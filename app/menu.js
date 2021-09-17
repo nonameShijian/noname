@@ -43,7 +43,7 @@ async function checkForUpdate(url) {
 					},
 				});
 				updateContent.loadURL(`file://${__dirname}/temp-updateContent.html`);
-				updateContent.webContents.openDevTools();
+				//updateContent.webContents.openDevTools();
 				updateContent.on('closed', () => {
 					updateContent = null;
 					fs.unlink(`${__dirname}/temp-updateContent.html`, (err) => {
@@ -66,7 +66,7 @@ async function checkForUpdate(url) {
 		}
 	}
 	
-	if(+localInstallerVersion <= +serverInstallerVersion) {
+	if(+localInstallerVersion < +serverInstallerVersion) {
 		//本地版本小于服务器安装版本
 		//nonameSkill:?updateURL=https://raw.fastgit.org/nonameShijian/noname/main
 		let fileList = [], updateStr = `
