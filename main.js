@@ -137,7 +137,7 @@ function createUpdateWindow() {
 		}
 	});
 	win.loadURL(`file://${__dirname}/update.html`);
-	win.webContents.openDevTools();
+	//win.webContents.openDevTools();
 	win.webContents.executeJavaScript(`window.updateURL = '${updateURL}'`);
 	return win;
 }

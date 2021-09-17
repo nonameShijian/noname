@@ -78,10 +78,11 @@ async function checkForUpdate(url) {
 			</head>
 			<style>
 			span {
-				font-size: 20px;
+				color: red;
+				font-size: 23px;
 			}
 			pre {
-				font-size: 18px;
+				font-size: 20px;
 			}
 			</style>
 			<script type="text/javascript">
