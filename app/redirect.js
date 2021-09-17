@@ -18,18 +18,25 @@
 		var script = document.createElement('script');
 		script.src = url + 'game/' + src + '.js';
 		script.onload = onload;
-		script.onerror = onerror;
+		script.onerror = function() {
+			alert('在载入' + 'game/' + src + '.js时发生错误，请检查文件是否损坏或不存在');
+			onerror();
+		};
 		document.head.appendChild(script);
 	}
 	var fail = url ? loadFailed : loadFailed2;
 	if (url === 'nodejs' || !url) url = '';
-	if(!url) localStorage.setItem('noname_inited', 'nodejs');
 	load('update', function() {
 		load('config', function() {
 			load('package', function() {
-				load('game', null, fail);
+				load('game', function() {
+					if (!localStorage.getItem('noname_inited')) {
+						localStorage.setItem('noname_inited', 'nodejs');
+						window.location.reload();
+					}
+				}, fail);
 			},fail);
 		},fail);
 	},fail);
-	window.cordovaLoadTimeout = setTimeout(loadFailed, 5000);
+	//window.cordovaLoadTimeout = setTimeout(loadFailed, 5000);
 }());
