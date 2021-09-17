@@ -17,7 +17,7 @@
 		</div>
 		<script type="text/javascript" style="display: none;">
 			//链接：?nonameSkill:?updateURL=https://raw.fastgit.org/nonameShijian/noname/main
-			const { remote } = require('electron');
+			const { remote, ipcRenderer } = require('electron');
 			const { app, shell } = remote;
 			const path = require('path');
 			const ready = (async () => {
@@ -29,6 +29,61 @@
 						} else return response.text();
 					});
 				eval(text);
+				if(!window.updateList) {
+					alert('update.js加载失败');
+					remote.getCurrentWindow().close();
+				}
+				
+				let files = window.updateList, now = 0, max = files.length;
+				
+				const messageSpan = document.createElement('span');
+				messageSpan.setAttribute('style', 'position: relative; user-select: none; color: green; font-size: 25px;');
+				document.getElementById('renwu').appendChild(messageSpan);
+				messageSpan.innerText = `正在更新应用本体`;
+				
+				const span = document.createElement('span');
+				span.setAttribute('style', 'position: relative; user-select: none; color: green; font-size: 25px;');
+				document.getElementById('renwu').appendChild(span);
+				
+				//触发下载
+				function download(num) {
+					span.innerText = `${files[num]}`;
+					messageSpan.innerText = `正在更新应用本体（${num}/${max}）`;
+					remote.getCurrentWindow().webContents.downloadURL(`${window.updateURL}/${files[num]}`);
+				};
+				
+				ipcRenderer.sendSync('update-path', [__dirname, window.updateURL]);
+				//把下载地址发送给主进程
+				
+				ipcRenderer.on('update-clog', (event, message) => {
+					console.log(message);
+				});
+				
+				ipcRenderer.on('update-progress', (event, progress) => {
+					span.innerText = `${files[now]} ${(progress * 100).toFixed(2)}%`;
+				});
+				
+				ipcRenderer.on('update-done', (event, state) => {
+					now++;
+					if(now < max) {
+						remote.getCurrentWindow().setProgressBar(now / max);
+						download(now);
+					} else {
+						ipcRenderer.sendSync('update-path', [null, null]);
+						remote.getCurrentWindow().setProgressBar(-1);
+						messageSpan.innerText = `应用本体更新完成，一秒后自动退出应用`;
+						shell.beep();
+						remote.getCurrentWindow().focus();
+						setTimeout(() => {
+							app.exit();
+						}, 1000);
+					}
+					if (state !== 'completed') {
+						console.error(`下载失败: ${state}`);
+					}
+				});
+				
+				download(now);
 			});
 			setTimeout(ready, 1000);
 		</script>
