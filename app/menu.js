@@ -105,7 +105,7 @@ async function checkForUpdate(url) {
 		
 		if(Notification.isSupported()){
 			//如果支持桌面通知
-			const TITLE = '更新提醒';
+			const TITLE = '应用更新提醒';
 			const BODY = '点击查看更新内容';
 			// 实例化不会进行通知
 			const updateNotification = new Notification({
@@ -124,7 +124,18 @@ async function checkForUpdate(url) {
 			});
 			updateNotification.show();
 		} else {
-			//不支持
+			//不支持Notification用dialog
+			dialog.showMessageBox(remote.getCurrentWindow(), {
+				message: '查看更新内容',
+				type: 'info',
+				title: '应用更新提醒',
+				icon: 'noname.ico',
+				buttons: ['确定', '取消'],
+				defaultId: 0,
+				cancelId: 1,
+			}).then(({response}) => {
+				if(response == 0) writeTempFile(updateStr);
+			});
 		}
 	}
 }
@@ -205,7 +216,7 @@ var Menus = [{
 			});
 		}
 	}, {
-		label: '检查本体更新',
+		label: '检查应用更新',
 		click: () => {
 			checkForUpdate('https://raw.fastgit.org/nonameShijian/noname/main');
 		},
