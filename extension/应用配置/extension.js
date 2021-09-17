@@ -22,14 +22,16 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 						lib.config.extensions.add(extensionName);
 						game.saveConfig('extensions', lib.config.extensions);
 						game.saveConfig('extension_' + extensionName + '_enable', true);
-						for (var i in game.importedPack.config) {
+						for (let i in game.importedPack.config) {
 							if (game.importedPack.config[i] && game.importedPack.config[i].hasOwnProperty('init')) {
 								game.saveConfig('extension_' + extensionName + '_' + i, game.importedPack.config[i].init);
 							}
 						}
 						alert(`扩展【${extensionName}】导入成功！`);
+						localStorage.removeItem('download-extensionName');
 						game.reload();
 					} catch (e) {
+						localStorage.removeItem('download-extensionName');
 						dialog.showErrorBox("扩展代码有错误！", `${e}`);
 					} finally {
 						_status.importingExtension = false;

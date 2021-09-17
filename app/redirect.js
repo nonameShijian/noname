@@ -16,16 +16,15 @@
 	}
 	var load = function(src, onload, onerror) {
 		var script = document.createElement('script');
-		script.src = url + 'game/' + src + '.js';
+		script.src = 'game/' + src + '.js';
 		script.onload = onload;
 		script.onerror = function() {
-			alert('在载入' + 'game/' + src + '.js时发生错误，请检查文件是否损坏或不存在');
+			alert('在载入' + 'game/' + src + '.js时发生错误');
 			onerror();
 		};
 		document.head.appendChild(script);
 	}
 	var fail = url ? loadFailed : loadFailed2;
-	if (url === 'nodejs' || !url) url = '';
 	load('update', function() {
 		load('config', function() {
 			load('package', function() {
@@ -38,5 +37,5 @@
 			},fail);
 		},fail);
 	},fail);
-	//window.cordovaLoadTimeout = setTimeout(loadFailed, 5000);
+	window.cordovaLoadTimeout = setTimeout(loadFailed, 5000);
 }());
