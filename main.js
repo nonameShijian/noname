@@ -154,17 +154,22 @@ app.setName('无名杀');//防止32位无名杀的乱码
 
 app.whenReady().then(() => {
 	
-	let downloadPath, extensionName;
-	const url = 'https://kuangthree.coding.net/p/noname-extensionxwjh/d/noname-extensionxwjh/git/raw/master/';
+	let downloadPath, extensionName, updatePath, updateUrl, updateWin;
+	const downloadUrl = 'https://kuangthree.coding.net/p/noname-extensionxwjh/d/noname-extensionxwjh/git/raw/master/';
 	
 	ipcMain.on('download-path', function(event, arg) {
 		[downloadPath, extensionName] = arg;
 		event.returnValue = downloadPath;
 	});
 	
+	ipcMain.on('update-path', function(event, arg) {
+		[updatePath, updateUrl, updateWin] = arg;
+		event.returnValue = updatePath;
+	});
+	
 	session.defaultSession.on('will-download', (event, item) => {
 		if(!downloadPath || !extensionName) return;
-		const fileUrl = decodeURI(item.getURL()).replace(url + extensionName + '/', '');
+		const fileUrl = decodeURI(item.getURL()).replace(downloadUrl + extensionName + '/', '');
 		const savePath = path.join(downloadPath, fileUrl);
 		item.setSavePath(savePath);
 		
@@ -183,6 +188,30 @@ app.whenReady().then(() => {
 		
 		item.once('done', (event, state) => {
 			win.webContents.send('download-done', state);
+		});
+	});
+	
+	session.defaultSession.on('will-download', (event, item) => {
+		if(!updatePath || !updateUrl, || !updateWin) return;
+		const fileUrl = decodeURI(item.getURL()).replace(updateUrl + '/', '');
+		const savePath = path.join(updatePath, fileUrl);
+		item.setSavePath(savePath);
+		
+		item.on('updated', (event, state) => {
+			if (state === 'interrupted') {
+				updateWin.webContents.send('update-clog', '下载被中断，但可以继续');
+			} else if (state === 'progressing') {
+				if (item.isPaused()) {
+					updateWin.webContents.send('update-clog', '下载暂停');
+				} else {
+					const progress = item.getReceivedBytes() / item.getTotalBytes();
+					updateWin.webContents.send('update-progress', progress);
+				}
+			}
+		});
+		
+		item.once('done', (event, state) => {
+			updateWin.webContents.send('update-done', state);
 		});
 	});
 	

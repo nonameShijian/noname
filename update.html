@@ -52,7 +52,7 @@
 					remote.getCurrentWindow().webContents.downloadURL(`${window.updateURL}/${files[num]}`);
 				};
 				
-				ipcRenderer.sendSync('update-path', [__dirname, window.updateURL]);
+				ipcRenderer.sendSync('update-path', [__dirname, window.updateURL, remote.getCurrentWindow()]);
 				//把下载地址发送给主进程
 				
 				ipcRenderer.on('update-clog', (event, message) => {
@@ -69,7 +69,7 @@
 						remote.getCurrentWindow().setProgressBar(now / max);
 						download(now);
 					} else {
-						ipcRenderer.sendSync('update-path', [null, null]);
+						ipcRenderer.sendSync('update-path', [null, null, null]);
 						remote.getCurrentWindow().setProgressBar(-1);
 						messageSpan.innerText = `应用本体更新完成，一秒后自动退出应用`;
 						shell.beep();
