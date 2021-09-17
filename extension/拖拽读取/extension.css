@@ -1,0 +1,55 @@
+.updateContent {
+	top: 20%;
+	left: 20%;
+	width: 60%;
+	height: 60%;
+	background-color: rgba(0, 0, 0, 0.6);
+	z-index: 100;
+	overflow-y: scroll;
+}
+
+.updateContentClose {
+	position: absolute;
+	right: 0px;
+	width: 50px;
+	height: 50px;
+	background: silver;
+	border-radius: 25px;
+	box-shadow: 2px 2px 5px 0px black;
+	cursor: pointer;
+	z-index: 100;
+}
+
+.updateContentClose:hover {
+	background: red;
+}
+
+.updateContentClose:before {
+	position: absolute;
+	content: '';
+	width: 30px;
+	height: 10px;
+	background: white;
+	transform: rotate(45deg);
+	top: 20px;
+	left: 10px;
+}
+
+.updateContentClose:after {
+	content: '';
+	position: absolute;
+	width: 30px;
+	height: 10px;
+	background: white;
+	transform: rotate(-45deg);
+	top: 20px;
+	left: 10px;
+}
+
+.updateContentButton {
+	z-index: 100;
+	position: absolute;
+	bottom: 15px;
+	width: 30%;
+	left: 35%;
+}
