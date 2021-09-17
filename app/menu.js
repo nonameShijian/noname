@@ -138,10 +138,13 @@ async function checkForUpdate(url) {
 				if(response == 0) writeTempFile(updateStr);
 			});
 		}
+	} else if(+localInstallerVersion == +serverInstallerVersion){
+		//版本相同
+		alert('应用已经是最新版');
 	}
 }
 
-eval(localStorage.getItem('autoCheckUpdates')) && checkForUpdate('https://raw.fastgit.org/nonameShijian/noname/main');
+localStorage.getItem('autoCheckUpdates') == 'true' && checkForUpdate('https://raw.fastgit.org/nonameShijian/noname/main');
 
 //跳过最开始的下载界面
 if(!localStorage.getItem('noname_inited')){
@@ -225,7 +228,7 @@ var Menus = [{
 		label: '自动检查更新',
 		type: 'checkbox',
 		checked: (() => {
-			const bool = eval(localStorage.getItem('autoCheckUpdates'));
+			const bool = localStorage.getItem('autoCheckUpdates') == 'true';
 			return bool || false;
 		})(),
 		click: (menuItem) => {
