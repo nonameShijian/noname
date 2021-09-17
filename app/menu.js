@@ -1,8 +1,135 @@
 const { remote, shell } = require('electron');
-const { BrowserWindow, Menu, dialog } = remote;
+const { BrowserWindow, Menu, dialog, Notification } = remote;
 const path = require('path');
 const contents = remote.getCurrentWindow().webContents;
 const fs = require('fs');
+
+const readJSON = (url) => {
+	return new Promise((resolve, reject) => {
+		fetch(url)
+			.then(response => {
+				if (response.status != 200) {
+					console.error(`未找到文件：${url}`);
+					return {};
+				}
+				return response.json();
+			}).then(resolve);
+	});
+};
+	
+async function checkForUpdate(url) {
+	//本地json数据
+	const localJSON = await readJSON('package.json');
+	//本地安装程序版本
+	const localInstallerVersion = localJSON.installerVersion || "";
+	//服务器json数据
+	const serverJSON = await readJSON(url + '/package.json');
+	//服务器安装程序版本
+	const serverInstallerVersion = serverJSON.installerVersion || "";
+	
+	const writeTempFile = (str, callback) => {
+		fs.writeFile(`${__dirname}/temp-updateContent.html`, str, err => {
+			if(err) alert(err);
+			else {
+				let updateContent = new BrowserWindow({
+					width: 800,
+					height: 600,
+					title: '无名杀-更新内容',
+					autoHideMenuBar: true,
+					webPreferences: {
+						nodeIntegration: true,
+						contextIsolation: false,
+						enableRemoteModule: true,
+					},
+				});
+				updateContent.loadURL(`file://${__dirname}/temp-updateContent.html`);
+				updateContent.webContents.openDevTools();
+				updateContent.on('closed', () => {
+					updateContent = null;
+					fs.unlink(`${__dirname}/temp-updateContent.html`, (err) => {
+					  if (err) throw err;
+					});
+				});
+			}
+		});
+	}
+	
+	if(JSON.stringify(serverJSON) == "{}") {
+		//服务器json数据获取失败
+		if(Notification.isSupported()){
+			return new Notification({
+				title: '检查更新失败', 
+				body: '服务器json数据获取失败',
+			}).show();
+		} else {
+			return dialog.showErrorBox('服务器json数据获取失败', '');
+		}
+	}
+	
+	if(+localInstallerVersion <= +serverInstallerVersion) {
+		//本地版本小于服务器安装版本
+		//nonameSkill:?updateURL=https://raw.fastgit.org/nonameShijian/noname/main
+		let fileList = [], updateStr = `
+		<!DOCTYPE html>
+		<html>
+			<head>
+				<meta charset="utf-8">
+				<title>无名杀-更新内容</title>
+			</head>
+			<style>
+			span {
+				font-size: 20px;
+			}
+			pre {
+				font-size: 18px;
+			}
+			</style>
+			<script type="text/javascript">
+				const { remote } = require('electron');
+			</script>
+			<body>
+		`;
+		for(let i = 0; i < serverJSON.installerUpdateContent.length; i++) {
+			const {version, updateContent} = serverJSON.installerUpdateContent[i];
+			if(version <= localInstallerVersion) break;
+			updateStr += `
+			<span>v${version}更新内容：</span></br>
+			<pre>${updateContent.join('\n')}</pre></br>
+			`;
+		}
+		updateStr += `
+			<button onclick="location.href='nonameSkill:?updateURL=${url}'; setTimeout(remote.getCurrentWindow().close, 1000);">更新无名杀</button>
+			</body>
+		</html>
+		`;
+		
+		if(Notification.isSupported()){
+			//如果支持桌面通知
+			const TITLE = '更新提醒';
+			const BODY = '点击查看更新内容';
+			// 实例化不会进行通知
+			const updateNotification = new Notification({
+				// 通知的标题, 将在通知窗口的顶部显示
+				title: TITLE, 
+				// 通知的正文文本, 将显示在标题或副标题下面
+				body: BODY,
+				// false有声音，true没声音
+				silent: false,
+				// 通知的超时持续时间 'default' or 'never'
+				//never显示关闭按钮，关闭也触发click
+				timeoutType: 'default',
+			});
+			updateNotification.addListener('click', () => {
+				writeTempFile(updateStr);
+			});
+			updateNotification.show();
+		} else {
+			//不支持
+		}
+	}
+}
+
+eval(localStorage.getItem('autoCheckUpdates')) && checkForUpdate('https://raw.fastgit.org/nonameShijian/noname/main');
 
 //跳过最开始的下载界面
 if(!localStorage.getItem('noname_inited')){
@@ -77,6 +204,21 @@ var Menus = [{
 				});
 			});
 		}
+	}, {
+		label: '检查本体更新',
+		click: () => {
+			checkForUpdate('https://raw.fastgit.org/nonameShijian/noname/main');
+		},
+	}, {
+		label: '自动检查更新',
+		type: 'checkbox',
+		checked: (() => {
+			const bool = eval(localStorage.getItem('autoCheckUpdates'));
+			return bool || false;
+		})(),
+		click: (menuItem) => {
+			localStorage.setItem('autoCheckUpdates', menuItem.checked);
+		},
 	}]
 }, {
 	label: '窗口',

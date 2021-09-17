@@ -2,7 +2,7 @@ const PROTOCOL = 'nonameSkill';
 const { app, BrowserWindow, Menu, ipcMain, session } = require('electron');
 const path = require('path');
 const isWindows = process.platform === 'win32';
-let win, extensionName;
+let win, extensionName, updateURL;
 
 // 获取单实例锁
 const gotTheLock = app.requestSingleInstanceLock();
@@ -10,6 +10,8 @@ if (!gotTheLock) {
 	// 如果获取失败，说明已经有实例在运行了，直接退出
 	app.quit();
 }
+
+app.setAppUserModelId('无名杀');
 
 if (!app.isDefaultProtocolClient(PROTOCOL)) {
 	const args = [];
@@ -22,22 +24,12 @@ if (!app.isDefaultProtocolClient(PROTOCOL)) {
 	
 	app.setAsDefaultProtocolClient(PROTOCOL, process.execPath, args);
 	//对应的取消协议:
-	//app.removeAsDefaultProtocolClient(protocol[, path, args])
-}
-
-function handleArgv(argv) {
-	const prefix = `${PROTOCOL}:`;
-	// 开发阶段，跳过前两个参数（`electron.exe .`）
-	// 打包后，跳过第一个参数（`myapp.exe`）
-	const offset = app.isPackaged ? 1 : 2;
-	const url = argv.find((arg, index) => index >= offset && arg.startsWith(prefix));
-	if (url) handleUrl(url);
+	//app.removeAsDefaultProtocolClient(protocol)
 }
 
 function handleUrl(urlStr) {
 	const urlObj = new URL(urlStr);
 	const { searchParams } = urlObj;
-	if(!searchParams.get('extensionName')) return;
 	
 	//玄武镜像：https://kuangthree.coding.net/p/noname-extensionxwjh/d/noname-extensionxwjh/git/raw/master
 	//链接：nonameSKill:?extensionName=全能搜索
@@ -45,24 +37,41 @@ function handleUrl(urlStr) {
 	//无名杀里再内置一个扩展，类似xwtool，下载完成后重启加载扩展信息
 	//内置的扩展应该有取消协议的选项，保证卸载无名杀前可以删除协议设置
 	extensionName = searchParams.get('extensionName');
+	updateURL = searchParams.get('updateURL');
 }
 
 // 如果打开协议时，没有其他实例，则当前实例当做主实例，处理参数
-//handleArgv(process.argv);
-
 handleUrl(process.argv[process.argv.length - 1]);
 
 // 其他实例启动时，主实例会通过 second-instance 事件接收其他实例的启动参数 `argv`
 app.on('second-instance', (event, argv) => {
   // Windows 下通过协议URL启动时，URL会作为参数，所以需要在这个事件里处理
   if (process.platform === 'win32') {
-    handleArgv(argv);
+	if(argv[argv.length - 1] === '--allow-file-access-from-files') return;
+	handleUrl(argv[argv.length - 1]);
+	if(extensionName) {
+		createExtensionWindow();
+	} else if(updateURL) {
+		createUpdateWindow();
+		win.webContents.executeJavaScript(`console.log('${updateURL}')`)
+	} else {
+		createMainWindow();
+	}
   }
 });
 
 // macOS 下通过协议URL启动时，主实例会通过 open-url 事件接收这个 URL
 app.on('open-url', (event, urlStr) => {
-  handleUrl(urlStr);
+	if(argv[argv.length - 1] === '--allow-file-access-from-files') return;
+	handleUrl(urlStr[urlStr.length - 1]);
+	if(extensionName) {
+		createExtensionWindow();
+	} else if(updateURL) {
+		createUpdateWindow();
+		win.webContents.executeJavaScript(`console.log('${updateURL}')`)
+	} else {
+		createMainWindow();
+	}
 });
 
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
@@ -70,37 +79,67 @@ process.noDeprecation = true;
 
 function createWindow() {
 	if(extensionName) {
-		win = new BrowserWindow({
-			width: 800,
-			height: 600,
-			title: '无名杀-下载扩展',
-			webPreferences: {
-				nodeIntegration: true, //主页面用node
-				contextIsolation: false,//必须为false
-				enableRemoteModule: true, //可以调用Remote
-			}
-		});
-		win.loadURL(`file://${__dirname}/downloadExtension.html`);
-		win.webContents.openDevTools();
-		Menu.setApplicationMenu(null);
-		win.webContents.executeJavaScript(`window.extensionName = '${extensionName}'`);
+		win = win || createExtensionWindow();
+	} else if(updateURL) {
+		win = win || createUpdateWindow();
 	} else {
-		win = new BrowserWindow({
-			width: 1000,
-			height: 800,
-			title: '无名杀',
-			webPreferences: {
-				preload: path.join(__dirname, 'app', 'menu.js'), //页面运行其他脚本之前预先加载指定的脚本
-				nodeIntegration: true, //主页面用node
-				nodeIntegrationInSubFrames: true, //子页面用node
-				contextIsolation: false,//必须为false
-				plugins: true, //启用插件
-				enableRemoteModule: true, //可以调用Remote
-				experimentalFeatures: true, //启用Chromium的实验功能
-			}
-		});
-		win.loadURL(`file://${__dirname}/app.html`);
+		win = win || createMainWindow();
 	}
+}
+
+function createMainWindow() {
+	let win = new BrowserWindow({
+		width: 1000,
+		height: 800,
+		title: '无名杀',
+		webPreferences: {
+			preload: path.join(__dirname, 'app', 'menu.js'), //页面运行其他脚本之前预先加载指定的脚本
+			nodeIntegration: true, //主页面用node
+			nodeIntegrationInSubFrames: true, //子页面用node
+			contextIsolation: false,//必须为false
+			plugins: true, //启用插件
+			enableRemoteModule: true, //可以调用Remote
+			experimentalFeatures: true, //启用Chromium的实验功能
+		}
+	});
+	win.loadURL(`file://${__dirname}/app.html`);
+	return win;
+}
+
+function createExtensionWindow() {
+	let win = new BrowserWindow({
+		width: 800,
+		height: 600,
+		title: '无名杀-下载扩展',
+		autoHideMenuBar: true,
+		webPreferences: {
+			nodeIntegration: true, //主页面用node
+			contextIsolation: false, //必须为false
+			enableRemoteModule: true, //可以调用Remote
+		}
+	});
+	win.loadURL(`file://${__dirname}/downloadExtension.html`);
+	win.webContents.openDevTools();
+	win.webContents.executeJavaScript(`window.extensionName = '${extensionName}'`);
+	return win;
+}
+
+function createUpdateWindow() {
+	let win = new BrowserWindow({
+		width: 800,
+		height: 600,
+		title: '无名杀-更新文件',
+		autoHideMenuBar: true,
+		webPreferences: {
+			nodeIntegration: true, //主页面用node
+			contextIsolation: false, //必须为false
+			enableRemoteModule: true, //可以调用Remote
+		}
+	});
+	win.loadURL(`file://${__dirname}/update.html`);
+	win.webContents.openDevTools();
+	win.webContents.executeJavaScript(`window.updateURL = '${updateURL}'`);
+	return win;
 }
 
 app.setPath('home', path.join(__dirname, 'Home'));
