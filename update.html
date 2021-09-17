@@ -52,7 +52,7 @@
 					remote.getCurrentWindow().webContents.downloadURL(`${window.updateURL}/${files[num]}`);
 				};
 				
-				ipcRenderer.sendSync('update-path', [__dirname, window.updateURL, remote.getCurrentWindow()]);
+				ipcRenderer.sendSync('update-path', [__dirname, window.updateURL, remote.getCurrentWindow().id]);
 				//把下载地址发送给主进程
 				
 				ipcRenderer.on('update-clog', (event, message) => {

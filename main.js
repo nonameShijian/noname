@@ -154,7 +154,7 @@ app.setName('无名杀');//防止32位无名杀的乱码
 
 app.whenReady().then(() => {
 	
-	let downloadPath, extensionName, updatePath, updateUrl, updateWin;
+	let downloadPath, extensionName, updatePath, updateUrl, updateWinId;
 	const downloadUrl = 'https://kuangthree.coding.net/p/noname-extensionxwjh/d/noname-extensionxwjh/git/raw/master/';
 	
 	ipcMain.on('download-path', function(event, arg) {
@@ -163,7 +163,7 @@ app.whenReady().then(() => {
 	});
 	
 	ipcMain.on('update-path', function(event, arg) {
-		[updatePath, updateUrl, updateWin] = arg;
+		[updatePath, updateUrl, updateWinId] = arg;
 		event.returnValue = updatePath;
 	});
 	
@@ -192,26 +192,26 @@ app.whenReady().then(() => {
 	});
 	
 	session.defaultSession.on('will-download', (event, item) => {
-		if(!updatePath || !updateUrl, || !updateWin) return;
+		if(!updatePath || !updateUrl || !updateWinId) return;
 		const fileUrl = decodeURI(item.getURL()).replace(updateUrl + '/', '');
 		const savePath = path.join(updatePath, fileUrl);
 		item.setSavePath(savePath);
 		
 		item.on('updated', (event, state) => {
 			if (state === 'interrupted') {
-				updateWin.webContents.send('update-clog', '下载被中断，但可以继续');
+				BrowserWindow.fromId(updateWinId).webContents.send('update-clog', '下载被中断，但可以继续');
 			} else if (state === 'progressing') {
 				if (item.isPaused()) {
-					updateWin.webContents.send('update-clog', '下载暂停');
+					BrowserWindow.fromId(updateWinId).webContents.send('update-clog', '下载暂停');
 				} else {
 					const progress = item.getReceivedBytes() / item.getTotalBytes();
-					updateWin.webContents.send('update-progress', progress);
+					BrowserWindow.fromId(updateWinId).webContents.send('update-progress', progress);
 				}
 			}
 		});
 		
 		item.once('done', (event, state) => {
-			updateWin.webContents.send('update-done', state);
+			BrowserWindow.fromId(updateWinId).webContents.send('update-done', state);
 		});
 	});
 	
