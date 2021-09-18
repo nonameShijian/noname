@@ -1,13 +1,197 @@
 "use strict";
 game.import("extension", function(lib, game, ui, get, ai, _status) {
+
+	if (typeof game.download == 'function') {
+		game.download = (url, folder, onsuccess, onerror, dev, onprogress) => {
+			if (url.indexOf('http') != 0) {
+				url = get.url(dev) + url;
+			}
+			if (lib.node && lib.node.fs) {
+				game.ensureDirectory(folder, function() {
+					let file;
+					try {
+						file = lib.node.fs.createWriteStream(__dirname + '/' + folder, {
+							mode: 0o755
+						});
+					} catch (e) {
+						onerror();
+					}
+					lib.config.brokenFile.add(folder);
+					game.saveConfigValue('brokenFile');
+					if (!lib.node.http) lib.node.http = require('http');
+					if (!lib.node.https) lib.node.https = require('https');
+					let opts = require('url').parse(encodeURI(url));
+					opts.headers = {
+						'User-Agent': 'AppleWebkit'
+					};
+					let request = (url.indexOf('https') == 0 ? lib.node.https : lib.node.http).get(opts, function(response) {
+						let stream = response.pipe(file);
+						stream.on('finish', () => {
+							lib.config.brokenFile.remove(folder);
+							game.saveConfigValue('brokenFile');
+							if (onsuccess) {
+								onsuccess();
+							}
+						});
+						stream.on('error', onerror);
+						if (onprogress) {
+							let streamInterval = setInterval(() => {
+								if (stream.closed) {
+									clearInterval(streamInterval);
+								} else {
+									onprogress(stream.bytesWritten);
+								}
+							}, 200);
+						}
+					});
+				}, true);
+			} else if (typeof FileTransfer == 'function') {
+				let fileTransfer = new FileTransfer();
+				let folder2 = folder;
+				folder = lib.assetURL + folder;
+				lib.config.brokenFile.add(folder2);
+				game.saveConfigValue('brokenFile');
+				if (onprogress) {
+					fileTransfer.onprogress = function(progressEvent) {
+						onprogress(progressEvent.loaded, progressEvent.total);
+					};
+				}
+				fileTransfer.download(encodeURI(url), encodeURI(folder), function() {
+					lib.config.brokenFile.remove(folder2);
+					game.saveConfigValue('brokenFile');
+					if (onsuccess) {
+						onsuccess();
+					}
+				}, onerror);
+			} else throw '不支持下载文件'
+		};
+	}
+
+	let brokenFileArr = lib.config.extension_在线更新_brokenFile || [];
+	brokenFileArr = Array.from(new Set([...brokenFileArr, ...lib.config.brokenFile]));
+
+	window.addEventListener('beforeunload', () => {
+		if (brokenFileArr && brokenFileArr.length) {
+			for (let i = 0; i < brokenFileArr.length; i++) {
+				game.removeFile(brokenFileArr[i]);
+			}
+		}
+		game.saveExtensionConfig('在线更新', 'brokenFile', Array.from(new Set([...brokenFileArr, ...lib.config.brokenFile])));
+	});
+
+	let downloadFile = (current, onsuccess, onerror) => {
+		game.removeFile(current, err => {
+			if (err) {
+				console.error(`未能删除${current},可能是文件不存在或没有删除权限`);
+			}
+		});
+		let reload = (err) => {
+			typeof err != 'undefined' && typeof err != 'boolean' && console.error(err);
+			typeof onerror == "function" && onerror(current, !!err);
+			setTimeout(() => {
+				let str1 = "正在下载：";
+				let current3 = current.replace(lib.updateURL, '');
+
+				if (current3.indexOf('theme') == 0) {
+					game.print(str1 + current3.slice(6));
+				} else if (current3.indexOf('image/skin') == 0) {
+					game.print(str1 + current3.slice(11));
+				} else {
+					game.print(str1 + current3.slice(current3.lastIndexOf('/') + 1));
+				}
+
+				downloadFile(current, onsuccess, onerror);
+			}, 500);
+		};
+		let contrast = () => {
+			if (lib.node && lib.node.fs) {
+				game.readFile(current, (result) => {
+					if ("Too Many Requests" === result.toString()) {
+						reload();
+					} else {
+						typeof onsuccess == "function" && onsuccess(current);
+					}
+				}, reload);
+			} else if (window.cordova) {
+				window.resolveLocalFileSystemURL(lib.assetURL, function(entry) {
+					entry.getFile(current, {}, function(fileEntry) {
+						fileEntry.file(function(fileToLoad) {
+							var fileReader = new FileReader();
+							fileReader.onload = function(e) {
+								let str = e.target.result;
+								if ("Too Many Requests" === str) {
+									reload();
+								} else {
+									typeof onsuccess == "function" && onsuccess(current);
+								}
+							};
+							fileReader.readAsText(fileToLoad, "UTF-8");
+						}, reload);
+					}, reload);
+				}, reload);
+			}
+		}
+		try {
+			game.download(current, current, () => {
+				contrast();
+			}, reload, false);
+		} catch (e) {
+			reload(e);
+		}
+	};
+
+	let multiDownload = (list, onsuccess, onerror, onfinish) => {
+		list = list.slice(0);
+		let download = () => {
+			if (list.length) {
+				let current = list.shift();
+				let str1 = "正在下载：";
+
+				if (current.indexOf('theme') == 0) {
+					game.print(str1 + current.slice(6));
+				} else if (current.indexOf('image/skin') == 0) {
+					game.print(str1 + current.slice(11));
+				} else {
+					game.print(str1 + current.slice(current.lastIndexOf('/') + 1));
+				}
+
+				downloadFile(current, () => {
+					typeof onsuccess == "function" && onsuccess(current);
+					download();
+				}, onerror);
+
+			} else {
+				typeof onfinish == "function" && onfinish();
+			}
+		};
+		download();
+	};
+
 	return {
 		name: "在线更新",
 		editable: false,
 		content: function(config, pack) {
 			lib.updateURLS.github = 'https://raw.fastgit.org/libccy/noname';
-			//lib.updateURL = 'https://raw.fastgit.org/libccy/noname';
 		},
-		precontent: function() {},
+		precontent: function() {
+			if (brokenFileArr && brokenFileArr.length) {
+				//如果有没下载完就重启的文件
+				alert(`检测到有未下载成功的文件(${brokenFileArr})，进行重新下载`);
+				console.log('未下载成功的文件：', brokenFileArr);
+				multiDownload(brokenFileArr.concat(), (current) => {
+					brokenFileArr.remove(current);
+					game.saveExtensionConfig('在线更新', 'brokenFile', brokenFileArr);
+					lib.config.brokenFile.remove(current);
+					game.saveConfigValue('brokenFile');
+					console.log(`${current}下载成功`);
+				}, (current) => {
+					console.error(`${current}下载失败，尝试重新下载`);
+				}, () => {
+					alert('下载完成');
+					game.reload();
+				});
+			}
+		},
 		config: {
 			checkForUpdate: {
 				//检查游戏更新
@@ -23,12 +207,6 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 						this.childNodes[0].innerHTML = '<button type="button">检查游戏更新</button>';
 					};
 					let button = this.childNodes[0].childNodes[0];
-
-					let DownloadingFiles = null;
-
-					window.addEventListener('beforeunload', () => {
-						if (DownloadingFiles) game.removeFile(DownloadingFiles.replace(updateURL, ''))
-					});
 
 					if (button.disabled) {
 						return;
@@ -136,94 +314,6 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 											span.innerHTML = `正在下载文件（${n1}/${n2}）`;
 											this.childNodes[0].appendChild(span);
 
-											let downloadFile = (current, current2, onsuccess, onerror) => {
-												game.removeFile(current);
-												let reload = (err) => {
-													typeof err != 'undefined' && typeof err != 'boolean' && console.error(err);
-													typeof onerror == "function" && onerror(current, !!err);
-													setTimeout(() => {
-														let str1 = "正在下载：";
-														let current3 = current.replace(updateURL, '');
-
-														if (current3.indexOf('theme') == 0) {
-															game.print(str1 + current3.slice(6));
-														} else if (current3.indexOf('image/skin') == 0) {
-															game.print(str1 + current3.slice(11));
-														} else {
-															game.print(str1 + current3.slice(current3.lastIndexOf('/') + 1));
-														}
-
-														DownloadingFiles = current;
-														downloadFile(current, current2, onsuccess, onerror);
-													}, 500);
-												};
-												let contrast = () => {
-													if (lib.node && lib.node.fs) {
-														game.readFile(current, (result) => {
-															if ("Too Many Requests" === result.toString()) {
-																reload();
-															} else {
-																typeof onsuccess == "function" && onsuccess(current);
-															}
-														}, reload);
-													} else if (window.cordova) {
-														window.resolveLocalFileSystemURL(lib.assetURL, function(entry) {
-															entry.getFile(current, {}, function(fileEntry) {
-																fileEntry.file(function(fileToLoad) {
-																	var fileReader = new FileReader();
-																	fileReader.onload = function(e) {
-																		let str = e.target.result;
-																		if ("Too Many Requests" === str) {
-																			reload();
-																		} else {
-																			typeof onsuccess == "function" && onsuccess(current);
-																		}
-																	};
-																	fileReader.readAsText(fileToLoad, "UTF-8");
-																}, reload);
-															}, reload);
-														}, reload);
-													}
-												}
-												try {
-													game.download(current, current2, () => {
-														contrast();
-													}, reload, false);
-												} catch (e) {
-													reload(e);
-												}
-											};
-
-											let multiDownload = (list, onsuccess, onerror, onfinish) => {
-												list = list.slice(0);
-												let download = () => {
-													if (list.length) {
-														let current = list.shift();
-														let current2 = current;
-														let str1 = "正在下载：";
-
-														if (current.indexOf('theme') == 0) {
-															game.print(str1 + current.slice(6));
-														} else if (current.indexOf('image/skin') == 0) {
-															game.print(str1 + current.slice(11));
-														} else {
-															game.print(str1 + current.slice(current.lastIndexOf('/') + 1));
-														}
-
-														DownloadingFiles = current;
-
-														downloadFile(current, current2, () => {
-															typeof onsuccess == "function" && onsuccess(current);
-															download();
-														}, onerror);
-
-													} else {
-														typeof onfinish == "function" && onfinish();
-													}
-												};
-												download();
-											};
-
 											multiDownload(updates, (current) => {
 												game.print(`${current.slice(current.lastIndexOf('/') + 1)}下载成功`);
 												n1++;
@@ -242,7 +332,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 												setTimeout(() => {
 													alert('更新完成');
 													consoleMenu.remove();
-													DownloadingFiles = null;
+													//DownloadingFiles = null;
 													this.childNodes[0].appendChild(document.createElement('br'));
 													let button2 = document.createElement('button');
 													button2.innerHTML = '重新启动';
@@ -347,12 +437,6 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 					};
 					let button = this.childNodes[0].childNodes[0];
 
-					let DownloadingFiles = null;
-
-					window.addEventListener('beforeunload', () => {
-						if (DownloadingFiles) game.removeFile(DownloadingFiles.replace(updateURL, ''))
-					});
-
 					if (button.disabled) {
 						return;
 					} else if (!game.download) {
@@ -447,94 +531,6 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 									}
 								}
 
-								let downloadFile = (current, current2, onsuccess, onerror) => {
-									game.removeFile(current);
-									let reload = (err) => {
-										typeof err != 'undefined' && typeof err != 'boolean' && console.error(err);
-										typeof onerror == "function" && onerror(current, !!err);
-										setTimeout(() => {
-											let str1 = "正在下载：";
-											let current3 = current.replace(updateURL, '');
-
-											if (current3.indexOf('theme') == 0) {
-												game.print(str1 + current3.slice(6));
-											} else if (current3.indexOf('image/skin') == 0) {
-												game.print(str1 + current3.slice(11));
-											} else {
-												game.print(str1 + current3.slice(current3.lastIndexOf('/') + 1));
-											}
-
-											DownloadingFiles = current;
-											downloadFile(current, current2, onsuccess, onerror);
-										}, 500);
-									};
-									let contrast = () => {
-										if (lib.node && lib.node.fs) {
-											game.readFile(current, (result) => {
-												if ("Too Many Requests" === result.toString()) {
-													reload();
-												} else {
-													typeof onsuccess == "function" && onsuccess(current);
-												}
-											}, reload);
-										} else if (window.cordova) {
-											window.resolveLocalFileSystemURL(lib.assetURL, function(entry) {
-												entry.getFile(current, {}, function(fileEntry) {
-													fileEntry.file(function(fileToLoad) {
-														var fileReader = new FileReader();
-														fileReader.onload = function(e) {
-															let str = e.target.result;
-															if ("Too Many Requests" === str) {
-																reload();
-															} else {
-																typeof onsuccess == "function" && onsuccess(current);
-															}
-														};
-														fileReader.readAsText(fileToLoad, "UTF-8");
-													}, reload);
-												}, reload);
-											}, reload);
-										}
-									}
-									try {
-										game.download(current, current2, () => {
-											contrast();
-										}, reload, false);
-									} catch (e) {
-										reload(e);
-									}
-								};
-
-								let multiDownload = (list, onsuccess, onerror, onfinish) => {
-									list = list.slice(0);
-									let download = () => {
-										if (list.length) {
-											let current = list.shift();
-											let current2 = current;
-											let str1 = "正在下载：";
-
-											if (current.indexOf('theme') == 0) {
-												game.print(str1 + current.slice(6));
-											} else if (current.indexOf('image/skin') == 0) {
-												game.print(str1 + current.slice(11));
-											} else {
-												game.print(str1 + current.slice(current.lastIndexOf('/') + 1));
-											}
-
-											DownloadingFiles = current;
-
-											downloadFile(current, current2, () => {
-												typeof onsuccess == "function" && onsuccess(current);
-												download();
-											}, onerror);
-
-										} else {
-											typeof onfinish == "function" && onfinish();
-										}
-									};
-									download();
-								};
-
 								let proceed = () => {
 									if (updates.length == 0) {
 										game.saveConfig('asset_version', asset_version);
@@ -575,7 +571,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 										span.innerHTML = `素材更新完毕（${n1}/${n2}）`;
 										setTimeout(() => {
 											alert('更新完成');
-											DownloadingFiles = null;
+											//DownloadingFiles = null;
 											consoleMenu.remove();
 											this.childNodes[0].appendChild(document.createElement('br'));
 											let button2 = document.createElement('button');
@@ -613,6 +609,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 												}
 											} else {
 												n--;
+												i--;
 												updates.remove(entry);
 												if (n == 0) {
 													proceed();
@@ -709,11 +706,11 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 				skill: {},
 				translate: {},
 			},
-			intro: "点击按钮即可在线更新，文件下载失败会自动重新下载。</br>点击按钮后若短时间内没反应可以重启游戏，请不要重复点击以免bug",
+			intro: "点击按钮即可在线更新，文件下载失败会自动重新下载。</br>点击按钮后若短时间内没反应可以重启游戏。</br><span style='color:red'>请不要在更新时关闭游戏，否则后果自负</br>（更新时关闭游戏后，windows用户会有不能删除的残留文件，可以通过注销用户来自动清除）</span>",
 			author: "诗笺",
 			diskURL: "",
 			forumURL: "",
-			version: "1.1",
+			version: "1.17",
 		},
 		files: {
 			"character": [],
