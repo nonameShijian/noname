@@ -5,8 +5,8 @@
 	"main": "main.js",
 	"scripts": {
 		"start": "electron .",
-		"package": "electron-packager . 无名杀 --platform=win32 --arch=x64 --out=./ --app-version=1.9.0 --icon=favicon.ico --overwrite --ignore=node_modules --electron-version 13.1.7",
-		"pack": "electron-packager . 无名杀 --platform=win32 --arch=ia32 --out=./ --app-version=1.9.0 --icon=favicon.ico --overwrite --ignore=node_modules --electron-version 13.1.7"
+		"package": "electron-packager . 无名杀 --platform=win32 --arch=x64 --out=./ --app-version=1.9.0 --icon=noname.ico --overwrite --ignore=node_modules --electron-version 13.1.7",
+		"pack": "electron-packager . 无名杀 --platform=win32 --arch=ia32 --out=./ --app-version=1.9.0 --icon=noname.ico --overwrite --ignore=node_modules --electron-version 13.1.7"
 	},
 	"repository": {
 		"type": "git",

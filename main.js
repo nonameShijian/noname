@@ -88,6 +88,7 @@ function createMainWindow() {
 		width: 1000,
 		height: 800,
 		title: '无名杀',
+		icon: path.join(__dirname, 'noname.ico'),
 		webPreferences: {
 			preload: path.join(__dirname, 'app', 'menu.js'), //页面运行其他脚本之前预先加载指定的脚本
 			nodeIntegration: true, //主页面用node
@@ -107,6 +108,7 @@ function createExtensionWindow() {
 		width: 800,
 		height: 600,
 		title: '无名杀-下载扩展',
+		icon: path.join(__dirname, 'noname.ico'),
 		autoHideMenuBar: true,
 		webPreferences: {
 			nodeIntegration: true, //主页面用node
@@ -125,6 +127,7 @@ function createUpdateWindow() {
 		width: 800,
 		height: 600,
 		title: '无名杀-更新文件',
+		icon: path.join(__dirname, 'noname.ico'),
 		autoHideMenuBar: true,
 		webPreferences: {
 			nodeIntegration: true, //主页面用node
