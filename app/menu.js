@@ -140,6 +140,7 @@ async function checkForUpdate(url) {
 		}
 	} else if(+localInstallerVersion == +serverInstallerVersion){
 		//版本相同
+		shell.beep();
 		alert('应用已经是最新版');
 	}
 }

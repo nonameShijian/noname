@@ -44,7 +44,7 @@
 						let url = 'https://kuangthree.coding.net/p/noname-extensionxwjh/d/noname-extensionxwjh/git/raw/master';
 						//进行下载
 						let files = extension[extensionName]['files'];
-						let pos = this.find('catalogTemplate.txt');
+						let pos = files.indexOf('catalogTemplate.txt');
 						//排除这个没用的文件
 						if (pos != -1) {
 							files.splice(pos, 1);
