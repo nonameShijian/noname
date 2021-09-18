@@ -27,10 +27,16 @@ if (!app.isDefaultProtocolClient(PROTOCOL)) {
 	//app.removeAsDefaultProtocolClient(protocol)
 }
 
-function handleUrl(urlStr) {
-	const urlObj = new URL(urlStr);
+function handleUrl(arr) {
+	const result = arr.filter(val => val.startsWith('nonameskill:'));
+	/*if(win) {
+		win.webContents.executeJavaScript(`console.log('${arr}')`);
+		win.webContents.executeJavaScript(`console.log('${result}')`);
+	}*/
+	if(!result.length) return;
+	const url = result[0];
+	const urlObj = new URL(url);
 	const { searchParams } = urlObj;
-	
 	//玄武镜像：https://kuangthree.coding.net/p/noname-extensionxwjh/d/noname-extensionxwjh/git/raw/master
 	//链接：nonameSKill:?extensionName=全能搜索
 	//步骤：截取链接，跳转到另一个html里下载
@@ -41,14 +47,13 @@ function handleUrl(urlStr) {
 }
 
 // 如果打开协议时，没有其他实例，则当前实例当做主实例，处理参数
-handleUrl(process.argv[process.argv.length - 1]);
+handleUrl(process.argv);
 
 // 其他实例启动时，主实例会通过 second-instance 事件接收其他实例的启动参数 `argv`
 app.on('second-instance', (event, argv) => {
   // Windows 下通过协议URL启动时，URL会作为参数，所以需要在这个事件里处理
   if (process.platform === 'win32') {
-	if(argv[argv.length - 1] === '--allow-file-access-from-files') return;
-	handleUrl(argv[argv.length - 1]);
+	handleUrl(argv);
 	if(extensionName) {
 		createExtensionWindow();
 	} else if(updateURL) {
@@ -61,8 +66,7 @@ app.on('second-instance', (event, argv) => {
 
 // macOS 下通过协议URL启动时，主实例会通过 open-url 事件接收这个 URL
 app.on('open-url', (event, urlStr) => {
-	if(urlStr[urlStr.length - 1] === '--allow-file-access-from-files') return;
-	handleUrl(urlStr[urlStr.length - 1]);
+	handleUrl(urlStr);
 	if(extensionName) {
 		createExtensionWindow();
 	} else if(updateURL) {
@@ -76,12 +80,13 @@ process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
 process.noDeprecation = true;
 
 function createWindow() {
+	if(win) return;
 	if(extensionName) {
-		win = win || createExtensionWindow();
+		win = createExtensionWindow();
 	} else if(updateURL) {
-		win = win || createUpdateWindow();
+		win = createUpdateWindow();
 	} else {
-		win = win || createMainWindow();
+		win = createMainWindow();
 	}
 }
 
