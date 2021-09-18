@@ -35,6 +35,7 @@ async function checkForUpdate(url) {
 					width: 800,
 					height: 600,
 					title: '无名杀-更新内容',
+					icon: path.join(__dirname, 'noname.ico'),
 					autoHideMenuBar: true,
 					webPreferences: {
 						nodeIntegration: true,
@@ -142,6 +143,9 @@ async function checkForUpdate(url) {
 		//版本相同
 		shell.beep();
 		alert('应用已经是最新版');
+	} else if(+localInstallerVersion > +serverInstallerVersion) {
+		//本地版本大于服务器版本
+		console.log('本地版本大于服务器版本');
 	}
 }
 
