@@ -78,7 +78,7 @@
 						messageSpan.innerText = `应用本体更新完成，一秒后自动退出应用`;
 						shell.beep();
 						remote.getCurrentWindow().focus();
-						setTimeout(() => {
+						setTimeout(() => {			
 							app.exit();
 						}, 1000);
 					}

@@ -33,7 +33,11 @@ function handleUrl(arr) {
 		win.webContents.executeJavaScript(`console.log('${arr}')`);
 		win.webContents.executeJavaScript(`console.log('${result}')`);
 	}*/
-	if(!result.length) return;
+	if(!result.length) {
+		extensionName = null;
+		updateURL = null;
+		return;
+	}
 	const url = result[0];
 	const urlObj = new URL(url);
 	const { searchParams } = urlObj;
@@ -54,40 +58,29 @@ app.on('second-instance', (event, argv) => {
   // Windows 下通过协议URL启动时，URL会作为参数，所以需要在这个事件里处理
   if (process.platform === 'win32') {
 	handleUrl(argv);
-	if(extensionName) {
-		createExtensionWindow();
-	} else if(updateURL) {
-		createUpdateWindow();
-	} else {
-		createMainWindow();
-	}
+	createWindow();
   }
 });
 
 // macOS 下通过协议URL启动时，主实例会通过 open-url 事件接收这个 URL
 app.on('open-url', (event, urlStr) => {
 	handleUrl(urlStr);
-	if(extensionName) {
-		createExtensionWindow();
-	} else if(updateURL) {
-		createUpdateWindow();
-	} else {
-		createMainWindow();
-	}
+	createWindow();
 });
 
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
 process.noDeprecation = true;
 
 function createWindow() {
-	if(win) return;
+	let createWin;
 	if(extensionName) {
-		win = createExtensionWindow();
+		createWin = createExtensionWindow();
 	} else if(updateURL) {
-		win = createUpdateWindow();
+		createWin = createUpdateWindow();
 	} else {
-		win = createMainWindow();
+		createWin = createMainWindow();
 	}
+	if(!win) win = createWin;
 }
 
 function createMainWindow() {
@@ -157,11 +150,11 @@ app.setName('无名杀');//防止32位无名杀的乱码
 
 app.whenReady().then(() => {
 	
-	let downloadPath, extensionName, extensionWinId, updatePath, updateUrl, updateWinId;
+	let downloadPath, downloadExtName, extensionWinId, updatePath, updateUrl, updateWinId;
 	const downloadUrl = 'https://kuangthree.coding.net/p/noname-extensionxwjh/d/noname-extensionxwjh/git/raw/master/';
 	
 	ipcMain.on('download-path', function(event, arg) {
-		[downloadPath, extensionName, extensionWinId] = arg;
+		[downloadPath, downloadExtName, extensionWinId] = arg;
 		event.returnValue = downloadPath;
 	});
 	
@@ -171,8 +164,8 @@ app.whenReady().then(() => {
 	});
 	
 	session.defaultSession.on('will-download', (event, item) => {
-		if(!downloadPath || !extensionName || !extensionWinId) return;
-		const fileUrl = decodeURI(item.getURL()).replace(downloadUrl + extensionName + '/', '');
+		if(!downloadPath || !downloadExtName || !extensionWinId) return;
+		const fileUrl = decodeURI(item.getURL()).replace(downloadUrl + downloadExtName + '/', '');
 		const savePath = path.join(downloadPath, fileUrl);
 		item.setSavePath(savePath);
 		const winId = BrowserWindow.fromId(extensionWinId);
@@ -180,7 +173,7 @@ app.whenReady().then(() => {
 		item.on('updated', (event, state) => {
 			if(winId.isDestroyed()) {
 				//窗口被关闭
-				downloadPath = extensionName = extensionWinId = null;
+				downloadPath = downloadExtName = extensionWinId = null;
 				item.cancel();
 				return;
 			}
