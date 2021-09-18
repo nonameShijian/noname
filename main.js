@@ -53,7 +53,6 @@ app.on('second-instance', (event, argv) => {
 		createExtensionWindow();
 	} else if(updateURL) {
 		createUpdateWindow();
-		win.webContents.executeJavaScript(`console.log('${updateURL}')`)
 	} else {
 		createMainWindow();
 	}
@@ -62,13 +61,12 @@ app.on('second-instance', (event, argv) => {
 
 // macOS 下通过协议URL启动时，主实例会通过 open-url 事件接收这个 URL
 app.on('open-url', (event, urlStr) => {
-	if(argv[argv.length - 1] === '--allow-file-access-from-files') return;
+	if(urlStr[urlStr.length - 1] === '--allow-file-access-from-files') return;
 	handleUrl(urlStr[urlStr.length - 1]);
 	if(extensionName) {
 		createExtensionWindow();
 	} else if(updateURL) {
 		createUpdateWindow();
-		win.webContents.executeJavaScript(`console.log('${updateURL}')`)
 	} else {
 		createMainWindow();
 	}
@@ -119,7 +117,7 @@ function createExtensionWindow() {
 		}
 	});
 	win.loadURL(`file://${__dirname}/downloadExtension.html`);
-	win.webContents.openDevTools();
+	//win.webContents.openDevTools();
 	win.webContents.executeJavaScript(`window.extensionName = '${extensionName}'`);
 	return win;
 }
@@ -154,11 +152,11 @@ app.setName('无名杀');//防止32位无名杀的乱码
 
 app.whenReady().then(() => {
 	
-	let downloadPath, extensionName, updatePath, updateUrl, updateWinId;
+	let downloadPath, extensionName, extensionWinId, updatePath, updateUrl, updateWinId;
 	const downloadUrl = 'https://kuangthree.coding.net/p/noname-extensionxwjh/d/noname-extensionxwjh/git/raw/master/';
 	
 	ipcMain.on('download-path', function(event, arg) {
-		[downloadPath, extensionName] = arg;
+		[downloadPath, extensionName, extensionWinId] = arg;
 		event.returnValue = downloadPath;
 	});
 	
@@ -168,26 +166,34 @@ app.whenReady().then(() => {
 	});
 	
 	session.defaultSession.on('will-download', (event, item) => {
-		if(!downloadPath || !extensionName) return;
+		if(!downloadPath || !extensionName || !extensionWinId) return;
 		const fileUrl = decodeURI(item.getURL()).replace(downloadUrl + extensionName + '/', '');
 		const savePath = path.join(downloadPath, fileUrl);
 		item.setSavePath(savePath);
+		const winId = BrowserWindow.fromId(extensionWinId);
 		
 		item.on('updated', (event, state) => {
+			if(winId.isDestroyed()) {
+				//窗口被关闭
+				downloadPath = extensionName = extensionWinId = null;
+				item.cancel();
+				return;
+			}
 			if (state === 'interrupted') {
-				win.webContents.send('download-clog', '下载被中断，但可以继续');
+				winId.webContents.send('download-clog', '下载被中断，但可以继续');
 			} else if (state === 'progressing') {
 				if (item.isPaused()) {
-					win.webContents.send('download-clog', '下载暂停');
+					winId.webContents.send('download-clog', '下载暂停');
 				} else {
 					const progress = item.getReceivedBytes() / item.getTotalBytes();
-					win.webContents.send('download-progress', progress);
+					winId.webContents.send('download-progress', progress);
 				}
 			}
 		});
 		
 		item.once('done', (event, state) => {
-			win.webContents.send('download-done', state);
+			if(winId.isDestroyed()) return;
+			winId.webContents.send('download-done', state);
 		});
 	});
 	
@@ -196,22 +202,29 @@ app.whenReady().then(() => {
 		const fileUrl = decodeURI(item.getURL()).replace(updateUrl + '/', '');
 		const savePath = path.join(updatePath, fileUrl);
 		item.setSavePath(savePath);
+		const winId = BrowserWindow.fromId(updateWinId);
 		
 		item.on('updated', (event, state) => {
+			if(winId.isDestroyed()) {
+				//窗口被关闭
+				updatePath = updateUrl = updateWinId = null;
+				item.cancel();
+			}
 			if (state === 'interrupted') {
-				BrowserWindow.fromId(updateWinId).webContents.send('update-clog', '下载被中断，但可以继续');
+				winId.webContents.send('update-clog', '下载被中断，但可以继续');
 			} else if (state === 'progressing') {
 				if (item.isPaused()) {
-					BrowserWindow.fromId(updateWinId).webContents.send('update-clog', '下载暂停');
+					winId.webContents.send('update-clog', '下载暂停');
 				} else {
 					const progress = item.getReceivedBytes() / item.getTotalBytes();
-					BrowserWindow.fromId(updateWinId).webContents.send('update-progress', progress);
+					winId.webContents.send('update-progress', progress);
 				}
 			}
 		});
 		
 		item.once('done', (event, state) => {
-			BrowserWindow.fromId(updateWinId).webContents.send('update-done', state);
+			if(winId.isDestroyed()) return;
+			winId.webContents.send('update-done', state);
 		});
 	});
 	
