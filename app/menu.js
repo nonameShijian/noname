@@ -35,7 +35,7 @@ async function checkForUpdate(url) {
 					width: 800,
 					height: 600,
 					title: '无名杀-更新内容',
-					icon: path.join(__dirname, 'noname.ico'),
+					icon: path.join(__dirname, '..' ,'noname.ico'),
 					autoHideMenuBar: true,
 					webPreferences: {
 						nodeIntegration: true,
