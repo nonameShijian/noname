@@ -6,14 +6,13 @@ const fs = require('fs');
 
 const readJSON = (url) => {
 	return new Promise((resolve, reject) => {
-		fetch(url)
-			.then(response => {
-				if (response.status != 200) {
-					console.error(`未找到文件：${url}`);
-					return {};
-				}
-				return response.json();
-			}).then(resolve);
+		fetch(url).then(response => {
+			if (response.status != 200) {
+				console.error(`未找到文件：${url}`);
+				return {};
+			}
+			return response.json();
+		}).then(resolve);
 	});
 };
 	
@@ -131,7 +130,7 @@ async function checkForUpdate(url) {
 				message: '查看更新内容',
 				type: 'info',
 				title: '应用更新提醒',
-				icon: 'noname.ico',
+				icon: path.join(__dirname, '..', 'noname.ico'),
 				buttons: ['确定', '取消'],
 				defaultId: 0,
 				cancelId: 1,
@@ -176,10 +175,11 @@ function createIframe() {
 		height: 600,
 		autoHideMenuBar: true,
 		parent: remote.getCurrentWindow(),
+		icon: path.join(__dirname, '..', 'noname.ico'),
 		webPreferences: {
 			plugins: true
 		},
-	})
+	});
 	win.loadURL(`file://${__dirname}/../(必看)无名杀全教程9.5.pdf`);
 	win.on('closed', () => {
 		win = null
@@ -295,7 +295,7 @@ var Menus = [{
 				message: '无名杀作者为水乎。无名杀为开源免费游戏，谨防受骗！！！游戏开源，仅供个人学习，研究之用，请勿用于商业用途',
 				type: 'info',
 				title: '版权声明',
-				icon: 'noname.ico'
+				icon: path.join(__dirname, '..', 'noname.ico'),
 			});
 		}
 	}]
