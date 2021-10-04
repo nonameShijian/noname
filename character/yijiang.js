@@ -249,11 +249,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				skillAnimation:true,
 				animationColor:'water',
 				filter:function(event,player){
-					return player!=event.player&&!player.hasSkill('rejueqing_1st');
+					return player!=event.player&&!player.storage.rejueqing_rewrite;
 				},
 				prompt2:function(event,player){
-					var num=get.cnNumber(2*event.num);
-					return '令即将对其造成的伤害翻倍至'+num+'，并令自己失去'+get.cnNumber(event.num)+'点体力';
+					var num=get.cnNumber(2*event.num,true);
+					return '令即将对其造成的伤害翻倍至'+num+'点，并令自己失去'+get.cnNumber(event.num)+'点体力';
 				},
 				check:function(event,player){
 					return player.hp>event.num&&event.player.hp>event.num&&!event.player.hasSkillTag('filterDamage',null,{
@@ -261,36 +261,39 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						card:event.card,
 					})&&get.attitude(player,event.player)<0;
 				},
+				locked:function(skill,player){
+					return player&&player.storage.rejueqing_rewrite;
+				},
 				logTarget:'player',
 				content:function(){
 					player.loseHp(trigger.num);
 					trigger.num*=2;
-					var next=game.createEvent('rejueqing_add',false);
-					event.next.remove(next);
-					trigger.after.push(next);
-					next.player=player;
-					next.setContent(function(){
-						player.addSkill('rejueqing_1st');
-					});
+					player.storage.rejueqing_rewrite=true;
 				},
 				derivation:'rejueqing_rewrite',
-			},
-			rejueqing_1st:{
-				trigger:{source:'damageBefore'},
-				forced:true,
-				charlotte:true,
-				audio:'jueqing',
-				filter:function(event,player){
-					return player.hasSkill('rejueqing');
+				group:'rejueqing_rewrite',
+				subSkill:{
+					rewrite:{
+						trigger:{source:'damageBefore'},
+						forced:true,
+						charlotte:true,
+						audio:'rejueqing',
+						filter:function(event,player){
+							return player.storage.rejueqing_rewrite==true;
+						},
+						check:function(){return false;},
+						content:function(){
+							trigger.cancel();
+							trigger.player.loseHp(trigger.num);
+						},
+						ai:{
+							jueqing:true,
+							skillTagFilter:function(player){
+								return player.storage.rejueqing_rewrite==true;
+							},
+						}
+					}
 				},
-				check:function(){return false;},
-				content:function(){
-					trigger.cancel();
-					trigger.player.loseHp(trigger.num);
-				},
-				ai:{
-					jueqing:true
-				}
 			},
 			reshangshi:{
 				audio:2,
@@ -373,7 +376,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 0'
 					player.judge(function(card){
 						return get.color(card)=='black'?1:-1;
-					});
+					}).judge2=function(result){
+						return result.bool;
+					};
 					'step 1'
 					if(result.bool&&player.maxHp>player.hp){
 						var cards=get.cards(player.maxHp-player.hp);
@@ -423,7 +428,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 0'
 					player.judge(function(card){
 						return get.suit(card)!='heart'?1:-1;
-					});
+					}).judge2=function(result){
+						return result.bool;
+					};
 					'step 1'
 					if(result.bool){
 						trigger.cancel();
@@ -5024,7 +5031,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						trigger.target.judge(function(card){
 							if(get.color(card)=='red') return -1;
 							return 0;
-						});
+						}).judge2=function(result){
+							return result.bool==false?true:false;
+						};
 					}
 					'step 2'
 					if(result.color=='red') trigger.directHit.add(trigger.target);
@@ -6620,7 +6629,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 4'
 					if(result&&result.cards){
 						event.card=result.cards[0];
-						event.current.lose(result.cards,ui.cardPile,'visible','insert');
+						event.current.lose(result.cards,ui.cardPile,'insert');
 						game.broadcastAll(function(player){
 							var cardx=ui.create.card();
 							cardx.classList.add('infohidden');
@@ -8932,7 +8941,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.storage.dingpin.push(get.type(cards[0],'trick'));
 					target.judge(function(card){
 						return get.color(card)=='black'?1:-1;
-					});
+					}).judge2=function(result){
+						return result.bool;
+					};
 					"step 1"
 					if(result.bool){
 						target.draw(target.maxHp-target.hp);
@@ -12050,7 +12061,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		},
 		dynamicTranslate:{
 			rejueqing:function(player){
-				if(player.hasSkill('rejueqing_1st')) return '锁定技，你即将造成的伤害均视为失去体力。';
+				if(player.storage.rejueqing_rewrite) return '锁定技，你即将造成的伤害均视为失去体力。';
 				return '当你对其他角色造成伤害时，你可以令此伤害值+X。若如此做，你失去X点体力，并于此伤害结算完成后修改〖绝情〗（X为伤害值）。';
 			},
 			reyanzhu:function(player){
@@ -12082,7 +12093,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			wuguotai:['re_wuguotai','wuguotai'],
 			lingtong:['xin_lingtong','re_lingtong','lingtong','old_lingtong'],
 			gaoshun:['gaoshun','re_gaoshun'],
-			zhonghui:['re_zhonghui','zhonghui','old_zhonghui'],
+			zhonghui:['re_zhonghui','xin_zhonghui','zhonghui','old_zhonghui'],
 			wangyi:['wangyi','old_wangyi'],
 			caozhang:['re_caozhang','xin_caozhang','caozhang'],
 			guanzhang:['guanzhang','old_guanzhang'],
@@ -12122,7 +12133,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			guotufengji:['re_guotufengji','guotufengji'],
 			guanping:['re_guanping','guanping'],
 			caifuren:['xin_caifuren','re_caifuren','caifuren'],
-			guyong:['xin_guyong','guyong'],
+			guyong:['re_guyong','xin_guyong','guyong'],
 		},
 		translate:{
 			old_huaxiong:'华雄',
@@ -12682,7 +12693,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			old_fuhun:'父魂',
 			old_fuhun_info:'摸牌阶段开始时，你可以放弃摸牌，改为从牌堆顶亮出两张牌并获得之，若亮出的牌颜色不同，你获得技能“武圣”、“咆哮”，直到回合结束。',
 			rejueqing:'绝情',
-			rejueqing_info:'当你对其他角色造成伤害时，你可以令此伤害值+X。若如此做，你失去X点体力，并于此伤害结算完成后修改〖绝情〗（X为伤害值）。',
+			rejueqing_info:'当你对其他角色造成伤害时，你可以令此伤害值+X。若如此做，你失去X点体力并修改〖绝情〗（X为伤害值）。',
 			rejueqing_1st:'绝情',
 			rejueqing_rewrite:'绝情·改',
 			rejueqing_rewrite_info:'锁定技，你即将造成的伤害均视为失去体力。',

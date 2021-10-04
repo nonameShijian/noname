@@ -472,7 +472,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					//function(card,player,target){
 					//	return !target.isLinked();
 					//},
-					'是否发动【太公阴符】横置一名角色？').set('ai',function(target){
+					'是否发动【太公阴符】横置或重置一名角色？').set('ai',function(target){
 						return get.effect(target,{name:'tiesuo'},_status.event.player,_status.event.player);
 					});
 					'step 1'
@@ -795,7 +795,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			zhujinqiyuan:'逐近弃远',
 			zhujinqiyuan_info:'出牌阶段，对一名有牌的其他角色使用。若你与其距离的大于1，你弃置其区域内的一张牌；若你与其的距离等于1，你获得其区域内的一张牌。',
 			dongzhuxianji:'洞烛先机',
-			dongzhuxianji_info:'出牌阶段，对包含你在内的一名角色使用。你观看牌堆顶的两张牌并将其以任意顺序置于牌堆顶或牌堆底，然后摸两张牌。',
+			dongzhuxianji_info:'出牌阶段，对包含你在内的一名角色使用。目标角色卜算2，然后摸两张牌。',
 			chuqibuyi:'出其不意',
 			chuqibuyi_info:'出牌阶段，对一名有手牌的其他角色使用。你展示其一张手牌，若此牌与【出其不意】的花色不同，则你对其造成1点伤害。',
 			wuxinghelingshan:'五行鹤翎扇',
@@ -1001,7 +1001,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 		help:{
 			'应变篇':('<div style="margin:10px">应变机制</div><ul style="margin-top:0">'+
 			'<li>当一名角色声明使用右下角标注了应变条件的卡牌后，若其满足应变条件，则其触发此牌的“应变”效果。<br><li>长按或鼠标右键点击卡牌，即可查看此牌所拥有的应变效果。'+
-			'<br><li>应变条件<br><ul style="padding-left:20px;padding-top:5px"><li>空巢：该角色声明使用此牌后，其手牌数为0。<br><li>富甲：该角色声明使用此牌后，其手牌数为全场最多或之一。<br><li>残躯：该角色声明使用此牌后，其体力值为1。<br><li>助战：该角色声明使用此牌后，其发起“助战”。其他角色可弃置一张与此牌类型系统的卡牌，响应此“助战”。若有角色响应，则视为其应变成功。</ul></ul>'),
+			'<br><li>应变条件<br><ul style="padding-left:20px;padding-top:5px"><li>空巢：该角色声明使用此牌后，其手牌数为0。<br><li>富甲：该角色声明使用此牌后，其手牌数为全场最多或之一。<br><li>残躯：该角色声明使用此牌后，其体力值为1。<br><li>助战：该角色声明使用此牌后，其发起“助战”。其他角色可弃置一张与此牌类型相同的卡牌，响应此“助战”。若有角色响应，则视为其应变成功。</ul></ul>'),
 		},
 	}
 });

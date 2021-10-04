@@ -302,3 +302,12 @@ var Menus = [{
 }];
 
 Menu.setApplicationMenu(Menu.buildFromTemplate(Menus));
+
+remote.getCurrentWindow().on('enter-full-screen', () => {
+	Menu.setApplicationMenu(null);
+});
+
+remote.getCurrentWindow().on('leave-full-screen', () => {
+	Menu.setApplicationMenu(Menu.buildFromTemplate(Menus));
+	contents.closeDevTools();
+});

@@ -1,4 +1,15 @@
 <pre style="color:rgb(210,210,000); font-size:25px; line-height:20px; text-shadow: 0 0 2px black;">
+v1.73更新内容:
+
+———【一键导出完整包】的功能不再包括皮肤
+
+（image/skin）文件夹
+
+———因为有了【在线更新】扩展，所以本扩展移除
+
+【替换github更新地址】的功能
+
+
 v1.72更新内容:
 
 ———修复【替换github更新地址】的bug

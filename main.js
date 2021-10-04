@@ -1,5 +1,5 @@
 const PROTOCOL = 'nonameSkill';
-const { app, BrowserWindow, Menu, ipcMain, session } = require('electron');
+const { app, BrowserWindow, Menu, ipcMain, session, globalShortcut } = require('electron');
 const path = require('path');
 const isWindows = process.platform === 'win32';
 let win, extensionName, updateURL;
@@ -80,7 +80,13 @@ function createWindow() {
 	} else {
 		createWin = createMainWindow();
 	}
-	if(!win) win = createWin;
+	if(!win) {
+		win = createWin;
+		//按esc退出全屏模式
+		globalShortcut.register('ESC', () => {
+			win.setFullScreen(false);
+		})
+	}
 }
 
 function createMainWindow() {
@@ -240,5 +246,10 @@ app.whenReady().then(() => {
 app.on('window-all-closed', () => {
 	if (process.platform !== 'darwin') {
 		app.quit();
+		// 注销快捷键
+		globalShortcut.unregister('ESC');
+		
+		// 注销所有快捷键
+		//globalShortcut.unregisterAll();
 	}
 });

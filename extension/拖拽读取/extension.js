@@ -169,9 +169,9 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 		name: "拖拽读取",
 		editable: false,
 		onremove: function() {
-			game.saveConfig('update_link', 'coding');
+			/*game.saveConfig('update_link', 'coding');
 			lib.updateURLS.github = 'https://raw.githubusercontent.com/libccy/noname';
-			lib.updateURL = lib.updateURLS['coding'];
+			lib.updateURL = lib.updateURLS['coding'];*/
 			delete window.JSZip3;
 		},
 		content: function(config, pack) {
@@ -363,7 +363,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 					window.JSZip = zip;
 				});
 			}
-			let bool = game.getExtensionConfig('拖拽读取', 'changeURL');
+			/*let bool = game.getExtensionConfig('拖拽读取', 'changeURL');
 			if (bool) {
 				game.saveConfig('update_link', 'github');
 				lib.updateURLS.github = 'https://raw.fastgit.org/libccy/noname';
@@ -371,7 +371,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 			} else {
 				lib.updateURLS.github = 'https://raw.githubusercontent.com/libccy/noname';
 				lib.updateURL = 'https://raw.githubusercontent.com/libccy/noname';
-			}
+			}*/
 		},
 		config: {
 			checkForUpdate: {
@@ -527,7 +527,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 						});
 				},
 			},
-			changeURL: {
+			/*changeURL: {
 				init: false,
 				clear: false,
 				name: '更换github的更新地址',
@@ -544,7 +544,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 						lib.updateURL = 'https://raw.githubusercontent.com/libccy/noname';
 					}
 				},
-			},
+			},*/
 			generateZip: {
 				clear: true,
 				name: '一键生成完整包',
@@ -607,7 +607,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 						//cache文件夹
 						callback("audio", ["background", "card", "die", "effect", "skill", "voice"], []);
 						//audio文件夹
-						callback("image", ["background", "card", "character", "emotion", "mode", "skin", "splash"], []);
+						callback("image", ["background", "card", "character", "emotion", "mode", /*"skin",*/ "splash"], []);
 						//image文件夹, 避免导出image/FC等皮肤包
 						callback("extension", ["boss", "cardpile", "coin", "wuxing"], []);
 						//四个原生扩展
@@ -634,7 +634,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 							let chooseDirectory = dialog.showSaveDialog(remote.getCurrentWindow(), {
 								title: '选择一个文件夹，以保存到选择的文件夹下',
 								properties: ['openDirectory'],
-								defaultPath: `v${lib.version}完整包.zip`,
+								defaultPath: `v${lib.version}(完整包).zip`,
 								dontAddToRecent: true,
 							}, writeFile);
 							if (chooseDirectory) chooseDirectory.then(result => {
@@ -669,7 +669,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 			author: "诗笺",
 			diskURL: "",
 			forumURL: "",
-			version: "1.72",
+			version: "1.73",
 		},
 		files: {
 			"character": [],
