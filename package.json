@@ -15,6 +15,9 @@
 	},
 	"installerVersion": "1.31",
 	"installerUpdateContent": [{
+		"version": "1.32",
+		"updateContent": ["全屏时隐藏菜单栏（需要用esc退出全屏）"]
+	},{
 		"version": "1.31",
 		"updateContent": ["修复下载扩展的一处代码错误"]
 	},{
