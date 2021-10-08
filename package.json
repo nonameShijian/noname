@@ -6,15 +6,19 @@
 	"main": "main.js",
 	"scripts": {
 		"start": "electron .",
-		"package": "electron-packager . 无名杀 --platform=win32 --arch=x64 --out=./ --app-version=1.9.0 --icon=noname.ico --overwrite --ignore=node_modules --electron-version 13.1.7",
-		"pack": "electron-packager . 无名杀 --platform=win32 --arch=ia32 --out=./ --app-version=1.9.0 --icon=noname.ico --overwrite --ignore=node_modules --electron-version 13.1.7"
+		"packageWin64": "electron-packager . 无名杀 --platform=win32 --arch=x64 --out=./ --app-version=1.9.0 --icon=noname.ico --overwrite --ignore=node_modules --electron-version 13.1.7",
+		"packageWin32": "electron-packager . 无名杀 --platform=win32 --arch=ia32 --out=./ --app-version=1.9.0 --icon=noname.ico --overwrite --ignore=node_modules --electron-version 13.1.7",
+		"packageLinux": "electron-packager . 无名杀 --platform=linux --arch=x64 --out=./ --app-version=1.9.0 --icon=noname.ico --overwrite --ignore=node_modules --electron-version 13.1.7"
 	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/nonameShijian/noname.git"
 	},
-	"installerVersion": "1.31",
+	"installerVersion": "1.33",
 	"installerUpdateContent": [{
+		"version": "1.33",
+		"updateContent": ["无名杀全教程9.7完整版"]
+	},{
 		"version": "1.32",
 		"updateContent": ["全屏时隐藏菜单栏（需要用esc退出全屏）"]
 	},{

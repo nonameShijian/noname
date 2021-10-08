@@ -9,4 +9,7 @@ window.updateList = [
 	'package.json',
 	'package-lock.json',
 	'update.html',
+	
+	//教程
+	'(必看)无名杀全教程9.7.pdf',
 ];
