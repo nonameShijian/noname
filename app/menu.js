@@ -180,7 +180,7 @@ function createIframe() {
 			plugins: true
 		},
 	});
-	win.loadURL(`file://${__dirname}/../(必看)无名杀全教程9.5.pdf`);
+	win.loadURL(`file://${__dirname}/../(必看)无名杀全教程9.7.pdf`);
 	win.on('closed', () => {
 		win = null
 	});

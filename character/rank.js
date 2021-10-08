@@ -696,6 +696,8 @@ window.noname_character_rank={
 		'liuzhang',
 		're_guyong',
 		'xin_zhonghui',
+		'jiachong',
+		'wuban',
 	],
 	b:[
 		'diy_feishi',
@@ -884,7 +886,8 @@ window.noname_character_rank={
 		'xiangchong',
 		'qiuliju',
 		're_dongbai',
-		're_guyong',
+		'xin_guyong',
+		'duosidawang',
 	],
 	bm:[
 		'diy_xizhenxihong',
@@ -1035,6 +1038,7 @@ window.noname_character_rank={
 		'longyufei',
 		'sp_zhangwen',
 		're_zoushi',
+		'yuejiu',
 	],
 	c:[
 		'xiahoudun',
@@ -1721,6 +1725,7 @@ window.noname_character_rank={
 			'liuzhang',
 			'zhangzhongjing',
 			'xin_zhonghui',
+			'jiachong',
 		],
 		junk:[
 			'sunshao',
