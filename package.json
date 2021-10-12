@@ -14,8 +14,11 @@
 		"type": "git",
 		"url": "git+https://github.com/nonameShijian/noname.git"
 	},
-	"installerVersion": "1.33",
+	"installerVersion": "1.34",
 	"installerUpdateContent": [{
+		"version": "1.34",
+		"updateContent": ["修复游戏崩溃后初始界面无限重启的bug"]
+	},{
 		"version": "1.33",
 		"updateContent": ["无名杀全教程9.7完整版"]
 	},{

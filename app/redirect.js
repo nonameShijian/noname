@@ -37,5 +37,4 @@
 			},fail);
 		},fail);
 	},fail);
-	window.cordovaLoadTimeout = setTimeout(loadFailed, 5000);
 }());
