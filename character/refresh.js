@@ -182,6 +182,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								selectTarget:targets.length==1?-1:1,
 								selectCard:num,
 								prompt:'将'+get.cnNumber(num)+'张手牌交给一名手牌数最少的其他角色',
+								forced:true,
 								ai1:function(card){
 									var goon=false,player=_status.event.player;
 									for(var i of _status.event.targets){
@@ -253,13 +254,23 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				enable:'phaseUse',
 				usable:1,
 				filter:function(event,player){
-					return game.hasPlayer((current)=>current.countCards('h')>0);
+					return game.hasPlayer((current)=>lib.skill.oldimeng.filterTarget(null,player,current));
 				},
 				selectTarget:2,
 				complexTarget:true,
 				filterTarget:function(card,player,target){
-					if(!ui.selected.targets.length||ui.selected.targets[0].countCards('h')>0) return true;
-					return target.countCards('h')>0;
+					if(target==player) return false;
+					var ps=player.countCards('he');
+					if(!ui.selected.targets.length){
+						var hs=target.countCards('h');
+						return game.hasPlayer(function(current){
+							if(current==player||current==target) return false;
+							var cs=current.countCards('h');
+							return (hs>0||cs>0)&&Math.abs(hs-cs)<=ps;
+						});
+					}
+					var current=ui.selected.targets[0],hs=target.countCards('h'),cs=current.countCards('h');
+					return (hs>0||cs>0)&&Math.abs(hs-cs)<=ps;
 				},
 				multitarget:true,
 				multiline:true,
@@ -325,11 +336,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						mod:{
 							cardEnabled:function(card,player){
 								var source=_status.currentPhase;
-								if(card.name=='tao'&&source&&source!=player&&source.hasSkill('rewansha')) return false;
+								if(card.name=='tao'&&source&&source!=player&&source.hasSkill('rewansha')&&!player.isDying()) return false;
 							},
 							cardSavable:function(card,player){
 								var source=_status.currentPhase;
-								if(card.name=='tao'&&source&&source!=player&&source.hasSkill('rewansha')) return false;
+								if(card.name=='tao'&&source&&source!=player&&source.hasSkill('rewansha')&&!player.isDying()) return false;
 							},
 						},
 					},
@@ -1568,12 +1579,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//国钟会
 			gzquanji:{
-				audio:'quanji',
+				audio:2,
 				trigger:{
 					player:'damageEnd',
 					source:'damageSource',
 				},
 				frequent:true,
+				preHidden:true,
 				filter:function(event,player,name){
 					if(name=='damageEnd') return true;
 					if(!event.card) return false;
@@ -1610,7 +1622,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			gzpaiyi:{
-				audio:'paiyi',
+				audio:2,
 				enable:'phaseUse',
 				filter:function(event,player){
 					return player.getStorage('gzquanji').length>0&&!player.hasSkill('gzquanji2');
@@ -1621,7 +1633,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					},
 					backup:function(links,player){
 						return {
-							audio:'paiyi',
+							audio:'gzpaiyi',
 							filterTarget:true,
 							filterCard:function(){return false},
 							selectCard:-1,
@@ -1664,7 +1676,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					game.delayx();
 					"step 1"
 					var num=player.getStorage('gzquanji').length;
-					if(num) target.draw(num);
+					if(num) target.draw(Math.min(7,num));
 					"step 2"
 					if(target.countCards('h')>player.countCards('h')){
 						target.damage();
@@ -6730,12 +6742,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					halfneg:true,
 				},
 			},
-			"new_retuxi":{
+			new_retuxi:{
 				audio:"retuxi",
 				trigger:{
 					player:"phaseDrawBegin2",
 				},
 				direct:true,
+				preHidden:true,
 				filter:function(event,player){
 					return event.num>0&&!event.numFixed&&game.hasPlayer(function(target){
 						return target.countCards('h')>0&&player!=target;
@@ -6751,7 +6764,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						var att=get.attitude(_status.event.player,target);
 						if(target.hasSkill('tuntian')) return att/10;
 						return 1-att;
-					});
+					}).setHiddenSkill('new_retuxi');
 					"step 1"
 					if(result.bool){
 						result.targets.sortBySeat();
@@ -8271,6 +8284,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return (get.attitude(player,event.source)<=0);
 				},
 				logTarget:'source',
+				preHidden:true,
 				content:function(){
 					"step 0"
 					event.num=trigger.num;
@@ -8389,6 +8403,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				audioname:['heqi','sunce','gexuan','re_sunben','re_sunce','re_heqi'],
 				trigger:{player:'phaseDrawBegin2'},
 				forced:true,
+				preHidden:true,
 				filter:function(event,player){
 					return !event.numFixed;
 				},
@@ -8426,7 +8441,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					target.storage.refanjian=cards[0];
 					target.gain(cards[0],player,'give');
 					"step 1"
-					target.chooseControl('refanjian_card','refanjian_hp').ai=function(event,player){
+					var suit=get.suit(target.storage.refanjian);
+					if(!target.countCards('h')) event._result={control:'refanjian_hp'};
+					else target.chooseControl('refanjian_card','refanjian_hp').ai=function(event,player){
 						var cards=player.getCards('he',{suit:get.suit(player.storage.refanjian)});
 						if(cards.length==1) return 0;
 						if(cards.length>=2){
@@ -8451,7 +8468,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						event.finish();
 					}
 					"step 3"
-					target.discard(target.getCards('he',{suit:get.suit(target.storage.refanjian)}))
+					var suit=get.suit(target.storage.refanjian);
+					target.discard(target.getCards('he',function(i){
+						return get.suit(i)==suit&&lib.filter.cardDiscardable(i,target,'refanjian');
+					}));
 					delete target.storage.refanjian;
 				},
 				ai:{
@@ -9384,9 +9404,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			xunxun:{
 				audio:2,
 				trigger:{player:'phaseDrawBegin1'},
-				//check:function(event,player){
-				//	return !player.hasSkill('reyiji2');
-				//},
+				preHidden:true,
 				content:function(){
 					"step 0"
 					event.cards=get.cards(4);
@@ -9424,6 +9442,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(event.player==player) return event.source;
 					return event.player;
 				},
+				preHidden:true,
 				content:function(){
 					"step 0"
 					event.count=trigger.num;
@@ -10390,7 +10409,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			gzquanji_info:'当你受到伤害后或当你使用牌指定唯一目标并对其造成伤害后，你可以摸一张牌，然后你将一张牌置于武将牌上，称为“权”；你的手牌上限+X（X为“权”的数量）。',
 			gzpaiyi:'排异',
 			gzpaiyi_backup:'排异',
-			gzpaiyi_info:'出牌阶段，你可以将移去一张“权”，然后选择一名角色并令其摸X张牌（X为“权”的数量），若其手牌数不小于你，则你对其造成1点伤害且本技能于此回合内失效。',
+			gzpaiyi_info:'出牌阶段，你可以将移去一张“权”，然后选择一名角色并令其摸X张牌（X为“权”的数量且至多为7），若其手牌数不小于你，则你对其造成1点伤害且本技能于此回合内失效。',
 			ol_zhurong:'界祝融',
 			changbiao:'长标',
 			changbiao_info:'出牌阶段限一次，你可以将任意张手牌当做【杀】使用（无距离限制）。若你因此【杀】对目标角色造成过伤害，则你于出牌阶段结束时摸X张牌（X为此【杀】对应的实体牌数量）。',
@@ -10458,7 +10477,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			olhaoshi:'好施',
 			olhaoshi_info:'摸牌阶段开始时，你可以多摸两张牌。然后摸牌阶段结束时，若你的手牌数大于5，则你将手牌数的一半（向下取整）交给一名手牌最少其他角色并获得如下效果直到你下回合开始：当你成为【杀】或普通锦囊牌的目标后，其可以交给你一张手 牌。',
 			oldimeng:'缔盟',
-			oldimeng_info:'出牌阶段限一次，你可令两名角色交换手牌并获得如下效果：出牌阶段结束时，你弃置X张牌（X为这两名角色的手牌数之差）。',
+			oldimeng_info:'出牌阶段限一次，你可令两名满足X≤Y的其他角色交换手牌并获得如下效果：出牌阶段结束时，你弃置X张牌（X为这两名角色手牌数之差的绝对值；Y为你的手牌数）。',
 			
 			refresh_standard:'界限突破·标',
 			refresh_feng:'界限突破·风',

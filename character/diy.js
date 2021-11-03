@@ -340,6 +340,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				enable:true,
 				filterTarget:true,
 				selectTarget:[1,3],
+				derivation:'key_kano',
 				content:function(){
 					'step 0'
 					target.draw();
@@ -6350,7 +6351,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 2'
 					if(result.bool){
 						player.addTempSkill('riki_spwenji_respond');
-						player.storage.riki_spwenji_respond=result.cards[0].name;
+						player.storage.riki_spwenji_respond=get.type2(result.cards[0],target);
 						event.target.give(result.cards,player,true);
 					}
 				},
@@ -6363,7 +6364,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						charlotte:true,
 						audio:'riki_spwenji',
 						filter:function(event,player){
-							return event.card.name==player.storage.riki_spwenji_respond;
+							return get.type2(event.card)==player.storage.riki_spwenji_respond;
 						},
 						content:function(){
 							trigger.directHit.addArray(game.players);
@@ -6371,7 +6372,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						ai:{
 							directHit_ai:true,
 							skillTagFilter:function(player,tag,arg){
-								return arg.card.name==player.storage.riki_spwenji_respond;
+								return get.type2(arg.card)==player.storage.riki_spwenji_respond;
 							},
 						},
 					}
