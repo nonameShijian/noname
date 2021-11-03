@@ -4,9 +4,16 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 		editable: false,
 		content: function(config, pack) {
 			//链接：nonameSKill:?extensionName=全能搜索
-			delete lib.extensionMenu.extension_应用配置.delete;
+			delete lib.extensionMenu.extension_应用配置.delete; 
 		},
 		precontent: function() {
+			const path = require('path');
+			for (let extensionName of ['拖拽读取', '在线更新', '应用配置']) {
+				if(lib.node.fs.existsSync(path.join(__dirname, 'extension' , extensionName)) && !lib.config.extensions.contains(extensionName)) {
+					lib.config.extensions.add(extensionName);
+				}
+			}
+			game.saveConfig('extensions', lib.config.extensions);
 			let extensionName = localStorage.getItem('download-extensionName');
 			if(extensionName) {
 				if(lib.config.extensions.contains(extensionName)) {
@@ -47,6 +54,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 					const { app } = require('electron').remote;
 					const result = app.removeAsDefaultProtocolClient('nonameSkill');
 					if(result) alert('移除协议配置成功');
+					else alert('移除协议配置失败');
 				},
 			}
 		},
@@ -69,7 +77,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 			author: "诗笺",
 			diskURL: "",
 			forumURL: "",
-			version: "1.0",
+			version: "1.1",
 		},
 		files: {
 			"character": [],
@@ -77,4 +85,4 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 			"skill": []
 		}
 	}
-})
+});

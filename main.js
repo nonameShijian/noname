@@ -84,7 +84,11 @@ function createWindow() {
 		win = createWin;
 		//按esc退出全屏模式
 		globalShortcut.register('ESC', () => {
-			win.setFullScreen(false);
+			if(win.isDestroyed()) {
+				globalShortcut.unregister('ESC');
+			} else {
+				win.setFullScreen(false);
+			}
 		})
 	}
 }
@@ -155,7 +159,8 @@ app.setPath('cache', path.join(__dirname, 'Home', 'Cache'));
 app.setPath('crashDumps', path.join(__dirname, 'Home', 'crashDumps'));//崩溃转储文件存储的目录
 app.setPath('logs', path.join(__dirname, 'Home', 'logs'));//日志目录
 
-app.setName('无名杀');//防止32位无名杀的乱码
+//防止32位无名杀的乱码
+app.setName('无名杀');
 
 app.whenReady().then(() => {
 	

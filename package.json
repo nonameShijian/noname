@@ -14,8 +14,11 @@
 		"type": "git",
 		"url": "git+https://github.com/nonameShijian/noname.git"
 	},
-	"installerVersion": "1.34",
+	"installerVersion": "1.35",
 	"installerUpdateContent": [{
+		"version": "1.35",
+		"updateContent": ["修复窗口销毁后按esc报错的问题", "完善免费提示", "【在线更新】扩展V1.18版本", "无名杀全教程9.8完整版"]
+	}, {
 		"version": "1.34",
 		"updateContent": ["修复游戏崩溃后初始界面无限重启的bug"]
 	},{

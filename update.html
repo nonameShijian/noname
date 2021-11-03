@@ -24,6 +24,7 @@
 			const { remote, ipcRenderer } = require('electron');
 			const { app, shell } = remote;
 			const path = require('path');
+			const fs = require('fs');
 			const ready = (async () => {
 				let text = await fetch(window.updateURL + '/update.js')
 					.then(response => {
@@ -36,6 +37,12 @@
 				if(!window.updateList) {
 					alert('update.js加载失败');
 					remote.getCurrentWindow().close();
+				}
+				if(Array.isArray(window.removeFileList)) {
+					for (let file of window.removeFileList) {
+						let filePath = path.join(__dirname, file);
+						fs.existsSync(filePath) && fs.unlink(filePath, console.error);
+					}
 				}
 				
 				let files = window.updateList, now = 0, max = files.length;

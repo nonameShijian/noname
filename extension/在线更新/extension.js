@@ -170,15 +170,18 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 	return {
 		name: "在线更新",
 		editable: false,
-		content: function(config, pack) {
-			lib.updateURLS.github = 'https://raw.fastgit.org/libccy/noname';
-		},
+		content: function(config, pack) {},
 		precontent: function() {
+			lib.updateURLS.github = 'https://raw.fastgit.org/libccy/noname';
+			if(lib.updateURL == 'https://raw.githubusercontent.com/libccy/noname') {
+				lib.updateURL = lib.updateURLS.github;
+			}
+			
 			if (brokenFileArr && brokenFileArr.length) {
 				//如果有没下载完就重启的文件
 				alert(`检测到有未下载成功的文件(${brokenFileArr})，进行重新下载`);
 				console.log('未下载成功的文件：', brokenFileArr);
-				multiDownload(brokenFileArr.concat(), (current) => {
+				multiDownload(brokenFileArr, (current) => {
 					brokenFileArr.remove(current);
 					game.saveExtensionConfig('在线更新', 'brokenFile', brokenFileArr);
 					lib.config.brokenFile.remove(current);
@@ -187,7 +190,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 				}, (current) => {
 					console.error(`${current}下载失败，尝试重新下载`);
 				}, () => {
-					alert('下载完成');
+					alert('下载完成，将自动重启');
 					game.reload();
 				});
 			}
@@ -232,7 +235,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 								game.saveConfig('check_version', update.version);
 								if (update.version == lib.version) {
 									//要更新的版本和现有的版本一致
-									if (!confirm('当前版本已经是最新，是否继续更新？')) {
+									if (!confirm('当前版本已经是最新，是否覆盖更新？')) {
 										game.Updating = false;
 										button.innerHTML = '检查游戏更新';
 										button.disabled = false;
@@ -330,9 +333,9 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 											}, () => {
 												span.innerHTML = `游戏更新完毕（${n1}/${n2}）`;
 												setTimeout(() => {
-													alert('更新完成');
+													if(!game.UpdatingForAsset) alert('更新完成');
+													game.Updating = false;
 													consoleMenu.remove();
-													//DownloadingFiles = null;
 													this.childNodes[0].appendChild(document.createElement('br'));
 													let button2 = document.createElement('button');
 													button2.innerHTML = '重新启动';
@@ -570,8 +573,8 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 									}, () => {
 										span.innerHTML = `素材更新完毕（${n1}/${n2}）`;
 										setTimeout(() => {
-											alert('更新完成');
-											//DownloadingFiles = null;
+											if(!game.Updating) alert('更新完成');
+											game.UpdatingForAsset = false;
 											consoleMenu.remove();
 											this.childNodes[0].appendChild(document.createElement('br'));
 											let button2 = document.createElement('button');
@@ -710,7 +713,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 			author: "诗笺",
 			diskURL: "",
 			forumURL: "",
-			version: "1.17",
+			version: "1.18",
 		},
 		files: {
 			"character": [],

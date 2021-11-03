@@ -145,6 +145,7 @@ async function checkForUpdate(url) {
 	} else if(+localInstallerVersion > +serverInstallerVersion) {
 		//本地版本大于服务器版本
 		console.log('本地版本大于服务器版本');
+		alert('本地版本大于服务器版本');
 	}
 }
 
@@ -180,7 +181,7 @@ function createIframe() {
 			plugins: true
 		},
 	});
-	win.loadURL(`file://${__dirname}/../(必看)无名杀全教程9.7.pdf`);
+	win.loadURL(`file://${__dirname}/../(必看)无名杀全教程9.8.pdf`);
 	win.on('closed', () => {
 		win = null
 	});
