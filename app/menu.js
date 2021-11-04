@@ -96,7 +96,7 @@ async function checkForUpdate(url) {
 			if(version <= localInstallerVersion) break;
 			updateStr += `
 			<span>v${version}更新内容：</span></br>
-			<pre>${updateContent.join('\n')}</pre></br></br>
+			<pre>${updateContent.join('\n\n')}</pre></br>
 			`;
 		}
 		updateStr += `
