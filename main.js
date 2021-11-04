@@ -68,6 +68,7 @@ app.on('open-url', (event, urlStr) => {
 	createWindow();
 });
 
+process.env['ELECTRON_DEFAULT_ERROR_MODE'] = 'true';
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
 process.noDeprecation = true;
 
@@ -252,9 +253,9 @@ app.on('window-all-closed', () => {
 	if (process.platform !== 'darwin') {
 		app.quit();
 		// 注销快捷键
-		globalShortcut.unregister('ESC');
+		//globalShortcut.unregister('ESC');
 		
 		// 注销所有快捷键
-		//globalShortcut.unregisterAll();
+		globalShortcut.unregisterAll();
 	}
 });

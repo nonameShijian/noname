@@ -4,16 +4,41 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 		editable: false,
 		content: function(config, pack) {
 			//链接：nonameSKill:?extensionName=全能搜索
-			delete lib.extensionMenu.extension_应用配置.delete; 
+			delete lib.extensionMenu.extension_应用配置.delete;
 		},
 		precontent: function() {
 			const path = require('path');
+			const { remote } = require('electron');
+			const { dialog } = remote;
+			
+			//保存扩展
 			for (let extensionName of ['拖拽读取', '在线更新', '应用配置']) {
 				if(lib.node.fs.existsSync(path.join(__dirname, 'extension' , extensionName)) && !lib.config.extensions.contains(extensionName)) {
+					console.log(`【应用配置】加载并保存了【${extensionName}】内置扩展`);
 					lib.config.extensions.add(extensionName);
 				}
 			}
 			game.saveConfig('extensions', lib.config.extensions);
+			
+			//避免提示是否下载图片和字体素材
+			if(!lib.config.asset_version) {
+				game.saveConfig('asset_version','无');
+			}
+			
+			//修改原生alert弹窗
+			if(lib.config.extension_应用配置_replaceAlert) {
+				window.alert = (message) => {
+					dialog.showMessageBox(remote.getCurrentWindow(), {
+						title: '无名杀',
+						message: message + '',
+						icon: path.join(__dirname, 'noname.ico'),
+						buttons: ['确定'],
+						noLink: true
+					});
+				}
+			}
+			
+			//导入因协议下载的扩展
 			let extensionName = localStorage.getItem('download-extensionName');
 			if(extensionName) {
 				if(lib.config.extensions.contains(extensionName)) {
@@ -34,7 +59,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 								game.saveConfig('extension_' + extensionName + '_' + i, game.importedPack.config[i].init);
 							}
 						}
-						alert(`扩展【${extensionName}】导入成功！`);
+						alert(`扩展【${extensionName}】导入成功！将为你自动重启`);
 						localStorage.removeItem('download-extensionName');
 						game.reload();
 					} catch (e) {
@@ -47,6 +72,15 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 			}
 		},
 		config: {
+			//修改原生alert弹窗
+			replaceAlert: {
+				init: true,
+				name: '修改原生alert弹窗',
+				onclick: () => {
+					alert('修改选项后重启生效');
+				}
+			},
+			//移除协议配置
 			removeAsDefaultProtocol: {
 				name: '<span style="text-decoration: underline;">卸载游戏前请点此处移除协议配置<span>',
 				clear: true,

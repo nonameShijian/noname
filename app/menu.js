@@ -1,7 +1,8 @@
 const { remote, shell } = require('electron');
-const { BrowserWindow, Menu, dialog, Notification } = remote;
+const { app, BrowserWindow, Menu, dialog, Notification, globalShortcut } = remote;
 const path = require('path');
-const contents = remote.getCurrentWindow().webContents;
+const thisWindow = remote.getCurrentWindow();
+const contents = thisWindow.webContents;
 const fs = require('fs');
 
 const readJSON = (url) => {
@@ -126,7 +127,7 @@ async function checkForUpdate(url) {
 			updateNotification.show();
 		} else {
 			//不支持Notification用dialog
-			dialog.showMessageBox(remote.getCurrentWindow(), {
+			dialog.showMessageBox(thisWindow, {
 				message: '查看更新内容',
 				type: 'info',
 				title: '应用更新提醒',
@@ -175,7 +176,7 @@ function createIframe() {
 		width: 800,
 		height: 600,
 		autoHideMenuBar: true,
-		parent: remote.getCurrentWindow(),
+		parent: thisWindow,
 		icon: path.join(__dirname, '..', 'noname.ico'),
 		webPreferences: {
 			plugins: true
@@ -292,8 +293,8 @@ var Menus = [{
 	}, {
 		label: '版权声明',
 		click: () => {
-			dialog.showMessageBoxSync(remote.getCurrentWindow(), {
-				message: '无名杀作者为水乎。无名杀为开源免费游戏，谨防受骗！！！游戏开源，仅供个人学习，研究之用，请勿用于商业用途',
+			dialog.showMessageBoxSync(thisWindow, {
+				message: '【无名杀】属于个人开发软件且【完全免费】。如非法倒卖用于牟利将承担法律责任 开发团队将追究到底',
 				type: 'info',
 				title: '版权声明',
 				icon: path.join(__dirname, '..', 'noname.ico'),
@@ -304,11 +305,33 @@ var Menus = [{
 
 Menu.setApplicationMenu(Menu.buildFromTemplate(Menus));
 
-remote.getCurrentWindow().on('enter-full-screen', () => {
-	Menu.setApplicationMenu(null);
+thisWindow.on('enter-full-screen', () => {
+	if(!thisWindow.isDestroyed()) {
+		Menu.setApplicationMenu(null);
+	} else {
+		app.exit(0);
+	}
 });
 
-remote.getCurrentWindow().on('leave-full-screen', () => {
-	Menu.setApplicationMenu(Menu.buildFromTemplate(Menus));
-	contents.closeDevTools();
+thisWindow.on('leave-full-screen', () => {
+	if(!thisWindow.isDestroyed()) {
+		Menu.setApplicationMenu(Menu.buildFromTemplate(Menus));
+		contents.closeDevTools();
+	} else {
+		app.exit(0);
+	}
+});
+
+window.showEmojiPanel = () => {
+	if(!app.isEmojiPanelSupported()) {
+		alert('当前操作系统版本不允许使用本机emoji选取器');
+	} else {
+		app.showEmojiPanel();
+	}
+};
+
+document.addEventListener('keydown', e => {
+	if(!e.ctrlKey || e.key != 'e') return;
+	if(!['[object HTMLInputElement]', '[object HTMLTextAreaElement]'].includes(e.srcElement.toString())) return;
+	showEmojiPanel();
 });
