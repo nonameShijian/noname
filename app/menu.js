@@ -241,6 +241,13 @@ var Menus = [{
 		click: (menuItem) => {
 			localStorage.setItem('autoCheckUpdates', menuItem.checked);
 		},
+	}, {
+		type: 'separator'
+	}, {
+		label: 'emoji选取',
+		click: () => {
+			window.showEmojiPanel();
+		},
 	}]
 }, {
 	label: '窗口',
@@ -330,8 +337,13 @@ window.showEmojiPanel = () => {
 	}
 };
 
-document.addEventListener('keydown', e => {
+/*document.addEventListener('keydown', e => {
 	if(!e.ctrlKey || e.key != 'e') return;
 	if(!['[object HTMLInputElement]', '[object HTMLTextAreaElement]'].includes(e.srcElement.toString())) return;
-	showEmojiPanel();
-});
+	if(!app.isEmojiPanelSupported()) {
+		alert('当前操作系统版本不允许使用本机emoji选取器');
+	} else {
+		app.showEmojiPanel();
+	}
+	return true;
+});*/

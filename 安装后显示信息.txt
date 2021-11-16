@@ -18,9 +18,7 @@ v1.36更新提示：
 
 2.取消第一次进入游戏提示【是否下载图片和字体素材】？（约175MB）
 
-3.在输入框或文本域中，按下ctrl + e将唤出emoji选择器
-
-4.可以通过window.showEmojiPanel()唤起emoji选择器
+3.可以通过点击输入框-点击菜单栏-操作-emoji选取或window.showEmojiPanel()唤起emoji选择器
 
 
 v1.35更新提示：

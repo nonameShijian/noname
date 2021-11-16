@@ -1,4 +1,22 @@
 game.import("extension", function(lib, game, ui, get, ai, _status) {
+	const path = require('path');
+	const { remote } = require('electron');
+	const { dialog } = remote;
+	
+	//保存扩展
+	for (let extensionName of ['拖拽读取', '在线更新', '应用配置']) {
+		if(lib.node.fs.existsSync(path.join(__dirname, 'extension' , extensionName)) && !lib.config.extensions.contains(extensionName)) {
+			console.log(`【应用配置】加载并保存了【${extensionName}】内置扩展`);
+			lib.config.extensions.add(extensionName);
+		}
+	}
+	game.saveConfig('extensions', lib.config.extensions);
+	
+	//避免提示是否下载图片和字体素材
+	if(!lib.config.asset_version) {
+		game.saveConfig('asset_version','无');
+	}
+	
 	return {
 		name: "应用配置",
 		editable: false,
@@ -7,24 +25,6 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 			delete lib.extensionMenu.extension_应用配置.delete;
 		},
 		precontent: function() {
-			const path = require('path');
-			const { remote } = require('electron');
-			const { dialog } = remote;
-			
-			//保存扩展
-			for (let extensionName of ['拖拽读取', '在线更新', '应用配置']) {
-				if(lib.node.fs.existsSync(path.join(__dirname, 'extension' , extensionName)) && !lib.config.extensions.contains(extensionName)) {
-					console.log(`【应用配置】加载并保存了【${extensionName}】内置扩展`);
-					lib.config.extensions.add(extensionName);
-				}
-			}
-			game.saveConfig('extensions', lib.config.extensions);
-			
-			//避免提示是否下载图片和字体素材
-			if(!lib.config.asset_version) {
-				game.saveConfig('asset_version','无');
-			}
-			
 			//修改原生alert弹窗
 			if(lib.config.extension_应用配置_replaceAlert) {
 				window.alert = (message) => {
@@ -34,7 +34,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 						icon: path.join(__dirname, 'noname.ico'),
 						buttons: ['确定'],
 						noLink: true
-					});
+					}).then(console.log);
 				}
 			}
 			
