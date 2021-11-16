@@ -1,4 +1,14 @@
 <pre style="color:rgb(210,210,000); font-size:25px; line-height:20px; text-shadow: 0 0 2px black;">
+v1.75更新内容:
+
+———兼容Electron V15及以上的新api
+
+
+v1.74更新内容:
+
+———修复导入的不是扩展时不弹窗提示的问题
+
+
 v1.73更新内容:
 
 ———【一键导出完整包】的功能不再包括皮肤

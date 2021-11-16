@@ -9,13 +9,15 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 	}
 
 	const fs = require("fs");
-	const {
-		remote
-	} = require('electron');
-	const {
-		dialog,
-		BrowserWindow
-	} = remote;
+	const { versions } = process;
+	const electronVersion = parseFloat(versions.electron);
+	let remote;
+	if (electronVersion >= 14) {
+		remote =  require('@electron/remote');
+	} else {
+		remote = require('electron').remote;
+	}
+	const { dialog, BrowserWindow } = remote;
 	const path = require('path');
 	const body = document.body;
 	let loadCSS = false;
@@ -236,12 +238,14 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 								}
 								let candidates = zip3.file(/\bextension.js$/);
 								if (!candidates.length) {
-									throw ('没有extension.js，无法导入');
+									div.remove();
+									return dialog.showErrorBox("导入失败", "没有extension.js，无法导入");
 								}
 								let source = candidates.reduce((a, b) => a.name.length < b.name.length ? a : b);
 								let prefix = pathlib.split(source.name)[0];
 								if (!candidates.every(f => f.name.startsWith(prefix))) {
-									throw ('你导入的不是扩展！请选择正确的文件');
+									div.remove();
+									return dialog.showErrorBox("导入失败", "你导入的不是扩展！请选择正确的文件");
 								}
 								zip3 = zip3.folder(prefix);
 
@@ -256,6 +260,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 									}
 
 									if (!game.importedPack) {
+										div.remove();
 										dialog.showErrorBox("导入失败", "此压缩包不是一个扩展！");
 										delete game.importedPack;
 										return false;
@@ -264,6 +269,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 									extname = game.importedPack.name;
 
 									if (lib.config.all.plays.contains(extname)) {
+										div.remove();
 										dialog.showErrorBox("导入失败", "禁止安装游戏原生扩展");
 										delete game.importedPack;
 										return false;
@@ -344,7 +350,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 					cancelId: 0, //关闭对话框的时候，不是通过点击对话框的情况的默认执行索引
 				}, nextDo);
 
-				if (showMessageBox) showMessageBox.then(result => nextDo(result.response));
+				if (showMessageBox) showMessageBox.then(result => nextDo(result.response)).catch(e => alert(e));
 			});
 
 			//绑定拖拽文件在容器移动事件
@@ -669,7 +675,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 			author: "诗笺",
 			diskURL: "",
 			forumURL: "",
-			version: "1.73",
+			version: "1.75",
 		},
 		files: {
 			"character": [],

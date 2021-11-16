@@ -1,6 +1,21 @@
 game.import("extension", function(lib, game, ui, get, ai, _status) {
+	const { versions } = process;
+	const electronVersion = parseFloat(versions.electron);
+	
+	if (isNaN(electronVersion) || electronVersion < 13) {
+		throw '此版本应用不适用【应用配置】';
+	}
+	
 	const path = require('path');
-	const { remote } = require('electron');
+	let remote;
+	if (electronVersion >= 14) {
+		remote =  require('@electron/remote');
+		lib.node.debug = () => {
+			remote.getCurrentWindow().toggleDevTools();
+		};
+	} else {
+		remote = require('electron').remote;
+	}
 	const { dialog } = remote;
 	
 	//保存扩展

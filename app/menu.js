@@ -1,4 +1,12 @@
-const { remote, shell } = require('electron');
+const { shell } = require('electron');
+const { versions } = process;
+const electronVersion = parseFloat(versions.electron);
+let remote;
+if (electronVersion >= 14) {
+	remote =  require('@electron/remote');
+} else {
+	remote = require('electron').remote;
+}
 const { app, BrowserWindow, Menu, dialog, Notification, globalShortcut } = remote;
 const path = require('path');
 const thisWindow = remote.getCurrentWindow();
@@ -248,6 +256,52 @@ var Menus = [{
 		click: () => {
 			window.showEmojiPanel();
 		},
+	}, {
+		type: 'separator'
+	}, {
+		label: '创建快捷方式',
+		click: () => {
+			let lnkPath = dialog.showSaveDialogSync(thisWindow, {
+				title: '选择目录保存快捷方式',
+				defaultPath: path.join(app.getPath('desktop'), '无名杀.lnk'),
+				properties: ['dontAddToRecent'],
+			});
+			
+			if(!lnkPath) return;
+			
+			let result =  shell.writeShortcutLink(lnkPath, {
+				target: app.getPath('exe'),
+				description: '无名杀',
+				icon: path.join(__dirname, '..', 'noname.ico'),
+				iconIndex: 0,
+				appUserModelId: '无名杀'
+			});
+			if (result) {
+				dialog.showMessageBoxSync(thisWindow, {
+					title: '无名杀',
+					message: '快捷方式创建成功',
+					icon: path.join(__dirname, 'noname.ico'),
+					buttons: ['确定'],
+					noLink: true
+				});
+			} else {
+				dialog.showMessageBoxSync(thisWindow, {
+					title: '无名杀',
+					type: 'error',
+					message: '快捷方式创建失败',
+					icon: path.join(__dirname, 'noname.ico'),
+					buttons: ['确定'],
+					noLink: true
+				});
+			}
+		},
+	}, {
+		type: 'separator'
+	}, {
+		label: '打开无名杀目录',
+		click: () => {
+			shell.showItemInFolder(__dirname);
+		},
 	}]
 }, {
 	label: '窗口',
@@ -308,6 +362,14 @@ var Menus = [{
 			});
 		}
 	}]
+}, {
+	label: '反馈',
+	submenu: [{
+		label: '通过QQ联系本应用作者',
+		click: () => {
+			shell.openExternal('tencent://message/?uin=2954700422');
+		},
+	}],
 }];
 
 Menu.setApplicationMenu(Menu.buildFromTemplate(Menus));
