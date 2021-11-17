@@ -13,7 +13,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 	const electronVersion = parseFloat(versions.electron);
 	let remote;
 	if (electronVersion >= 14) {
-		remote =  require('@electron/remote');
+		remote = require('@electron/remote');
 	} else {
 		remote = require('electron').remote;
 	}

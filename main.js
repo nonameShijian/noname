@@ -2,8 +2,15 @@ const PROTOCOL = 'nonameSkill';
 const { app, BrowserWindow, Menu, ipcMain, session, globalShortcut } = require('electron');
 const path = require('path');
 const isWindows = process.platform === 'win32';
-const remote = require('@electron/remote/main');
-remote.initialize();
+const { versions } = process;
+const electronVersion = parseFloat(versions.electron);
+let remote;
+if (electronVersion >= 14) {
+	remote = require('@electron/remote/main');
+	remote.initialize();
+} else {
+	remote = require('electron').remote;
+}
 let win, extensionName, updateURL;
 
 // 获取单实例锁
@@ -113,7 +120,9 @@ function createMainWindow() {
 		}
 	});
 	win.loadURL(`file://${__dirname}/app.html`);
-	remote.enable(win.webContents);
+	if (electronVersion >= 14) {
+		remote.enable(win.webContents);
+	}
 	return win;
 }
 
