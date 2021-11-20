@@ -25,7 +25,9 @@ v1.37更新提示：
 
 6.【拖拽读取】扩展v1.75更新
 
-7.Electron升级至 V16.0.0 （需要重新安装），支持中文控制台，使用remote模块需要改用require('@electron/remote')
+7.【在线更新】扩展v1.2更新
+
+8.Electron升级至 V16.0.0 （需要重新安装），支持中文控制台，使用remote模块需要改用require('@electron/remote')
 
 
 v1.36更新提示：
