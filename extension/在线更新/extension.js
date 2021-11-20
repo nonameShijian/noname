@@ -1,74 +1,90 @@
 "use strict";
 game.import("extension", function(lib, game, ui, get, ai, _status) {
-
-	if (typeof game.download == 'function') {
-		game.download = (url, folder, onsuccess, onerror, dev, onprogress) => {
-			if (url.indexOf('http') != 0) {
-				url = get.url(dev) + url;
+	
+	game.shijianDownload = async (url, onsuccess, onerror) => {
+		if (!navigator.onLine) {
+			throw '此设备未联网！';
+		}
+		if (typeof game.writeFile != 'function') {
+			throw '此版本无名杀不支持写入文件！';
+		}
+		
+		let downloadUrl = url, path = '', name = url;
+		if (url.indexOf('/') != -1) {
+			path = url.slice(0, url.lastIndexOf('/'));
+			name = url.slice(url.lastIndexOf('/') + 1);
+		}
+		
+		lib.config.brokenFile.add(url);
+		
+		if(url.indexOf('http') != 0){
+			url = lib.updateURL + '/master/' + url;
+		}
+		
+		function success(status) {
+			lib.config.brokenFile.remove(downloadUrl);
+			game.saveConfigValue('brokenFile');
+			if(typeof onsuccess == 'function'){
+				onsuccess(status);
 			}
-			if (lib.node && lib.node.fs) {
-				game.ensureDirectory(folder, function() {
-					let file;
-					try {
-						file = lib.node.fs.createWriteStream(__dirname + '/' + folder, {
-							mode: 0o755
-						});
-					} catch (e) {
-						onerror();
-					}
-					lib.config.brokenFile.add(folder);
-					game.saveConfigValue('brokenFile');
-					if (!lib.node.http) lib.node.http = require('http');
-					if (!lib.node.https) lib.node.https = require('https');
-					let opts = require('url').parse(encodeURI(url));
-					opts.headers = {
-						'User-Agent': 'AppleWebkit'
-					};
-					let request = (url.indexOf('https') == 0 ? lib.node.https : lib.node.http).get(opts, function(response) {
-						let stream = response.pipe(file);
-						stream.on('finish', () => {
-							lib.config.brokenFile.remove(folder);
-							game.saveConfigValue('brokenFile');
-							if (onsuccess) {
-								onsuccess();
-							}
-						});
-						stream.on('error', onerror);
-						if (onprogress) {
-							let streamInterval = setInterval(() => {
-								if (stream.closed) {
-									clearInterval(streamInterval);
-								} else {
-									onprogress(stream.bytesWritten);
-								}
-							}, 200);
+		}
+		
+		function error(e, statusText) {
+			if(typeof onerror == 'function'){
+				onerror(e, statusText);
+			} else console.error(e);
+		}
+		
+		await fetch(url)
+			.then(response => {
+				const { ok, status, statusText } = response;
+				if (!ok) {
+					return error(status, statusText);
+				} else {
+					return response.arrayBuffer();
+				}
+			})
+			.then(arrayBuffer => {
+				// 写入文件
+				if (!arrayBuffer) return;
+				if(lib.node && lib.node.fs) {
+					game.writeFile(arrayBuffer, path, name, e => {
+						if(e) {
+							error(e, 'writeFile');
+						} else {
+							success(200);
 						}
 					});
-				}, true);
-			} else if (typeof FileTransfer == 'function') {
-				let fileTransfer = new FileTransfer();
-				let folder2 = folder;
-				folder = lib.assetURL + folder;
-				lib.config.brokenFile.add(folder2);
-				game.saveConfigValue('brokenFile');
-				if (onprogress) {
-					fileTransfer.onprogress = function(progressEvent) {
-						onprogress(progressEvent.loaded, progressEvent.total);
-					};
+				} else {
+					game.ensureDirectory(path, () => {});
+					window.resolveLocalFileSystemURL(lib.assetURL + path, entry => {
+						entry.getFile(name, {create:true}, fileEntry => {
+							fileEntry.createWriter(fileWriter => {
+								fileWriter.onwriteend = () => {
+									success(200);
+								};
+								fileWriter.write(arrayBuffer);
+							}, e => {
+								error(e, 'writeFile');
+							});
+						});
+					});
 				}
-				fileTransfer.download(encodeURI(url), encodeURI(folder), function() {
-					lib.config.brokenFile.remove(folder2);
-					game.saveConfigValue('brokenFile');
-					if (onsuccess) {
-						onsuccess();
-					}
-				}, onerror);
-			} else throw '不支持下载文件'
-		};
-	}
+			})
+			.catch(error);
+	};
 
 	let brokenFileArr = lib.config.extension_在线更新_brokenFile || [];
 	brokenFileArr = Array.from(new Set([...brokenFileArr, ...lib.config.brokenFile]));
+	
+	
+	//修改lib.config.extension_在线更新_brokenFile，同步修改brokenFileArr
+	Object.defineProperty(lib.config, 'extension_在线更新_brokenFile', {
+		configurable: true,
+		enumerable: true,
+		get() { return brokenFileArr; },
+		set(newValue) { brokenFileArr = newValue; },
+	});
 
 	window.addEventListener('beforeunload', () => {
 		if (brokenFileArr && brokenFileArr.length) {
@@ -80,14 +96,8 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 	});
 
 	let downloadFile = (current, onsuccess, onerror) => {
-		game.removeFile(current, err => {
-			if (err) {
-				console.error(`未能删除${current},可能是文件不存在或没有删除权限`);
-			}
-		});
-		let reload = (err) => {
-			typeof err != 'undefined' && typeof err != 'boolean' && console.error(err);
-			typeof onerror == "function" && onerror(current, !!err);
+		let reload = (err, statusText) => {
+			onerror(current, statusText);
 			setTimeout(() => {
 				let str1 = "正在下载：";
 				let current3 = current.replace(lib.updateURL, '');
@@ -103,41 +113,33 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 				downloadFile(current, onsuccess, onerror);
 			}, 500);
 		};
-		let contrast = () => {
-			if (lib.node && lib.node.fs) {
-				game.readFile(current, (result) => {
-					if ("Too Many Requests" === result.toString()) {
-						reload();
-					} else {
-						typeof onsuccess == "function" && onsuccess(current);
-					}
-				}, reload);
-			} else if (window.cordova) {
-				window.resolveLocalFileSystemURL(lib.assetURL, function(entry) {
-					entry.getFile(current, {}, function(fileEntry) {
-						fileEntry.file(function(fileToLoad) {
-							var fileReader = new FileReader();
-							fileReader.onload = function(e) {
-								let str = e.target.result;
-								if ("Too Many Requests" === str) {
-									reload();
-								} else {
-									typeof onsuccess == "function" && onsuccess(current);
-								}
-							};
-							fileReader.readAsText(fileToLoad, "UTF-8");
-						}, reload);
-					}, reload);
-				}, reload);
+		
+		game.shijianDownload(current, function success(status) {
+			onsuccess(current);
+		}, function error(e, statusText) {
+			if (typeof e == 'number') {
+				//状态码
+				switch(e) {
+					case 404 :
+						game.print("文件不存在，不需要重新下载");
+						console.error('文件不存在，不需要重新下载');
+						return onsuccess(current, true);
+					case 429 :
+						game.print("请求太多，稍后重新下载");
+						console.error('请求太多，稍后重新下载');
+						break;
+					default: 
+						game.print(e);
+				}
+			} else if (statusText === 'writeFile') {
+				game.print("写入文件失败");
+				console.error('写入文件失败');
+			} else {
+				game.print(e);
 			}
-		}
-		try {
-			game.download(current, current, () => {
-				contrast();
-			}, reload, false);
-		} catch (e) {
-			reload(e);
-		}
+			console.error(e, statusText);
+			reload(e, statusText);
+		});
 	};
 
 	let multiDownload = (list, onsuccess, onerror, onfinish) => {
@@ -155,13 +157,13 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 					game.print(str1 + current.slice(current.lastIndexOf('/') + 1));
 				}
 
-				downloadFile(current, () => {
-					typeof onsuccess == "function" && onsuccess(current);
+				downloadFile(current, (c, bool) => {
+					onsuccess(current, bool);
 					download();
 				}, onerror);
 
 			} else {
-				typeof onfinish == "function" && onfinish();
+				onfinish();
 			}
 		};
 		download();
@@ -181,14 +183,18 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 				//如果有没下载完就重启的文件
 				alert(`检测到有未下载成功的文件(${brokenFileArr})，进行重新下载`);
 				console.log('未下载成功的文件：', brokenFileArr);
-				multiDownload(brokenFileArr, (current) => {
+				multiDownload(brokenFileArr, (current, bool) => {
 					brokenFileArr.remove(current);
 					game.saveExtensionConfig('在线更新', 'brokenFile', brokenFileArr);
 					lib.config.brokenFile.remove(current);
 					game.saveConfigValue('brokenFile');
-					console.log(`${current}下载成功`);
-				}, (current) => {
-					console.error(`${current}下载失败，尝试重新下载`);
+					if (bool) {
+						console.error(`${current}不存在，不需要下载`);
+					} else {
+						console.log(`${current}下载成功`);
+					}
+				}, (current, statusText) => {
+					console.error(`${current}下载失败`);
 				}, () => {
 					alert('下载完成，将自动重启');
 					game.reload();
@@ -317,19 +323,18 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 											span.innerHTML = `正在下载文件（${n1}/${n2}）`;
 											this.childNodes[0].appendChild(span);
 
-											multiDownload(updates, (current) => {
-												game.print(`${current.slice(current.lastIndexOf('/') + 1)}下载成功`);
+											multiDownload(updates, (current, bool) => {
+												if (bool) {
+													game.print(`${current.slice(current.lastIndexOf('/') + 1)}不存在，不需要下载`);
+													console.error(`${current.slice(current.lastIndexOf('/') + 1)}不存在，不需要下载`);
+												} else {
+													game.print(`${current.slice(current.lastIndexOf('/') + 1)}下载成功`);
+													console.log(`${current.slice(current.lastIndexOf('/') + 1)}下载成功`);
+												}
 												n1++;
 												span.innerHTML = `正在下载文件（${n1}/${n2}）`;
-											}, (current, requests) => {
-												let str;
-												if (requests) {
-													str = `下载${current}失败(请求太多)，尝试重新下载`;
-												} else {
-													str = `下载${current}失败，尝试重新下载`;
-												}
-												game.print(str);
-												console.error(str);
+											}, (current, statusText) => {
+												
 											}, () => {
 												span.innerHTML = `游戏更新完毕（${n1}/${n2}）`;
 												setTimeout(() => {
@@ -557,19 +562,18 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 									span.innerHTML = `正在下载素材（${n1}/${n2}）`;
 									this.childNodes[0].appendChild(span);
 
-									multiDownload(updates, (current) => {
-										game.print(`${current.slice(current.lastIndexOf('/') + 1)}下载成功`);
+									multiDownload(updates, (current, bool) => {
+										if (bool) {
+											game.print(`${current.slice(current.lastIndexOf('/') + 1)}不存在，不需要下载`);
+											console.error(`${current.slice(current.lastIndexOf('/') + 1)}不存在，不需要下载`);
+										} else {
+											game.print(`${current.slice(current.lastIndexOf('/') + 1)}下载成功`);
+											console.log(`${current.slice(current.lastIndexOf('/') + 1)}下载成功`);
+										}
 										n1++;
 										span.innerHTML = `正在下载文件（${n1}/${n2}）`;
 									}, (current, requests) => {
-										let str;
-										if (requests) {
-											str = `下载${current}失败(请求太多)，尝试重新下载`;
-										} else {
-											str = `下载${current}失败，尝试重新下载`;
-										}
-										game.print(str);
-										console.error(str);
+									
 									}, () => {
 										span.innerHTML = `素材更新完毕（${n1}/${n2}）`;
 										setTimeout(() => {
@@ -691,7 +695,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 				//为了和最下面的删除扩展区分开
 				clear: true,
 				nopointer: true,
-				name: '</br>--------------------',
+				name: '</br>---------------',
 			},
 		},
 		help: {},
@@ -709,11 +713,11 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 				skill: {},
 				translate: {},
 			},
-			intro: "点击按钮即可在线更新，文件下载失败会自动重新下载。</br>点击按钮后若短时间内没反应可以重启游戏。</br><span style='color:red'>请不要在更新时关闭游戏，否则后果自负</br>（更新时关闭游戏后，windows用户会有不能删除的残留文件，可以通过注销用户来自动清除）</span>",
+			intro: "点击按钮即可在线更新，文件下载失败会自动重新下载。</br><span style='color:red'>请不要在更新时关闭游戏，否则后果自负</span></br>最新完整包下载地址：<a target='_self' href='https://hub.fastgit.org/libccy/noname/archive/refs/heads/master.zip'><span style='text-decoration: underline;'>点击下载</span></a>",
 			author: "诗笺",
 			diskURL: "",
 			forumURL: "",
-			version: "1.18",
+			version: "1.2",
 		},
 		files: {
 			"character": [],

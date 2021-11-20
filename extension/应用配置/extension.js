@@ -43,13 +43,29 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 			//修改原生alert弹窗
 			if(lib.config.extension_应用配置_replaceAlert) {
 				window.alert = (message) => {
-					dialog.showMessageBox(remote.getCurrentWindow(), {
+					dialog.showMessageBoxSync(remote.getCurrentWindow(), {
 						title: '无名杀',
-						message: message + '',
+						message: message !== undefined ? (message + '') : '',
 						icon: path.join(__dirname, 'noname.ico'),
 						buttons: ['确定'],
 						noLink: true
-					}).then(console.log);
+					});
+				}
+			}
+			
+			//修改原生alert弹窗
+			if(lib.config.extension_应用配置_replaceConfirm) {
+				window.confirm = (message) => {
+					const result = dialog.showMessageBoxSync(remote.getCurrentWindow(), {
+						title: '无名杀',
+						message: message !== undefined ? (message + '') : '',
+						icon: path.join(__dirname, 'noname.ico'),
+						buttons: ['确定', '取消'],
+						noLink: true,
+						cancelId: 1,
+						defaultId: 0,
+					});
+					return result == 0;
 				}
 			}
 			
@@ -95,12 +111,20 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 					alert('修改选项后重启生效');
 				}
 			},
+			//修改原生confirm弹窗
+			replaceConfirm: {
+				init: true,
+				name: '修改原生confirm弹窗',
+				onclick: () => {
+					alert('修改选项后重启生效');
+				}
+			},
 			//移除协议配置
 			removeAsDefaultProtocol: {
 				name: '<span style="text-decoration: underline;">卸载游戏前请点此处移除协议配置<span>',
 				clear: true,
 				onclick: () => {
-					const { app } = require('electron').remote;
+					const { app } = remote;
 					const result = app.removeAsDefaultProtocolClient('nonameSkill');
 					if(result) alert('移除协议配置成功');
 					else alert('移除协议配置失败');

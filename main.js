@@ -1,5 +1,6 @@
 const PROTOCOL = 'nonameSkill';
 const { app, BrowserWindow, Menu, ipcMain, session, globalShortcut } = require('electron');
+const fs = require('fs');
 const path = require('path');
 const isWindows = process.platform === 'win32';
 const { versions } = process;
@@ -22,6 +23,9 @@ if (!gotTheLock) {
 
 app.setAppUserModelId('无名杀');
 
+//防止32位无名杀的乱码
+app.setName('无名杀');
+
 if (!app.isDefaultProtocolClient(PROTOCOL)) {
 	const args = [];
 	if (!app.isPackaged) {
@@ -38,10 +42,6 @@ if (!app.isDefaultProtocolClient(PROTOCOL)) {
 
 function handleUrl(arr) {
 	const result = arr.filter(val => val.startsWith('nonameskill:'));
-	/*if(win) {
-		win.webContents.executeJavaScript(`console.log('${arr}')`);
-		win.webContents.executeJavaScript(`console.log('${result}')`);
-	}*/
 	if(!result.length) {
 		extensionName = null;
 		updateURL = null;
@@ -53,8 +53,6 @@ function handleUrl(arr) {
 	//玄武镜像：https://kuangthree.coding.net/p/noname-extensionxwjh/d/noname-extensionxwjh/git/raw/master
 	//链接：nonameSKill:?extensionName=全能搜索
 	//步骤：截取链接，跳转到另一个html里下载
-	//无名杀里再内置一个扩展，类似xwtool，下载完成后重启加载扩展信息
-	//内置的扩展应该有取消协议的选项，保证卸载无名杀前可以删除协议设置
 	extensionName = searchParams.get('extensionName');
 	updateURL = searchParams.get('updateURL');
 }
@@ -99,7 +97,7 @@ function createWindow() {
 			} else {
 				win.setFullScreen(false);
 			}
-		})
+		});
 	}
 }
 
@@ -164,16 +162,26 @@ function createUpdateWindow() {
 	return win;
 }
 
-app.setPath('home', path.join(__dirname, 'Home'));
-app.setPath('appData', path.join(__dirname, 'Home', 'AppData'));
-app.setPath('userData', path.join(__dirname, 'Home', 'UserData'));
-app.setPath('temp', path.join(__dirname, 'Home', 'Temp'));
-app.setPath('cache', path.join(__dirname, 'Home', 'Cache'));
-app.setPath('crashDumps', path.join(__dirname, 'Home', 'crashDumps'));//崩溃转储文件存储的目录
-app.setPath('logs', path.join(__dirname, 'Home', 'logs'));//日志目录
+function createDir(dirPath) {
+	if (!fs.existsSync(dirPath)) {
+		fs.mkdirSync(dirPath);
+	}
+}
 
-//防止32位无名杀的乱码
-app.setName('无名杀');
+function setPath(path1, path2) {
+	createDir(path2);
+	app.setPath(path1, path2);
+}
+
+setPath('home', path.join(__dirname, 'Home'));
+setPath('appData', path.join(__dirname, 'Home', 'AppData'));
+setPath('userData', path.join(__dirname, 'Home', 'UserData'));
+setPath('temp', path.join(__dirname, 'Home', 'Temp'));
+setPath('cache', path.join(__dirname, 'Home', 'Cache'));
+//崩溃转储文件存储的目录
+setPath('crashDumps', path.join(__dirname, 'Home', 'crashDumps'));
+//日志目录
+setPath('logs', path.join(__dirname, 'Home', 'logs'));
 
 app.whenReady().then(() => {
 	
