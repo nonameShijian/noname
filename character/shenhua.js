@@ -1445,12 +1445,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					name2:'橘',
 					content:'当前有#个“橘”',
 				},
-				//mark:true,
 				audio:2,
 				trigger:{
-					global:'gameDrawAfter'
+					global:'phaseBefore',
+					player:'enterGame',
 				},
 				forced:true,
+				filter:function(event,player){
+					return (event.name!='phase'||game.phaseNumber==0);
+				},
 				content:function(){
 					player.addMark('nzry_huaiju',3);
 					player.addSkill('nzry_huaiju_ai');
@@ -1458,7 +1461,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				group:['tachibana_effect'],
 			},
 			//没错 这是个橘
-			"tachibana_effect":{
+			tachibana_effect:{
 				audio:'nzry_huaiju',
 				trigger:{
 					global:['damageBegin4','phaseDrawBegin2'],
@@ -1906,13 +1909,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					1:{
 						audio:2,
 						trigger:{
-							global:'gameDrawAfter',
+							global:'phaseBefore',
 							player:'enterGame',
 						},
 						forced:true,
 						locked:false,
 						filter:function(event,player){
-							return !player.getStorage('nzry_mingren').length;
+							return !player.getStorage('nzry_mingren').length&&(event.name!='phase'||game.phaseNumber==0);
 						},
 						content:function(){
 							'step 0'
@@ -4846,9 +4849,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				filter:function(event,player){
 					if(event.card.name!='sha') return false;
 					if(player==event.player){
-						return event.target.sex=='female';
+						return event.target.hasSex('female');
 					}
-					return event.player.sex=='female';
+					return event.player.hasSex('female');
 				},
 				check:function(event,player){
 					return player==event.player;
@@ -4867,7 +4870,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				ai:{
 					directHit_ai:true,
 					skillTagFilter:function(player,tag,arg){
-						if(arg.card.name!='sha'||arg.target.sex!='female'||arg.target.countCards('h','shan')>1) return false;
+						if(arg.card.name!='sha'||!arg.target.hasSex('female')||arg.target.countCards('h','shan')>1) return false;
 					},
 				},
 			},
@@ -7035,9 +7038,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							if(name=='wuxie') continue;
 							if(name=='sha'){
 								list.push(['基本','','sha']);
-								list.push(['基本','','sha','fire']);
-								list.push(['基本','','sha','thunder']);
-								list.push(['基本','','sha','ice']);
+								for(var j of lib.inpile_nature) list.push(['基本','','sha',j]);
 							}
 							else if(get.type(name)=='trick') list.push(['锦囊','',name]);
 							else if(get.type(name)=='basic') list.push(['基本','',name]);
@@ -7193,7 +7194,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				intro:{
 					content:function(storage,player,skill){
 						var str='<li>锁定技，你不能质疑于吉，只要你的体力值为1，你的其他技能便全部失效。';
-						var list=player.getSkills(null,null,false).filter(function(i){
+						var list=player.getSkills(null,false,false).filter(function(i){
 							return lib.skill.rechanyuan.skillBlocker(i,player);
 						});
 						if(list.length) str+=('<br><li>失效技能：'+get.translation(list))

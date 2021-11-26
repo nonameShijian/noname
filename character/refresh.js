@@ -1624,6 +1624,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			gzpaiyi:{
 				audio:2,
 				enable:'phaseUse',
+				usable:1,
 				filter:function(event,player){
 					return player.getStorage('gzquanji').length>0&&!player.hasSkill('gzquanji2');
 				},
@@ -2252,7 +2253,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					var ai2=function(target){
 						var player=_status.event.player;
 						if(get.attitude(player,target)<=0) return 0;
-						var list=[null,'fire','thunder','ice','juedou'];
+						var list=[null,'juedou'].concat(lib.inpile_nature);
 						if(target.hasSkill('ayato_zenshen')) list.push('kami');
 						var num=Math.max.apply(Math,list.map(function(i){
 							if(i=='juedou') return target.getUseValue({name:'juedou',isCard:true},false);
@@ -2292,7 +2293,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						return target!=player&&target!=_status.event.target;
 					},'选择'+get.translation(target)+'使用【杀】或【决斗】的目标',true).set('target',target).set('ai',function(target){
 						var evt=_status.event;
-						var list=[null,'fire','thunder','ice','juedou'];
+						var list=[null,'juedou'].concat(lib.inpile_nature);
 						if(evt.target.hasSkill('ayato_zenshen')) list.push('kami')
 						return Math.max.apply(Math,list.map(function(i){
 							var card={name:'sha',isCard:true};
@@ -2308,9 +2309,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					event.target2=target2;
 					player.line(target2);
 					game.log(player,'选择了',target2);
-					var list=[null,'fire','thunder','ice'];
+					var list=lib.inpile_nature.slice(0);
+					list.unshift(null);
 					var vcards=[];
-					if(target.hasSkill('ayato_zenshen')) list.push('kami');
+					if(target.hasSkill('ayato_zenshen')) list.add('kami');
 					for(var i of list){
 						if(target.canUse({name:'sha',isCard:true,nature:i},target2,false)) vcards.push(['基本','','sha',i]);
 					}
@@ -2320,6 +2322,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						else event._result={index:1};
 					}
 					else if(!target.countCards('h')){
+						event.vcards=vcards;
 						event._result={index:0};
 					}
 					else{
@@ -5812,11 +5815,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			rehuashen_init:{
 				trigger:{
-					global:'gameDrawAfter',
+					global:'phaseBefore',
 					player:'enterGame',
 				},
 				forced:true,
 				popup:false,
+				filter:function(event,player){
+					return (event.name!='phase'||game.phaseNumber==0);
+				},
 				content:function(){
 					lib.skill.rehuashen.addHuashens(player,3);
 					player.syncStorage('rehuashen');
@@ -5854,7 +5860,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						if(i=='shan'||i=='wuxie') continue;
 						var type=get.type(i);
 						if((type=='basic'||type=='trick')&&event.filterCard({name:i},player,event)) return true;
-						if(i=='sha'&&(event.filterCard({name:i,nature:'ice'},player,event)||event.filterCard({name:i,nature:'fire'},player,event)||event.filterCard({name:i,nature:'thunder'},player,event))) return true;
+						if(i=='sha'){
+							for(var j of lib.inpile_nature){
+								if(event.filterCard({name:i,nature:j},player,event)) return true;
+							}
+						}
 					}
 					return false;
 				},
@@ -5866,9 +5876,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							var type=get.type(i);
 							if(type=='basic'||type=='trick') list.push([type,'',i]);
 							if(i=='sha'){
-								list.push([type,'',i,'fire']);
-								list.push([type,'',i,'thunder']);
-								list.push([type,'',i,'ice']);
+								for(var j of lib.inpile_nature) list.push(['基本','','sha',j]);
 							}
 						}
 						return ui.create.dialog('蛊惑',[list,'vcard']);
@@ -6134,7 +6142,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				intro:{
 					content:function(storage,player,skill){
 						var str='<li>锁定技，你不能于〖蛊惑〗的结算流程中进行质疑。当你的体力值不大于1时，你的其他技能失效。';
-						var list=player.getSkills(null,null,false).filter(function(i){
+						var list=player.getSkills(null,false,false).filter(function(i){
 							return lib.skill.rechanyuan.skillBlocker(i,player);
 						});
 						if(list.length) str+=('<br><li>失效技能：'+get.translation(list))
@@ -7645,7 +7653,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				},
 				filterTarget:function(card,player,target){
-					if(target.sex!='male') return false;
+					if(!target.hasSex('male')) return false;
 					var card=ui.selected.cards[0];
 					if(!card) return false;
 					if(get.position(card)=='e'&&!target.isEmpty(get.subtype(card))) return false;
@@ -7955,9 +7963,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								return player.canUse('sha',current);
 							})){
 								list.push(['基本','','sha']);
-								list.push(['基本','','sha','fire']);
-								list.push(['基本','','sha','thunder']);
-								list.push(['基本','','sha','ice']);
+							}
+							for(var i of lib.inpile_nature){
+							 if(lib.filter.cardUsable({name:'sha',nature:i},player,event.getParent('chooseToUse'))&&game.hasPlayer(function(current){
+										return player.canUse({name:'sha',nature:i},current);
+									})){
+									list.push(['基本','','sha',i]);
+								}
 							}
 							if(lib.filter.cardUsable({name:'tao'},player,event.getParent('chooseToUse'))&&game.hasPlayer(function(current){
 								return player.canUse('tao',current);
@@ -9224,7 +9236,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				delay:false,
 				filter:function(event,player){
 					return game.hasPlayer(function(current){
-						return current.sex=='male';
+						return current.hasSex('male');
 					});
 				},
 				content:function(){
@@ -9249,7 +9261,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.showCards([event.card]);
 					"step 2"
 					player.chooseTarget(true,'选择一名男性角色送出'+get.translation(event.card),function(card,player,target){
-						return target.sex=='male';
+						return target.hasSex('male');
 					}).set('ai',function(target){
 						var att=get.attitude(_status.event.player,target);
 						if(_status.event.neg) return -att;
@@ -9265,7 +9277,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					result:{
 						player:function(player){
 							if(game.hasPlayer(function(current){
-								return current.sex=='male'&&get.attitude(player,current)>0;
+								return current.hasSex('male')&&get.attitude(player,current)>0;
 							})) return 2;
 							return 0;
 						},
@@ -10409,7 +10421,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			gzquanji_info:'当你受到伤害后或当你使用牌指定唯一目标并对其造成伤害后，你可以摸一张牌，然后你将一张牌置于武将牌上，称为“权”；你的手牌上限+X（X为“权”的数量）。',
 			gzpaiyi:'排异',
 			gzpaiyi_backup:'排异',
-			gzpaiyi_info:'出牌阶段，你可以将移去一张“权”，然后选择一名角色并令其摸X张牌（X为“权”的数量且至多为7），若其手牌数不小于你，则你对其造成1点伤害且本技能于此回合内失效。',
+			gzpaiyi_info:'出牌阶段限一次。你可以移去一张“权”，然后选择一名角色并令其摸X张牌（X为“权”的数量且至多为7），若其手牌数不小于你，则你对其造成1点伤害。',
 			ol_zhurong:'界祝融',
 			changbiao:'长标',
 			changbiao_info:'出牌阶段限一次，你可以将任意张手牌当做【杀】使用（无距离限制）。若你因此【杀】对目标角色造成过伤害，则你于出牌阶段结束时摸X张牌（X为此【杀】对应的实体牌数量）。',
@@ -10427,7 +10439,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			redingpin:'定品',
 			redingpin_info:'出牌阶段，你可以弃置一张本回合未使用过/弃置过的类型的牌并选择一名角色。其进行判定，若结果为：黑色，其摸X张牌（X为其体力值且至多为3）且本回合内不能再成为〖定品〗的目标；红桃，你令此次弃置的牌不计入〖定品〗弃置牌合法性的检测；方片，你将武将牌翻面。',
 			refaen:'法恩',
-			refaen_info:'一名角色翻面或横置后，你可令其摸一张牌。',
+			refaen_info:'一名角色翻至正面或横置后，你可令其摸一张牌。',
 			reshizhi:'矢志',
 			reshizhi_info:'锁定技，若你的体力值为1，则你的【闪】视为【杀】，且当你使用对应的实体牌为一张【闪】的非转化普通杀造成伤害后，你回复1点体力。',
 			re_guotufengji:'界郭图逢纪',

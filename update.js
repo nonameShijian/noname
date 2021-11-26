@@ -7,7 +7,7 @@ window.updateList = [
 	'downloadExtension.html',
 	'main.js',
 	'package.json',
-	'package-lock.json',
+	//'package-lock.json',
 	'update.html',
 	
 	//教程

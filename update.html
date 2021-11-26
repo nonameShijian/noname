@@ -21,7 +21,13 @@
 		</div>
 		<script type="text/javascript" style="display: none;">
 			//链接：?nonameSkill:?updateURL=https://raw.fastgit.org/nonameShijian/noname/main
-			const { remote, ipcRenderer } = require('electron');
+			const { ipcRenderer } = require('electron');
+			let remote;
+			if (electronVersion >= 14) {
+				remote =  require('@electron/remote');
+			} else {
+				remote = require('electron').remote;
+			}
 			const { app, shell } = remote;
 			const path = require('path');
 			const fs = require('fs');
