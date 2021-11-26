@@ -1,4 +1,14 @@
 <pre style="color:rgb(210,210,000); font-size:25px; line-height:20px; text-shadow: 0 0 2px black;">
+v1.76更新内容:
+
+———增加新功能，拖拽一个extension.js也可以导入扩展
+
+———拖拽的监听放在了启动函数里，
+
+即选模式的界面也可以用拖拽了
+
+
+
 v1.75更新内容:
 
 ———兼容Electron V15及以上的新api

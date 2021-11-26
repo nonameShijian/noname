@@ -14,8 +14,15 @@
     "type": "git",
     "url": "git+https://github.com/nonameShijian/noname.git"
   },
-  "installerVersion": "1.37",
+  "installerVersion": "1.38",
   "installerUpdateContent": [
+	{
+	  "version": "1.38",
+	  "updateContent": [
+			"main.js中对部分代码的顺序进行调整，修复某些代码执行太晚而失效的问题",
+			"通过【应用配置】扩展修复【制作扩展-选择武将图片】时闪退的问题"
+	  ]
+	},
     {
       "version": "1.37",
       "updateContent": [
@@ -92,10 +99,10 @@
   "author": "诗笺",
   "license": "ISC",
   "devDependencies": {
-    "electron-packager": "^15.3.0"
+	"electron-packager": "^15.3.0",
+	"electron": "^16.0.0"
   },
   "dependencies": {
-    "@electron/remote": "^2.0.1",
-    "electron": "^16.0.0"
+    "@electron/remote": "^2.0.1"
   }
 }

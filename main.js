@@ -1,5 +1,5 @@
 const PROTOCOL = 'nonameSkill';
-const { app, BrowserWindow, Menu, ipcMain, session, globalShortcut } = require('electron');
+const { app, BrowserWindow, Menu, ipcMain, session, globalShortcut, crashReporter } = require('electron');
 const fs = require('fs');
 const path = require('path');
 const isWindows = process.platform === 'win32';
@@ -25,6 +25,37 @@ app.setAppUserModelId('无名杀');
 
 //防止32位无名杀的乱码
 app.setName('无名杀');
+
+
+function createDir(dirPath) {
+	if (!fs.existsSync(dirPath)) {
+		fs.mkdirSync(dirPath);
+	}
+}
+
+function setPath(path1, path2) {
+	app.getPath(path1);
+	createDir(path2);
+	app.setPath(path1, path2);
+}
+
+setPath('home', path.join(__dirname, 'Home'));
+setPath('appData', path.join(__dirname, 'Home', 'AppData'));
+setPath('userData', path.join(__dirname, 'Home', 'UserData'));
+setPath('temp', path.join(__dirname, 'Home', 'Temp'));
+setPath('cache', path.join(__dirname, 'Home', 'Cache'));
+//崩溃转储文件存储的目录
+setPath('crashDumps', path.join(__dirname, 'Home', 'crashDumps'));
+//日志目录
+setPath('logs', path.join(__dirname, 'Home', 'logs'));
+
+//崩溃处理
+crashReporter.start({
+	productName: '无名杀',
+	//崩溃报告将被收集并存储在崩溃目录中，不会上传
+	uploadToServer: false,
+	compress: false
+});
 
 if (!app.isDefaultProtocolClient(PROTOCOL)) {
 	const args = [];
@@ -161,27 +192,6 @@ function createUpdateWindow() {
 	win.webContents.executeJavaScript(`window.updateURL = '${updateURL}'`);
 	return win;
 }
-
-function createDir(dirPath) {
-	if (!fs.existsSync(dirPath)) {
-		fs.mkdirSync(dirPath);
-	}
-}
-
-function setPath(path1, path2) {
-	createDir(path2);
-	app.setPath(path1, path2);
-}
-
-setPath('home', path.join(__dirname, 'Home'));
-setPath('appData', path.join(__dirname, 'Home', 'AppData'));
-setPath('userData', path.join(__dirname, 'Home', 'UserData'));
-setPath('temp', path.join(__dirname, 'Home', 'Temp'));
-setPath('cache', path.join(__dirname, 'Home', 'Cache'));
-//崩溃转储文件存储的目录
-setPath('crashDumps', path.join(__dirname, 'Home', 'crashDumps'));
-//日志目录
-setPath('logs', path.join(__dirname, 'Home', 'logs'));
 
 app.whenReady().then(() => {
 	
