@@ -171,6 +171,9 @@ function createExtensionWindow() {
 	win.loadURL(`file://${__dirname}/downloadExtension.html`);
 	//win.webContents.openDevTools();
 	win.webContents.executeJavaScript(`window.extensionName = '${extensionName}'`);
+	if (electronVersion >= 14) {
+		remote.enable(win.webContents);
+	}
 	return win;
 }
 
@@ -190,6 +193,9 @@ function createUpdateWindow() {
 	win.loadURL(`file://${__dirname}/update.html`);
 	//win.webContents.openDevTools();
 	win.webContents.executeJavaScript(`window.updateURL = '${updateURL}'`);
+	if (electronVersion >= 14) {
+		remote.enable(win.webContents);
+	}
 	return win;
 }
 
