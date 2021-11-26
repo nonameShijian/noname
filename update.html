@@ -22,6 +22,8 @@
 		<script type="text/javascript" style="display: none;">
 			//链接：?nonameSkill:?updateURL=https://raw.fastgit.org/nonameShijian/noname/main
 			const { ipcRenderer } = require('electron');
+			const { versions } = process;
+			const electronVersion = parseFloat(versions.electron);
 			let remote;
 			if (electronVersion >= 14) {
 				remote =  require('@electron/remote');

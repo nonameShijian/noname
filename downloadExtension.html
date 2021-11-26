@@ -22,6 +22,8 @@
 		<script type="text/javascript" style="display: none;">
 			//链接：nonameSKill:?extensionName=全能搜索
 			const { ipcRenderer } = require('electron');
+			const { versions } = process;
+			const electronVersion = parseFloat(versions.electron);
 			let remote;
 			if (electronVersion >= 14) {
 				remote =  require('@electron/remote');
