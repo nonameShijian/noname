@@ -95,7 +95,14 @@ async function checkForUpdate(url) {
 			}
 			</style>
 			<script type="text/javascript">
-				const { remote } = require('electron');
+				const { versions } = process;
+				const electronVersion = parseFloat(versions.electron);
+				let remote;
+				if (electronVersion >= 14) {
+					remote =  require('@electron/remote');
+				} else {
+					remote = require('electron').remote;
+				}
 			</script>
 			<body>
 		`;
