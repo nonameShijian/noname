@@ -40,56 +40,6 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 			delete lib.extensionMenu.extension_应用配置.delete;
 		},
 		precontent: function() {
-			//尝试修复点击选取文件image/*崩溃的问题
-			//转换成File实例需要读取ArrayBuffer
-			const fs = require('fs');
-			
-			const addClickListener = setInterval(() => {
-				//因为menu设置了事件禁止冒泡，所以要用时间函数获取它，然后监听
-				const menu = document.getElementsByClassName('main menu dialog popped static')[0];
-				if (!menu) return;
-				else {
-					//取消时间函数
-					clearInterval(addClickListener);
-					menu.addEventListener('click', e => {
-						const { target } = e;
-						//获取到闪退的文件选取器
-						if (target.classList.contains('fileinput') && target.constructor == HTMLInputElement) {
-							//取消目标元素的默认行为
-							e.preventDefault();
-							e.stopPropagation();
-							//手动唤起dialog
-							const selectResult = dialog.showOpenDialogSync(remote.getCurrentWindow(), {
-								title: '打开',
-								//打开文件，显示隐藏文件，不要将正在打开的项目添加到最近的文档列表中
-								properties: ['openFile', 'showHiddenFiles', 'dontAddToRecent'],
-								//用户可选范围
-								filters: [{
-									name: 'JPEG Image',
-									extensions: ['jpg', 'gif']
-								}],
-							});
-							if (selectResult) {
-								const imagePath = selectResult[0];
-								const buffer = fs.readFileSync(imagePath).buffer;
-								const imageFile = new File([buffer], path.basename(imagePath), {
-									type: 'image/' + path.extname(imagePath).slice(1)
-								});
-								//不能用常规方法修改FileList，所以只能用这个了
-								Object.defineProperty(target, 'files', {
-									configurable: true,
-									get() {
-										return [imageFile];
-									}
-								});
-								//正常触发game.js中设置的onchange事件
-								target.onchange();
-							}
-						}
-					});
-				}
-			}, 500);
-			
 			//修改原生alert弹窗
 			if(lib.config.extension_应用配置_replaceAlert) {
 				window.alert = (message) => {

@@ -21,7 +21,7 @@ if (!gotTheLock) {
 	app.quit();
 }
 
-app.setAppUserModelId('无名杀');
+app.setAppUserModelId('com.shijian.noname');
 
 //防止32位无名杀的乱码
 app.setName('无名杀');
