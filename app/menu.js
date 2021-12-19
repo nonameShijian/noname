@@ -7,7 +7,7 @@ if (electronVersion >= 14) {
 } else {
 	remote = require('electron').remote;
 }
-const { app, BrowserWindow, Menu, dialog, Notification, globalShortcut } = remote;
+const { app, BrowserWindow, Menu, dialog, Notification } = remote;
 const path = require('path');
 const thisWindow = remote.getCurrentWindow();
 const contents = thisWindow.webContents;
@@ -94,16 +94,6 @@ async function checkForUpdate(url) {
 				font-size: 20px;
 			}
 			</style>
-			<script type="text/javascript">
-				const { versions } = process;
-				const electronVersion = parseFloat(versions.electron);
-				let remote;
-				if (electronVersion >= 14) {
-					remote =  require('@electron/remote');
-				} else {
-					remote = require('electron').remote;
-				}
-			</script>
 			<body>
 		`;
 		for(let i = 0; i < serverJSON.installerUpdateContent.length; i++) {
@@ -115,7 +105,7 @@ async function checkForUpdate(url) {
 			`;
 		}
 		updateStr += `
-			<button onclick="location.href='nonameSkill:?updateURL=${url}'; setTimeout(remote.getCurrentWindow().close, 1000);">更新无名杀</button>
+			<button onclick="location.href='nonameSkill:?updateURL=${url}'; setTimeout(window.close, 1000);">更新无名杀</button>
 			</body>
 		</html>
 		`;
@@ -183,6 +173,7 @@ if(!localStorage.getItem('noname_inited')){
 	if(has) localStorage.setItem('noname_inited', 'nodejs');
 }
 
+//创建教程页面
 let win;
 
 function createIframe() {
@@ -203,6 +194,7 @@ function createIframe() {
 	});
 }
 
+// 截图 base64 -> blob
 function b64toBlob(b64Data, contentType = null, sliceSize = null) {
 	contentType = contentType || 'image/png'
 	sliceSize = sliceSize || 512
@@ -220,6 +212,58 @@ function b64toBlob(b64Data, contentType = null, sliceSize = null) {
 	return new Blob(byteArrays, {
 		type: contentType
 	})
+}
+
+if (window.indexedDB) {
+    let configprefix = 'noname_0.9_';
+    if (typeof __dirname === 'string' && __dirname.length) {
+        const dirsplit = __dirname.split('/');
+        for (let i = 0; i < dirsplit.length; i++) {
+            if (dirsplit[i]) {
+                const c = dirsplit[i][0];
+                configprefix += /[A-Z]|[a-z]/.test(c) ? c : '_';
+            }
+        }
+        configprefix += '_';
+    }
+
+    const request = window.indexedDB.open(configprefix + 'data', 4);
+    request.onerror = function (e) { console.error(e); };
+	request.onupgradeneeded = function (e) {
+		const db = e.target.result;
+		if(!db.objectStoreNames.contains('video')){
+			db.createObjectStore('video', { keyPath: 'time' });
+		}
+		if(!db.objectStoreNames.contains('image')){
+			db.createObjectStore('image');
+		}
+		if(!db.objectStoreNames.contains('audio')){
+			db.createObjectStore('audio');
+		}
+		if(!db.objectStoreNames.contains('config')){
+			db.createObjectStore('config');
+		}
+		if(!db.objectStoreNames.contains('data')){
+			db.createObjectStore('data');
+		}
+	};
+    request.onsuccess = function (e) {
+        const db = e.target.result;
+		if (!db.objectStoreNames.contains('config')) return;
+        const store = db.transaction(['config'], 'readwrite').objectStore('config');
+        store.get('extensions').onsuccess = function (e) {
+            const extensions = e.target.result;
+            if (!Array.isArray(extensions) || extensions.length == 0) {
+                db.transaction(['config'], 'readwrite').objectStore('config').put(['拖拽读取', '在线更新', '应用配置'], 'extensions');
+            }
+            if (extensions.includes('\u6982\u5ff5\u6b66\u5c06')) {
+                db.transaction(['config'], 'readwrite').objectStore('config').put(false, "extension_\u6982\u5ff5\u6b66\u5c06_enable");
+            }
+            if (extensions.includes('\u5047\u88c5\u65e0\u654c')) {
+                db.transaction(['config'], 'readwrite').objectStore('config').put(false, "extension_\u5047\u88c5\u65e0\u654c_enable");
+            }
+        };
+    };
 }
 
 var Menus = [{

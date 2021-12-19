@@ -113,7 +113,9 @@ process.noDeprecation = true;
 function createWindow() {
 	let createWin;
 	if(extensionName) {
-		createWin = createExtensionWindow();
+        //暂时屏蔽通过链接下载扩展的功能
+		//createWin = createExtensionWindow();
+        createWin = createMainWindow();
 	} else if(updateURL) {
 		createWin = createUpdateWindow();
 	} else {
@@ -195,6 +197,33 @@ function createUpdateWindow() {
 	win.webContents.executeJavaScript(`window.updateURL = '${updateURL}'`);
 	if (electronVersion >= 14) {
 		remote.enable(win.webContents);
+	}
+	return win;
+}
+
+global.createEditorWindow = createEditorWindow;
+
+function createEditorWindow() {
+	let win = new BrowserWindow({
+		width: 800,
+		height: 600,
+		title: '无名杀-代码编辑器',
+		icon: path.join(__dirname, 'noname.ico'),
+		autoHideMenuBar: true,
+		webPreferences: {
+			preload: path.join(__dirname, 'editor', 'preload.js'),
+			nodeIntegration: false,
+			contextIsolation: true,
+			enableRemoteModule: true,
+		},
+	});
+	win.loadURL(`file://${__dirname}/editor/index.html`);
+	win.webContents.openDevTools();
+	win.on('closed', () => {
+		win = null;
+	});
+	if (electronVersion >= 14) {
+		require('@electron/remote/main').enable(win.webContents);
 	}
 	return win;
 }

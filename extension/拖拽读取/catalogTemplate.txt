@@ -1,9 +1,9 @@
 extension["拖拽读取"]={
-	intro:"windows电脑版专属扩展，把zip文件（离线包，扩展或素材压缩包）拖入到游戏内即可导入",
+	intro:"windows电脑版专属扩展，把zip或7z文件（离线包，扩展或素材压缩包，目前不支持导入7z扩展）拖入到游戏内即可导入",
 	author:"诗笺",
 	nedisk:"",
 	forum:"",
 	size:"#SIZE",
-	version:"1.76",
+	version:"1.77",
 	files:[#FILES],
 };

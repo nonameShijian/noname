@@ -8,6 +8,40 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 		throw '没有nodejs环境，无法导入此扩展';
 	}
 
+    //导入7z
+    let SevenZip;
+    const { div: SevenZip_div, span: SevenZip_span } = createProgress('开始解压7z文件');
+    let SevenZip_startTime, SevenZip_filePath;
+    const reg = /Global[\s]+Time =[\S\s]+100%/;
+    SevenZip_div.hide();
+
+    function print(str) {
+        //console.log(str);
+        if (reg.test(str)) {
+            SevenZip_span.innerText = '解压完成';
+            SevenZip_div.hide();
+            const endTime = new Date().getTime();
+            setTimeout(() => {
+                SevenZip_span.innerText = '开始解压7z文件';
+                if (fs.existsSync(SevenZip_filePath)) {
+                    fs.unlinkSync(SevenZip_filePath);
+                }
+                if (confirm(`解压完成(耗时${(endTime - SevenZip_startTime) / 1000}秒)，是否重启？`)) {
+                    game.reload();
+                }
+            }, 500);
+        } else {
+            SevenZip_span.innerText = str;
+        }
+    }
+
+    require('./extension/拖拽读取/node_modules/7z-wasm')({
+        print,
+        printErr: print
+    }).then(result => {
+        SevenZip = result;
+    });
+    
 	const fs = require("fs");
 	const { versions } = process;
 	const electronVersion = parseFloat(versions.electron);
@@ -17,7 +51,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 	} else {
 		remote = require('electron').remote;
 	}
-	const { dialog, BrowserWindow } = remote;
+	const { dialog } = remote;
 	const path = require('path');
 	const body = document.body;
 	let loadCSS = false;
@@ -111,18 +145,20 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 		});
 	}
 
+    /*显示进度*/
 	function createProgress(str) {
-		/*显示进度*/
 		let fileReader = new FileReader();
 		let div = document.body.appendChild(document.createElement('div'));
 		div.id = 'importZip';
-		div.style['background-color'] = 'blueviolet';
-		div.style.textAlign = 'center';
-		div.style.width = '300px';
-		div.style.height = '50px';
-		div.style.left = '35%';
-		div.style.bottom = '45%';
-		div.style.zIndex = 100;
+        div.css({
+            'background-color': 'blueviolet',
+            textAlign: 'center',
+            width: '300px',
+            height: '55px',
+            left: '35%',
+            bottom: '45%',
+            zIndex: 100
+        });
 		let span = div.appendChild(document.createElement('span'));
 		span.innerHTML = str;
 		let startTime = new Date().getTime();
@@ -140,12 +176,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 			div.remove();
 			alert(str);
 		};
-		return {
-			div,
-			span,
-			fileReader,
-			startTime
-		}
+		return { div, span, fileReader, startTime };
 	}
 
 	return {
@@ -157,221 +188,243 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 		content: function(config, pack) {},
 		precontent: function() {
 			if (!window.JSZip3) {
-				let zip = window.JSZip;
-				lib.init.js(lib.assetURL + 'extension/拖拽读取', 'jszip', function() {
-					window.JSZip3 = window.JSZip;
-					window.JSZip = zip;
-					
-					//绑定拖拽结束事件
-					body.addEventListener('drop', function(e) {
-						//必须要阻止拖拽的默认事件
-						e.preventDefault();
-						e.stopPropagation();
-					
-						//获得拖拽的文件集合
-						let files = e.dataTransfer.files;
-						//没有文件，不往下执行
-						if (!files.length) return;
-						//只处理第一个文件
-						let name = files[0].name;
-					
-						//如果文件不是zip压缩包
-						if (files[0].type.indexOf("zip") == -1) {
-							// 支持只导入extension.js
-							if (name == "extension.js" && confirm(`检测到extension.js(${files[0].path})，是否导入？`)) {
-								let success = true;
-								//修改game.import以获得扩展名
-								let importFunction = game.import;
-								game.import = (type, content) => {
-									return content;
-								};
-								let str = fs.readFileSync(files[0].path, 'utf-8');
-								try {
-									_status.importingExtension = true;
-									let extension = eval(str)();
-									let { name } = extension;
-									let extensionPath = path.join(__dirname, 'extension', name, 'extension.js');
-									let extensionDir = path.dirname(extensionPath);
-									if (lib.config.all.plays.contains(name)) {
-										dialog.showErrorBox("导入失败", "禁止安装游戏原生扩展");
-										success = false;
-									} else {
-										if (!fs.existsSync(extensionDir)) {
-											fs.mkdirSync(extensionDir);
-										}
-										fs.writeFileSync(extensionPath, str);
-										//如果扩展列表里有这个扩展，那么只覆盖文件即可，不需要加载
-										if (!lib.config.extensions.contains(name)) {
-											lib.config.extensions.add(name);
-											game.saveConfig('extensions', lib.config.extensions);
-											game.saveConfig('extension_' + name + '_enable', true);
-											for (let i in extension.config) {
-												if (extension.config[i] && extension.config[i].hasOwnProperty('init')) {
-													game.saveConfig('extension_' + name + '_' + i, extension.config[i].init);
-												}
-											}
-										}
-									}
-								} catch(e) {
-									alert('extension.js代码有错误，无法导入！');
-								} finally {
-									_status.importingExtension = false;
-								}
-								//还原game.import
-								game.import = importFunction;
-								if (success && confirm('导入完成，是否重启？')) game.reload();
-							}
-							return false;
-						}
-					
-						function nextDo(index) {
-							if (index == 0) return;
-							let {
-								div,
-								fileReader,
-								startTime
-							} = createProgress(`请等待加载${name}，加载时间和文件大小成正比`);
-					
-							if (index == 1) { //扩展
-								fileReader.onload = function(fileLoadedEvent) {
-									let data = fileLoadedEvent.target.result;
-									let zip3 = new JSZip3();
-									zip3.loadAsync(data).then(zip3 => {
-										let extname;
-					
-										//导入扩展前的判断
-										let pathlib = {
-											split: function(str) {
-												let i = str.lastIndexOf('/')
-												return [str.substring(0, i + 1), str.substring(i + 1)]
-											},
-										}
-										let candidates = zip3.file(/\bextension.js$/);
-										if (!candidates.length) {
-											div.remove();
-											return dialog.showErrorBox("导入失败", "没有extension.js，无法导入");
-										}
-										let source = candidates.reduce((a, b) => a.name.length < b.name.length ? a : b);
-										let prefix = pathlib.split(source.name)[0];
-										if (!candidates.every(f => f.name.startsWith(prefix))) {
-											div.remove();
-											return dialog.showErrorBox("导入失败", "你导入的不是扩展！请选择正确的文件");
-										}
-										zip3 = zip3.folder(prefix);
-					
-										zip3.file('extension.js').async('text').then((str) => {
-											_status.importingExtension = true;
-											try {
-												eval(str);
-											} catch (e) {
-												dialog.showErrorBox("扩展代码有错误！", `${e}`);
-											} finally {
-												_status.importingExtension = false;
-											}
-					
-											if (!game.importedPack) {
-												div.remove();
-												dialog.showErrorBox("导入失败", "此压缩包不是一个扩展！");
-												delete game.importedPack;
-												return false;
-											}
-					
-											extname = game.importedPack.name;
-					
-											if (lib.config.all.plays.contains(extname)) {
-												div.remove();
-												dialog.showErrorBox("导入失败", "禁止安装游戏原生扩展");
-												delete game.importedPack;
-												return false;
-											}
-					
-											if (lib.config.extensions.contains(extname)) {
-												//卸载之前的扩展（保留文件）
-												game.removeExtension(extname, true);
-											}
-					
-											loadZip({
-													zip3,
-													startTime,
-													prefix
-												}, fileLoadedEvent, path.join(__dirname, 'extension', extname), name)
-												.finally(() => {
-													//导入后执行的代码
-													lib.config.extensions.add(extname);
-													game.saveConfig('extensions', lib.config.extensions);
-													game.saveConfig('extension_' + extname + '_enable', true);
-													for (let i in game.importedPack.config) {
-														if (game.importedPack.config[i] && game.importedPack.config[i].hasOwnProperty('init')) {
-															game.saveConfig('extension_' + extname + '_' + i, game.importedPack.config[i].init);
-														}
-													}
-													delete game.importedPack;
-												}).catch(errStr => alert(errStr));
-										});
-									});
-								};
-							} else if (index == 2) { //离线包
-								fileReader.onload = function(fileLoadedEvent) {
-									loadZip({
-										startTime
-									}, fileLoadedEvent, __dirname, name).catch(errStr => alert(errStr));
-								};
-							} else if (index == 3) { //素材包
-								let nextDo = (result) => {
-									if (result === undefined) return;
-									if (!Array.isArray(result) && result.canceled) return;
-									startTime = new Date().getTime(); //选择文件夹的时间排除
-									let filePath;
-									if (Array.isArray(result)) filePath = result[0];
-									else filePath = result.filePaths[0];
-					
-									let loaded = function() {
-										loadZip({
-											startTime
-										}, {
-											target: fileReader
-										}, filePath, name).catch(errStr => alert(errStr));
-									};
-									if (fileReader.readyState == 2) {
-										//已经加载完
-										loaded();
-									} else {
-										fileReader.onload = loaded;
-									}
-								};
-								let openDialog = dialog.showOpenDialog(remote.getCurrentWindow(), {
-									title: '选择文件夹，以解压到选择的文件夹下',
-									properties: ['openDirectory'],
-									defaultPath: __dirname
-								}, nextDo);
-								if (openDialog) openDialog.then(result => nextDo(result));
-							}
-					
-							fileReader.readAsArrayBuffer(files[0], "UTF-8");
-						};
-					
-					
-						let showMessageBox = dialog.showMessageBox(remote.getCurrentWindow(), {
-							type: 'info',
-							title: '拖拽导入',
-							message: `获取到${name}(${files[0].path})，是否选择文件类型并导入？`,
-							buttons: ['取消', '扩展包', '离线包', '素材包'],
-							defaultId: 1, //默认为导入扩展
-							cancelId: 0, //关闭对话框的时候，不是通过点击对话框的情况的默认执行索引
-						}, nextDo);
-					
-						if (showMessageBox) showMessageBox.then(result => nextDo(result.response)).catch(e => alert(e));
-					});
-					
-					//绑定拖拽文件在容器移动事件
-					body.addEventListener('dragover', (e) => {
-						//必须要阻止拖拽的默认事件
-						e.preventDefault();
-						e.stopPropagation();
-					});
-					
-				});
+                window.JSZip3 = require('./extension/拖拽读取/jszip.js');
 			}
+            //绑定拖拽结束事件
+            body.addEventListener('drop', function (e) {
+                //必须要阻止拖拽的默认事件
+                e.preventDefault();
+                e.stopPropagation();
+
+                //获得拖拽的文件集合
+                let files = e.dataTransfer.files;
+                //没有文件，不往下执行
+                if (!files.length) return;
+                //只处理第一个文件
+                let name = files[0].name;
+
+                //如果文件不是zip或者7z压缩包
+                if (files[0].type.indexOf("zip") == -1 && !name.endsWith('.7z')) {
+                    // 支持只导入extension.js
+                    if (name == "extension.js" && confirm(`检测到extension.js(${files[0].path})，是否导入？`)) {
+                        let success = true;
+                        //修改game.import以获得扩展名
+                        let importFunction = game.import;
+                        game.import = (type, content) => {
+                            return content;
+                        };
+                        let str = fs.readFileSync(files[0].path, 'utf-8');
+                        try {
+                            _status.importingExtension = true;
+                            let extension = eval(str)();
+                            let { name } = extension;
+                            let extensionPath = path.join(__dirname, 'extension', name, 'extension.js');
+                            let extensionDir = path.dirname(extensionPath);
+                            if (lib.config.all.plays.contains(name)) {
+                                dialog.showErrorBox("导入失败", "禁止安装游戏原生扩展");
+                                success = false;
+                            } else {
+                                if (!fs.existsSync(extensionDir)) {
+                                    fs.mkdirSync(extensionDir);
+                                }
+                                fs.writeFileSync(extensionPath, str);
+                                //如果扩展列表里有这个扩展，那么只覆盖文件即可，不需要加载
+                                if (!lib.config.extensions.contains(name)) {
+                                    lib.config.extensions.add(name);
+                                    game.saveConfigValue('extensions');
+                                    game.saveConfig('extension_' + name + '_enable', true);
+                                    for (let i in extension.config) {
+                                        if (extension.config[i] && extension.config[i].hasOwnProperty('init')) {
+                                            game.saveConfig('extension_' + name + '_' + i, extension.config[i].init);
+                                        }
+                                    }
+                                }
+                            }
+                        } catch (e) {
+                            alert('extension.js代码有错误，无法导入！');
+                        } finally {
+                            _status.importingExtension = false;
+                        }
+                        //还原game.import
+                        game.import = importFunction;
+                        if (success && confirm('导入完成，是否重启？')) game.reload();
+                    }
+                    return false;
+                }
+
+                function nextDo(index) {
+                    if (index == 0) return;
+                    let { div, fileReader, startTime } = createProgress(`请等待加载${name}，加载时间和文件大小成正比`);
+
+                    if (index == 1) { //扩展
+                        fileReader.onload = function (fileLoadedEvent) {
+                            let data = fileLoadedEvent.target.result;
+                            let zip3 = new JSZip3();
+                            zip3.loadAsync(data).then(zip3 => {
+                                let extname;
+
+                                //导入扩展前的判断
+                                let pathlib = {
+                                    split: function (str) {
+                                        let i = str.lastIndexOf('/')
+                                        return [str.substring(0, i + 1), str.substring(i + 1)]
+                                    },
+                                }
+                                let candidates = zip3.file(/\bextension.js$/);
+                                if (!candidates.length) {
+                                    div.remove();
+                                    return dialog.showErrorBox("导入失败", "没有extension.js，无法导入");
+                                }
+                                let source = candidates.reduce((a, b) => a.name.length < b.name.length ? a : b);
+                                let prefix = pathlib.split(source.name)[0];
+                                if (!candidates.every(f => f.name.startsWith(prefix))) {
+                                    div.remove();
+                                    return dialog.showErrorBox("导入失败", "你导入的不是扩展！请选择正确的文件");
+                                }
+                                zip3 = zip3.folder(prefix);
+
+                                zip3.file('extension.js').async('text').then((str) => {
+                                    _status.importingExtension = true;
+                                    try {
+                                        eval(str);
+                                    } catch (e) {
+                                        dialog.showErrorBox("扩展代码有错误！", `${e}`);
+                                    } finally {
+                                        _status.importingExtension = false;
+                                    }
+
+                                    if (!game.importedPack) {
+                                        div.remove();
+                                        dialog.showErrorBox("导入失败", "此压缩包不是一个扩展！");
+                                        delete game.importedPack;
+                                        return false;
+                                    }
+
+                                    extname = game.importedPack.name;
+
+                                    if (lib.config.all.plays.contains(extname)) {
+                                        div.remove();
+                                        dialog.showErrorBox("导入失败", "禁止安装游戏原生扩展");
+                                        delete game.importedPack;
+                                        return false;
+                                    }
+
+                                    if (lib.config.extensions.contains(extname)) {
+                                        //卸载之前的扩展（保留文件）
+                                        game.removeExtension(extname, true);
+                                    }
+
+                                    loadZip({ zip3, startTime, prefix }, fileLoadedEvent, path.join(__dirname, 'extension', extname), name)
+                                        .finally(() => {
+                                            //导入后执行的代码
+                                            lib.config.extensions.add(extname);
+                                            game.saveConfig('extensions', lib.config.extensions);
+                                            game.saveConfig('extension_' + extname + '_enable', true);
+                                            for (let i in game.importedPack.config) {
+                                                if (game.importedPack.config[i] && game.importedPack.config[i].hasOwnProperty('init')) {
+                                                    game.saveConfig('extension_' + extname + '_' + i, game.importedPack.config[i].init);
+                                                }
+                                            }
+                                            delete game.importedPack;
+                                        }).catch(errStr => alert(errStr));
+                                });
+                            });
+                        };
+                    } else if (index == 2) { //离线包
+                        fileReader.onload = function (fileLoadedEvent) {
+                            loadZip({ startTime }, fileLoadedEvent, __dirname, name).catch(errStr => alert(errStr));
+                        };
+                    } else if (index == 3) { //素材包
+                        let nextDo = (result) => {
+                            if (result === undefined) return;
+                            if (!Array.isArray(result) && result.canceled) return;
+                            startTime = new Date().getTime(); //选择文件夹的时间排除
+                            let filePath;
+                            if (Array.isArray(result)) filePath = result[0];
+                            else filePath = result.filePaths[0];
+
+                            let loaded = function () {
+                                loadZip({ startTime }, { target: fileReader }, filePath, name).catch(errStr => alert(errStr));
+                            };
+                            if (fileReader.readyState == 2) {
+                                //已经加载完
+                                loaded();
+                            } else {
+                                fileReader.onload = loaded;
+                            }
+                        };
+                        let openDialog = dialog.showOpenDialog(remote.getCurrentWindow(), {
+                            title: '选择文件夹，以解压到选择的文件夹下',
+                            properties: ['openDirectory'],
+                            defaultPath: __dirname
+                        }, nextDo);
+                        if (openDialog) openDialog.then(result => nextDo(result));
+                    }
+
+                    fileReader.readAsArrayBuffer(files[0], "UTF-8");
+                };
+
+                async function nextDo_7z(index) {
+                    //window.SevenZip = SevenZip;
+                    if (index == 0) return;
+                    if (index == 1) {
+                        throw '还不支持读取7z格式的扩展。\r\n导入7z格式的扩展请参考万能导入法\r\n然后选择素材包，解压缩到指定扩展目录';
+                    }
+                    const typedArray = new Uint8Array(await files[0].arrayBuffer())
+                    const cwd = process.cwd();
+                    const hostRoot = path.parse(cwd).root;
+                    const mountRoot = "/nodefs";
+                    SevenZip.FS.mkdir(mountRoot);
+                    let outDir;
+                    //离线包
+                    if (index == 2) {
+                        outDir = __dirname;
+                    }
+                    //素材包
+                    if (index == 3) {
+                        let selectPath = dialog.showOpenDialogSync(remote.getCurrentWindow(), {
+                            title: '选择文件夹，以解压到选择的文件夹下',
+                            properties: ['openDirectory'],
+                            defaultPath: __dirname
+                        });
+                        if (!selectPath) return;
+                        outDir = selectPath[0];
+                    }
+
+                    //const hostDir = path.relative(hostRoot, cwd).split(path.sep).join("/");
+
+                    SevenZip_filePath = path.join(outDir, name);
+                    SevenZip_startTime = new Date().getTime();
+                    SevenZip_div.show();
+
+                    SevenZip.FS.mount(SevenZip.NODEFS, { root: hostRoot }, mountRoot);
+                    SevenZip.FS.chdir(mountRoot + "/" + outDir.split(path.sep).join("/").slice(3));
+
+                    const stream = SevenZip.FS.open(name, "w+");
+                    SevenZip.FS.write(stream, typedArray, 0, typedArray.length);
+                    SevenZip.FS.close(stream);
+
+                    SevenZip.callMain(["x", name, '-y', '-bd', '-bt']);
+                }
+
+                let showMessageBox = dialog.showMessageBox(remote.getCurrentWindow(), {
+                    type: 'info',
+                    title: '拖拽导入',
+                    message: `获取到${name}(${files[0].path})，是否选择文件类型并导入？`,
+                    buttons: ['取消', '扩展包', '离线包', '素材包'],
+                    defaultId: 0, //默认为取消
+                    cancelId: 0, //关闭对话框的时候，不是通过点击对话框的情况的默认执行索引
+                }, name.endsWith('.zip') ? nextDo : nextDo_7z);
+
+                if (showMessageBox) showMessageBox.then(result => (name.endsWith('.zip') ? nextDo : nextDo_7z)(result.response)).catch(e => alert(e));
+            });
+
+            //绑定拖拽文件在容器移动事件
+            body.addEventListener('dragover', (e) => {
+                //必须要阻止拖拽的默认事件
+                e.preventDefault();
+                e.stopPropagation();
+            });
 		},
 		config: {
 			checkForUpdate: {
@@ -634,29 +687,11 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 		},
 		help: {},
 		package: {
-			character: {
-				character: {},
-				translate: {},
-			},
-			card: {
-				card: {},
-				translate: {},
-				list: [],
-			},
-			skill: {
-				skill: {},
-				translate: {},
-			},
 			intro: `windows电脑版专属扩展，把zip文件（离线包，扩展或素材压缩包）拖入到游戏内即可导入`,
 			author: "诗笺",
 			diskURL: "",
 			forumURL: "",
-			version: "1.76",
+			version: "1.77",
 		},
-		files: {
-			"character": [],
-			"card": [],
-			"skill": []
-		}
 	}
 })

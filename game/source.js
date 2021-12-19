@@ -10,7 +10,6 @@ window.noname_source_list=[
 	'card/standard.js',
 	'card/swd.js',
 	'card/yingbian.js',
-	'card/yongjian.js',
 	'card/yunchou.js',
 	'card/zhenfa.js',
 	'card/zhulu.js',

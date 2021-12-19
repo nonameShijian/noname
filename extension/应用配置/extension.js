@@ -38,6 +38,15 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 		content: function(config, pack) {
 			//链接：nonameSKill:?extensionName=全能搜索
 			delete lib.extensionMenu.extension_应用配置.delete;
+			
+			//让无名杀控制台内的文字可选中
+			const fullsize = document.createElement('style');
+			fullsize.innerText = `
+			.fullsize {
+				user-select: text;
+				-webkit-user-select: text;
+			}`;
+			document.body.appendChild(fullsize);
 		},
 		precontent: function() {
 			//修改原生alert弹窗
@@ -117,6 +126,17 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 			*/
 		},
 		config: {
+			/*//打开代码编辑器
+			openEditor: {
+				name: '<span style="text-decoration: underline;">打开VSCode代码编辑器<span>',
+				clear: true,
+				onclick: () => {
+					const createEditorWindow = remote.getGlobal('createEditorWindow');
+					if (createEditorWindow) {
+						createEditorWindow();
+					}
+				},
+			},*/
 			//修改原生alert弹窗
 			replaceAlert: {
 				init: true,
@@ -135,7 +155,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 			},
 			//移除协议配置
 			removeAsDefaultProtocol: {
-				name: '<span style="text-decoration: underline;">卸载游戏前请点此处移除协议配置<span>',
+				name: '<span style="text-decoration: underline;">卸载游戏前请点击此处移除协议配置<span>',
 				clear: true,
 				onclick: () => {
 					const { app } = remote;
@@ -147,29 +167,11 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 		},
 		help: {},
 		package: {
-			character: {
-				character: {},
-				translate: {},
-			},
-			card: {
-				card: {},
-				translate: {},
-				list: [],
-			},
-			skill: {
-				skill: {},
-				translate: {},
-			},
-			intro: "本扩展是为了导入通过协议下载的扩展，请不要删除，否则通过协议下载的扩展不能自动在游戏里显示",
+			intro: "本扩展是为了让此应用添加更多的功能，比如导入通过协议下载的扩展，请不要删除，否则通过协议下载的扩展不能自动在游戏里显示",
 			author: "诗笺",
 			diskURL: "",
 			forumURL: "",
-			version: "1.11",
-		},
-		files: {
-			"character": [],
-			"card": [],
-			"skill": []
+			version: "1.12",
 		}
 	}
 });
