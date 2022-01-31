@@ -4,7 +4,6 @@ window.updateList = [
 	'app/menu.js',
 	'app/redirect.js',
 	
-    //无名杀目录
 	'downloadExtension.html',
 	'main.js',
 	'package.json',
@@ -55,4 +54,5 @@ window.removeFileList = [
 	'(必看)无名杀全教程9.6.pdf',
 	'(必看)无名杀全教程9.7.pdf',
 	'(必看)无名杀全教程9.8.pdf',
+	'(必看)无名杀全教程9.9.pdf'
 ];

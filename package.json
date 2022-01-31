@@ -14,8 +14,16 @@
         "type": "git",
         "url": "git+https://github.com/nonameShijian/noname.git"
     },
-    "installerVersion": "1.39",
+    "installerVersion": "1.40",
     "installerUpdateContent": [
+		{
+			"version": "1.40",
+			"updateContent": [
+			    "【在线更新】扩展v1.25更新",
+			    "【应用配置】扩展v1.12更新，优化游戏内的报错弹窗",
+			    "内置无名杀全教程V10.0完整版"
+			]
+		},
         {
             "version": "1.39",
             "updateContent": [

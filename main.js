@@ -154,6 +154,9 @@ function createMainWindow() {
 	if (electronVersion >= 14) {
 		remote.enable(win.webContents);
 	}
+    /*win.on('closed', () => {
+        BrowserWindow.getAllWindows().forEach(item => item.destroy());
+    });*/
 	return win;
 }
 
@@ -202,6 +205,8 @@ function createUpdateWindow() {
 }
 
 global.createEditorWindow = createEditorWindow;
+global.editorWindow = null;
+global.debugWindow = null;
 
 function createEditorWindow() {
 	let win = new BrowserWindow({
@@ -221,10 +226,48 @@ function createEditorWindow() {
 	win.webContents.openDevTools();
 	win.on('closed', () => {
 		win = null;
+        global.editorWindow = null;
+        if (global.debugWindow != null) {
+            global.debugWindow.destroy();
+            global.debugWindow = null;
+        }
 	});
 	if (electronVersion >= 14) {
 		require('@electron/remote/main').enable(win.webContents);
 	}
+    global.editorWindow = win;
+
+    function createDebugWindow() {
+        let debugWindow = new BrowserWindow({
+            width: 800,
+            height: 600,
+            title: '无名杀-代码调试',
+            icon: path.join(__dirname, 'noname.ico'),
+            show: false,
+            webPreferences: {
+                preload: path.join(__dirname, 'editor', 'js', 'debug-preload.js'),
+                nodeIntegration: true,
+                contextIsolation: false,
+                enableRemoteModule: true,
+            }
+        });
+        debugWindow.loadURL(`file://${__dirname}/app.html`);
+        debugWindow.webContents.openDevTools();
+        debugWindow.on('closed', () => {
+            debugWindow = null;
+            global.debugWindow = null;
+            if (global.editorWindow != null) {
+                createDebugWindow();
+            }
+        });
+        if (electronVersion >= 14) {
+            require('@electron/remote/main').enable(debugWindow.webContents);
+        }
+        global.debugWindow = debugWindow;
+    }
+
+    createDebugWindow();
+    
 	return win;
 }
 

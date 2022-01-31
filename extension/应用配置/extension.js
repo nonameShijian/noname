@@ -110,24 +110,77 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 					}
 				}
 			}
+
+            // 修改window.onerror
+            window.onerror = function (msg, src, line, column, err) {
+                let str = `错误文件: ${decodeURI(src)}\n错误信息: ${msg}`;
+                str += '\n' + `行号: ${line}`;
+                str += '\n' + `列号: ${column}`;
+                if (window._status && _status.event) {
+                    let evt = _status.event;
+                    str += `\nevent.name: ${evt.name}\nevent.step: ${evt.step}`;
+                    if (evt.parent) str += `\nevent.parent.name: ${evt.parent.name}\nevent.parent.step: ${evt.parent.step}`;
+                    if (evt.parent && evt.parent.parent) str += `\nevent.parent.parent.name: ${evt.parent.parent.name}\nevent.parent.parent.step: ${evt.parent.parent.step}`;
+                    if (evt.player || evt.target || evt.source || evt.skill || evt.card) {
+                        str += '\n-------------'
+                    }
+                    if (evt.player) {
+                        str += `\nplayer: ${lib.translate[evt.player.name]}[${evt.player.name}]`;
+                        let distance = get.distance(_status.roundStart, evt.player, 'absolute');
+                        if (distance != Infinity) {
+                            str += `\n座位号: ${distance + 1}`;
+                        }
+                    }
+                    if (evt.target) {
+                        str += `\ntarget: ${lib.translate[evt.target.name]}[${evt.target.name}]`;
+                    }
+                    if (evt.source) {
+                        str += `\nsource: ${lib.translate[evt.source.name]}[${evt.source.name}]`;
+                    }
+                    if (evt.skill) {
+                        str += `\nskill: ${lib.translate[evt.skill.name]}[${evt.skill.name}]`;
+                    }
+                    if (evt.card) {
+                        str += `\ncard: ${lib.translate[evt.card.name]}[${evt.card.name}]`;
+                    }
+                }
+                str += '\n-------------';
+                if (err && err.stack) str += '\n' + decodeURI(err.stack);
+                alert(str);
+                window.ea = Array.from(arguments);
+                window.em = msg;
+                window.el = line;
+                window.ec = column;
+                window.eo = err;
+                game.print(msg);
+                game.print(line);
+                game.print(column);
+                game.print(decodeURI(err.stack));
+                if (!lib.config.errstop) {
+                    _status.withError = true;
+                    game.loop();
+                }
+            };
 			
-			/*
-			//导入api.js
-			lib.cheat.i();
-			lib.init.js('extension/应用配置', 'api', () => {
-				if (!lib.config.dev) {
-					delete window.ui;
-					delete window.get;
-					delete window.ai;
-					delete window.lib;
-					delete window._status;
-				}
-			});
-			*/
+			
+			/*//导入api.js
+			//lib.cheat.i();
+            Object.defineProperty(window, 'newExtensionApi', {
+                enumerable: false,
+                configurable: false,
+                get() {
+                    return {
+                        lib, game, ui, get, ai, _status
+                    }
+                }
+            });
+
+			lib.init.js('extension/应用配置', 'api');*/
+			
 		},
 		config: {
-			/*//打开代码编辑器
-			openEditor: {
+			//打开代码编辑器
+			/*openEditor: {
 				name: '<span style="text-decoration: underline;">打开VSCode代码编辑器<span>',
 				clear: true,
 				onclick: () => {

@@ -225,7 +225,7 @@
 
 			changesite = document.createElement('div');
 			changesite.id = 'changesite';
-			changesite.innerHTML = '下载源: GitHub';
+			changesite.innerHTML = '下载源: GitHub镜像';
 			document.body.appendChild(changesite);
 
 			versionnode = document.createElement('div');
