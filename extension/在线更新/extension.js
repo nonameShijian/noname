@@ -137,16 +137,29 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
                 if (!menu || !help || !liArray || !liArray.length) return;
                 */
                 if (typeof game.download != 'function' || typeof game.writeFile != 'function') return clearInterval(interval);
-				if (!ui.menuContainer) return;
-				if (!ui.menuContainer.childNodes || !ui.menuContainer.childNodes[0]) return;
-				const menu = ui.menuContainer.childNodes[0];
-				if (!menu.querySelector('.menu-help')) return;
-				const help = menu.querySelector('.menu-help');
-				if (typeof help.querySelectorAll != 'function' || !help.querySelectorAll('li').length) return;
-                
+                if (!ui.menuContainer || !ui.menuContainer.firstElementChild) return;
+                const menu = ui.menuContainer.firstElementChild;
+                const active = ui.menuContainer.firstElementChild.querySelectorAll('.active');
+                if (!active || active.length < 2) return;
+                if (active[0].innerText != '其它' || active[1].innerText != '更新') return;
+                const help = menu.querySelector('.menu-help');
                 const liArray = Array.from(help.querySelectorAll('li'));
-                const updateButton = liArray[0].childNodes[1].firstElementChild;
-                const assetUpdateButton = liArray[1].childNodes[1].firstElementChild;
+                if (!liArray.length) return;
+
+                let updateButton = null;
+                let assetUpdateButton = null;
+
+                try {
+                    updateButton = liArray[0].childNodes[1].firstElementChild;
+                    assetUpdateButton = liArray[1].childNodes[1].firstElementChild;
+                } catch (error) {
+                    return console.log("获取按钮异常：", {
+                        error,
+                        liArray,
+                        updateButton,
+                        assetUpdateButton
+                    });
+                }
 
                 if (
                     updateButton && updateButton.innerText == "检查游戏更新"
@@ -156,7 +169,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
                     updateButton.onclick = checkForUpdate.onclick.bind(updateButton);
                     assetUpdateButton.onclick = checkForAssetUpdate.onclick.bind(assetUpdateButton);
                 } else {
-                    return console.log("获取的按钮不正确：", {
+                    return console.log("获取按钮异常：", {
                         liArray,
                         updateButton,
                         assetUpdateButton
@@ -171,49 +184,57 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
                 const jumpToExt = document.createElement('a');
                 jumpToExt.href = "javascript:void(0)";
                 jumpToExt.onclick = () => ui.click.extensionTab('在线更新');
-                HTMLDivElement.prototype.css.call(jumpToExt, {
-                    color: 'white',
-                    innerHTML: '点击跳转至扩展界面'
-                });
+
+                if (typeof HTMLDivElement.prototype.css == 'function') {
+                    HTMLDivElement.prototype.css.call(jumpToExt, {
+                        color: 'white',
+                        innerHTML: '点击跳转至扩展界面'
+                    });
+                } else {
+                    jumpToExt.innerHTML = '点击跳转至扩展界面';
+                    jumpToExt.style.color = 'white';
+                }
+                
                 insertLi.appendChild(jumpToExt);
 
 				const checkBoxArray = Array.from(liArray[1].childNodes[1].childNodes).filter(item => {
 					return item instanceof HTMLInputElement && item.type == 'checkbox';
 				});
                 
-                const addChangeEvt = function(configName) {
-					assetConfigDiv[configName + '_bindTarget'] = this;
-					this.checked = game.getExtensionConfig('在线更新', configName);
-					this.onchange = () => {
-                        game.saveConfig(configName, this.checked);
-						assetConfigFun[configName].onclick(this.checked);
+                const addChangeEvt = function (item, configName) {
+                    assetConfigDiv[configName + '_bindTarget'] = item;
+                    item.checked = game.getExtensionConfig('在线更新', configName);
+                    item.onchange = () => {
+                        game.saveConfig(configName, item.checked);
+                        assetConfigFun[configName].onclick(item.checked);
 					}
                 };
 
                 checkBoxArray.forEach((item, index) => {
                     //字体素材
                     if (index == 0) {
-                        addChangeEvt.call(item, 'assetFont');
+                        addChangeEvt(item, 'assetFont');
                     }
                     //音效素材
                     else if (index == 1) {
-                        addChangeEvt.call(item, 'assetAudio');
+                        addChangeEvt(item, 'assetAudio');
                     }
                     //皮肤素材
                     else if (index == 2) {
-                        addChangeEvt.call(item, 'assetSkin');
+                        addChangeEvt(item, 'assetSkin');
                     }
                     //图片素材精简
                     else if (index == 3) {
-                        addChangeEvt.call(item, 'assetImage');
+                        addChangeEvt(item, 'assetImage');
                     }
                     //图片素材完整
                     else if (index == 4) {
-                        addChangeEvt.call(item, 'assetImageFull');
+                        addChangeEvt(item, 'assetImageFull');
                     }
                 });
 
                 clearInterval(interval);
+                console.log("【在线更新】扩展已修改更新界面");
             }, 500);
         },
 		precontent: function() {
@@ -462,7 +483,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
             show_version: {
                 clear: true,
                 nopointer: true,
-                name: '扩展版本： v1.25',
+                name: '扩展版本： v1.26',
             },
             update_link_explain: {
                 clear: true,
@@ -1082,7 +1103,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 			author: "诗笺",
 			diskURL: "",
 			forumURL: "",
-			version: "1.25",
+			version: "1.26",
 		},
 	}
 });
