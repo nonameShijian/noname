@@ -27,6 +27,8 @@ v1.41更新提示：
 
 /// <reference path="../../typings/index.d.ts" />
 
+注：新扩展的写法可以参考 extension/应用配置/extension_demo.js 
+
 
 v1.40更新提示：
 1.【在线更新】扩展v1.25更新
