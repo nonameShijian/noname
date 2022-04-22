@@ -13,6 +13,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
     const { div: SevenZip_div, span: SevenZip_span } = createProgress('开始解压7z文件');
     let SevenZip_startTime, SevenZip_filePath;
     const reg = /Global[\s]+Time =[\S\s]+100%/;
+    SevenZip_div.id = 'SevenZip_div';
     SevenZip_div.hide();
 
     function print(str) {
@@ -126,8 +127,8 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 							}
 						} else {
 							let endTime = new Date().getTime();
-							resolve();
 							setTimeout(() => {
+                                resolve();
 								div.remove();
 								if (confirm(`${fileName}导入完成(耗时${(endTime - startTime) / 1000}秒)，是否重启？`)) game.reload();
 							}, 300);
@@ -191,7 +192,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
                 window.JSZip3 = require('./extension/拖拽读取/jszip.js');
 			}
             //绑定拖拽结束事件
-            body.addEventListener('drop', function (e) {
+            body.addEventListener('drop', async function (e) {
                 //必须要阻止拖拽的默认事件
                 e.preventDefault();
                 e.stopPropagation();
@@ -216,10 +217,30 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
                         let str = fs.readFileSync(files[0].path, 'utf-8');
                         try {
                             _status.importingExtension = true;
-                            let extension = eval(str)();
+                            /** 是否是模块扩展 */
+                            let isModuleExtension = false;
+                            /** 扩展数据 */
+                            let extension;
+                            // 对于导入模块扩展的判断
+                            try {
+                                extension = eval(str)();
+                            } catch (error) {
+                                if (
+                                    !lib.config.extension_应用配置_newExtApi ||
+                                    (
+                                        error.message != 'Cannot use import statement outside a module' &&
+                                        error.message != 'await is only valid in async functions and the top level bodies of modules'
+                                    )
+                                ) throw error;
+                                
+                                // 开启了【应用配置】扩展的模块扩展的选项
+                                isModuleExtension = true;
+                                extension = (await import(files[0].path)).default;
+                            }
                             let { name } = extension;
                             let extensionPath = path.join(__dirname, 'extension', name, 'extension.js');
                             let extensionDir = path.dirname(extensionPath);
+
                             if (lib.config.all.plays.contains(name)) {
                                 dialog.showErrorBox("导入失败", "禁止安装游戏原生扩展");
                                 success = false;
@@ -228,20 +249,36 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
                                     fs.mkdirSync(extensionDir);
                                 }
                                 fs.writeFileSync(extensionPath, str);
-                                //如果扩展列表里有这个扩展，那么只覆盖文件即可，不需要加载
-                                if (!lib.config.extensions.contains(name)) {
-                                    lib.config.extensions.add(name);
-                                    game.saveConfigValue('extensions');
-                                    game.saveConfig('extension_' + name + '_enable', true);
-                                    for (let i in extension.config) {
-                                        if (extension.config[i] && extension.config[i].hasOwnProperty('init')) {
-                                            game.saveConfig('extension_' + name + '_' + i, extension.config[i].init);
+                                // 如果是正常扩展
+                                if (!isModuleExtension) {
+                                    //如果扩展列表里有这个扩展，那么只覆盖文件即可，不需要加载，否则需要初始化配置
+                                    if (!lib.config.extensions.includes(name)) {
+                                        lib.config.extensions.add(name);
+                                        game.saveConfigValue('extensions');
+                                        game.saveConfig('extension_' + name + '_enable', true);
+                                        for (let i in extension.config) {
+                                            if (extension.config[i] && extension.config[i].hasOwnProperty('init')) {
+                                                game.saveConfig('extension_' + name + '_' + i, extension.config[i].init);
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    if (!lib.config.moduleExtensions.includes(name)) {
+                                        lib.config.moduleExtensions.add(name);
+                                        game.saveConfigValue('moduleExtensions');
+                                        game.saveConfig('extension_' + name + '_enable', true);
+                                        for (let i in extension.config) {
+                                            if (extension.config[i] && extension.config[i].hasOwnProperty('init')) {
+                                                game.saveConfig('extension_' + name + '_' + i, extension.config[i].init);
+                                            }
                                         }
                                     }
                                 }
                             }
                         } catch (e) {
                             alert('extension.js代码有错误，无法导入！');
+                            success = false;
+                            console.log(e);
                         } finally {
                             _status.importingExtension = false;
                         }
@@ -261,8 +298,10 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
                             let data = fileLoadedEvent.target.result;
                             let zip3 = new JSZip3();
                             zip3.loadAsync(data).then(zip3 => {
+                                /** 扩展名 */
                                 let extname;
-
+                                /** 是否是模块扩展 */
+                                let isModuleExtension = false;
                                 //导入扩展前的判断
                                 let pathlib = {
                                     split: function (str) {
@@ -283,12 +322,36 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
                                 }
                                 zip3 = zip3.folder(prefix);
 
-                                zip3.file('extension.js').async('text').then((str) => {
+                                zip3.file('extension.js').async('text').then(async str => {
                                     _status.importingExtension = true;
+                                    const path = require("path");
+                                    const tmp = path.join(__dirname, 'extension/拖拽读取/tmp.js');
                                     try {
-                                        eval(str);
+                                        try {
+                                            eval(str);
+                                        } catch (error) {
+                                            if (
+                                                !lib.config.extension_应用配置_newExtApi ||
+                                                (
+                                                    error.message != 'Cannot use import statement outside a module' &&
+                                                    error.message != 'await is only valid in async functions and the top level bodies of modules'
+                                                )
+                                            ) throw error;
+
+                                            // 开启了【应用配置】扩展的模块扩展的选项
+                                            isModuleExtension = true;
+                                            // 创建临时文件
+                                            fs.writeFileSync(tmp, str);
+                                            // 判断文件是否出错, 并赋值给game.importedPack
+                                            game.importedPack = (await import(tmp)).default;
+                                            // 删除文件
+                                            fs.unlinkSync(tmp);
+                                        }
                                     } catch (e) {
+                                        div.remove();
                                         dialog.showErrorBox("扩展代码有错误！", `${e}`);
+                                        delete game.importedPack;
+                                        return false;
                                     } finally {
                                         _status.importingExtension = false;
                                     }
@@ -309,7 +372,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
                                         return false;
                                     }
 
-                                    if (lib.config.extensions.contains(extname)) {
+                                    if (!isModuleExtension && lib.config.extensions.contains(extname)) {
                                         //卸载之前的扩展（保留文件）
                                         game.removeExtension(extname, true);
                                     }
@@ -317,8 +380,13 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
                                     loadZip({ zip3, startTime, prefix }, fileLoadedEvent, path.join(__dirname, 'extension', extname), name)
                                         .finally(() => {
                                             //导入后执行的代码
-                                            lib.config.extensions.add(extname);
-                                            game.saveConfig('extensions', lib.config.extensions);
+                                            if (!isModuleExtension) {
+                                                lib.config.extensions.add(extname);
+                                                game.saveConfig('extensions', lib.config.extensions);
+                                            } else {
+                                                lib.config.moduleExtensions.add(name);
+                                                game.saveConfigValue('moduleExtensions');
+                                            }
                                             game.saveConfig('extension_' + extname + '_enable', true);
                                             for (let i in game.importedPack.config) {
                                                 if (game.importedPack.config[i] && game.importedPack.config[i].hasOwnProperty('init')) {
@@ -691,7 +759,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 			author: "诗笺",
 			diskURL: "",
 			forumURL: "",
-			version: "1.77",
+			version: "1.8",
 		},
 	}
 })

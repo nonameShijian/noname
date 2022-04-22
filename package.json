@@ -14,16 +14,26 @@
         "type": "git",
         "url": "git+https://github.com/nonameShijian/noname.git"
     },
-    "installerVersion": "1.40",
+    "installerVersion": "1.41",
     "installerUpdateContent": [
-		{
-			"version": "1.40",
-			"updateContent": [
-			    "【在线更新】扩展v1.25更新",
-			    "【应用配置】扩展v1.12更新，优化游戏内的报错弹窗",
-			    "内置无名杀全教程V10.0完整版"
-			]
-		},
+        {
+            "version": "1.41",
+            "updateContent": [
+                "【在线更新】扩展v1.28更新，取消了导入后自动修改更新地址",
+                "【应用配置】扩展v1.2更新，新增【扩展热更新】和【新扩展写法】功能，修复【修改配置无效】的bug",
+                "【拖拽读取】扩展v1.78及v1.8更新，修复导入时不显示进度的bug，兼容识别【应用配置】中提供的新扩展框架",
+                "修改/增加部分菜单栏内容（不影响游戏）",
+                "新增typings文件夹，用于存放无名杀的代码声明文件，若你想写扩展时获得代码提示，请再extension.js的开头添加: \n/// <reference path=\"../../typings/index.d.ts\" />"
+            ]
+        },
+        {
+            "version": "1.40",
+            "updateContent": [
+                "【在线更新】扩展v1.25更新",
+                "【应用配置】扩展v1.12更新，优化游戏内的报错弹窗",
+                "内置无名杀全教程V10.0完整版"
+            ]
+        },
         {
             "version": "1.39",
             "updateContent": [
@@ -132,6 +142,7 @@
         "electron-packager": "^15.3.0"
     },
     "dependencies": {
-        "@electron/remote": "^2.0.1"
+        "@electron/remote": "^2.0.1",
+        "@stackblitz/sdk": "^1.6.0"
     }
 }

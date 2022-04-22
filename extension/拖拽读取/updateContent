@@ -1,4 +1,17 @@
 <pre style="color:rgb(210,210,000); font-size:25px; line-height:20px; text-shadow: 0 0 2px black;">
+v1.8更新内容:
+
+———兼容识别【应用配置】中提供的新扩展框架
+
+
+v1.78更新内容:
+
+———修复导入时不显示进度的bug
+
+———zip解压完成后，过500ms再结束Promise
+（为了防止某些bug）
+
+
 v1.77更新内容:
 
 ———支持导入.7z格式的离线包和素材包

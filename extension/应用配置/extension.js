@@ -1,3 +1,5 @@
+/// <reference path="../../typings/index.d.ts" />
+"use strict";
 game.import("extension", function(lib, game, ui, get, ai, _status) {
 	const { versions } = process;
 	const electronVersion = parseFloat(versions.electron);
@@ -113,7 +115,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 
             // 修改window.onerror
             window.onerror = function (msg, src, line, column, err) {
-                let str = `错误文件: ${decodeURI(src)}\n错误信息: ${msg}`;
+                let str = `错误文件: ${ decodeURI(src) || 'undefined' }\n错误信息: ${msg}`;
                 str += '\n' + `行号: ${line}`;
                 str += '\n' + `列号: ${column}`;
                 if (window._status && _status.event) {
@@ -162,21 +164,56 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
                 }
             };
 			
-			
-			/*//导入api.js
-			//lib.cheat.i();
-            Object.defineProperty(window, 'newExtensionApi', {
-                enumerable: false,
-                configurable: false,
-                get() {
-                    return {
-                        lib, game, ui, get, ai, _status
+            if (lib.config.extension_应用配置_newExtApi) {
+                //导入api.js
+                Object.defineProperty(window, 'newExtensionApi', {
+                    enumerable: false,
+                    configurable: false,
+                    get() {
+                        return {
+                            lib, game, ui, get, ai, _status
+                        }
                     }
-                }
-            });
+                });
 
-			lib.init.js('extension/应用配置', 'api');*/
+                // 设置全局路径
+                Object.defineProperty(window, 'newExtApiUrl', {
+                    enumerable: false,
+                    configurable: false,
+                    get() {
+                        return path.join(__dirname, 'extension/应用配置/export.js');
+                    }
+                });
+
+			    lib.init.js('extension/应用配置', 'api');
+            }
 			
+            if (lib.config.extension_应用配置_watchExt) {
+                const fs = require('fs');
+                fs.watch(__dirname + '/extension', {
+                    persistent: true,
+                    recursive: true
+                }, (event, fileName) => {
+                    if (!fileName) return;
+                    const extName = fileName.slice(0, fileName.indexOf('\\'));
+                    const file = fileName.slice(fileName.indexOf('\\') + 1);
+                    
+                    if (!game.importedPack && 
+                        !lib.config.all.plays.includes(extName) && 
+                        lib.config.extensions.includes(extName) && 
+                        lib.config[`extension_${extName}_enable`] == true &&
+                        (extName && file != 'updateContent') &&
+                        !(extName == "拖拽读取" && fileName.slice(fileName.indexOf('\\') + 1) == "tmp.js")
+                    ) {
+                        console.log(`监听到扩展文件改变，类别: ${event}，扩展名: ${extName}，文件路径: ${fileName} `);
+                        // 符合条件，重启游戏
+                        const thisWindow = remote.getCurrentWindow();
+                        thisWindow.focus();
+                        game.reload();
+                    }
+                });
+            }
+
 		},
 		config: {
 			//打开代码编辑器
@@ -194,18 +231,39 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 			replaceAlert: {
 				init: true,
 				name: '修改原生alert弹窗',
-				onclick: () => {
+                onclick: (result) => {
 					alert('修改选项后重启生效');
+                    game.saveExtensionConfig('应用配置', 'replaceAlert', result);
 				}
 			},
 			//修改原生confirm弹窗
 			replaceConfirm: {
 				init: true,
 				name: '修改原生confirm弹窗',
-				onclick: () => {
+                onclick: (result) => {
 					alert('修改选项后重启生效');
+                    game.saveExtensionConfig('应用配置', 'replaceConfirm', result);
 				}
 			},
+            //新的扩展导入方式，用模块的方式写扩展
+            newExtApi: {
+                init: false,
+                name: '新的扩展写法',
+                onclick: (result) => {
+                    alert('修改选项后重启生效');
+                    game.saveExtensionConfig('应用配置', 'newExtApi', result);
+                }
+            },
+            //监听扩展文件，改变后重启游戏
+            watchExt: {
+                init: false,
+                name: '扩展文件改变重启',
+                intro: '导入扩展时也会导致重启，但是完美兼容【拖拽读取】扩展的导入文件',
+                onclick: (result) => {
+                    alert('修改选项后重启生效');
+                    game.saveExtensionConfig('应用配置', 'watchExt', result);
+                }
+            },
 			//移除协议配置
 			removeAsDefaultProtocol: {
 				name: '<span style="text-decoration: underline;">卸载游戏前请点击此处移除协议配置<span>',
@@ -224,7 +282,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 			author: "诗笺",
 			diskURL: "",
 			forumURL: "",
-			version: "1.12",
+			version: "1.2",
 		}
 	}
 });

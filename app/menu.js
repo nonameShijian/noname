@@ -188,7 +188,7 @@ function createIframe() {
 			plugins: true
 		},
 	});
-	win.loadURL(`file://${__dirname}/../(必看)无名杀全教程9.9.pdf`);
+	win.loadURL(`file://${__dirname}/../(必看)无名杀全教程10.0pdf`);
 	win.on('closed', () => {
 		win = null
 	});
@@ -406,7 +406,7 @@ var Menus = [{
 		label: '版权声明',
 		click: () => {
 			dialog.showMessageBoxSync(thisWindow, {
-				message: '【无名杀】属于个人开发软件且【完全免费】。如非法倒卖用于牟利将承担法律责任 开发团队将追究到底',
+				message: '【无名杀】属于个人（水乎）开发项目且【完全免费】。如非法倒卖用于牟利将承担法律责任 开发团队将追究到底',
 				type: 'info',
 				title: '版权声明',
 				icon: path.join(__dirname, '..', 'noname.ico'),
@@ -416,11 +416,15 @@ var Menus = [{
 }, {
 	label: '反馈',
 	submenu: [{
-		label: '通过QQ联系本应用作者',
+		label: '通过QQ联系本应用作者（诗笺）',
 		click: () => {
 			shell.openExternal('tencent://message/?uin=2954700422');
 		},
-	}],
+	}, {
+        label: '无名杀项目作者： 水乎',
+    }, {
+        label: '无名杀现任更新者： 苏婆玛丽奥',
+    }],
 }];
 
 Menu.setApplicationMenu(Menu.buildFromTemplate(Menus));

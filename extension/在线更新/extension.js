@@ -1,3 +1,4 @@
+/// <reference path="../../typings/index.d.ts" />
 "use strict";
 game.import("extension", function(lib, game, ui, get, ai, _status) {
 	
@@ -37,6 +38,13 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 		}
 		game.saveExtensionConfig('在线更新', 'brokenFile', Array.from(new Set([...brokenFileArr, ...lib.config.brokenFile])));
 	});
+
+    /**
+     * @description 请求结果分析状态码
+     * @param { string } current 
+     * @param { Response } response 
+     * @returns { Promise<string> | never } response.text() | throw new Error()
+     */
 	
 	const response_then = (current, response) => {
 		const ok = response.ok, 
@@ -67,6 +75,11 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 		}
 	};
 	
+    /**
+     * @description 请求错误处理
+     * @param { { current: string, status: number, statusText: string } | Error } err 
+     */
+
 	const response_catch = err => {
 		console.error(err);
 		game.print(err);
@@ -87,7 +100,11 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 				alert(`网络请求目标：${current}\n状态码：${status}\n状态消息：${statusText}`);
 			}
 		} else {
-			alert(err);
+            if (err.message == 'Failed to fetch') {
+                alert('网络请求失败');
+            } else {
+                alert(err);
+            }
 		}
 
         if (typeof game.updateErrors == 'number' && game.updateErrors >= 5) {
@@ -139,8 +156,8 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
                 if (typeof game.download != 'function' || typeof game.writeFile != 'function') return clearInterval(interval);
                 if (!ui.menuContainer || !ui.menuContainer.firstElementChild) return;
                 const menu = ui.menuContainer.firstElementChild;
-                const active = ui.menuContainer.firstElementChild.querySelectorAll('.active');
-                if (!active || active.length < 2) return;
+                const active = menu.querySelectorAll('.active');
+                if (active.length < 2) return;
                 if (active[0].innerText != '其它' || active[1].innerText != '更新') return;
                 const help = menu.querySelector('.menu-help');
                 const liArray = Array.from(help.querySelectorAll('li'));
@@ -246,7 +263,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 			if (!game.getExtensionConfig('在线更新', 'update_link')) {
 				game.saveConfig('update_link', 'fastgit');
 				game.saveExtensionConfig('在线更新', 'update_link', 'fastgit');
-				lib.updateURL = lib.updateURLS['fastgit'];
+				//lib.updateURL = lib.updateURLS['fastgit'];
 			}
 			
 			if (lib.configMenu.general.config.update_link) {
@@ -267,10 +284,108 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 					},
 				};
 			}
-			
-			/*if(lib.updateURL == 'https://raw.githubusercontent.com/libccy/noname') {
-				lib.updateURL = lib.updateURLS.github;
-			}*/
+
+            /**
+             * @description 获取最快连接到的更新源
+             * @param { object } updateURLS 
+             * @param { object } translate 
+             * @returns { never | Promise<{ success: Array<{ key: string, finish : number }>; failed: Error | Array<{ key: string, err : Error }>; fastest?: { key: string, finish : number }; } }
+             */
+            game.getFastestUpdateURL = function (updateURLS, translate) {
+                updateURLS = updateURLS || lib.updateURLS;
+                if (typeof updateURLS != 'object') throw new TypeError('updateURLS must be an object type');
+                translate = translate || {
+                    coding: 'Coding',
+                    github: 'GitHub',
+                    fastgit: 'GitHub镜像',
+                    xuanwu: '玄武镜像'
+                };
+                if (typeof translate != 'object') throw new TypeError('translate must be an object type');
+                const promises = [];
+                const keys = Object.keys(updateURLS);
+                keys.forEach(key => {
+                    const url = updateURLS[key];
+                    const start = new Date().getTime();
+                    promises.push(
+                        fetch(`${url}/master/game/update.js`)
+                            .then(response => {
+                                if (!response.ok) {
+                                    return {
+                                        key,
+                                        err: new Error(`HTTP error! status: ${response.status}`)
+                                    };
+                                } else {
+                                    const finish = new Date().getTime() - start;
+                                    return { key, finish };
+                                }
+                            })
+                    );
+                });
+
+                /* Promise.allSettled */
+                function allSettled(array) {
+                    return new Promise(resolve => {
+                        let args = Array.prototype.slice.call(array);
+                        if (args.length === 0) return resolve([]);
+                        let arrCount = args.length;
+
+                        function resolvePromise(index, value) {
+                            if (typeof value === 'object') {
+                                let then = value.then;
+                                if (typeof then === 'function') {
+                                    then.call(
+                                        value,
+                                        function (val) {
+                                            args[index] = { status: 'fulfilled', value: val };
+                                            if (--arrCount === 0) {
+                                                resolve(args);
+                                            }
+                                        },
+                                        function (e) {
+                                            args[index] = { status: 'rejected', reason: e };
+                                            if (--arrCount === 0) {
+                                                resolve(args);
+                                            }
+                                        }
+                                    );
+                                }
+                            }
+                        }
+
+                        for (let i = 0; i < args.length; i++) {
+                            resolvePromise(i, args[i]);
+                        }
+                    });
+                }
+
+                return allSettled(promises)
+                    .then(values => {
+                        const array = values.filter(i => i && !i.reason && !i.value.err);
+                        const errArray = values.filter(i => i && (i.reason || i.value.err));
+                        if (array.length == 0) {
+                            alert('更新源连接全部出错');
+                            return {
+                                success: [],
+                                failed: errArray.map(_ => _.value || _.reason)
+                            }
+                        }
+                        const fastest = array.reduce((previous, next) => {
+                            const a = previous.value.finish;
+                            const b = next.value.finish;
+                            return a > b ? next : previous;
+                        });
+                        function getTranslate(_) {
+                            const index = values.findIndex(item => item == _);
+                            return translate[keys[index]];
+                        }
+                        alert(`最快连接到的更新源是：${getTranslate(fastest) || fastest.value.key}, 用时${fastest.value.finish / 1000}秒${errArray.length > 0 ? '\n连接不上的更新源有：' + errArray.map(getTranslate) : ''}`);
+                        return {
+                            fastest: fastest.value,
+                            success: array.map(_ => _.value),
+                            failed: errArray.map(_ => _.value || _.reason)
+                        }
+                    });
+            }
 
             /**
              * @description 通过@url参数下载文件，并通过onsuccess和onerror回调
@@ -291,6 +406,9 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 					path = url.slice(0, url.lastIndexOf('/'));
 					name = url.slice(url.lastIndexOf('/') + 1);
 				}
+                /*console.log({
+                    path, name
+                });*/
 				
 				lib.config.brokenFile.add(url);
 				
@@ -483,7 +601,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
             show_version: {
                 clear: true,
                 nopointer: true,
-                name: '扩展版本： v1.26',
+                name: '扩展版本： v1.28',
             },
             update_link_explain: {
                 clear: true,
@@ -532,6 +650,21 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 					lib.updateURL = lib.updateURLS[item] || lib.updateURLS.coding;
 				},
 			},
+            getFastestUpdateURL: {
+                clear: true,
+                intro: '点击测试最快连接到的更新源',
+                name: '<span style="text-decoration: underline;">测试最快连接到的更新源</span>',
+                onclick: function () {
+                    const span = this.childNodes[0].childNodes[0];
+                    if (span.innerText == '测试最快连接到的更新源') {
+                        span.innerText = '测试中...';
+                        game.getFastestUpdateURL().then(result => {
+                            console.log(result);
+                            span.innerText = '测试最快连接到的更新源';
+                        });
+                    }
+                }
+            },
 			checkForUpdate: {
 				//检查游戏更新
 				clear: true,
@@ -550,11 +683,13 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
                         button = this.childNodes[0].childNodes[0];
                     }
                     let parentNode = button.parentNode;
-                    if (game.Updating) {
-                        return alert('正在更新游戏文件，请勿重复点击');
-                    }
-                    if (game.allUpdatesCompleted) {
-                        return alert('游戏文件和素材全部更新完毕');
+                    if (button instanceof HTMLButtonElement && button.innerHTML == "检查游戏更新") {
+                        if (game.Updating) {
+                            return alert('正在更新游戏文件，请勿重复点击');
+                        }
+                        if (game.allUpdatesCompleted) {
+                            return alert('游戏文件和素材全部更新完毕');
+                        }
                     }
                     if (button.innerText != '检查游戏更新') return;
 					game.Updating = true;
@@ -591,8 +726,8 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 								let update = window.noname_update;
 								delete window.noname_update;
 								game.saveConfig('check_version', update.version);
+                                //要更新的版本和现有的版本一致
 								if (update.version == lib.version) {
-									//要更新的版本和现有的版本一致
 									if (!confirm('当前版本已经是最新，是否覆盖更新？')) {
 										game.Updating = false;
 										button.innerHTML = '检查游戏更新';
@@ -621,7 +756,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
                                             } else {
                                                 break;
                                             }
-                                        } else if (next1.done && next2.done) {
+                                        } else if (next1.done && next2.done || version1 < version2) {
                                             break;
                                         }
                                     } while (true);
@@ -734,6 +869,9 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 											});
 										})
 										.catch(err => {
+                                            console.log('还原版本');
+                                            // 还原版本
+                                            lib.version = version;
 											response_catch(err);
 											reduction();
 										});
@@ -830,14 +968,16 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
                         button = this.childNodes[0].childNodes[0];
                     }
                     let parentNode = button.parentNode;
-                    if (game.UpdatingForAsset) {
-                        return alert('正在更新游戏素材，请勿重复点击');
-                    }
-                    if (game.allUpdatesCompleted) {
-                        return alert('游戏文件和素材全部更新完毕');
-                    }
-                    if (game.unwantedToUpdateAsset) {
-                        return alert('素材已是最新');
+                    if (button instanceof HTMLButtonElement && button.innerHTML == "检查素材更新") {
+                        if (game.UpdatingForAsset) {
+                            return alert('正在更新游戏素材，请勿重复点击');
+                        }
+                        if (game.allUpdatesCompleted) {
+                            return alert('游戏文件和素材全部更新完毕');
+                        }
+                        if (game.unwantedToUpdateAsset) {
+                            return alert('素材已是最新');
+                        }
                     }
                     if (button.innerText != '检查素材更新') return;
 					game.UpdatingForAsset = true;
@@ -1103,7 +1243,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 			author: "诗笺",
 			diskURL: "",
 			forumURL: "",
-			version: "1.26",
+			version: "1.28",
 		},
 	}
 });
