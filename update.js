@@ -15,6 +15,9 @@ window.updateList = [
 
     //应用配置
     'extension/应用配置/extension.js',
+    'extension/应用配置/extension_demo.js',
+    'extension/应用配置/export.js',
+    'extension/应用配置/api.js',
 
     //在线更新
     'extension/在线更新/extension.js',
