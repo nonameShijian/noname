@@ -1,4 +1,4 @@
-import { lib, game, ui, get, ai, _status } from window.newExtApiUrl;
+const { lib, game, ui, get, ai, _status } = await import(window.newExtApiUrl);
 
 export default {
     name: '测试',
