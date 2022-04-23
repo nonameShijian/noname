@@ -21,11 +21,16 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 	const { dialog } = remote;
 	
 	//保存扩展
-	for (let extensionName of ['拖拽读取', '在线更新', '应用配置']) {
-		if(lib.node.fs.existsSync(path.join(__dirname, 'extension' , extensionName)) && !lib.config.extensions.contains(extensionName)) {
-			console.log(`【应用配置】加载并保存了【${extensionName}】内置扩展`);
-			lib.config.extensions.add(extensionName);
-		}
+    for (let extensionName of ['应用配置', '拖拽读取', '在线更新']) {
+        if (lib.node.fs.existsSync(path.join(__dirname, 'extension', extensionName))) {
+            if (!lib.config.extensions.contains(extensionName)) {
+                console.log(`【应用配置】加载并保存了【${extensionName}】内置扩展`);
+                lib.config.extensions.add(extensionName);
+            }
+            if (!lib.config[`extension_${extensionName}_enable`]) {
+                game.saveExtensionConfig(extensionName, 'enable', true);
+            }
+        }
 	}
 	game.saveConfig('extensions', lib.config.extensions);
 	

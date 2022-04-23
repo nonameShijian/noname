@@ -261,16 +261,27 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 			});
 			
 			if (!game.getExtensionConfig('在线更新', 'update_link')) {
-				game.saveConfig('update_link', 'fastgit');
-				game.saveExtensionConfig('在线更新', 'update_link', 'fastgit');
-				//lib.updateURL = lib.updateURLS['fastgit'];
+				game.saveConfig('update_link', 'coding');
+                game.saveExtensionConfig('在线更新', 'update_link', 'coding');
+                lib.updateURL = lib.updateURLS['coding'];
 			}
 			
 			if (lib.configMenu.general.config.update_link) {
 				lib.configMenu.general.config.update_link = {
 					unfrequent: true,
 					name:'更新地址',
-					init: (lib.updateURL == lib.updateURLS['coding'] ? 'coding' : 'fastgit'),
+					//init: (lib.updateURL == lib.updateURLS['coding'] ? 'coding' : 'fastgit'),
+                    init: (() => {
+                        for (const url in lib.updateURLS) {
+                            if (lib.updateURL == lib.updateURLS[url]) {
+                                return url;
+                            }
+                        }
+                        game.saveConfig('update_link', 'coding');
+                        game.saveExtensionConfig('在线更新', 'update_link', 'coding');
+                        lib.updateURL = lib.updateURLS.coding;
+                        return 'coding';
+                    })(),
 					item:{
 						coding: 'Coding',
 						github: 'GitHub',
@@ -637,7 +648,18 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
             },
 			update_link:{
 				name:'更新地址',
-				init: (lib.updateURL == lib.updateURLS['coding'] ? 'coding' : 'fastgit'),
+				//init: (lib.updateURL == lib.updateURLS['coding'] ? 'coding' : 'fastgit'),
+                init: (() => {
+                    for (const url in lib.updateURLS) {
+                        if (lib.updateURL == lib.updateURLS[url]) {
+                            return url;
+                        }
+                    }
+                    game.saveConfig('update_link', 'coding');
+                    game.saveExtensionConfig('在线更新', 'update_link', 'coding');
+                    lib.updateURL = lib.updateURLS.coding;
+                    return 'coding';
+                })(),
 				item:{
 					coding: 'Coding',
 					github: 'GitHub',

@@ -130,8 +130,10 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 							setTimeout(() => {
                                 resolve();
 								div.remove();
-								if (confirm(`${fileName}导入完成(耗时${(endTime - startTime) / 1000}秒)，是否重启？`)) game.reload();
-							}, 300);
+                                setTimeout(() => {
+                                    if (confirm(`${fileName}导入完成(耗时${(endTime - startTime) / 1000}秒)，是否重启？`)) game.reload();
+                                }, 300);
+							}, 0);
 						}
 					}
 					writeFile();

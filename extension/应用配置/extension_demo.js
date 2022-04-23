@@ -11,10 +11,10 @@ export default {
         //'cards://[""]',
     ],
     config: {},
-    content(config, pack) {
+    content: function(config, pack) {
 
     },
-    precontent(data) {
+    precontent: function(data) {
 
     },
     package: {

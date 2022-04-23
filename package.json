@@ -143,7 +143,6 @@
         "electron-packager": "^15.3.0"
     },
     "dependencies": {
-        "@electron/remote": "^2.0.1",
-        "@stackblitz/sdk": "^1.6.0"
+        "@electron/remote": "^2.0.1"
     }
 }

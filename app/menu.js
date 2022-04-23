@@ -40,8 +40,8 @@ async function checkForUpdate(url) {
 			if(err) alert(err);
 			else {
 				let updateContent = new BrowserWindow({
-					width: 800,
-					height: 600,
+					width: 850,
+					height: 650,
 					title: '无名杀-更新内容',
 					icon: path.join(__dirname, '..' ,'noname.ico'),
 					autoHideMenuBar: true,
@@ -249,18 +249,19 @@ if (window.indexedDB) {
 	};
     request.onsuccess = function (e) {
         const db = e.target.result;
-		if (!db.objectStoreNames.contains('config')) return;
+        if (!db.objectStoreNames.contains('config')) return;
         const store = db.transaction(['config'], 'readwrite').objectStore('config');
         store.get('extensions').onsuccess = function (e) {
             const extensions = e.target.result;
+            const config = db.transaction(['config'], 'readwrite').objectStore('config');
             if (!Array.isArray(extensions) || extensions.length == 0) {
-                db.transaction(['config'], 'readwrite').objectStore('config').put(['拖拽读取', '在线更新', '应用配置'], 'extensions');
+                config.put(['应用配置', '拖拽读取', '在线更新'], 'extensions');
             }
             if (extensions.includes('\u6982\u5ff5\u6b66\u5c06')) {
-                db.transaction(['config'], 'readwrite').objectStore('config').put(false, "extension_\u6982\u5ff5\u6b66\u5c06_enable");
+                config.put(false, "extension_\u6982\u5ff5\u6b66\u5c06_enable");
             }
             if (extensions.includes('\u5047\u88c5\u65e0\u654c')) {
-                db.transaction(['config'], 'readwrite').objectStore('config').put(false, "extension_\u5047\u88c5\u65e0\u654c_enable");
+                config.put(false, "extension_\u5047\u88c5\u65e0\u654c_enable");
             }
         };
     };
