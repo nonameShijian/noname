@@ -97,4 +97,9 @@ interface UI {
     arena: HTMLDivElement;
     /** 托管按钮 */
     auto: HTMLDivElement;
+
+	/** 占满整个页面的div。它的第一个子元素就是菜单 */
+	menuContainer?: HTMLDivElement;
+	
+	window?: HTMLDivElement;
 }

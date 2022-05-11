@@ -26,8 +26,12 @@ interface Window {
      * @param errorCallback    invoked if error occurs retrieving file system entry
      */
     resolveLocalFileSystemURL(url: string,
-        successCallback: (entry: Entry) => void,
+		successCallback: (entry: Entry) => void,
         errorCallback?: (error: FileError) => void): void;
+	
+	resolveLocalFileSystemURL(url: string,
+		successCallback: (entry: DirectoryEntry) => void,
+		errorCallback?: (error: FileError) => void): void;
     /**
      * Look up file system Entry referred to by local URI.
      * @param string uri       URI referring to a local file or directory
@@ -294,9 +298,9 @@ interface FileWriter extends FileSaver {
     length: number;
     /**
      * Write the supplied data to the file at position.
-     * @param {Blob|string} data The blob to write.
+     * @param {Blob|string|ArrayBuffer} data The blob to write.
      */
-    write(data: Blob|string): void;
+	write(data: Blob | string | ArrayBuffer): void;
     /**
      * The file position at which the next write will occur.
      * @param offset If nonnegative, an absolute byte offset into the file.

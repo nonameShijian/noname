@@ -21,6 +21,7 @@ window.updateList = [
 
     //在线更新
     'extension/在线更新/extension.js',
+	'extension/在线更新/typings/index.d.ts',
 
     //拖拽读取
     'extension/拖拽读取/extension.js',
@@ -65,6 +66,7 @@ window.updateList = [
     "typings/content.d.ts",
     "typings/control.d.ts",
     "typings/cordova-plugin-file.d.ts",
+	"typings/cordova-plugin-dialogs.d.ts",
     "typings/cordova.d.ts",
     "typings/create.d.ts",
     "typings/DateEx.d.ts",

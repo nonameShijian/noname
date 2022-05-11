@@ -35,4 +35,16 @@ declare interface Window {
     ui: UI;
     get: Get;
     ai: AI;
+
+	/** 从该路径获取无名杀的变量信息 */
+	newExtApiUrl: string;
+	/** 全局变量获取无名杀的变量 */
+	newExtensionApi: {
+		game: Game;
+		lib: Lib;
+		_status: Status;
+		ui: UI;
+		get: Get;
+		ai: AI;
+	}
 }

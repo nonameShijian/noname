@@ -173,41 +173,46 @@ interface ExtensionInfoConfigData extends ExCommonConfig {
     editable?: boolean;
 
     /** 
-     * 该扩展菜单的扩展 
+     * 该扩展菜单的配置 
      * 
-     * 名字：”extension_“+name
+     * 名字："extension_" + key
+	 * 
+	 * 内容： value
+	 * 
      * (也是游戏编辑器中的选项代码部分)
      */
     config?: SMap<SelectConfigData>;
 
     /**
-     * 联机配置
+     * 联机配置（目前扩展已经不能联机）
      * 
      * 特殊接口：update
      */
     connect?: SMap<SelectConfigData>;
 
     /**
-     * 扩展的包信息
-     * （主要是通过系统内部自带编译器编辑的代码，导入逻辑其实基本一致）
+     * 扩展的包信息。
+	 * 
+	 * 包括卡牌，技能，人物的代码以及中文翻译
      */
     package: PackageData;
 
     /**
      * 函数执行时机为游戏数据加载之后、界面加载之前
-     * （也是游戏编辑器中的主代码部分）
+	 * 
+     * （游戏编辑器中的主代码部分）
      * 
      * 注：即选择了玩法模式之后加载的内容部分；
-     * @param config 扩展选/配置
+     * @param config 扩展选项/配置
      * @param pack 扩展定义的武将、卡牌和技能等
      */
     content?(config: SMap<any>, pack: PackageData): void;
     /**
-     * 函数执行时机为游戏数据加载之前，且不受禁用扩展的限制
-     * 除添加模式外请慎用
+     * 函数执行时机为游戏数据加载之前，且不受禁用扩展的限制，除添加模式外请慎用
      * （也是游戏编辑器中的启动代码部分）
      * 
      * 注：game.import添加扩展时就加载，即当前游戏加载菜单界面时就已经加载；
+	 * 
      * 注2：当前扩展联机时，需要直接再此扩展；为了方便扩展，大部分扩展直接在这里扩展；
      * @param data 保存在lib.config中”extension_扩展名“为前缀的配置
      */
@@ -287,6 +292,66 @@ interface ExtensionInfoConfigData extends ExCommonConfig {
      * 例如：translate，help，skill... ... 或者其他自定义的...
      */
     [key: string]: any;
+}
+
+/**
+ * 新写法extentsion扩展的配置（import:extentsion）
+ */
+interface newExtensionInfoConfigData extends ExCommonConfig {
+	/** 扩展描述 */
+	intro: string;
+	/** 扩展作者 */
+	author: string;
+	/** 扩展版本 */
+	version: string;
+	/** 扩展更新内容 */
+	changeLog: string[];
+	/** 
+	 * 该扩展菜单的配置 
+	 * 
+	 * 名字："extension_" + key
+	 * 
+	 * 内容： value
+	 * 
+	 * (也是游戏编辑器中的选项代码部分)
+	 */
+	config?: SMap<SelectConfigData>;
+	/**
+	 * 扩展的包信息。
+	 * 
+	 * 包括卡牌，技能，人物的代码以及中文翻译
+	 */
+	package: {
+		/** 武将导入信息 */
+		character?: CharacterConfigData;
+		/** 卡牌导入信息 */
+		card?: CardHolderConfigData;
+		/** 技能导入信息 */
+		skill?: ExSkillConifgData;
+	}
+
+	/**
+	 * 函数执行时机为游戏数据加载之后、界面加载之前
+	 * 
+	 * （游戏编辑器中的主代码部分）
+	 * 
+	 * 注：即选择了玩法模式之后加载的内容部分；
+	 * @param config 扩展选项/配置
+	 * @param pack 扩展定义的武将、卡牌和技能等
+	 */
+	content?(config: SMap<any>, pack: PackageData): void;
+	/**
+	 * 函数执行时机为游戏数据加载之前，且不受禁用扩展的限制，除添加模式外请慎用
+	 * （也是游戏编辑器中的启动代码部分）
+	 * 
+	 * 注：game.import添加扩展时就加载，即当前游戏加载菜单界面时就已经加载；
+	 * 
+	 * 注2：当前扩展联机时，需要直接再此扩展；为了方便扩展，大部分扩展直接在这里扩展；
+	 * @param data 保存在lib.config中”extension_扩展名“为前缀的配置
+	 */
+	precontent?(data?: SMap<any>): void;
+	/** 删除该扩展后调用 */
+	onremove?(): void;
 }
 
 /**
@@ -444,6 +509,18 @@ interface PackageData {
         card: string[];
         skill: string[];
     }
+
+	/** 主代码中，pack.code包括以下属性： */
+	code?: {
+		/** 扩展的config配置信息 */
+		config?: SMap<SelectConfigData>;
+		/** 扩展主代码 */
+		content?: (config: SMap<any>, pack: PackageData) => void;
+		/** 扩展帮助信息 */
+		help?: SMap<string>;
+		/** 扩展启动代码 */
+		precontent?: (data?: SMap<any>) => void;
+	}
 }
 
 

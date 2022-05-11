@@ -127,13 +127,13 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 							}
 						} else {
 							let endTime = new Date().getTime();
-							setTimeout(() => {
+                            setTimeout(() => {
                                 resolve();
-								div.remove();
+                                div.remove();
                                 setTimeout(() => {
                                     if (confirm(`${fileName}导入完成(耗时${(endTime - startTime) / 1000}秒)，是否重启？`)) game.reload();
                                 }, 300);
-							}, 0);
+                            }, 0);
 						}
 					}
 					writeFile();
@@ -225,7 +225,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
                             let extension;
                             // 对于导入模块扩展的判断
                             try {
-                                extension = eval(str)();
+								extension = eval(str)(lib, game, ui, get, ai, _status);
                             } catch (error) {
                                 if (
                                     !lib.config.extension_应用配置_newExtApi ||
@@ -286,7 +286,8 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
                         }
                         //还原game.import
                         game.import = importFunction;
-                        if (success && confirm('导入完成，是否重启？')) game.reload();
+						let bool = confirm('导入完成，是否重启？');
+						if (success && bool) game.reload();
                     }
                     return false;
                 }
@@ -761,7 +762,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 			author: "诗笺",
 			diskURL: "",
 			forumURL: "",
-			version: "1.8",
+			version: "1.81",
 		},
 	}
 })

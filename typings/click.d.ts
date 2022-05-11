@@ -1,6 +1,10 @@
 declare namespace UI {
 
     interface Click {
+		/** 跳转对应扩展界面 */
+		extensionTab(extName:string): void;
+		/** 跳转到命令页面 */
+		consoleMenu(): void;
         /** 点击身份icon */
         identitycircle(): void;
         /** 联机约战 */

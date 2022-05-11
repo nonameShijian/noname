@@ -13,7 +13,7 @@ declare namespace UI {
          */
         div(...args): HTMLDivElement;
         filediv(): any;
-        node(): any;
+		node(...args): any;
         /** 创建iframe */
         iframe(src:string): void;
         identitycircle(list, target): void;

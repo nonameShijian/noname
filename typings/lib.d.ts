@@ -1,4 +1,5 @@
 declare var lib: Lib;
+
 /**
  * 游戏内的主要信息储存区域，与核心游戏方法对象
  */
@@ -391,7 +392,7 @@ interface Lib {
    * 
    * 一般只有主机拥有，客机没有该对象（作为区分的条件之一）
    */
-  node: {
+  node?: {
     //网络操作：
     //创建服务器
     /** 
@@ -409,11 +410,10 @@ interface Lib {
 
     //文件操作：
     //以下对象，大多是nodejs的操作对象
-    fs: any;
+	fs: any;
     debug(): void;
-    http: any;
-    https: any;
-
+    http?: any;
+    https?: any;
   };
 
   //【v1.9.98.3】
