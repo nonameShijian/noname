@@ -1183,13 +1183,28 @@ interface ExModData {
     globalFrom?(from: Player, to: Player, distance:number): number;
     /**
      * 角色的攻击范围
-     * @param from 
-     * @param to 
-     * @param range 
-     * 
-     * 注：和globalFrom同理，拉近距离，减去；
+	 * 
+	 * 于【v1.9.113.4】更改效果
+	 * 
+	 * @deprecated attackFrom的mod不再影响攻击范围的数值，改为由attackRangeBase和attackRange控制，但attackFrom和attackTo仍然影响“A是否在B攻击范围内”的判断
+	 * 
      */
     attackFrom?(from: Player, to: Player, range:number):number;
+	// 通过Object.values(lib.skill).filter(s => s.mod?.attackRangeBase)查询所有带attackRangeBase的技能
+	/**
+	 * 角色的攻击范围基数
+	 * 
+	 * 【v1.9.113.4】
+	 *
+	 */
+	attackRangeBase?(player: Player, num: number):number;
+	/**
+	 * 修改角色的攻击范围
+	 * 
+	 * 【v1.9.113.4】
+	 *
+	 */
+	attackRange?(player: Player, distance: number):number;
     /**
      * 攻击到角色的范围
      * @param from 

@@ -436,6 +436,9 @@ interface Lib {
   /** 貌似是所有的那些配置的那些选项的状态都保存在这里了 */
   config: LibConfigData;
 
+  /** 数据库 */
+  db: IDBDatabase;
+
   //自己独立增加的：
   /**
    * 【无名杀扩展定制】自动化卡组生成

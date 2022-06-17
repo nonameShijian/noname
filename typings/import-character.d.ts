@@ -1,4 +1,4 @@
-declare interface importCharacterConfig {
+declare interface importCharacterConfig extends ExCommonConfig {
     /** 
      * 类型：布尔值
      * 
@@ -157,4 +157,7 @@ declare interface importCharacterConfig {
      * (目前可显示帮助信息：mode，extension，card卡包，character武将包)
      */
     help?: SMap<string>;
+
+	/** 扩展中设置武将的名称(id)或技能翻译 */
+	translate?: SMap<string>
 }

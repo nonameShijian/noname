@@ -1,4 +1,5 @@
 declare var _status:Status;
+
 interface Status {
     /** 暂停游戏game.loop循环，由game.pause控制 */
     paused:boolean;
@@ -102,6 +103,12 @@ interface Status {
 
     /** 适用于“乱斗”（brawl）模式，扩展，在这里保存的对应name，可以打开对应的扩展设置 */
     extensionmade:string[];
+
+	/**
+	 * 于【v1.9.113.4】废弃
+	 * @deprecated 在已生成座位号的场合，不再通过_status.firstAct来判断“一轮游戏”的开始，而是按“当前回合角色的座位号是否大于上一回合的角色”判断
+	 */
+	firstAct?: any;
 
     /*  扩展成员  */
     [key:string]:any;

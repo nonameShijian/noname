@@ -53,7 +53,7 @@ interface CharacterConfigData extends ExCommonConfig {
  * [ 0string,1string,2number/string,3string[],4string[],.....其他特殊扩展 ]
  * 0："性别",
  * 1："势力", 
- * 2：体力【体力可以支持分开独立显示："初始hp/血量上限"】,
+ * 2：体力【体力可以支持分开独立显示："初始hp/血量上限", 加上护甲就是"初始hp/血量上限/护甲值"】,
  * 3：["技能"],
  * 4：[可以保持图片，一些卡片标记，如："zhu","boss",""...,或者一些带前缀的特殊文本，例如：des:xxxx，表示描述] 
  *      【v1.9.108.6~：支持国战模式下，多势力，格式“doublegroup:xx:xx”，例如“doublegroup:wei:wu”】
@@ -63,7 +63,9 @@ interface CharacterConfigData extends ExCommonConfig {
  * 在4中，拥有"ZJNGEx"标记，表示这位zjsha扩展人物，5为扩展内容:[zjsha势力,血槽]
  * 1属性（即原势力），7zj杀势力，8血槽（体力可以支持双配置，所以这个没什么用了），9zj杀角色标记，暂时未想好 （从倒数开始数，倒数三个）
  */
-type HeroData = [string, string, number | string, string[] | [], string[], ...any[]] | [string, string, number | string, string[] | [],  ...any[]];
+
+type HeroSex = 'male' | 'female' | 'dobule' | 'none';
+type HeroData = [HeroSex, string, number | string, string[] | [], string[], ...any[]] | [HeroSex, string, number | string, string[] | [],  ...any[]];
 
 /** 武将信息索引 */
 declare const enum HeroDataFields {

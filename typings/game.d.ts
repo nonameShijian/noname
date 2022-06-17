@@ -757,6 +757,8 @@ interface Game {
     onlineKey: string;
     ip: string;
     roomId: number;
+
+	documentZoom: number;
 }
 
 //由玩法模式自己扩展实现的方法接口：
@@ -1007,9 +1009,8 @@ type GlobalHistoryData = {
 interface IDownLoadFun {
     download(url, folder, onsuccess, onerror, dev, onprogress);
     readFile(filename, callback, onerror);
-    writeFile(data, path, name, callback);
+	writeFile(data: string | ArrayBuffer, path: string, name: string, callback: Function);
     removeFile(filename, callback);
     getFileList(dir, callback);
-    ensureDirectory(list, callback, file);
-
+    ensureDirectory(list: string, callback: Function, file?: any);
 }

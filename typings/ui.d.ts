@@ -99,7 +99,13 @@ interface UI {
     auto: HTMLDivElement;
 
 	/** 占满整个页面的div。它的第一个子元素就是菜单 */
-	menuContainer?: HTMLDivElement;
+	menuContainer: HTMLDivElement;
 	
-	window?: HTMLDivElement;
+	window: HTMLDivElement;
+	/** 正在显示的dialog */
+	dialog?: HTMLDivElement;
+	/** 正在显示的选项按钮(使用技能等) */
+	control?: HTMLDivElement;
+	/** 导入游戏设置的div */
+	import_data_button: HTMLDivElement;
 }

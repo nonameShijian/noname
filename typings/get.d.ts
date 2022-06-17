@@ -34,11 +34,19 @@ interface Get {
     evtprompt(next:GameEvent,str:string):void;
     /**
      * 自动视为指定牌。
-     * 若指定视为牌，有autoViewAs，则返回重新整合后的视为牌（既强制自动变成该视为牌）;
-     * 非autoViewAs，
-     *  若对象有isCard为true,或者是一个真实卡牌，则返回带isCard=true，的卡牌结构信息；
-     *  若不是，只是信息对象，无cards参数,否则则返回带cards的card对象的副本；
-     *  都不是，则按原来输出；
+	 * 
+	 * 有autoViewAs: 返回重新整合后的视为牌（即强制自动变成该视为牌）
+	 * 
+	 * 没有: 
+	 *     
+	 * &nbsp;&nbsp;&nbsp;&nbsp;若对象有isCard为true,或者是一个真实卡牌，则返回带isCard=true，的卡牌结构信息
+	 * 
+	 * &nbsp;&nbsp;&nbsp;&nbsp;若只是信息对象，无cards参数,否则则返回带cards的card对象的副本
+	 * 
+	 * &nbsp;&nbsp;&nbsp;&nbsp;都不是，则按原来输出
+	 * 
+	 * 在【v1.9.114.1】修复获取卡牌点数错误的bug
+	 * 
      * @param card 指定视为牌
      * @param cards 待操作的卡牌集合，一般是指真实使用的卡牌,取值为false时，卡牌有autoViewAs，则返回不携带的cards的card;
      */
@@ -380,7 +388,17 @@ interface Get {
     /**
      * 获取卡牌的数字number
      * 
-     * 注：目前暂未实现，只是简单获取卡牌的number而已；
+     * 在【v1.9.113.5】中已实现读取卡牌拥有者身上的mod
+	 * 
+	 * 代码示例：
+	 * ```
+	 * mod: {
+	 *     cardnumber: function(card) {
+	 *         return 13;
+	 *     },
+	 * }
+	 * ```
+	 * 
      * @param card 
      * @param player 一张牌在一名角色手牌区时的牌面信息:player不填时默认视为卡牌的拥有者;填false时不做判断
      */
@@ -628,7 +646,7 @@ interface Get {
      * @param name 获取卡牌的名字，获取判定卡牌的方法
      * @param create 指定获取卡牌的地方：'cardPile'抽卡区,'discardPile'弃卡区,'field'玩家场地（玩家的装备，判定牌区），若都不是，则创建一张该名字的卡牌
      */
-    cardPile(name: string | OneParmFun<Card, boolean>,create:string):Card;
+    cardPile(name: string | OneParmFun<Card, boolean>, create:string):Card;
     /**
      * 获取抽卡区里指定名字的卡牌（一张）
      * @param name 获取卡牌的名字，获取判定卡牌的方法
@@ -730,11 +748,17 @@ interface Get {
      * 
      * 注：五谷按value顺序选；
      * 
-     * 例：return 8-get.value(card); 
+     * 例：
+	 * ```
+	 * return 8 - get.value(card); 
+	 * ```
      * 选取价值小于8的牌。数字越大，会选用的牌范围越广，8以上甚至会选用桃发动技能，一般为6-ai.get.value(card); 
+	 * 
+	 * 在【v1.9.113.4】修复判断空数组价值时返回Infinity的bug
+	 * 
      * @param card 
      * @param player 
-     * @param method 取值“raw”，目前在代码里看，貌似没用，可能时写错了；
+     * @param method 取值“raw”，目前在代码里看，貌似没用，可能是写错了；
      */
     value(card:CCards,player?:Player,method?:string):number;
     /**

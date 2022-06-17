@@ -1393,7 +1393,7 @@ declare namespace Lib.element {
 		 * 
          * @param bool true，翻面；false翻回正面
          */
-        turnOver(bool: boolean): Event;
+        turnOver(bool?: boolean): Event;
 
         /** 离开游戏 */
         out(skill: number|string): void;
@@ -1404,7 +1404,7 @@ declare namespace Lib.element {
          * 铁锁连环
          * @param bool true，解锁；false连锁，若当前处于该状态就不执行
          */
-        link(bool: boolean): Event;
+        link(bool?: boolean): Event;
         /**
          * 跳过阶段
          * @param name 阶段名
@@ -1594,9 +1594,10 @@ declare namespace Lib.element {
 		 * 
          * @param skill 技能名
          * @param checkConflict 额外检测方法(检测冲突用？没有提供参数，自己处理)
-         * @param nobroadcast 是否向网络发布消失(默认广播)
+         * @param nobroadcast 是否向网络发布消息(默认广播)
+		 * @param addToSkills 是否不添加到player.skills中
          */
-        addSkill(skill: string | string[], checkConflict?: NoneParmFum<void>, nobroadcast?: boolean): string | string[];
+		addSkill(skill: string | string[], checkConflict?: NoneParmFum<void>, nobroadcast?: boolean, addToSkills?: boolean): void | string | string[];
         /**
          * 添加额外技能（一个技能内同时拥有多个相关技能）
 		 * 
@@ -1672,7 +1673,7 @@ declare namespace Lib.element {
          * @param skill 
          * @param flag 是否强制移除“固有技”，取值为true，移除可强制移除有info.fixed的技能
          */
-        removeSkill(skill: string | string[], flag?: boolean): string;
+        removeSkill(skill: string | string[], flag?: boolean): void | string;
         /**
          * 添加临时技能
          * 
@@ -2252,9 +2253,53 @@ declare namespace Lib.element {
         throwEmotion(target:Target,name:string):void;
         /** 投掷表情动画【1.9.106~】*/
         $throwEmotion(target:Target,name:string):void;
+
+		/**
+		 * 将卡牌移动武将牌上, 然后通过gaintag区分牌
+		 * 
+		 * 【v1.9.113】
+		 * 
+		 * ```
+		 * player.addToExpansion(event.card,'gain2').gaintag.add('tuntian');
+		 * ```
+		 * 其他参数：'log', 'fromStorage', 'fromRenku', 'bySelf'
+		 * @param { Player } player 指定来源角色
+		 * @param { Card[] } cards 指定移除游戏的卡牌数组
+		 * @param { Card } card 指定移除游戏的单个卡牌
+		 * @param { string } animate 指定动画
+		 * @param { boolean } delay 是否延迟
+		 */
+		addToExpansion(...any): GameEvent;
+
+		/**
+		 * 获取座位号
+		 * 
+		 * 【v1.9.113.3】
+		 * 
+		 * 在使用正常phaseLoop函数的模式下会返回正常的座位号（从1开始）；在统率三军、战棋等模式下会返回0
+		 */
+		getSeatNum(): number
+
+		/**
+		 * 【v1.9.114.1】
+		 * 
+		 * 用于调整转换技的状态，且播放动画效果
+		 * 
+		 * @param skill 技能名
+		 */
+		changeZhuanhuanji(skill: string): void;
+		
+		/**
+		 * 【v1.9.114.1】
+		 * 
+		 * 调整转换技状态动画
+		 * 
+		 * @param skill 技能名
+		 */
+		$changeZhuanhuanji(skill: string): void;
     }
 
-    //核心成员属性（暂时先暂时一部分比较核心常用的）
+    //核心成员属性（暂时先一部分比较核心常用的）
     interface Player extends HTMLDivElement {
         /** 武将名 */
         name:string;
@@ -2297,6 +2342,8 @@ declare namespace Lib.element {
          * phase（回合阶段即将结束），
 		 * 
          * phaseUse（每次出牌阶段使用完一次卡牌后）
+		 * 
+		 * @deprecated
          */
         using?:Card[];
 
@@ -2349,11 +2396,12 @@ declare namespace Lib.element {
          * 其实质是html节点自带DOMStringMap，用于存储携带数据信息
          */
         dataset:{
-            position:string;
+            position: string;
+			[key: string]: string;
         }
 
         /**
-         * 跳过列表
+         * 跳过时机列表
          */
         skipList:string[];
         /**
@@ -2431,14 +2479,21 @@ declare namespace Lib.element {
         
         queueCount:number;
 
-        /** 上一位玩家 */
+        /** 上一座位玩家 */
         previous:Player;
-        /** 下一位玩家 */
+        /** 下一座位玩家 */
         next:Player;
+		
         //暂时不清楚，正常玩的时候，没有见到这东西（应该是座位标记）
-        side:number;
+		/**
+		 * 要获取座位号请使用如下方法：
+		 * ```
+		 * player.getSeatNum();
+		 * ```
+		 */
+        side?:number;
 
-        /** 当前玩家是不是“zhu”，可能受玩法模式影响 */
+        /** 当前玩家是不是主公，可能受玩法模式影响 */
         isZhu:boolean;
 
         /** 不进入濒死阶段，询问求助 */

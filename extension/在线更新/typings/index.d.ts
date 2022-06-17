@@ -1,6 +1,15 @@
+interface fetchOptions {
+	/** 超时时间 */
+	timeout: number;
+}
+
 interface progress extends HTMLDivElement {
+	/** 获取标题 */
+	getTitle: (title: string) => string;
 	/** 更改标题 */
 	setTitle: (title: string) => void;
+	/** 获取显示的文件名 */
+	getFileName: (title: string) => string;
 	/** 更改显示的文件名 */
 	setFileName: (title: string) => void;
 	/** 获取进度*/
@@ -115,17 +124,18 @@ declare interface Game {
 	/**
 	 * 通过@url参数下载文件，并通过onsuccess和onerror回调
 	 */
-	shijianDownload: (url: string, onsuccess?: VoidFunction, onerror?: (e?: Error | number, statusText?: string) => void) => void;
+	shijianDownload: (url: string, onsuccess?: VoidFunction, onerror?: (e: Error | number | string, statusText: string) => void, onprogress?: (loaded: number, total: number) => void) => void;
 
 	/**
 	 * 将current分别显示在无名杀控制台中，比game.shijianDownload做出了更细致的错误划分
+	 * onsuccess中的bool代表当前文件是否下载了（即是否是404）
 	 */
-	shijianDownloadFile: (current: string, onsuccess: (current?: string, bool?: boolean) => void, onerror: (current?: string, e?: Error | number, statusText?: string) => void) => void;
+	shijianDownloadFile: (current: string, onsuccess: (current: string, bool?: boolean) => void, onerror: (current: string) => void, onprogress?: (current: string, loaded: number, total: number) => void) => void;
 
 	/**
 	 * 根据字符串数组下载文件
 	 */
-	shijianMultiDownload: (list: string[], onsuccess: (current?: string, bool?: boolean) => void, onerror: (current?: string, e?: Error | number, statusText?: string) => void, onfinish: VoidFunction) => void;
+	shijianMultiDownload: (list: string[], onsuccess: (current: string, bool?: boolean) => void, onerror: (current: string) => void, onfinish: VoidFunction, onprogress?: (current: string, loaded: number, total: number) => void) => Promise<void>;
 
 	/**
 	 * 显示下载进度

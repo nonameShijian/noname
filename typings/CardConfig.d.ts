@@ -152,10 +152,11 @@ interface ExCardData {
      */
     filterTarget?: boolean | ThreeParmFun<Card, Player, Target, boolean>;
     /**
-     * 单一目标的卡（依次指定单一目标）
-     * 
-     * (真实意思应该不是这样的，应该是指，当前卡牌需要selectTarget指定多个目标，
-     * 指一个目标，另一个目标这样子，用于将其分多次单一目标选择)
+	 * 这个应该是指先指定A再指定B的动作（和铁索不同）
+	 * 
+     * 目前只有【借刀杀人】，【隔岸观火】，【声东击西】有这个属性
+	 * 
+	 * 于【v1.9.113.4】修改实现，董允的舍宴可以为有这个属性的卡牌添加目标
      */
     singleCard?: boolean;
 
