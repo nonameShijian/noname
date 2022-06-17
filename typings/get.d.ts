@@ -390,10 +390,10 @@ interface Get {
      * 
      * 在【v1.9.113.5】中已实现读取卡牌拥有者身上的mod
 	 * 
-	 * 代码示例：
+	 * 代码示例：(所有卡牌视为K)
 	 * ```
 	 * mod: {
-	 *     cardnumber: function(card) {
+	 *     cardnumber: function(card, player, number) {
 	 *         return 13;
 	 *     },
 	 * }
@@ -402,7 +402,7 @@ interface Get {
      * @param card 
      * @param player 一张牌在一名角色手牌区时的牌面信息:player不填时默认视为卡牌的拥有者;填false时不做判断
      */
-    number(card:CardBaseUIData,player?:Player|boolean):number;
+	number(card: CardBaseUIData | { cards: CardBaseUIData[], [key: string]: any }, player?: Player | boolean): number | null;
     /**
      * 获取卡牌的名字
      * @param card 
@@ -438,12 +438,21 @@ interface Get {
     judge(card:Card):OneParmFun<Card,number>;
     /**
      * 获得玩家from到to之间的距离
+	 * 
+	 * 【v1.9.112.1】 修改效果，计算与其他角色的距离时至少为1
+	 * 
      * 具体距离类型，到时详细研究代码分析：
+	 * 
      * raw，原始距离；
+	 * 
      * pure，直线距离；
+	 * 
      * absolute，绝对距离；
+	 * 
      * attack，攻击距离；
+	 * 
      * 除以上情况，其他值（默认）为防御距离
+	 * 
      * @param from 源玩家
      * @param to 目标玩家
      * @param method 获取距离的类型：raw，pure，absolute，attack，默认防御距离

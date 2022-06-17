@@ -73,8 +73,12 @@ interface Status {
      * 当轮的第一个玩家（会随玩家死亡进度刷新） 
      * 
      * 若该玩家翻面状态，会在_turnover中进行特殊结算；
+	 * 
+	 * 于【v1.9.113.4】废弃
+	 * 
+	 * @deprecated 在已生成座位号的场合，不再通过_status.firstAct来判断“一轮游戏”的开始，而是按“当前回合角色的座位号是否大于上一回合的角色”判断
      */
-    roundStart:Player;
+    roundStart?:Player;
 
     /** 
      * 牌堆顶的一张牌 
@@ -106,9 +110,19 @@ interface Status {
 
 	/**
 	 * 于【v1.9.113.4】废弃
+	 * 
 	 * @deprecated 在已生成座位号的场合，不再通过_status.firstAct来判断“一轮游戏”的开始，而是按“当前回合角色的座位号是否大于上一回合的角色”判断
 	 */
 	firstAct?: any;
+
+	/** 仁库，为张仲景（游戏中叫张机）一个人添加的属性（一个特殊的区域） */
+	renku: CardBaseUIData[]; 
+
+	/** 游戏是否已经开始 */
+	gameStarted: boolean;
+
+	/** 应该是许劭左慈等人要从“剩余武将牌”里获取的武将名数组 */
+	characterlist: string[];
 
     /*  扩展成员  */
     [key:string]:any;

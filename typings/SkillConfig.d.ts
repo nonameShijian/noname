@@ -1333,6 +1333,14 @@ interface ExModData {
     cardname?(card: Card, player: Player): string;
     /** 改变卡牌伤害属性   用于get.nature*/
     cardnature?(card: Card, player: Player): string;
+	/**
+	 * 改变卡牌点数
+	 * 
+	 * 【v1.9.113.5】
+	 * 
+	 * @param number 原来的卡牌点数
+	 */
+	cardnumber?(card: Card, player: Player, number: number): number;
 
     /** 对特定角色使用牌的次数限制（用于优化【对特定角色使用牌无次数限制】的机制）【v1.9.105】 */
     cardUsableTarget?(card: Card, player: Player, target: Target):boolean;
