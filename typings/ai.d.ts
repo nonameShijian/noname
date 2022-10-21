@@ -1,4 +1,5 @@
 declare var ai:AI;
+
 interface AI {
     basic:AIBasic;
     get:Get;

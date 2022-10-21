@@ -111,9 +111,9 @@ interface Status {
 	/**
 	 * 于【v1.9.113.4】废弃
 	 * 
-	 * @deprecated 在已生成座位号的场合，不再通过_status.firstAct来判断“一轮游戏”的开始，而是按“当前回合角色的座位号是否大于上一回合的角色”判断
+	 * @deprecated 有座位号的局不以此作为判断标准了。在已生成座位号的场合，不再通过_status.firstAct来判断“一轮游戏”的开始，而是按“当前回合角色的座位号是否大于上一回合的角色”判断
 	 */
-	firstAct?: any;
+	firstAct?: Player;
 
 	/** 仁库，为张仲景（游戏中叫张机）一个人添加的属性（一个特殊的区域） */
 	renku: CardBaseUIData[]; 
@@ -123,6 +123,22 @@ interface Status {
 
 	/** 应该是许劭左慈等人要从“剩余武将牌”里获取的武将名数组 */
 	characterlist: string[];
+
+	/**
+	 * 扩展设置的扩展更新内容，由无名杀自动解析显示(由`game.showChangeLog`调用)
+	 * 
+	 * 注: extensionChangeLog的键对应的值将被解析成HTML字符串，所以使用'\n'是无效的。请使用\<br\>换行
+	 * 
+	 * 示例:
+	 * ```jsx
+	 * _status.extensionChangeLog = { 
+	 * 	'扩展名': '我的扩展', 
+	 * 	'版本号': 'v1.23', 
+	 * 	'更新内容': 'xxx'
+	 * };
+	 * ```
+	 */
+	extensionChangeLog: SMap<string>;
 
     /*  扩展成员  */
     [key:string]:any;

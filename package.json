@@ -6,7 +6,7 @@
     "main": "main.js",
     "scripts": {
         "start": "electron .",
-        "packageWin64": "electron-packager . 无名杀 --platform=win32 --arch=x64 --out=./ --app-version=1.9.0 --icon=noname.ico --overwrite --ignore=node_modules --electron-version 16.0.4",
+        "packageWin64": "electron-packager . 无名杀 --platform=win32 --arch=x64 --out=./ --app-version=1.9.0 --icon=noname.ico --overwrite --ignore=./node_modules --ignore=.git --electron-version 16.0.4",
         "packageWin32": "electron-packager . 无名杀 --platform=win32 --arch=ia32 --out=./ --app-version=1.9.0 --icon=noname.ico --overwrite --ignore=node_modules --electron-version 16.0.4",
         "packageLinux": "electron-packager . 无名杀 --platform=linux --arch=x64 --out=./ --app-version=1.9.0 --icon=noname.ico --overwrite --ignore=node_modules --electron-version 16.0.4"
     },
@@ -14,14 +14,25 @@
         "type": "git",
         "url": "git+https://github.com/nonameShijian/noname.git"
     },
-    "installerVersion": "1.42",
+    "installerVersion": "1.43",
     "installerUpdateContent": [
+		{
+			"version": "1.43",
+			"updateContent": [
+				"【在线更新】扩展v1.46更新，优化大部分功能",
+				"修改退出全屏方式的实现，修复esc占用全局按键监听的问题，现在用f11退出全屏即可",
+				"本应用程序从v1.43开始降低对【假装无敌】和【概念武将】的限制，不再强制关闭而是进行安全性提醒",
+				"修正部分typings代码声明文件",
+				"注释掉部分无用代码"
+			]
+		},
 		{
 			"version": "1.42",
 			"updateContent": [
-				"【在线更新】扩展v1.3更新，不兼容1.8无名杀（由理兼容版），覆盖游戏内自动检测更新的功能，提供代码声明文件",
+				"【在线更新】扩展v1.3更新，不兼容手机1.8无名杀（由理兼容版），覆盖游戏内自动检测更新的功能，提供代码声明文件",
 				"【应用配置】扩展v1.21更新，优化修改window.onerror",
 				"【拖拽读取】扩展v1.81更新，修复一个导入时的bug",
+				"修改退出全屏方式的实现，修复esc占用全局按键监听的问题，现在用f11退出全屏即可",
 				"修正部分typings代码声明文件，添加cordova-plugin-dialogs.d.ts代码提示"
 			]
 		},
@@ -148,10 +159,14 @@
     "author": "诗笺",
     "license": "ISC",
     "devDependencies": {
-        "electron": "^16.0.4",
-        "electron-packager": "^15.3.0"
+		"electron-packager": "^15.3.0",
+		"electron": "^16.0.4",
+		"@types/cordova": "^0.0.34"
     },
     "dependencies": {
-        "@electron/remote": "^2.0.1"
+		"@electron/remote": "^2.0.1",
+		"options": "0.0.6",
+		"ultron": "1.0.2",
+		"ws": "1.0.1"
     }
 }

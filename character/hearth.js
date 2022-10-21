@@ -3161,7 +3161,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					if(!lib.character.stone_misha){
-						lib.character.stone_misha=['male','shu',3,['chaofeng'],['minskin','stone','mode:stone'],[3,3,'hunter']];
+						lib.character.stone_misha=['male','shu',3,['lschaofeng'],['minskin','stone','mode:stone'],[3,3,'hunter']];
 					}
 					if(!lib.character.stone_huofu){
 						lib.character.stone_huofu=['male','qun',2,['stone_chongfeng'],['minskin','stone','mode:stone'],[3,4,'hunter']];
@@ -5559,9 +5559,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				group:'hhudun_hujia',
 				subSkill:{
 					hujia:{
-						trigger:{player:'damageZero'},
+						trigger:{player:'damageEnd'},
 						filter:function(event){
-							return event.hujia;
+							return event.hujia==event.num;
 						},
 						forced:true,
 						content:function(){

@@ -48,9 +48,17 @@ interface CharacterConfigData extends ExCommonConfig {
     translate?: SMap<string>
 }
 
+/**
+ * 武将性别
+ */
+type HeroSex = 'male' | 'female' | 'dobule' | 'none';
+
+/** 武将体力 */
+type HeroHp = number | string;
+
 /** 
  * 武将信息:
- * [ 0string,1string,2number/string,3string[],4string[],.....其他特殊扩展 ]
+ * [ 0 string, 1 string, 2 number/string, 3 string[], 4 string[],.....其他特殊扩展 ]
  * 0："性别",
  * 1："势力", 
  * 2：体力【体力可以支持分开独立显示："初始hp/血量上限", 加上护甲就是"初始hp/血量上限/护甲值"】,
@@ -63,9 +71,8 @@ interface CharacterConfigData extends ExCommonConfig {
  * 在4中，拥有"ZJNGEx"标记，表示这位zjsha扩展人物，5为扩展内容:[zjsha势力,血槽]
  * 1属性（即原势力），7zj杀势力，8血槽（体力可以支持双配置，所以这个没什么用了），9zj杀角色标记，暂时未想好 （从倒数开始数，倒数三个）
  */
-
-type HeroSex = 'male' | 'female' | 'dobule' | 'none';
-type HeroData = [HeroSex, string, number | string, string[] | [], string[], ...any[]] | [HeroSex, string, number | string, string[] | [],  ...any[]];
+type HeroData = [HeroSex, string, HeroHp, string[] | [], string[], ...any[]] | 
+				[HeroSex, string, HeroHp, string[] | [],  ...any[]];
 
 /** 武将信息索引 */
 declare const enum HeroDataFields {
@@ -79,4 +86,22 @@ declare const enum HeroDataFields {
     skills=3,
     /** 额外携带信息 */
     exInfo=4
+}
+
+/** 新增一个game.addCharacter的info类型 */
+interface CharacterConfigInfo {
+	/** 来源扩展 */
+	extension?: string;
+	/** 性别 */
+	sex: HeroSex;
+	/** 国籍 */
+	group: string;
+	/** 体力值 */
+	hp: HeroHp;
+	/** 技能 */
+	skills?: string[];
+	/** 其他标签，添加到character[4]中 */
+	tags?: string[];
+	/** 武将中文名 */
+	translate: string;
 }

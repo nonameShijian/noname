@@ -6,7 +6,7 @@ declare namespace UI {
 		/** 跳转到命令页面 */
 		consoleMenu(): void;
         /** 点击身份icon */
-        identitycircle(): void;
+		identitycircle(): void;
         /** 联机约战 */
         connectEvents(): void;
         connectClients(): void;
@@ -17,14 +17,14 @@ declare namespace UI {
          * 标记自己当前触摸弹出某些面板 的状态
          * @param forced 
          */
-        touchpop(forced): any;
+        touchpop(forced?:any): any;
         exit(): any;
         shortcut(show): any;
         favouriteCharacter(e): any;
         buttonnameenter(): any;
         buttonnameleave(): any;
-        identity(e): any;
-        identity2(): any;
+        identity(e): void;
+        identity2(): void;
         roundmenu(): any;
         pausehistory(): any;
         pauseconfig(): any;

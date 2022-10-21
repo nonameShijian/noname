@@ -44,11 +44,11 @@ declare namespace Lib.element {
         /**
          * 并排多个同阶段触发的技能
          */
-        arrangeTrigger(): any;
+		arrangeTrigger: ContentFuncByAll;
         /**
          * 创建触发的技能的事件：“技能名”s
          */
-        createTrigger(): any;
+		createTrigger: ContentFuncByAll;
         playVideoContent(): any;
         /**
          * 等待玩家
@@ -61,7 +61,7 @@ declare namespace Lib.element {
         phaseDraw(): any;
         phaseUse(): any;
         phaseDiscard(): any;
-        chooseToUse(): any;
+		chooseToUse: ContentFuncByAll;
         chooseToRespond(): any;
         /**
          * 选择弃牌

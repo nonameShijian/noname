@@ -18,7 +18,8 @@ interface SelectConfigData {
     /** 
      * 【核心】初始化时默认的选项/配置/模式（对应下面item的key）
      */
-    init?: boolean | string;
+    // init?: boolean | string | number;
+	init?: any;
     /** 
      * 【核心】二级菜单配置(当前config内容的菜单)
      */
@@ -70,9 +71,13 @@ interface SelectConfigData {
      * 点击触发事件
      * 
      * 若有返回值false，则当前点击事件的toggle切换无效
+	 * 
+	 * 有时候不需要返回值，但是函数需要用async， 所以返回值我加了个Promise<any>
+	 * 
+	 * @this HTMLDivElement
      */
-    onclick?(item: any): void | boolean;
-    onclick?(link: any, node: HTMLDivElement): void | boolean;
+	onclick?(item?: any): boolean | Promise<any> | void;
+	onclick?(link: any, node: HTMLDivElement): void | boolean | Promise<any>;
 
     /** 当前没有onclick方法时，除了默认game.saveConfig保存数据配置key的数据，可以使用该方法进行数据处理啊 */
     onsave?(reslut: any): void;
@@ -86,7 +91,7 @@ interface SelectConfigData {
     /** 取值true，若没有设置可以进行input输入 */
     fixed?: boolean;
     /** 设置input节点的onblur事件的回调（焦点离开输出框） */
-    onblur?(): void;
+    onblur?(e: FocusEvent): void;
 
     /**
      * 用于扩展菜单lib.extensionMenu中(目前未见使用)
@@ -162,10 +167,8 @@ declare type OtherImportFunc = (lib: Lib, game: Game, ui: UI, get: Get, ai: AI, 
  * game.import的回调返回值结构
  */
 interface ExtensionInfoConfigData extends ExCommonConfig {
-    /** 扩展名 */
-    name: string;
     /** 用于解析用的key，不直接参与游戏逻辑，参与自己定义的解析流程，统一该包的前缀 */
-    key?:string;
+    key?: string;
     /** 
      * 是否可编辑该扩展（需要打开显示制作扩展）
      * （都满足条件，则可以开启“编辑此扩展”功能）
@@ -356,11 +359,15 @@ interface newExtensionInfoConfigData extends ExCommonConfig {
 
 /**
  * 玩法模式的扩展配置(import:mode)
+ * 
  * game.import,type为mode的主要返回结构
  * 
  * 若想扩展一些项目内没有的对象，最好采用以下两种结构加入：
- * 1.数组:[];
- * 2.对象结构：{}
+ * 
+ * 1.数组
+ * 
+ * 2.对象结构
+ * 
  * 要扩充方法，通过对象结构，都会以lib[新对象结构的key]={对象结构}的方式保存在本地。
  */
 interface ExModeConfigData extends ExCommonConfig {
@@ -394,7 +401,7 @@ interface ExModeConfigData extends ExCommonConfig {
     /**
      * mode的start启动方法
      */
-    start(): void;
+	start: ContentFuncByAll;
     /**
      * mode的start启动之前的处理方法
      */

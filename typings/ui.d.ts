@@ -8,7 +8,7 @@ interface UI {
      * 刷新node样式
      * 用于当node.style值改变时，下面需要立刻感应到该变化，可以使用该方法立刻主动刷新，立即生效
      */
-    refresh(node: HTMLElement): void;
+    refresh(node: any): void;
     create: UI.Create,
     click: UI.Click,
     /** 选中的ui */
@@ -94,6 +94,11 @@ interface UI {
     /** 手牌区 */
     handcards: HTMLDivElement;
 
+	handcards1: HTMLDivElement;
+	handcards2: HTMLDivElement;
+	handcards1Container: HTMLDivElement;
+	handcards2Container: HTMLDivElement;
+
     arena: HTMLDivElement;
     /** 托管按钮 */
     auto: HTMLDivElement;
@@ -103,9 +108,30 @@ interface UI {
 	
 	window: HTMLDivElement;
 	/** 正在显示的dialog */
-	dialog?: HTMLDivElement;
+	dialog: HTMLDivElement;
 	/** 正在显示的选项按钮(使用技能等) */
-	control?: HTMLDivElement;
+	control: HTMLDivElement;
 	/** 导入游戏设置的div */
 	import_data_button: HTMLDivElement;
+	/** 背景div */
+	background: HTMLDivElement;
+	
+	system1: HTMLDivElement;
+	system2: HTMLDivElement;
+
+	handcards1Container: HTMLDivElement;
+	handcards2Container: HTMLDivElement;
+
+	/** 托管的div */
+	autonode: HTMLDivElement;
+	
+	me: HTMLDivElement;
+
+    historybar: HTMLDivElement;
+    sidebar: HTMLDivElement;
+    arenalog: HTMLDivElement;
+	/** 挑战模式下显示的正在操控的角色 */
+	fakeme: HTMLDivElement;
+	confirm: HTMLDivElement;
+	skills: HTMLDivElement;
 }

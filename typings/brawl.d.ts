@@ -4,7 +4,7 @@
  * 
  * brawl乱斗模式 
  * 
- * 导入配置，需要设置_status.extensionscene=true;
+ * 导入配置，需要设置_status.extensionscene = true;
  */
 interface BrawlSceneMode extends ExModeConfigData {
 

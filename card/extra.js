@@ -149,7 +149,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 							if(card){
 								if(game.hasPlayer(function(current){
 									return (get.attitude(target,current)<0&&
-										target.canUse(card,current,true,true)&&
+										target.canUse(card,current,null,true)&&
 										!current.hasSkillTag('filterDamage',null,{
 											player:player,
 											card:card,
@@ -164,7 +164,8 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 						},
 					},
 					tag:{
-						save:1
+						save:1,
+						recover:0.1,
 					}
 				}
 			},
@@ -247,16 +248,16 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 							if(target==player){
 								if(typeof _status.event.filterCard=='function'&&
 									_status.event.filterCard({name:'huogong'},player,_status.event)){
-									return -1.5;
+									return -1.15;
 								}
 								if(_status.event.skill){
 									var viewAs=get.info(_status.event.skill).viewAs;
-									if(viewAs=='huogong') return -1.5;
-									if(viewAs&&viewAs.name=='huogong') return -1.5;
+									if(viewAs=='huogong') return -1.15;
+									if(viewAs&&viewAs.name=='huogong') return -1.15;
 								}
 								return 0;
 							}
-							return -1.5;
+							return -1.15;
 						}
 					},
 					tag:{
@@ -899,6 +900,9 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					}
 					return eff>=0;
 				},
+				prompt2:function(event,player){
+					return '将'+get.translation(event.card)+'改为火属性';
+				},
 				content:function(){
 					trigger.card.nature='fire';
 					if(get.itemtype(trigger.card)=='card'){
@@ -1012,7 +1016,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			["club",11,"tiesuo"],
 			["club",12,"tiesuo"],
 			["club",13,"tiesuo"],
-			["heart",13,"wuxie"],
+			["heart",1,"wuxie"],
 			["heart",13,"wuxie"],
 			["spade",13,"wuxie"],
 			["spade",10,"bingliang"],

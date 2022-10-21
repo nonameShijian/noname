@@ -160,17 +160,19 @@ declare namespace Lib.element {
             /** 背景 */
             background:HTMLDivElement;
             /** 化身 */
-            avatar:HTMLDivElement;
+            avatar?:HTMLDivElement;
             /** 边框背景（边框） */
-            framebg:HTMLDivElement;
+            framebg?:HTMLDivElement;
             /** 额外添加信息（右下角） */
-            addinfo:HTMLDivElement;
+            addinfo?:HTMLDivElement;
             /** 不明 */
             intro:HTMLDivElement;
             /** 范围，卡牌是装备类型时，右下角显示距离（正常情况下和addinfo冲突） */
             range:HTMLDivElement;
             /** 手牌标记【v1.9.108.3】 */
             gaintag:HTMLDivElement;
+			
+			[key: string]: HTMLDivElement;
         };
         
         link:Card;
@@ -181,6 +183,11 @@ declare namespace Lib.element {
         //添加手牌标记（gaintag）机制，用于对玩家的特定手牌进行标记 【v1.9.108.3】
         /** 手牌标记 */
         gaintag:string[];
+
+		storage: SMap<any>;
+		vanishtag: any[];
+		gaintag: any[];
+		_uncheck: any[];
 
         [key:string]:any;
     }

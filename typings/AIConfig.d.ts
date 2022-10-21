@@ -164,18 +164,20 @@ interface ExAIData {
     noTurnover?:boolean;
 
     //【v1.9.102】
-    /** 
+    /**
      * 用于观看其他角色的手牌
      * 
      * 令其他角色的手牌对自己可见；
      * 只需令自己拥有viewHandcard的技能标签即可，通过调整skillTagFilter即可实现对特定角色的手牌可见；
      * 例：
+	 * ```jsx
      * ai:{
-            viewHandcard:true,
-            skillTagFilter:function(player,tag,arg){ //arg为目标，通过调整skillTagFilter即可实现对特定角色的手牌可见；
-                if(player==arg) return false;
-            }, //可看见除自己外所有人的手牌；
-        }
+     *      viewHandcard:true,
+     *      skillTagFilter:function(player,tag,arg){ //arg为目标，通过调整skillTagFilter即可实现对特定角色的手牌可见；
+     *          if(player==arg) return false;
+     *       }, //可看见除自己外所有人的手牌；
+     *   }
+	 *```
      */
     viewHandcard?:boolean;
 
@@ -246,21 +248,30 @@ interface ExAIData {
         对确定的意向，反应准确的收益
 
         【收益论的检验】示例：
+		```jsx
         content:function(){
             game.log(player,'对',target,'的att是',ai.get.attitude(player,target));
             game.log(player,'对',player,'的att是',ai.get.attitude(player,player));
             game.log(player,'对',target,'发动【测试】的eff是',ai.get.effect(target,'测试',player,player));
             game.log(player,'对',target,'使用【杀】的eff是',ai.get.effect(target,{name:'sha'},player,player));
         },
-
+		```
         永远的萌新大佬的示例：
+
         effect的返回值：
+
             effect有3种可能的返回值,1个数字，长度为2的数组，长度为4的数组。
+
             1个数字n:收益*n
+
             长度为2的数组[a,b]:a*收益+b
+
             长度为4的数组[a,b,c,d]:对目标为a*收益+b，对使用者为c*收益+d
-            *注意 zeroplayertarget 实际上是[0,0,0,0]  zerotarget  实际上是[0,0
-            "下面以target:function(){},别人对你使用杀为例，括号里为可能的技能描述"
+
+            *注意 zeroplayertarget 实际上是[0,0,0,0]  zerotarget  实际上是[0,0]
+
+            "下面以target:function,别人对你使用杀为例，括号里为可能的技能描述"
+
                 return -1;//负影响(杀对你造成伤害时改为等量回复)
                 return 0;//无影响(杀对你无效)
                 return 2;//2倍影响(杀对你的伤害翻倍)
@@ -302,7 +313,7 @@ interface ExAIData {
          * ai如何选择目标（对目标的收益）：
          * 返回负，选敌人，返回正，选队友;
          * 没有返回值则不选;
-         * 注：写了这个就不用写player(player){}了，因为player可以在这里进行判断......先继续研究好，再下定论；
+         * 注：写了这个就不用写player:function了，因为player可以在这里进行判断......先继续研究好，再下定论；
          */
         target?:ThreeParmFun<Player,Target,Card,number>|number;
         /**

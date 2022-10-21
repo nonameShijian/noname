@@ -27,11 +27,15 @@ interface ExCardData {
     cardimage?: string;
     /** 
      * 卡牌的卡面
+	 * 
      * 注：需要fullskin为true
-     * 带“ext:”前缀的，其文件夹路径：extension/卡牌的image
-     *  没有，则路径是：卡牌的image
+	 * 
+     * 带“ext:”前缀的，其文件夹路径：extension/卡牌的image。没有则路径是：卡牌的image
+	 * 
      * 若值为“background”：则调用setBackground，设置对应类型的卡面；
+	 * 
      * 若值为“card”：..........
+	 * 
      * 注：判断比较复杂，有优先级顺序，之后在独立详细讨论
      */
     image?: string;
@@ -444,25 +448,39 @@ interface ExCardData {
     [key: string]: any;
 }
 
+/** 卡牌点数 */
+type CardBaseNumber = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13;
+
+/** 卡牌花色 */
+type CardBaseSuit = 'heart' | 'diamond' | 'club' | 'spade';
+
 /**
  * 卡牌基础配置信息(记录与牌堆list中基本结构)：
+ * 
  * 0：花色
- * 1：数字
+ * 
+ * 1：点数
+ * 
  * 2：名字
+ * 
  * 3：伤害属性
+ * 
  * 4........暂时没看见，有也是额外扩展
  * 
  * 用于显示的简单卡牌结构2
- * [suit花色,number数字,name卡牌名,nature伤害类型，......[tag列表]]
+ * 
+ * [suit花色, number数字, name卡牌名, nature伤害类型，......[tag列表]]
  */
-type CardBaseData = [string, number, string, string];
+type CardBaseData = [string, CardBaseNumber, string, string];
 
 /**
  * 联网模式下卡牌基础配置信息
- * 0:卡牌的唯一id
- * 其余和上面一致
+ * 
+ * 0: 卡牌的唯一id
+ * 
+ * 其余和上面的CardBaseData一致
  */
-type CardBaseOLData = [string, string, number, string, string];
+type CardBaseOLData = [string, string, CardBaseNumber, string, string];
 
 /**
  * 用于显示的简单卡牌结构(基本卡牌信息，作为基本的参数结构)
@@ -475,7 +493,7 @@ interface CardBaseUIData {
     //基本结构（UI一般会有的结构）
     name?: string;
     suit?: string;
-    number?: number;
+	number?: CardBaseNumber;
     nature?: string;
 
     //用于某些方法，用于过滤卡牌的额外结构
@@ -513,4 +531,42 @@ type DistanceData = {
     globalTo?: number;
     /** （武器）攻击范围：值为负数值（不填，为equip1时，默认显示“范围：1”） */
     attackFrom?: number;
+}
+
+/** 新增一个game.addCard的info2类型 */
+interface CardConfigInfo {
+	/** 来源扩展 */
+	extension?: string;
+	/** 是否有卡牌音效 */
+	audio?: boolean;
+	/** 是否有卡牌图片 */
+	fullskin?: boolean;
+	/** 是否有卡牌图片 */
+	fullimage?: boolean;
+	/** 卡牌中文名 */
+	translate: string;
+	/** 卡牌效果描述 */
+	description: string;
+	/** 卡牌点数 */
+	number?: CardBaseNumber;
+	/** 卡牌颜色 */
+	color?: 'red' | 'black';
+}
+
+/** 新增卡包类型 */
+interface CardPackConfigInfo {
+	mode?: any;
+	forbid?: any;
+	/**
+	 * [花色, 点数, 卡牌名, 属性, 其他标签]
+	 */
+	list: [CardBaseSuit, CardBaseNumber, string, string | null | undefined, string[]][];
+	card?: {
+		[key: string]: CardConfigInfo;
+	},
+	skill?: {
+		[key: string]: ExSkillData;
+	},
+	/** 其他属性覆盖lib同属性内容 */
+	[key: string]: object;
 }

@@ -22,6 +22,24 @@ interface progress extends HTMLDivElement {
 	setProgressMax: (max: number) => void;
 }
 
+interface notLogin {
+	code: number,
+	data: { account_type: string },
+	msg: { user_not_login: string },
+}
+
+interface noname_update {
+	version: string;
+	update: string;
+	changeLog: string[];
+	files: string[];
+}
+
+declare interface Window {
+	/** 保存没下载完的文件( from: extension/在线更新 )  */
+	saveBrokenFile: VoidFunction;
+}
+
 declare interface LibConfigData {
 	/**
 	 * 更新时是否检查音频文件
@@ -70,7 +88,10 @@ declare interface Lib {
 		coding: "https://nakamurayuri.coding.net/p/noname/d/noname/git/raw",
 		fastgit: "https://raw.fastgit.org/libccy/noname",
 		github: "https://raw.githubusercontent.com/libccy/noname",
-		xuanwu: "https://kuangthree.coding.net/p/nonamexwjh/d/nonamexwjh/git/raw"
+		/** 感谢寰宇星城 */
+		xuanwu: "https://kuangthree.coding.net/p/nonamexwjh/d/nonamexwjh/git/raw",
+		/** 感谢Show-K */
+		URC: "https://unitedrhythmized.club/libccy/noname",
 	},
 }
 
@@ -78,7 +99,7 @@ declare interface Game {
 	/**
 	 * 请求错误达到5次提示更换更新源
 	 */
-	updateErrors?: number;
+	updateErrors: number;
 	/**
 	 * 正在更新游戏文件
 	 */
@@ -106,14 +127,16 @@ declare interface Game {
 		coding: 'Coding',
 		github: 'GitHub',
 		fastgit: 'GitHub镜像',
-		xuanwu: '玄武镜像'
+		xuanwu: '玄武镜像',
+		URC: 'URC'
 	}
 	 */
 	getFastestUpdateURL: (updateURLS: SMap<string> = lib.updateURLS, translate: SMap<string> = {
 		coding: 'Coding',
 		github: 'GitHub',
 		fastgit: 'GitHub镜像',
-		xuanwu: '玄武镜像'
+		xuanwu: '玄武镜像',
+		URC: 'URC'
 	}) => never | 
 		Promise<{ 
 			success: Array<{ key: string, finish: number }>;
@@ -124,18 +147,20 @@ declare interface Game {
 	/**
 	 * 通过@url参数下载文件，并通过onsuccess和onerror回调
 	 */
-	shijianDownload: (url: string, onsuccess?: VoidFunction, onerror?: (e: Error | number | string, statusText: string) => void, onprogress?: (loaded: number, total: number) => void) => void;
+	shijianDownload: (url: string, onsuccess?: (skipDownload?: boolean) => void, onerror?: (e: FileTransferError | Error, message?: string) => void, onprogress?: (loaded: number, total: number) => void) => void;
 
 	/**
 	 * 将current分别显示在无名杀控制台中，比game.shijianDownload做出了更细致的错误划分
 	 * onsuccess中的bool代表当前文件是否下载了（即是否是404）
+	 * @deprecated 在v1.4及以后的在线更新扩展中弃用此函数
 	 */
 	shijianDownloadFile: (current: string, onsuccess: (current: string, bool?: boolean) => void, onerror: (current: string) => void, onprogress?: (current: string, loaded: number, total: number) => void) => void;
 
 	/**
 	 * 根据字符串数组下载文件
+	 * @param [onprogress] 下载一个文件的进度(手机端不触发)
 	 */
-	shijianMultiDownload: (list: string[], onsuccess: (current: string, bool?: boolean) => void, onerror: (current: string) => void, onfinish: VoidFunction, onprogress?: (current: string, loaded: number, total: number) => void) => Promise<void>;
+	shijianMultiDownload: (list: string[], onsuccess: VoidFunction, onerror: (e: FileTransferError | Error, message?: string) => void, onfinish: VoidFunction, onprogress?: (current: string, loaded: number, total: number) => void) => void;
 
 	/**
 	 * 显示下载进度
@@ -145,4 +170,38 @@ declare interface Game {
 	 * @param [value] 当前下载进度
 	 */
 	shijianCreateProgress: (title: string, max: number, fileName?: string, value?: number) => progress;
+
+	/**
+	 * 从更新源获取要更新的文件(不包括素材)
+	 * 
+	 * 最大重试次数为5次
+	 */
+	shijianGetUpdateFiles: () => Promise<{
+		/** window.noname_update */
+		update: noname_update,
+		/** window.noname_source_list */
+		source_list: string[],
+	}>;
+
+	/**
+	 * 从更新源获取要更新的素材(皮肤文件除外)
+	 * 
+	 * 最大重试次数为5次
+	 */
+	shijianGetUpdateAssets: () => Promise<{
+		assets: string[],
+		skins: {
+			[key: string]: number
+		},
+	}>;
+
+	/**
+	 * 是否有本地通知功能(安卓)
+	 */
+	shijianHasLocalNotification: () => boolean;
+
+	/**
+	 * 在线更新扩展安装后，禁用此函数
+	 */
+	checkForUpdate: VoidFunction;
 }

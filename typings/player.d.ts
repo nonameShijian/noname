@@ -109,7 +109,10 @@ declare namespace Lib.element {
         /**
          * 玩家初始化
          */
-        init(character: string, character2: string, skill: string): Player;
+        init(character: string, character2?: string | boolean, skill?: string | boolean): Player;
+
+		inits: ((player: Player) => void)[];
+		_inits: ((player: Player) => void)[];
 
         //联机相关初始化
         initOL(name: any, character: any): any;
@@ -119,12 +122,12 @@ declare namespace Lib.element {
         /**
          * 重新初始化
 		 * 
-         * @param from 原武将的名字（和玩家当前所显示的武将名一致，包括双将）
+         * @param from 原武将的名字（需和玩家当前所显示的武将名一致，包括双将）
          * @param to 将要更新成对应武将的名字
          * @param maxHp 若是数组的话，则第一个为血量，第二为最大血量；若是false，则默认0；若为“nosmooth”，则默认使用当前的；
          * @param online 是否在线（没什么用），若为true，则不更新UI信息
          */
-        reinit(from: string, to: string, maxHp?: number|string|[number,number], online?: boolean): void;
+		reinit(from: string, to: string, maxHp?: number | 'nosmooth' | [number,number] | false, online?: boolean): void;
         /**
          * 重置清除玩家Player的信息
          */
@@ -135,8 +138,12 @@ declare namespace Lib.element {
         getLeft(): number;
         /** 【UI】获取offsetTop（元素上方距离参照元素上边界偏移量） */
         getTop(): number;
-        /** 【动画】化生 */
-        smoothAvatar(vice: any, video: any): any;
+        /** 
+		 * 【动画】显示一瞬间的皮肤
+		 * @param vice 使用副将
+		 * @param video 是否加入动画
+		 */
+		smoothAvatar(vice?: boolean, video?: boolean): any;
         /** 【动画】换位置 */
         changeSeat(position: any, video: any): any;
 
@@ -198,6 +205,10 @@ declare namespace Lib.element {
          * 注：主要更新血量，手牌数，标记(可用于直接修改某些数值，例如血量，不会触发相关事件)
          */
         update(): Player;
+		/**
+		 * player.update中判断如果有lib.element.player.updates就循环执行
+		 */
+		updates: ((player: Player) => void)[];
         /**
          * 更新指定标记
 		 * 
@@ -273,7 +284,7 @@ declare namespace Lib.element {
          * @param arg1 获取玩家身上牌的类型：h手牌，e装备牌，j判定牌，可以多个拼接【个人扩充：增加“s”,"o"两个区域】
          * @param arg2 获取牌的详细过滤条件（若是字符串则是卡牌名，若是对象是个cardSimpInfo结构）【个人扩充：方法增加多一个参数--当前玩家】
          */
-        getCards(arg1: string, arg2?: string | CardBaseUIData |OneParmFun<Card,boolean>|TwoParmFun<Card,Player,boolean>): Card[];
+        getCards(arg1?: string, arg2?: string | CardBaseUIData |OneParmFun<Card,boolean>|TwoParmFun<Card,Player,boolean>): Card[];
         /**
          * 获取指定玩家可以弃置的当前玩家的牌
 		 * 
@@ -369,8 +380,9 @@ declare namespace Lib.element {
          * 
          * @param identity 若不填，则显示当前玩家的真实身份
          */
-        setIdentity(identity?: string): Player;
-
+		setIdentity(identity?: string, nature?: string): Player;
+		/** 展示身份 */
+		showIdentity(): void;
 
         //玩家操作事件（这些都是些关键操作，骚后仔细研究）
         /**
@@ -454,9 +466,11 @@ declare namespace Lib.element {
 		 * 
          *      "nosource":设置next.nosource为true，指明没有来源，若该值不为true,且当前没有next.source，默认来源为自己;
          * 
-         *  注1：【v1.9.106】该事件流程大改，其流程改成和chooseToUse基本一致，需要重新理解；
+         *  注1: 【v1.9.106】该事件流程大改，其流程改成和chooseToUse基本一致，需要重新理解；
 		 * 
          *      即现在chooseToRespond事件可以使用chooseButton类技能，可以触发useSkill，可以触发precontent了
+		 * 
+		 *  注2: 【v1.9.115.1】调整chooseToRespond事件的AI操作逻辑
          */
         chooseToRespond(...args: any[]): Event;
         /**
@@ -521,29 +535,26 @@ declare namespace Lib.element {
          * 
          * 参数列表：
 		 * 
-         *  boolean类型：对应next.forced，若没有，默认false(手动执行)；
+         *  boolean类型：对应```next.forced```，若没有，默认false(手动执行)；
 		 * 
-         *  itemtype为"dialog"类型：对应next.dialog，是否使用当前已有的dialog面板;
+         *  itemtype为"dialog"类型：对应```next.dialog```，是否使用当前已有的dialog面板;
 		 * 
-         *  itemtype为"select"类型/number类型：对应next.selectButton，没有就默认[1,1],可选按钮数目;
+         *  itemtype为"select"类型/number类型：对应```next.selectButton```，没有就默认```[1,1]```, 可选按钮数目;
 		 * 
-         *  function类型：依次设置next.ai,next.filterButton（先设ai...）;
+         *  function类型：依次设置```next.ai```和```next.filterButton```(注意先设置ai);
 		 * 
-         *          filterButton，若没有，默认lib.filter.filterButton;
+         *  若没有设置```filterButton```，默认lib.filter.filterButton;
 		 * 
-         *  数组类型：next.createDialog,核心，创建dialog的信息，常用基本结构：
+         *  数组类型：```next.createDialog```,核心，若没有event.dialog,则创建dialog的信息
+		 *  
+		 *  实际上是调用了如下代码, event.createDialog作为了ui.create.dialog的参数:
+		 *  ```jsx
+			event.createDialog.add('hidden');
+        	event.dialog = ui.create.dialog.apply(this, event.createDialog);
+		 *  ```
+		 *  所以有关event.createDialog的更多信息请参考```ui.create.dialog```
 		 * 
-         *      [
-		 * 
-         *      string的prompt文本,
-		 * 
-         *      [item,type],  (上面部分主要是提供给dialog.add的参数，可直接参考add的参数)
-		 * 
-         *      "hidden"/”notouchscroll“/”forcebutton“,
-		 * 
-         *      布尔类型值 (下面部分是主要提供ui.create.dialog)
-		 * 
-         *      ]；
+		 *  注: 【v1.9.115】修复联机模式下chooseButton类技能回传的backup技能在被读取之后才同步到主机的bug（对应卧龙凤雏和手杀杜预相关）
          */
         chooseButton(...args: any[]): Event;
         /**
@@ -630,9 +641,10 @@ declare namespace Lib.element {
          *      "noanimate":设置noanimate为false;
 		 * 
          *      "nodistance":设置nodistance为true，是否过滤距离（即让此次使用的卡牌不受距离限制），
-         *                      设置事件的filterTarget，
 		 * 
-         *                      默认采用filterTarget(会计算目标的距离),true则使用targetEnabled;
+         *      "filterTarget": 默认采用filterTarget(会计算目标的距离), true则使用targetEnabled; 
+		 * 
+		 * 		【v1.9.114.3.1】filterTarget可以自行指定为一个函数了
 		 * 
          *      "noTargetDelay":设置noTargetDelay为true；
 		 * 
@@ -1041,7 +1053,7 @@ declare namespace Lib.element {
         /**
          * 角色将手牌摸至X张，若角色手牌数不小于X则无事发生
 		 * 
-         * @param num 
+         * @param num 摸至num张
          * @param args 基本与draw一致，改成了数组的存储模式
          */
         drawTo(num:number,args:any[]): Event;
@@ -1062,11 +1074,17 @@ declare namespace Lib.element {
          */
         randomDiscard(...args: any[]): Card[];
         /**
-         * 随机会获得x张牌
+         * 随机获得x张牌
          * 
          * 参数列表：
          *  
-         * @param args 
+         *  number类型:设置随机获得牌的数量
+		 *  
+		 *  itemtype为"select" (即 [1, 2] 这类) 应该是苏婆写错了，等修复吧 
+		 * 
+		 *  boolean类型：是否对目标显示指示线
+		 * 
+		 *  itemtype为"player"类型： 要获得牌的目标
          */
         randomGain(...args: any[]): Card[];
         /**
@@ -1112,6 +1130,8 @@ declare namespace Lib.element {
          *      "noOrdering":设置next.noOrdering，当前标记当前无预处理区，不会把响应牌放置event.orderingCards中；
 		 * 
          *  其余string类型：设置next.skill，指响应用的技能，执行该技能配置的onrespond；
+		 * 
+		 *  【v1.9.114.3.1】 发动技能转化打出牌时也会增加使用或打出次数
          */
         respond(...args: any[]): Event;
         /**
@@ -1254,7 +1274,7 @@ declare namespace Lib.element {
          */
         recover(...args: any[]): Event;
         /**
-         * 双将模式下的抽牌
+         * 双将模式下的选择是否摸一张牌(长坂坡模式无效)
          */
         doubleDraw(...args: any[]): Event;
         /**
@@ -1306,7 +1326,7 @@ declare namespace Lib.element {
          * @param hp 复活时的血量，默认1
          * @param log 是否输出日志
          */
-        revive(hp: number, log: boolean,...args: any[]): void;
+        revive(hp?: number, log?: boolean): void;
 
         /**
          * 是否是“混乱”状态
@@ -1886,12 +1906,10 @@ declare namespace Lib.element {
         /**
          * 当前player的class标记是否有“unseen”，“unseen2”
 		 * 
-         * 应该是标记是否可见/隐藏的标记，后面继续研究
-		 * 
-         * 据推测，应该是双将模式下，隐藏武将
+         * 即判断该武将是否是主将，副将，或者全部暗置的状态
          * @param num 
          */
-        isUnseen(num: number): boolean;
+        isUnseen(num?: 0 | 1 | 2): boolean;
         /**
          * 判断底下的控制面板（即当前操作玩家自己的面板，在游戏的底边）是否是该玩家的
 		 * 
@@ -2179,8 +2197,11 @@ declare namespace Lib.element {
         //【v1.9.108.3】添加手牌标记（gaintag）机制，用于对玩家的特定手牌进行标记
         /**
          * 给手牌上指定卡牌标记上 手牌标记；
-         * @param cards 
-         * @param tag 
+         *
+         * 【v1.9.114.4】 改为不局限于只添加手牌区的牌
+         *
+         * @param cards 卡牌数组
+         * @param tag 标记名
          */
         addGaintag(cards:Card[],tag:string):void;
         /**
@@ -2216,7 +2237,7 @@ declare namespace Lib.element {
         $compareMultiple(card1: any, targets: any, cards: any): any;
         $compare(card1: any, target: any, card2: any): any;
         $throw(card: any, time: any, init: any, nosource: any): any;
-        $throwordered(): any;
+		$throwordered(node: any, nosource: any): any;
         $throwordered1(node: any, nosource: any): any;
         $throwordered2(node: any, nosource: any): any;
         $throwxy(card: any, left: any, top: any): any;
@@ -2297,15 +2318,37 @@ declare namespace Lib.element {
 		 * @param skill 技能名
 		 */
 		$changeZhuanhuanji(skill: string): void;
+
+		/**
+		 * 【国战】玩家是否是大势力角色
+		 */
+		isMajor(): boolean;
+		/**
+		 * 【国战】玩家是否不是大势力角色
+		 */
+		isNotMajor(): boolean;
+
+		/**
+		 * 【国战】玩家是否是角色最少的势力
+		 * @param nomajor 包括之一
+		 */
+		isMinor(nomajor?:boolean):boolean;
+
+		/**
+		 * 【国战】增加/减少身份暴露程度
+		 */
+		logAi(shown: number): void;
+		logAi(targets: Player[], card: Card): void;
     }
 
     //核心成员属性（暂时先一部分比较核心常用的）
     interface Player extends HTMLDivElement {
-        /** 武将名 */
+        /** 当前显示的武将名(一般是主将名，别的模式下可能是别的，如一号位等) */
         name:string;
-        /** 武将名2 */
-        name2?:string;
-        name1?:string;
+        /** 副将名 */
+        name2:string;
+		/** 主将名 */
+        name1:string;
         /** 性别 */
         sex:string;
         /** 势力 */
@@ -2360,11 +2403,11 @@ declare namespace Lib.element {
             hp: HTMLDivElement;
             /** 手牌数 */
             count: HTMLDivElement;
-            /** 化身1 */
+            /** 主将图片 */
             avatar: HTMLDivElement;
-            /** 化身2 */
+            /** 副将图片 */
             avatar2: HTMLDivElement;
-            
+            /** 挑战模式表示正在行动的角色，其他用途不明 */
             action: HTMLDivElement;
             /** 锁链（铁索连环） */
             chain: HTMLDivElement;
@@ -2484,8 +2527,7 @@ declare namespace Lib.element {
         /** 下一座位玩家 */
         next:Player;
 		
-        //暂时不清楚，正常玩的时候，没有见到这东西（应该是座位标记）
-		/**
+        /**
 		 * 要获取座位号请使用如下方法：
 		 * ```
 		 * player.getSeatNum();
@@ -2494,7 +2536,7 @@ declare namespace Lib.element {
         side?:number;
 
         /** 当前玩家是不是主公，可能受玩法模式影响 */
-        isZhu:boolean;
+        isZhu?:boolean;
 
         /** 不进入濒死阶段，询问求助 */
         nodying:boolean;
@@ -2534,7 +2576,7 @@ declare namespace Lib.element {
         //身份局玩法相关：
         /** 身份是否显示了 */
         identityShown:boolean;
-        /** 身份：“zhu”,"nei","fan"，“zhong” */
+        /** 身份："zhu","nei","fan","zhong" 其他模式还有别的身份 */
         identity:string;
 
         //联机相关：
@@ -2548,6 +2590,17 @@ declare namespace Lib.element {
         playerid:number;
         /** 玩家的昵称，客机的ws.nickname就是nickname */
         nickname:string;
+		/** 特殊身份 */
+		special_identity: string;
+
+		noclick: any;
+
+        /** 国战模式下玩家的真实国籍 */
+        _group?: string;
+		/** 座位号 */
+		seatNum: number;
+		
+		_hookTrigger: any[];
     }
 
     //由玩法模式自己扩展实现的方法接口：
@@ -2704,5 +2757,21 @@ type ActionHistoryData = {
     /** 造成伤害 */
     damage:GameEvent[],
     /** 客户端操作 */
-    custom:GameEvent[]
+    custom:any[],
+    /** 【v1.9.115】添加 使用技能事件记录 */
+    useSkill:HistoryUseSkillData[]
 }
+
+/** 【v1.9.115】添加 ActionHistoryData中useSkill的类型 */
+type HistoryUseSkillData = {
+    /** 技能事件 */
+    event: GameEvent,
+    /** 技能名 */
+    skill: string;
+    /** 来源技能 */
+    sourceSkill: string;
+    /** 技能目标 */
+    targets: Player[] | false;
+    /** 技能类型 */
+    type: "global" | "player";
+};

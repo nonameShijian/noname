@@ -640,7 +640,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 						targets.push(player);
 						if(target.identity!='ye'){
 						game.filterPlayer(function(current){
-							return target!=current&&target.identity==current.identity&&!current.hasSkill('diaohulishan');
+							return target!=current&&target.isFriendOf(current)&&!current.hasSkill('diaohulishan');
 							},targets);
 						}
 					}
@@ -920,14 +920,13 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					return true;
 				},
 				filterTarget:function(card,player,target){
-					if(get.mode()!='guozhan') return player!=target;
+					if(get.mode()!='guozhan') return target.group!=player.group;
 					if(target.identity=='unknown'||player.identity=='unknown') return false;
-					if(player==target) return false;
-					if(player.identity=='ye') return true;
-					return player.identity!=target.identity;
+					return player.isEnemyOf(target);
 				},
 				content:function(){
-					game.asyncDraw([target,player],[1,get.mode()=='guozhan'?3:1]);
+					target.draw(1,'nodelay');
+					player.draw(3);
 				},
 				ai:{
 					basic:{
@@ -1071,9 +1070,9 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				distance:{attackFrom:-1},
 				ai:{
 					equipValue:function(card,player){
-						if(player.identity=='unknown'||player.identity=='ye') return 2.5;
+						if(player.identity=='unknown'||player.identity=='ye') return 2;
 						return 2+game.countPlayer(function(current){
-							return current.identity==player.identity;
+							return current.isFriendOf(player);
 						})/2;
 					},
 					basic:{
@@ -1256,9 +1255,8 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				equipSkill:true,
 				trigger:{player:'linkBefore'},
 				forced:true,
-				//priority:20,
 				filter:function(event,player){
-					return !player.isMajor()&&!player.isLinked();
+					return player.isNotMajor()&&!player.isLinked();
 				},
 				content:function(){
 					trigger.cancel();
@@ -1749,11 +1747,9 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			g_wuliu_skill:{
 				equipSkill:true,
 				mod:{
-					attackFrom:function(from,to,distance){
-						return distance-game.countPlayer(function(current){
-							if(current==from) return false;
-							if(current.identity=='unknown'||current.identity=='ye') return false;
-							if(current.identity!=from.identity) return false;
+					attackRange:function(player,distance){
+						return distance+game.countPlayer(function(current){
+							if(current==player||!current.isFriendOf(player)) return false;
 							if(current.hasSkill('wuliu_skill')) return true;
 						});
 					}
@@ -1845,8 +1841,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			huoshaolianying_info_guozhan:'出牌阶段，对你的下家和与其处于同一队列的角色使用，每名角色受到一点火焰伤害',
 			huoshaolianying_info:'对离你最近的一名横置角色使用（若无横置角色则改为对距离你最近的所有角色使用），对目标造成一点火焰伤害',
 			yuanjiao:'远交近攻',
-			yuanjiao_info_guozhan:'对一名不同势力的角色使用，对方摸一张牌，然后你摸3张牌',
-			yuanjiao_info:'对一名其他角色使用，你与其各摸一张牌',
+			yuanjiao_info:'出牌阶段，对一名与你势力不同的角色使用。其摸一张牌，然后你摸三张牌。',
 			yuanjiao_bg:'交',
 			zhibi:'知己知彼',
 			zhibi_info:'出牌阶段对一名其他角色使用，观看其手牌或武将牌',

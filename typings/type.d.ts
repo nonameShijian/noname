@@ -48,15 +48,15 @@ type CCards = SAAType<Card>;
  *  _status:Status, lib:Lib, game:Game, ui:UI, get:Get, ai:AI这6大对象，不需要在参数列表中
  */
 type ContentFunc = ContentFuncByAll | ContentFuncByNormal | ContentFuncByNormal2 | ContentFuncByNormal21 | ContentFuncByNormal3 | ContentFuncByNormal4 | ContentFuncByNormal5 | ContentFuncByNormal6;
-type ContentFuncByAll = (event: GameEvent, step: number, source: Player, player: Player, target: Player, targets: Player[], card: Card, cards: Card[], skill: string, forced: boolean, num: number, trigger: GameEvent, result: BaseResultData) => void;
+type ContentFuncByAll = (event: GameEvent, step: number, source: Player, player: Player, target: Player, targets: Player[], card: Card, cards: Card[], skill: string, forced: boolean, num: number, trigger: GameEvent, result: BaseCommonResultData) => void;
 //扩充一些额外得搭配参数(简化参数配置),改成基本参数求event给就行了
 //这里只是用于方便些代码的声明，实际上的参数列表，是执行了parse后转换的函数参数，所以不用在意这里的位置关系，只要名字一致就行了
-type ContentFuncByNormal = (event: GameEvent, player: Player, trigger: GameEvent,result: BaseResultData)=>void;
-type ContentFuncByNormal2 = (event: GameEvent,  player: Player, target: Player, num: number,targets: Player[] ,cards: Card[], trigger: GameEvent,result: BaseResultData)=>void;
+type ContentFuncByNormal = (event: GameEvent, player: Player, trigger: GameEvent, result: BaseCommonResultData)=>void;
+type ContentFuncByNormal2 = (event: GameEvent, player: Player, target: Player, num: number, targets: Player[], cards: Card[], trigger: GameEvent, result: BaseCommonResultData)=>void;
 type ContentFuncByNormal21 = (event: GameEvent, source: Player, player: Player, target: Player ,trigger: GameEvent,result: BaseCommonResultData)=>void;//todo:暂时兼容
 //注1：角色的技能content事件执行的是，你技能的事件，你的技能事件并没有做过过多处理，并没有直接的source,target，一般为cards,targets,player：
 //注2：角色的技能content事件，还会携带，target，num，当该技能可以针对多数选择目标进行一一处理时(multitarget不为true时)，target为当前处理的目标，num为处理的目标的下标数
-type ContentFuncByNormal3 = (event: GameEvent,  player: Player ,result: BaseResultData)=>void;
+type ContentFuncByNormal3 = (event: GameEvent, player: Player, result: BaseCommonResultData)=>void;
 type ContentFuncByNormal4 = (event: GameEvent,  player: Player )=>void;
 type ContentFuncByNormal5 = (player: Player, trigger: GameEvent)=>void;
 type ContentFuncByNormal6 = (player: Player)=>void;//几乎最简的形式

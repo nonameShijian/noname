@@ -564,7 +564,16 @@ declare namespace Lib.element {
         oCard?:CardBaseUIData;
 
         _backup:CheckEventResultData;
-        
+        /** 上一事件 */
+		parent?: Event;
+		/** 【v1.9.114.3.1】 damage事件中会将发生过的伤害值变化全部记录于event.change_history */
+		change_history?: number[];
+		/** 是否被取消(见于createTrigger) */
+		cancelled?: boolean;
+		/** (见于createTrigger) */
+		revealed?: boolean;
+		/** (见于createTrigger) */
+		frequentSkill?: boolean;
         //自己扩展任意参数
         [key: string]: any;
         

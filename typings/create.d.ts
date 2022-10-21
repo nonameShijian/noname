@@ -16,7 +16,7 @@ declare namespace UI {
 		node(...args): any;
         /** 创建iframe */
         iframe(src:string): void;
-        identitycircle(list, target): void;
+        identitycircle(list: string[], target: HTMLDivElement): void;
         //联机相关（联机房间）
         chat(): void;
         exit(): void;
@@ -85,14 +85,16 @@ declare namespace UI {
          * @param func 设置按钮设置点击后的方法
          */
         confirm(str:string, func:(link:any,node:Lib.element.Control)=>void): void;
-        //创建技能的控制面板
-        skills(skills):  Lib.element.Control;
+        /** 创建技能的控制面板 */
+        skills(skills: string[]):  Lib.element.Control;
+		/** 创建技能的控制面板 */
         skills2(skills): Lib.element.Control;
+		/** 创建技能的控制面板 */
         skills3(skills):  Lib.element.Control;
         /** 创建游戏场景arena （核心UI）*/
         arena(): void;
         /** 创建游戏的system区域 */
-        system(str, func, right, before): HTMLDivElement;
+        system(str: string, func: Function, right?: boolean, before?: HTMLElement): HTMLDivElement;
         /** 创建显示“已暂停”背景区域 */
         pause(): HTMLDivElement;
         /**
@@ -132,11 +134,11 @@ declare namespace UI {
          * @param zoom 没用到，无用参数
          */
         buttons(list:any[], type:string, position:HTMLElement, noclick?:boolean, zoom?:any): Button[];
-        player(position, noclick): any;
+		player(position?: any, noclick?: any): Player;
         connectPlayers(ip): any;
         players(num): any;
         me(hasme): any;
-        card(position, info, noclick): any;
+		card(position?: any, info?: any, noclick?: boolean): Card;
         cardsAsync(): any;
         cards(ordered): any;
 

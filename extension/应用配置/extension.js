@@ -228,77 +228,59 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
                 });
             }
 
-            /**
-             * 
-             * @param {Function} func 
-             */
-            /*lib.init.parse2 = function(func) {
-                // 提取函数主体部分, 最后的}作为switch的结尾了
-                var str = func.toString();
-                str = str.slice(str.indexOf('{') + 1);
-                // 如果函数中不包括'step 0'，视为普通函数，只有一个步骤
-                var index0_1 = str.indexOf(`'step 0'`);
-                var index0_2 = str.indexOf((`"step 0"`));
-                // 防止不写step 0，反而在setContent中写step 0
-                if ((index0_1 == -1 && index0_2 == -1) || str.slice(0, index0_1 != -1 ? index0_1 : index0_2).search(/\S+/) != -1) {
-                    str = `{if (event.step == 1) {event.finish();return;}${str}`;
-                }
-                else {
-                    // 设一个_onlyKey，留后面替换
-                    str = str.replace(/'step 0'|"step 0"/, `if (event.step == '_onlyKey') {event.finish();return;}switch(step) {case 0:`);
-
-                    var k, tmpStr = str, success = true, resultFunction;
-
-                    for (k = 1; k < 99; k++) {
-                        // 没找到这个步骤退出循环
-                        if (str.indexOf('step ' + k) == -1) break;
-                        // 上一步解析失败也退出循环
-                        if (!success) break;
-
-                        var single = `'step ${k}'`;
-                        var double = `"step ${k}"`;
-                        var r = new RegExp(`${single}|${double}`, 'g');
-                        success = false;
-
-                        var result;
-                        while ((result = r.exec(tmpStr)) != null) {
-                            // 步骤字符串的长度
-                            var stepLen = result[0].length;
-                            // 下标
-                            var index = result.index;
-                            // 尝试转化为函数
-                            var resultFunStr = tmpStr.slice(0, index) + `break;case ${k}:` + tmpStr.slice(index + stepLen);
-                            try {
-                                resultFunction = new Function('event', 'step', 'source', 'player', 'target', 'targets',
-                                    'card', 'cards', 'skill', 'forced', 'num', 'trigger', 'result',
-                                    '_status', 'lib', 'game', 'ui', 'get', 'ai', resultFunStr);
-                            } catch(e) {
-                                continue;
-                            }
-                            tmpStr = resultFunStr;
-                            success = true;
-                            break;
-                        }
-                    }
-
-                    str = tmpStr.replace(`event.step == '_onlyKey'`, `event.step == '${k}'`);
-                }
-                return resultFunction;
-            };*/
-            
+			if ([lib.config.extension_应用配置_replaceAppWidth, lib.config.extension_应用配置_replaceAppHeight].every(v => !isNaN(Number(v)))) {
+				const thisWindow = remote.getCurrentWindow();
+				thisWindow.setSize(Number(lib.config.extension_应用配置_replaceAppWidth), Number(lib.config.extension_应用配置_replaceAppHeight), false);
+				thisWindow.center();
+			}
 		},
 		config: {
-			//打开代码编辑器
-			/*openEditor: {
-				name: '<span style="text-decoration: underline;">打开VSCode代码编辑器<span>',
-				clear: true,
-				onclick: () => {
-					const createEditorWindow = remote.getGlobal('createEditorWindow');
-					if (createEditorWindow) {
-						createEditorWindow();
+			//设置屏幕宽度
+			replaceAppWidth: {
+				init: '960',
+				name: 'APP的宽度',
+				input: true,
+				onblur: function (e) {
+					/**
+					 * @type { HTMLDivElement }
+					 */
+					// @ts-ignore
+					let target = e.target;
+					let width = Number(target.innerText);
+					if (isNaN(width)) {
+						target.innerText = '960';
+						width = 960;
+					} else if (width < 200) {
+						alert('暂时不允许将APP的宽度设置未小于200的数字');
+						target.innerText = '960';
+						width = 960;
 					}
+					game.saveExtensionConfig('应用配置', 'replaceAppWidth', width);
 				},
-			},*/
+			},
+			//设置屏幕高度
+			replaceAppHeight: {
+				init: '660',
+				name: 'APP的高度',
+				input: true,
+				onblur: function (e) {
+					/**
+					 * @type { HTMLDivElement }
+					 */
+					// @ts-ignore
+					let target = e.target;
+					let height = Number(target.innerText);
+					if (isNaN(height)) {
+						target.innerText = '660';
+						height = 660;
+					} else if (height < 200) {
+						alert('暂时不允许将APP的高度设置未小于200的数字');
+						target.innerText = '660';
+						height = 660;
+					}
+					game.saveExtensionConfig('应用配置', 'replaceAppHeight', height);
+				},
+			},
 			//修改原生alert弹窗
 			replaceAlert: {
 				init: true,

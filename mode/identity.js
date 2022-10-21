@@ -1086,7 +1086,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						list.remove('shen');
 						if(list.length) player.group=function(){
 						 if(_status.mode!='zhong'&&game.zhu&&game.zhu.group){
-						  if(['re_zhangjiao','liubei','re_liubei','caocao','re_caocao','sunquan','re_sunquan','zhangjiao','sp_zhangjiao','caopi','re_caopi','liuchen','caorui','sunliang','sunxiu','sunce','re_sunben','ol_liushan','re_liushan','key_akane','dongzhuo','re_dongzhuo','ol_dongzhuo','jin_simashi'].contains(game.zhu.name)) return game.zhu.group;
+						  if(['re_zhangjiao','liubei','re_liubei','caocao','re_caocao','sunquan','re_sunquan','zhangjiao','sp_zhangjiao','caopi','re_caopi','liuchen','caorui','sunliang','sunxiu','sunce','re_sunben','ol_liushan','re_liushan','key_akane','dongzhuo','re_dongzhuo','ol_dongzhuo','jin_simashi','caomao'].contains(game.zhu.name)) return game.zhu.group;
 						  if(game.zhu.name=='yl_yuanshu'){
 						   if(player.identity=='zhong') list.remove('qun');
 						   else return 'qun';
@@ -1180,11 +1180,11 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 									_status.tempNoButton=false;
 								},500);
 								var link=this.link;
-								if(game.zhu.name){
+								if(game.zhu){
 									if(link!='random'){
 										_status.event.parent.fixedseat=get.distance(game.me,game.zhu,'absolute');
 									}
-									game.zhu.uninit();
+									if(game.zhu.name) game.zhu.uninit();
 									delete game.zhu.isZhu;
 									delete game.zhu.identityShown;
 								}
@@ -2073,7 +2073,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 								if(!lib.group.contains(list[ix])) list.splice(ix--,1);
 							}
 						 if(_status.mode!='zhong'&&game.zhu&&game.zhu.group){
-						  if(['re_zhangjiao','liubei','re_liubei','caocao','re_caocao','sunquan','re_sunquan','zhangjiao','sp_zhangjiao','caopi','re_caopi','liuchen','caorui','sunliang','sunxiu','sunce','re_sunben','ol_liushan','re_liushan','key_akane','dongzhuo','re_dongzhuo','ol_dongzhuo','jin_simashi'].contains(game.zhu.name)) return game.zhu.group;
+						  if(['re_zhangjiao','liubei','re_liubei','caocao','re_caocao','sunquan','re_sunquan','zhangjiao','sp_zhangjiao','caopi','re_caopi','liuchen','caorui','sunliang','sunxiu','sunce','re_sunben','ol_liushan','re_liushan','key_akane','dongzhuo','re_dongzhuo','ol_dongzhuo','jin_simashi','caomao'].contains(game.zhu.name)) return game.zhu.group;
 							 if(game.zhu.name=='yl_yuanshu'){
 						   if(player.identity=='zhong') list.remove('qun');
 						   else return 'qun';

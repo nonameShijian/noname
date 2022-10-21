@@ -1,7 +1,7 @@
 /** 导入技能包的配置信息 */
 interface ExSkillConifgData extends ExCommonConfig {
     /** 技能 */
-    skill: SMap<ExSkillData>;
+	skill: SMap<ExSkillData | { [key: string]: any }>;
 	/** 技能描述 */
 	translate: SMap<any>;
 }
@@ -169,9 +169,9 @@ declare interface ExSkillData {
 	 * 可以影响技能触发响应时间（主要影响loop之间的时间,即game.delayx的调用情况）
      */
     autodelay?: boolean | number | TwoParmFun<Trigger, Player, number>;
-    /** 第一时刻执行？（将发动顺序前置到列表前） */
+    /** 当前时机首要执行此技能 */
     firstDo?:boolean;
-    /** 最后一刻做？（将发动顺序置于列表后方） */
+    /** 当前时机最后执行此技能 */
     lastDo?:boolean;
 
     /** 
@@ -356,7 +356,7 @@ declare interface ExSkillData {
      */
     usable?: number;
     /** 
-     * 每一轮的使用次数
+     * 每N轮可使用1次技能
      * 
      * 设置了该属性，会创建一个“技能名_roundcount”技能，将其加入group（技能组）中；
 	 * 
@@ -435,7 +435,19 @@ declare interface ExSkillData {
 	 * 
      * (目前来看，这个目前单纯是技能标记，在主逻辑上并没使用，但貌似会被某些技能本身用到，或者类似左慈判断不能获得的技能的)
      */
-    juexingji?:boolean;
+    juexingji?: boolean;
+	/**
+	 * 转换技标记
+	 */
+	zhuanhuanji?: boolean;
+	/**
+	 * 使命技标记
+	 * 
+	 * 使命技 = 有失败条件的觉醒技，其技能在成功/失败后都会失去此技能
+	 * 
+	 * 具体功能实现请自行在技能内实现，此标签仅仅只有标签这是个使命技的作用
+	 */
+	dutySkill?: boolean;
     /** 
      * 获得技能时是否显示此标记，
 	 * 
@@ -452,6 +464,8 @@ declare interface ExSkillData {
     mark?: boolean|string;
     /** 标记显示文本，一般为一个字 */
     marktext?: string;
+	/** 标记图片 */
+	markimage?: string;
     /** 标记显示内容 */
     intro?: {
         /** 自定义mark弹窗的显示内容 */
@@ -562,7 +576,10 @@ declare interface ExSkillData {
 	 * 
      * 若为true的话，则执行player.popup
 	 * 
-     * 例如：player.popup({使用卡牌名name，使用卡牌nature}，'metal')
+     * 例如：
+	 * ```jsx
+	 * player.popup({name, nature}, 'metal')
+	 * ```
      */
     popname?: boolean;
 
@@ -723,7 +740,7 @@ declare interface ExSkillData {
      * @param player 
      * @param name 触发名，为event.triggername，目前只有在lib.filter.filterTrigger中才传该值，即被动触发，主动触发不检测该值，目前暂未完善
      */
-    filter?(event: Trigger, player: Player,name?:string): boolean;
+    filter?(event: Trigger, player: Player, name?:string): boolean;
     /**
      * 选择的目标武将牌上出现什么字。
      * 
@@ -899,7 +916,7 @@ declare interface ExSkillData {
     /** 表示这次描述非常长(涉及用了h5文本)，设置为true，重新执行ui.update()，设置skillDialog.forcebutton为true */
     longprompt?: boolean;
 
-    //补充game.check相关参数的声明：
+    // 补充game.check相关参数的声明：
     /** 过滤不可选择按钮 */
     filterButton?(button: Button, player: Player): boolean;
     /** 按钮的可选数量，大多数情况下，默认1 */
@@ -907,7 +924,7 @@ declare interface ExSkillData {
     complexSelect?: boolean;
     /** 复合选牌：即每选完一次牌后，都会重新下一次对所有牌的过滤 */
     complexCard?: boolean;
-    complexTarget?:boolean;    
+    complexTarget?:boolean;
     
     /** 一般作为chooseCard相关ai */
     ai1?: Function;
@@ -1366,6 +1383,9 @@ interface ExModData {
 
     //希望扩展：
     //是否能成为技能的目标
+
+	/** 其他扩展自定义 */
+	[key: string]: Function;
 }
 
 /** 

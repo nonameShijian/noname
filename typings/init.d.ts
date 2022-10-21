@@ -52,7 +52,7 @@ declare namespace Lib {
 
         //初始化UI的样式
         cssstyles(): void;
-        layout(layout: any, nosave: any): void;
+        layout(layout: any, nosave?: any): void;
         background(): void;
 
         /** 转换content方法（即内部带有step的方法），返回转换后的字符串的方法 */

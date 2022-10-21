@@ -7,6 +7,8 @@ interface Get {
     infoHp(hp:number|string):number;
     /** 获取当前最大血量（xx/xxx右边部分 或者自身） */
     infoMaxHp(hp:number|string):number;
+	/** 获取当前护甲值（xx/xx/xx右边部分） */
+	infoHujia(hpinfo: string):number;
 
     /** 一些常用的条件判断 */
     is:Is;
@@ -140,7 +142,6 @@ interface Get {
     /**
      * 获取牌堆(lib.inpile)里所有指定类型的牌
      * @param type 牌的类型（详情请看get.type）
-     * @return 返回{name:xx;suit:xx;.....}结构的数组类型
      */
     inpilefull(type:string):CardBaseUIData[];
     /**
@@ -276,7 +277,7 @@ interface Get {
     parsedResult(item):any;
 
     /** 输出垂直显示字符串 */
-    verticalStr(str:string,sp:boolean):string;
+    verticalStr(str:string, sp?:boolean):string;
     /**
      * 获取数字显示字符串
      * @param num 若值是Infinity
@@ -313,7 +314,7 @@ interface Get {
      *      若class列表有“dialog”，则返回类型：dialog（对话框，包括提示，弹出框...）；
      * @param obj 
      */
-    itemtype(obj:any):string;
+    itemtype(obj:any): string | void;
     /**
      * 获取装备的类型（1-5）
      * 逻辑和get.equiptype基本一致（算是冗余的方法）
@@ -345,38 +346,46 @@ interface Get {
      * @param method 若传入“trick”，则type为“delay”（延时锦囊牌），也视为“锦囊牌”，结果返回“trick”
      * @param player 一张牌在一名角色手牌区时的牌面信息:player不填时默认视为卡牌的拥有者;填false时不做判断
      */
-    type(obj:string|CardBaseUIData,method?:string,player?:Player|boolean):string;
+    type(obj:string | CardBaseUIData | Card,method?:string,player?:Player|boolean):string;
     /**
      * 获取卡牌的类型2（上面方法的简略版，把延时锦囊“delay”，视为锦囊“trick”返回）
      * @param card 可以是卡牌的名字，也可以是带有name属性的对象
      * @param player 一张牌在一名角色手牌区时的牌面信息:player不填时默认视为卡牌的拥有者;填false时不做判断
      */
-    type2(card: string | CardBaseUIData,player?:Player|boolean):string;
+	type2(card: string | CardBaseUIData | Card,player?:Player|boolean):string;
     /**
      * 获取卡牌第二类型（子类型）
      * 返回卡牌的subtype属性
      * 例:equip装备的子类型：equip1武器，equip2防具，equip3防御马，equip4进攻马，equip5宝物（常规外的额外装备）
      * @param obj 可以是卡牌的名字，也可以是带有name属性的对象
      */
-    subtype(obj: string | CardBaseUIData):string;
+	subtype(obj: string | CardBaseUIData | Card):string;
     /**
      * 获取装备的类型（1-5）
      * 当前类型分别为：1武器，2防具，3防御马，4进攻马，5宝物（常规外的额外装备）
      * @param card 可以是卡牌的名字，也可以是带有name属性的对象
      */
-    equiptype(card: string | CardBaseUIData):number;
+	equiptype(card: string | CardBaseUIData | Card):number;
     /**
      * 获取卡牌的花色suit
      * 
      * 花色：spade黑桃，heart红桃，club梅花，diamond方块，none
+	 * 
      * 若该卡牌是玩家拥有的，则检查mod锁定技存在（game.checkMod），获取返回的花色；否则，获取该卡牌花色suit；
+	 * 
      * 特殊情况：
+	 * 
      * 若card的类型是“cards”，若所有卡牌花色都相同，则返回第一张的卡牌花色suit，若有一张不同，则返回“none”；
+	 * 
      * 若card有cards属性，该card.cards的类型为“cards”，且该card不是“muniu”，则按上面“cards”方式返回花色；
-     * @param card 
-     * @param player 一张牌在一名角色手牌区时的牌面信息:player不填时默认视为卡牌的拥有者;填false时不做判断
+     * @param card 卡牌
+     * @param player 一张牌在一名角色手牌区时的牌面信息:
+	 * 
+	 * player不填时默认视为卡牌的拥有者;
+	 * 
+	 * 填false时不做判断
      */
-    suit(card:CardBaseUIData|Card[],player?:Player|boolean):string;
+	suit(card: CardBaseUIData | Card | Card[],player?:Player|boolean):string;
     /**
      * 获取卡牌颜色color
      * 卡牌颜色：black黑色，red红色，none
@@ -384,11 +393,13 @@ interface Get {
      * @param card 
      * @param player 一张牌在一名角色手牌区时的牌面信息:player不填时默认视为卡牌的拥有者;填false时不做判断
      */
-    color(card:CardBaseUIData|Card[],player?:Player|boolean):string;
+	color(card: CardBaseUIData | Card | Card[],player?:Player|boolean):string;
     /**
-     * 获取卡牌的数字number
+     * 获取卡牌的点数number (多卡牌转换获取结果为null)
      * 
      * 在【v1.9.113.5】中已实现读取卡牌拥有者身上的mod
+     *
+     * 在【v1.9.115】 调整get.number函数的结算逻辑
 	 * 
 	 * 代码示例：(所有卡牌视为K)
 	 * ```
@@ -399,16 +410,16 @@ interface Get {
 	 * }
 	 * ```
 	 * 
-     * @param card 
+     * @param card 卡牌
      * @param player 一张牌在一名角色手牌区时的牌面信息:player不填时默认视为卡牌的拥有者;填false时不做判断
      */
-	number(card: CardBaseUIData | { cards: CardBaseUIData[], [key: string]: any }, player?: Player | boolean): number | null;
+	number(card: CardBaseUIData | Card | { cards: CardBaseUIData[], [key: string]: any }, player?: Player | boolean): number | null;
     /**
      * 获取卡牌的名字
      * @param card 
      * @param player 一张牌在一名角色手牌区时的牌面信息:player不填时默认视为卡牌的拥有者;填false时不做判断
      */
-    name(card: CardBaseUIData,player?:Player|boolean): string;
+	name(card: CardBaseUIData | Card,player?:Player|boolean): string;
     //  * @param mod 若不为false，则使用“cardname”mod检测；若为false（取值必须为false），则直接返回名字
     // name(card: Card, mod?: boolean): string;//【该用player】
     /**
@@ -417,18 +428,14 @@ interface Get {
      * @param card 
      * @param player 一张牌在一名角色手牌区时的牌面信息:player不填时默认视为卡牌的拥有者;填false时不做判断
      */
-    nature(card:CardBaseUIData,player?:Player|boolean):string;
+	nature(card: CardBaseUIData | Card,player?:Player|boolean):string;
     // * @param mod 若不为false，则使用“cardnature”mod检测；若为false（取值必须为false），则直接返回伤害属性
     // nature(card:Card,mod?:boolean):string;
     /**
      * 获取（牌堆顶的）牌
      * @param num 获取指定数量的牌，填了就返回数组
      */
-    cards(num:number):Card[];
-    /**
-     * 获取（牌堆顶的）一张牌
-     */
-    cards():Card[];
+    cards(num: number = 1): Card[];
     /**
      * 获取卡牌的judge（判定牌的判断条件）
      * 若该卡牌有viewAs（视为牌），则返回视为牌的judge；
@@ -929,7 +936,7 @@ interface Is {
     /** 是否是只有一个目标（单目标） */
     singleSelect(func: number | Select | NoneParmFum<number | Select>): boolean;
     /** 是否是“君主” */
-    jun(name:string): boolean;
+    jun(name?:string|Player): boolean;
     /** 是否是对决模式 */
     versus(): boolean;
     /** 判断自己当前是否是mobile（手机） */

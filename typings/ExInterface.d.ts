@@ -162,11 +162,12 @@ interface AreanStateInfo {
 
 /** 录像数据 */
 interface VideoData {
+	/** 事件类型 */
     type: string;
     /** 坐位号 */
     player: string;
     delay: number;
-    content: any;
+    content: any[];
 }
 
 /** 
@@ -200,13 +201,14 @@ interface BaseResultData {
      * 
      * 其实主要是ok方法会有直接的bool，主要涉及game.check;
      */
-    bool?:boolean;
+    bool: boolean;
     
     [key:string]:any;
 }
 
 /**
  * 一般用于带操作的事件的最终结果:
+ * 
  * choose系列基本架构，数据大多在game.check，的ui.click.ok进行设置；
  * 
  * 为了方便，将control系，ok系的结果结构放进去
@@ -216,31 +218,35 @@ interface BaseResultData {
 interface BaseCommonResultData extends BaseResultData {
     //choose系
     /** 记录返回当前事件操作过程中的卡牌 */
-    cards:Card[];
+    cards?: Card[];
     /** 记录返回当前事件操作过程中的目标 */
-    targets:Player[];
+    targets?: Player[];
     /** 记录返回当前事件操作过程中的按钮 */
-    buttons:Button[];
+    buttons?: Button[];
     /** 记录buttons内所有button.link(即该按钮的类型，link的类型很多，参考按钮的item) */
-    links:any[];
+    links?: any[];
 
     //control系(直接control系列没有result.bool)
     /** control操作面板的选中结果，即该按钮的link，即名字 */
-    control:string;
-    /** 既control的下标 */
-    index:number;
+    control? :string;
+    /** 即control的下标 */
+    index? :number;
 
     //ok系
     /** 记录返回当前事件操作过程中，面板按钮的确定ok取消cancel */
-    confirm:string;
+    confirm?: string;
     /** 一般为触发的“视为”技能 */
-    skill:string;
+	skill?: string;
     /**
-     *  当前事件操作的“视为”牌，
+     * 当前事件操作的“视为”牌，
+	 * 
      * 当前有“视为”操作，该card参数特供给视为牌，不需要cards[0]获取视为牌 ；
+	 * 
      * 判断是否为视为牌：card.isCard，false为视为牌
      */
-    card:Card;
+	card?: Card;
+
+	[key: string]: any;
 }
 
 

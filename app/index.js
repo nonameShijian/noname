@@ -19,9 +19,9 @@
 			//github镜像网址
 			var site_g = 'https://raw.fastgit.org/libccy/noname/master/';
 			//苏婆config镜像网址
-			var site_c = 'https://nakamurayuri.coding.net/p/noname/d/noname/git/raw/master/';
-			//星城玄武镜像网址
-			var site_xw = 'https://kuangthree.coding.net/p/nonamexwjh/d/nonamexwjh/git/raw/master/';
+			var site_c = 'https://ghproxy.com/https://raw.githubusercontent.com/libccy/noname/master/';
+			//Show-K URC网址
+			var site_urc = 'https://unitedrhythmized.club/libccy/noname/master/';
 			var site = site_g;
 			var button, changesite, help, version, versionnode;
 			var req = function(url, onload, onerror, target) {
@@ -264,13 +264,13 @@
 			changesite.onclick = function() {
 				if (site == site_c) {
 					site = site_g;
-					this.innerHTML = '下载源: GitHub'
+					this.innerHTML = '下载源: GitHub镜像'
 				} else if(site == site_g){
-					site = site_xw;
-					this.innerHTML = '下载源: 玄武镜像'
+					site = site_urc;
+					this.innerHTML = '下载源: URC'
 				} else {
 					site = site_c;
-					this.innerHTML = '下载源: Coding'
+					this.innerHTML = '下载源: GitHub Proxy'
 				}
 				checkConnection();
 			};
