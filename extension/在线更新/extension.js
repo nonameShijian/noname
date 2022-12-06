@@ -4,7 +4,7 @@
 game.import("extension", function (lib, game, ui, get, ai, _status) {
 
 	if (!game.getExtensionConfig('在线更新', 'incompatibleExtension') && (game.getExtensionConfig('概念武将', 'enable') || game.getExtensionConfig('假装无敌', 'enable'))) {
-		alert('【在线更新】扩展提示您：\r\n安装【概念武将】和【假装无敌】扩展后，本扩展出现任何问题后果自负');
+		alert('【在线更新】扩展提示您：\r\n安装【概念武将】和【假装无敌】扩展后，本扩展出现任何bug后果自负');
 		game.saveExtensionConfig('在线更新', 'incompatibleExtension', true);
 	}
 
@@ -23,7 +23,6 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 			if (typeof window.AbortController == 'function') {
 				myAbortController = new AbortController();
 				signal = myAbortController.signal;
-
 				setTimeout(() => myAbortController.abort(), options.timeout);
 			} else {
 				console.warn('设备不支持AbortController');
@@ -109,7 +108,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 					coding: 'Coding',
 					github: 'GitHub',
 					fastgit: 'GitHub镜像',
-					xuanwu: '玄武镜像'
+					// xuanwu: '玄武镜像'
 				};
 				let url_in_updateURLS;
 				for (const updateURL in lib.updateURLS) {
@@ -397,13 +396,13 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 				if (game.getExtensionConfig('在线更新', 'auto_check_update')) checkUpdate();
 			}, 1000 * 60 * 10);
 			// 刚开启时候的网络请求不会成功
-			if (game.getExtensionConfig('在线更新', 'auto_check_update')) setTimeout(checkUpdate, 2500);
+			if (game.getExtensionConfig('在线更新', 'auto_check_update')) setTimeout(checkUpdate, 3000);
 		},
 		precontent: function () {
 			// 添加两个更新地址
 			Object.assign(lib.updateURLS, {
-				fastgit: 'https://raw.fastgit.org/libccy/noname',
-				xuanwu: 'https://kuangthree.coding.net/p/nonamexwjh/d/nonamexwjh/git/raw',
+				// fastgit: 'https://raw.fastgit.org/libccy/noname',
+				// xuanwu: 'https://kuangthree.coding.net/p/nonamexwjh/d/nonamexwjh/git/raw',
 				URC: 'https://unitedrhythmized.club/libccy/noname'
 			});
 
@@ -416,7 +415,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 				game.saveConfig('update_link', game.getExtensionConfig('在线更新', 'update_link'));
 			}
 
-			// 修改游戏原生更新选项，插入上面的3个更新地址
+			// 修改游戏原生更新选项，插入上面的更新地址
 			if (lib.configMenu.general.config.update_link) {
 				lib.configMenu.general.config.update_link = {
 					unfrequent: true,
@@ -435,8 +434,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 					item: {
 						coding: 'Coding',
 						github: 'GitHub',
-						fastgit: 'GitHub镜像',
-						xuanwu: '玄武镜像',
+						// fastgit: 'GitHub镜像',
+						// xuanwu: '玄武镜像',
 						URC: 'URC'
 					},
 					onclick: function (item) {
@@ -453,11 +452,12 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 			}
 
 			/** 检测最快连接到的更新源  */
+			// @ts-ignore
 			game.getFastestUpdateURL = function (updateURLS = lib.updateURLS, translate = {
 				coding: 'Coding',
 				github: 'GitHub',
-				fastgit: 'GitHub镜像',
-				xuanwu: '玄武镜像',
+				// fastgit: 'GitHub镜像',
+				// xuanwu: '玄武镜像',
 				URC: 'URC'
 			}) {
 				if (typeof updateURLS != 'object') throw new TypeError('updateURLS must be an object type');
@@ -672,47 +672,48 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 				} else {
 					const fetch = myFetch(`${url}?date=${(new Date()).getTime()}`);
 
-					if (typeof onprogress == 'function') {
-						/** @type { number } 资源总长度 */
-						let contentLength;
-						/** @type { number } 当前接收到了这么多字节 */
-						let receivedLength = 0;
+					// if (typeof onprogress == 'function') {
 
-						fetch.then(response => {
-							if (response.headers instanceof Headers) {
-								contentLength = Number(response.headers.get('Content-Length'));
-							}
-							if (response.body instanceof ReadableStream) {
-								return response.body;
-							} else {
-								return Promise.reject('ReadableStream');
-							}
-						})
-							.then(body => {
-								const reader = body.getReader();
-								return new ReadableStream({
-									start(controller) {
-										function pump() {
-											return reader.read().then(({ done, value }) => {
-												// 读不到更多数据就关闭流
-												if (done) {
-													controller.close();
-													return;
-												}
-												receivedLength += value.length;
-												// @ts-ignore
-												onprogress(receivedLength, contentLength);
-												// 将下一个数据块置入流中
-												controller.enqueue(value);
-												return pump();
-											});
-										}
-										return pump();
-									}
-								});
-							})
-							.then(stream => new Response(stream))
-					}
+					// 	/** @type { number } 资源总长度 */
+					// 	let contentLength;
+					// 	/** @type { number } 当前接收到了这么多字节 */
+					// 	let receivedLength = 0;
+
+					// 	fetch.then(response => {
+					// 		if (response.headers instanceof Headers) {
+					// 			contentLength = Number(response.headers.get('Content-Length'));
+					// 		}
+					// 		if (response.body instanceof ReadableStream) {
+					// 			return response.body;
+					// 		} else {
+					// 			return Promise.reject('ReadableStream');
+					// 		}
+					// 	})
+					// 		.then(body => {
+					// 			const reader = body.getReader();
+					// 			return new ReadableStream({
+					// 				start(controller) {
+					// 					function pump() {
+					// 						return reader.read().then(({ done, value }) => {
+					// 							// 读不到更多数据就关闭流
+					// 							if (done) {
+					// 								controller.close();
+					// 								return;
+					// 							}
+					// 							receivedLength += value.length;
+					// 							// @ts-ignore
+					// 							onprogress(receivedLength, contentLength);
+					// 							// 将下一个数据块置入流中
+					// 							controller.enqueue(value);
+					// 							return pump();
+					// 						});
+					// 					}
+					// 					return pump();
+					// 				}
+					// 			});
+					// 		})
+					// 		.then(stream => new Response(stream))
+					// }
 
 					fetch.then(response => response.arrayBuffer())
 						.then(arrayBuffer => {
@@ -1087,6 +1088,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 
 			// 禁用自动检查更新
 			Object.defineProperty(game, 'checkForUpdate', {
+				enumerable: true,
 				get() {
 					return function () {
 						alert('无名杀自带的自动检查更新已禁用，请使用在线更新扩展内的自动检查更新功能');
@@ -1102,7 +1104,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 			show_version: {
 				clear: true,
 				nopointer: true,
-				name: '扩展版本： v1.45',
+				name: '扩展版本： v1.47',
 			},
 			update_link_explain: {
 				clear: true,
@@ -1113,8 +1115,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 					无: '无',
 					coding: 'Coding',
 					github: 'GitHub',
-					fastgit: 'GitHub镜像',
-					xuanwu: '玄武镜像',
+					// fastgit: 'GitHub镜像',
+					// xuanwu: '玄武镜像',
 					URC: 'URC',
 				},
 				onclick: function (item) {
@@ -1157,8 +1159,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 				item: {
 					coding: 'Coding',
 					github: 'GitHub',
-					fastgit: 'GitHub镜像',
-					xuanwu: '玄武镜像',
+					// fastgit: 'GitHub镜像',
+					// xuanwu: '玄武镜像',
 					URC: 'URC'
 				},
 				onclick: function (item) {
@@ -1226,14 +1228,14 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 					}
 				},
 			},
-			logProgress: {
+			/*logProgress: {
 				init: false,
 				intro: '下载文件时显示的进度条是否实时显示每个文件的下载进度',
 				name: '显示每个文件的下载进度',
 				onclick: function (bool) {
 					game.saveExtensionConfig('在线更新', 'logProgress', bool);
 				}
-			},
+			},*/
 			auto_check_update: {
 				init: (() => {
 					return lib.config['auto_check_update'] == true;
@@ -1250,6 +1252,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 				clear: true,
 				intro: '点击检查游戏更新',
 				name: '<button type="button">检查游戏更新</button>',
+				/** @this {HTMLDivElement | HTMLButtonElement} */
 				onclick: async function () {
 					/**
 					 * 下载按钮
@@ -1383,7 +1386,6 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 								parentNode.insertBefore(span, parentNode.firstElementChild);
 
 								let consoleMenu;
-								// @ts-ignore
 								if (this != button) {
 									consoleMenu = document.createElement('button');
 									consoleMenu.setAttribute('type', 'button');
@@ -1554,6 +1556,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 				clear: true,
 				intro: '点击检查素材更新',
 				name: '<button type="button">检查素材更新</button>',
+				/** @this {HTMLDivElement | HTMLButtonElement} */
 				onclick: async function () {
 					/**
 					 * @type { HTMLButtonElement } button
@@ -1690,7 +1693,6 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 								}
 								button.remove();
 								let consoleMenu;
-								// @ts-ignore
 								if (this != button) {
 									consoleMenu = document.createElement('button');
 									consoleMenu.setAttribute('type', 'button');
@@ -1706,7 +1708,6 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 								span.innerHTML = `正在下载素材（${n1}/${n2}）`;
 								parentNode.insertBefore(span, parentNode.firstElementChild);
 
-								// @ts-ignore
 								if (this == button) {
 									parentNode.insertBefore(document.createElement('br'), span.nextElementSibling);
 								}
@@ -1749,7 +1750,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 										});
 									}
 								}, error => {
-
+									console.log('error', error);
 								}, () => {
 									// 更新进度, 下载完成时不执行onsuccess而是onfinish
 									progress.setProgressValue(copyList.length);
@@ -1915,8 +1916,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 			author: "诗笺",
 			diskURL: "",
 			forumURL: "",
-			version: "1.46",
+			version: "1.47",
 		},
 		files: { "character": [], "card": [], "skill": [] }
 	}
-})
+});

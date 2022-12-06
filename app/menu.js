@@ -156,7 +156,7 @@ async function checkForUpdate(url) {
 	}
 }
 
-localStorage.getItem('autoCheckUpdates') == 'true' && checkForUpdate('https://raw.fastgit.org/nonameShijian/noname/main');
+localStorage.getItem('autoCheckUpdates') == 'true' && checkForUpdate('https://ghproxy.com/https://raw.githubusercontent.com/nonameShijian/noname/main');
 
 //跳过最开始的下载界面
 if(!localStorage.getItem('noname_inited')){
@@ -259,32 +259,6 @@ if (window.indexedDB) {
             if (!Array.isArray(extensions) || extensions.length == 0) {
                 config.put(['应用配置', '拖拽读取', '在线更新'], 'extensions');
             }
-			if (extensions.includes('\u6982\u5ff5\u6b66\u5c06')) {
-				dialog.showMessageBox(thisWindow, {
-					message: '运行\u6982\u5ff5\u6b66\u5c06扩展可能会造成安全性问题，是否关闭此扩展?',
-					type: 'error',
-					title: '应用更新提醒',
-					icon: path.join(__dirname, '..', 'noname.ico'),
-					buttons: ['确定', '取消'],
-					defaultId: 0,
-					cancelId: 1,
-				}).then(({ response }) => {
-					if (response == 0) config.put(false, "extension_\u6982\u5ff5\u6b66\u5c06_enable");
-				});
-			}
-			if (extensions.includes('\u5047\u88c5\u65e0\u654c')) {
-				dialog.showMessageBox(thisWindow, {
-					message: '运行\u5047\u88c5\u65e0\u654c扩展可能会造成安全性问题，是否关闭此扩展?',
-					type: 'error',
-					title: '应用更新提醒',
-					icon: path.join(__dirname, '..', 'noname.ico'),
-					buttons: ['确定', '取消'],
-					defaultId: 0,
-					cancelId: 1,
-				}).then(({ response }) => {
-					if (response == 0) config.put(false, "extension_\u5047\u88c5\u65e0\u654c_enable");
-				});
-			}
         };
     };
 }

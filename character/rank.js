@@ -101,6 +101,7 @@ window.noname_character_rank={
 		'shen_xunyu',
 		'shen_guojia',
 		'yangyan',
+		'liuhui',
 		'key_kamome',
 		'key_yukine',
 		'key_inari',
@@ -109,6 +110,7 @@ window.noname_character_rank={
 		'key_yukito',
 		'key_yuuki',
 		'db_key_liyingxia',
+		'key_kiyu',
 	],
 	a:[
 		'diy_zaozhirenjun',
@@ -272,6 +274,8 @@ window.noname_character_rank={
 		'ol_puyuan',
 		'ns_limi',
 		'jin_zhouchu',
+		'huojun',
+		'xiahouxuan',
 		'key_misuzu',
 		'key_sunohara',
 		'key_umi',
@@ -527,6 +531,7 @@ window.noname_character_rank={
 		'dc_wangchang',
 		'fengfang',
 		'prp_zhugeliang',
+		'dukui',
 	],
 	bp:[
 		'chess_diaochan',
@@ -807,6 +812,13 @@ window.noname_character_rank={
 		'dc_liuba',
 		'key_seira',
 		'lukai',
+		'niufu',
+		're_liufeng',
+		'huzhao',
+		'guanhai',
+		'zhangfen',
+		'ol_dianwei',
+		'wangyan',
 	],
 	b:[
 		'diy_feishi',
@@ -1045,6 +1057,9 @@ window.noname_character_rank={
 		'zhaoyǎn',
 		'zhangxun',
 		'xiahoulingnv',
+		're_sp_taishici',
+		'dc_lvkuanglvxiang',
+		'dengzhong',
 	],
 	bm:[
 		'diy_xizhenxihong',
@@ -1208,6 +1223,7 @@ window.noname_character_rank={
 		'ruanhui',
 		'xin_mamidi',
 		'xin_quancong',
+		'dc_caiyang',
 	],
 	c:[
 		'xiahoudun',
@@ -1278,6 +1294,7 @@ window.noname_character_rank={
 		'duanwei',
 		'wangxiang',
 		'duji',
+		'bianxi',
 	],
 	rarity:{
 		legend:[
@@ -1401,6 +1418,7 @@ window.noname_character_rank={
 			'shen_sunquan',
 			'shen_machao',
 			'tw_shen_guanyu',
+			'huojun',
 			'key_tomoya',
 			'key_masato',
 			'key_shiorimiyuki',
@@ -1422,6 +1440,7 @@ window.noname_character_rank={
 			'key_erika',
 			'key_satomi',
 			'key_seira',
+			'key_kiyu',
 			'noname',
 		],
 		epic:[
@@ -1604,6 +1623,8 @@ window.noname_character_rank={
 			'ol_xunyu',
 			'ns_zhonglimu',
 			'dc_sunru',
+			'zhangfen',
+			'xiahouxuan',
 			'prp_zhugeliang',
 			'key_kano',
 			'key_haruko',
@@ -2016,6 +2037,11 @@ window.noname_character_rank={
 			'jin_zhouchu',
 			'lukai',
 			'caoxiancaohua',
+			'huzhao',
+			're_liufeng',
+			'guanhai',
+			'dukui',
+			'ol_dianwei',
 		],
 		junk:[
 			'sunshao',
@@ -2038,6 +2064,7 @@ window.noname_character_rank={
 			'wangxiang',
 			'duji',
 			'dc_liuba',
+			'bianxi',
 		],
 	}
 };

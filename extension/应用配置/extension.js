@@ -70,7 +70,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 				}
 			}
 			
-			//修改原生alert弹窗
+			//修改原生confirm弹窗
 			if(lib.config.extension_应用配置_replaceConfirm) {
 				window.confirm = (message) => {
 					const result = dialog.showMessageBoxSync(remote.getCurrentWindow(), {
@@ -228,7 +228,8 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
                 });
             }
 
-			if ([lib.config.extension_应用配置_replaceAppWidth, lib.config.extension_应用配置_replaceAppHeight].every(v => !isNaN(Number(v)))) {
+			if (!sessionStorage.getItem('setAppSize') && [lib.config.extension_应用配置_replaceAppWidth, lib.config.extension_应用配置_replaceAppHeight].every(v => !isNaN(Number(v)))) {
+				sessionStorage.setItem('setAppSize', 'true');
 				const thisWindow = remote.getCurrentWindow();
 				thisWindow.setSize(Number(lib.config.extension_应用配置_replaceAppWidth), Number(lib.config.extension_应用配置_replaceAppHeight), false);
 				thisWindow.center();
@@ -336,7 +337,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 			author: "诗笺",
 			diskURL: "",
 			forumURL: "",
-			version: "1.21",
+			version: "1.22",
 		}
 	}
 });

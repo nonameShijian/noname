@@ -1148,10 +1148,16 @@ interface Game {
     /** 洗牌次数 */
     shuffleNumber: number;
 
-    /** 当前游戏的“主公”身份的角色，适用模式：身份局 */
+    /** 
+	 * 身份局的主公
+	 * 
+	 * 单挑模式下的先手角色
+	 */
     zhu: Player;
     /** 玩家自己 */
     me: Player;
+	/** 单挑模式下的后手角色 */
+	fan: Player;
 	/** 挑战模式下的boss */
 	boss: Player;
 

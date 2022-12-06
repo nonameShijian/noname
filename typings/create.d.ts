@@ -68,12 +68,19 @@ declare namespace UI {
          * 创建控制面板
          * 
          * 创建一个新的控制面板，保存在ui.controls；
+         * 
          * 其中，item参数列表：可以是任意参数，可以是一个数组（其实就是把任意参数用数组包起来）
+         * 
          *  function类型：设置control.custom，设置选项点击后的方法；
+         * 
          *  特定的string类型：
+         * 
          *      'nozoom'：暂时没有
+         * 
          *      'stayleft'：显示到左边，否则，默认显示在中间；
+         * 
          *  其他类型（目前来看选项只有string类型）：
+         * 
          *      使用control.add，设置面板的选项；
          */
         control(...item): Lib.element.Control;
