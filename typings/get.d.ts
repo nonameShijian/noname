@@ -4,11 +4,11 @@ declare var get:Get;
  */
 interface Get {
     /** 获取当前血量（xx/xxx左边部分 或者自身） */
-    infoHp(hp:number|string):number;
+    infoHp(hp: HeroHp):number;
     /** 获取当前最大血量（xx/xxx右边部分 或者自身） */
-    infoMaxHp(hp:number|string):number;
+    infoMaxHp(hp: HeroHp):number;
 	/** 获取当前护甲值（xx/xx/xx右边部分） */
-	infoHujia(hpinfo: string):number;
+	infoHujia(hpinfo: HeroHp):number;
 
     /** 一些常用的条件判断 */
     is:Is;
@@ -194,6 +194,8 @@ interface Get {
     /**
      * 获取拥有指定技能skill是“zhu”的玩家
      * 注：不同玩法，“zhu”的定义不一样
+     * 
+     * 【v1.9.118】修复get.zhu()函数存在的bug，以及因此衍生的国战君主所在势力出现野心家的bug
      * @param player 
      * @param skill 
      * @param unseen 
@@ -273,7 +275,10 @@ interface Get {
     infoPlayersOL(info):any;
     funcInfoOL(func):any;
     infoFuncOL(info):any;
-    stringifiedResult(item,level):any;
+    /**
+     * 【v1.9.116.2】 将get.stringifiedResult的默认层数由5改为8，并由此解决部分联机模式的bug（如陆凯〖卜筮〗无法在联机模式下正常发动的bug）
+     */
+    stringifiedResult(item, level = 8):any;
     parsedResult(item):any;
 
     /** 输出垂直显示字符串 */
@@ -635,7 +640,7 @@ interface Get {
      * 获取当前正在游戏中（还活着）的（身份）人数
      * @param identity 指定身份，不填默认获取当前所有玩家数（正在游戏+已死亡）
      */
-    population(identity?:number):number;
+    population(identity?:number | string):number;
     /**
      * 获取当前游戏中（活着+死亡）的（身份）人数
      * @param identity 指定身份，不填默认获取当前所有玩家数（正在游戏+已死亡）

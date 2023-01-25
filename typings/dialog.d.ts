@@ -7,17 +7,25 @@ declare namespace Lib.element {
          * 添加信息到会话面板中
          * 
          * item类型：
-         *  若为字符串类型string,若有“###”，则执行addText显示余下的文本；
-         *  若为“div”类型，则将其添加进content中；
-         *  若为“cards”类型，则添加生成卡牌列表按钮；
-         *  若为“players”类型，则添加生成玩家武将列表按钮；
+         * 
+         *      `string`: 若有“###”，则执行addText显示余下的文本
+         * 
+         *      `div`: 将其添加进content中
+         * 
+         *      `cards`: 添加生成卡牌列表按钮
+         * 
+         *      `players`: 添加生成玩家武将列表按钮；
+         * 
+         *      `array`: 【v1.9.117.2】若数组的第二个元素为'textbutton'，则调用ui.create.textbuttons创建纯文字按钮，并传入数组的第一个元素
+         * 
          *  若不是以上类型，则是[button的item或者list,button的type]数组，添加生成对应的按钮；
+         * 
          * @param item 添加的信息（有多种类型的信息）
          * @param noclick 是否可点击
          * @param zoom 是否是小型布局“smallzoom”的信息
          * @return 返回item
          */
-        add(item: any, noclick?: boolean, zoom?: boolean): any;
+        add<T extends any>(item: T, noclick?: boolean, zoom?: boolean): T;
         /**
          * 添加文本到会话面板里。
          * 

@@ -91,16 +91,18 @@ interface Status {
      * 全局事件的使用记录
      * 
      * 目前只记录：卡牌移动事件；
-     * 当前游戏，获取，操作该参数的方法：game.getGlobalHistory；
+     * 当前游戏，获取，操作该参数的方法：game.getGlobalHistory 和 game.getAllGlobalHistory
      */
-    globalHistory:GlobalHistoryData[];
+    globalHistory: GlobalHistoryData[];
 
     /** 没有倒计时显示 */
     noclearcountdown:boolean;
 
     /**
      * 卡牌标记
-     * 每个标记独立保存card.cardid；
+     * 
+     * 每个标记独立保存card.cardid
+     * 
      * 【v1.9.107】
      */
     cardtag:SMap<string[]>;

@@ -293,7 +293,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 						});
 					} else {
 						console.log('不进行重新下载，已清空失败列表');
-						lib.config.extension_在线更新_brokenFile = [];
+						brokenFileArr.length = 0;
 						game.saveConfigValue('extension_在线更新_brokenFile');
 					}
 				}, 2500);
@@ -396,7 +396,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 				if (game.getExtensionConfig('在线更新', 'auto_check_update')) checkUpdate();
 			}, 1000 * 60 * 10);
 			// 刚开启时候的网络请求不会成功
-			if (game.getExtensionConfig('在线更新', 'auto_check_update')) setTimeout(checkUpdate, 3000);
+			if (game.getExtensionConfig('在线更新', 'auto_check_update')) setTimeout(checkUpdate, 10000);
 		},
 		precontent: function () {
 			// 添加两个更新地址
@@ -1104,7 +1104,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 			show_version: {
 				clear: true,
 				nopointer: true,
-				name: '扩展版本： v1.47',
+				name: '扩展版本： v1.48',
 			},
 			update_link_explain: {
 				clear: true,
@@ -1124,7 +1124,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 					switch (item) {
 						case 'coding':
 							// str = '目前最主要的更新源，但也是崩的最彻底的一个';
-							str = '目前最主要的更新源。从v1.9.115.3以后(不包括)，coding更新源更换为了另一个可用网址';
+							str = '目前最主要的更新源。从v1.9.115.3以后(不包括)，coding更新源更换为了另一个可用网址(好像现在也不能用了)';
 							break;
 						case 'github':
 							str = '国外的更新源，没有vpn或修改host设置的情况下几乎连不上此更新源';
@@ -1136,7 +1136,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 							str = '由寰宇星城创建的更新源，和coding差不多，版本的更新需要他在苏婆更新后手动拉代码到服务器上。目前因coding网址的政策已废弃';
 							break;
 						case 'URC':
-							str = '由Show-K大佬提供，名字取自United Rhythmized Club';
+							str = '由Show-K大佬提供，名字取自United Rhythmized Club，推荐使用此更新源';
 					}
 					typeof str != 'undefined' && alert(str);
 					return false;
@@ -1916,7 +1916,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 			author: "诗笺",
 			diskURL: "",
 			forumURL: "",
-			version: "1.47",
+			version: "1.48",
 		},
 		files: { "character": [], "card": [], "skill": [] }
 	}

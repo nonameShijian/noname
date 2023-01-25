@@ -8,11 +8,8 @@ declare namespace Lib.element {
      * 来源：lib.element.player
      */
     interface Player {
-        //新函数
         /**
          * 选择对策（进攻/防御）
-		 * 
-         * 注：应该是非三国杀常规玩法
 		 * 
          * @param target 
          */
@@ -24,10 +21,14 @@ declare namespace Lib.element {
         chooseToPSS(target: Player): Event;
         /**
          * 选择恢复一个装备栏
+         * 
+         * 【v1.9.116.3】 如果只有一个可选选项，会自动选择了
          */
         chooseToEnable(): Event;
         /**
          * 选择废除一个装备栏
+         * 
+         * 【v1.9.116.3】 如果只有一个可选选项，会自动选择了
 		 * 
          * @param horse 若为true,则不能弃置马
          */
@@ -102,7 +103,7 @@ declare namespace Lib.element {
 		 * 
          * 使该玩家markSkill('_disableJudge')
          */
-        disableJudge(): any;
+        disableJudge(): Event;
         
         //原有函数
         //初始化相关函数
@@ -110,8 +111,9 @@ declare namespace Lib.element {
          * 玩家初始化
          */
         init(character: string, character2?: string | boolean, skill?: string | boolean): Player;
-
+        /** 玩家初始化后依次执行这里的函数 */
 		inits: ((player: Player) => void)[];
+        /** 玩家初始化后依次执行这里的函数 */
 		_inits: ((player: Player) => void)[];
 
         //联机相关初始化
@@ -120,7 +122,7 @@ declare namespace Lib.element {
         initRoom(info: any, info2: any): any;
 
         /**
-         * 重新初始化
+         * 单个武将重新初始化
 		 * 
          * @param from 原武将的名字（需和玩家当前所显示的武将名一致，包括双将）
          * @param to 将要更新成对应武将的名字
@@ -144,8 +146,13 @@ declare namespace Lib.element {
 		 * @param video 是否加入动画
 		 */
 		smoothAvatar(vice?: boolean, video?: boolean): any;
-        /** 【动画】换位置 */
-        changeSeat(position: any, video: any): any;
+        /**
+         * 【动画】换位置
+         * 
+         * @param position 一般是0-7之间的数字，指定要换的座次
+         * @param video 是否加入动画
+         */
+        changeSeat(position: number, video?: boolean): any;
 
         /** 
          * 【联机】发送信息
@@ -168,7 +175,7 @@ declare namespace Lib.element {
 		 * 
          *  注：主要是联机同步信息用，将信息打包成json结果（不过不知为什么把div打包了）
          */
-        getState(key: any): PlayerStateInfo;
+        getState(): PlayerStateInfo;
 
         /** 【联机】设置nickname */
         setNickname(str: string): Player;
@@ -224,7 +231,9 @@ declare namespace Lib.element {
         /**
          * 获取指定区域卡牌/技能的数量
 		 * 
-         * 注：和player.get一样，用得比较少，简单用法player.num(string,string)获取指定数量
+         * 注: 和player.get一样，用得比较少，简单用法player.num(string, string)获取指定数量
+         * 
+         * `注2: 此为老函数，不应继续使用了` 
 		 * 
          * @param arg1 若是“hej”任意组合，则是获取指定区域的牌；若为“s”则获取当前玩家包括全局技能的所有技能
          * @param arg2 过滤条件1
@@ -237,14 +246,14 @@ declare namespace Lib.element {
          * @param target 目标玩家
          * @param config css画线的配置
          */
-        line(target: Player, config: any): void;
+        line(target: Player | Player[], config: LineConfig): void;
         /**
          * 画多个目标的指引线（当前玩家到多个目标玩家）
 		 * 
          * @param targets 目标玩家列表
          * @param config css画线的配置
          */
-        line2(targets: Player[], config: any): void;
+        line2(targets: Player[], config: LineConfig): void;
         /**
          * 获取当前玩家的下一个玩家（下家）
 		 * 
@@ -281,8 +290,8 @@ declare namespace Lib.element {
         /**
          * 获取当前玩家的牌(根据类型指定)
 		 * 
-         * @param arg1 获取玩家身上牌的类型：h手牌，e装备牌，j判定牌，可以多个拼接【个人扩充：增加“s”,"o"两个区域】
-         * @param arg2 获取牌的详细过滤条件（若是字符串则是卡牌名，若是对象是个cardSimpInfo结构）【个人扩充：方法增加多一个参数--当前玩家】
+         * @param arg1 获取玩家身上牌的类型：h手牌，e装备牌，j判定牌，s木牛流马上盖的牌，x武将牌上的牌。可以多个拼接。【神雷Zero个人扩充：增加“s”,"o"两个区域】
+         * @param arg2 获取牌的详细过滤条件（若是字符串则是卡牌名，若是对象是个cardSimpInfo结构）。【神雷Zero个人扩充：方法增加多一个参数--当前玩家】
          */
         getCards(arg1?: string, arg2?: string | CardBaseUIData |OneParmFun<Card,boolean>|TwoParmFun<Card,Player,boolean>): Card[];
         /**
@@ -314,7 +323,7 @@ declare namespace Lib.element {
         /**
          * 计算获取当前玩家的牌数(根据类型指定)
 		 * 
-         * @param arg1 获取玩家身上牌的类型：h手牌，e装备牌，j判定牌，可以多个拼接
+         * @param arg1 获取玩家身上牌的类型：h手牌，e装备牌，j判定牌，s木牛流马上盖的牌，x武将牌上的牌。可以多个拼接
 		 * 
          * @param arg2 获取牌的详细过滤条件（若是字符串则是卡牌名，若是对象是个cardSimpInfo结构）
          */
@@ -403,40 +412,48 @@ declare namespace Lib.element {
          */
         insertEvent(name: string, content: string|ContentFunc, arg: SMap<any>): Event;
         /**
-         * 回合阶段
+         * 进行一个回合
          * @param skill 
          */
         phase(skill: string,...args: any[]): Event;
         /**
-         * 判断阶段
+         * 进行一个准备阶段
+         */
+        phaseZhunbei(): Event;
+        /**
+         * 进行一个判断阶段
          */
         phaseJudge(...args: any[]): Event;
         /**
-         * 抽牌阶段
+         * 进行一个摸牌阶段
          */
         phaseDraw(...args: any[]): Event;
         /**
-         * 出牌阶段
+         * 进行一个出牌阶段
          */
         phaseUse(...args: any[]): Event;
         /**
-         * 弃牌阶段
+         * 进行一个弃牌阶段
          */
         phaseDiscard(...args: any[]): Event;
+        /**
+         * 进行一个结束阶段
+         */
+        phaseJieshu(): Event;
         /**
          * 选择使用
          * 
          * 参数列表：
 		 * 
-         *  number类型/select类型：设置next.selectTarget，默认lib.filter.selectTarget；
+         *  `number类型/select类型`：设置next.selectTarget，默认lib.filter.selectTarget；
          *  
-		 *  object类型且是itemtype时player/已经设置了next.filterCard：设置next.filterTarget，其结果是对象get.filter(next.filterTarget,2)，默认lib.filter.filterTarget；
+		 *  `object类型且是itemtype时player/已经设置了next.filterCard`：设置next.filterTarget，其结果是对象get.filter(next.filterTarget,2)，默认lib.filter.filterTarget；
          *  
-		 *  object类型且itemtype不是player，也没设置了next.filterCard：设置next.filterCard，其结果是对象get.filter(next.filterCard)，默认lib.filter.filterCard；
+		 *  `object类型且itemtype不是player，也没设置了next.filterCard`：设置next.filterCard，其结果是对象get.filter(next.filterCard)，默认lib.filter.filterCard；
          *  
-		 *  boolean类型：设置next.forced；
+		 *  `boolean类型`：设置next.forced；
          *  
-		 *  string类型：next.prompt；
+		 *  `string类型`：next.prompt；
          *  
 		 *  next.selectCard，默认[1,1]，可由map结构来设置；
 		 * 
@@ -2109,7 +2126,16 @@ declare namespace Lib.element {
          * @returns 若两个参数都没有，则返回当前玩家回合的记录，若有key，则获取指定类型的记录
          */
         getHistory():ActionHistoryData;
-        getHistory(key?:keyof ActionHistoryData,filter?:OneParmFun<GameEvent,boolean>):GameEvent[];
+        getHistory(key:keyof ActionHistoryData, filter?:OneParmFun<GameEvent,boolean>):GameEvent[];
+        
+        /**
+         * 玩家是否有符合某些条件的记录
+         * 
+         * @param key 同getHistory的key参数
+         * @param filter 同getHistory的filter参数
+         * @param last 取last个记录之前的事件
+         */
+        hasHistory(key: keyof ActionHistoryData, filter:OneParmFun<GameEvent, boolean>, last: number): void;
         
         //【v1.9.98.6.1】
         /**
@@ -2120,14 +2146,14 @@ declare namespace Lib.element {
          * 例：Yui喵的【珍宝】判断整局游戏中因【激昂】获得过的牌的数量
          */
         getAllHistory():ActionHistoryData;
-        getAllHistory(key?:keyof ActionHistoryData,filter?:OneParmFun<GameEvent,boolean>):GameEvent[];
+        getAllHistory(key:keyof ActionHistoryData, filter?:OneParmFun<GameEvent,boolean>): GameEvent[];
 
         //【v1.9.102】
         /**
          * 用于获取某个玩家自己最近一个回合的actionHistory
          */
         getLastHistory():ActionHistoryData;
-        getLastHistory(key?:keyof ActionHistoryData,filter?:OneParmFun<GameEvent,boolean>):GameEvent[];
+        getLastHistory(key:keyof ActionHistoryData, filter?:OneParmFun<GameEvent,boolean>): GameEvent[];
 
         /**
          * 获取玩家本回合内使用倒数第X+1张牌的事件 
@@ -2179,6 +2205,8 @@ declare namespace Lib.element {
         showCharacter(num:number,log?:boolean):GameEvent;
         /** 【国战】移除自己的武将 */
         removeCharacter(num:number):GameEvent;
+        /** 【国战】 */
+        wontYe(group?: string): boolean;
 
         /**
          * 用于判断一名角色能否对另一名濒死角色提供帮助。
@@ -2231,7 +2259,7 @@ declare namespace Lib.element {
          */
         directgains(cards:Card[],broadcast:boolean|null,gaintag:string):Player;
 
-        //动画,UI相关的方法（前置$符）
+        // 动画,UI相关的方法（前置$符）
         $drawAuto(cards: any, target: any): any;
         $draw(num: any, init: any, config: any): any;
         $compareMultiple(card1: any, targets: any, cards: any): any;
@@ -2276,9 +2304,9 @@ declare namespace Lib.element {
         $throwEmotion(target:Target,name:string):void;
 
 		/**
+         * 【v1.9.113】
+         * 
 		 * 将卡牌移动武将牌上, 然后通过gaintag区分牌
-		 * 
-		 * 【v1.9.113】
 		 * 
 		 * ```
 		 * player.addToExpansion(event.card,'gain2').gaintag.add('tuntian');
@@ -2290,7 +2318,13 @@ declare namespace Lib.element {
 		 * @param { string } animate 指定动画
 		 * @param { boolean } delay 是否延迟
 		 */
-		addToExpansion(...any): GameEvent;
+		addToExpansion(...args: any[]): GameEvent;
+
+        /**
+         * 获取武将牌上指定gaintag(通常是技能名)所放置的牌
+         * @param tag 通常是技能名
+         */
+        getExpansions(tag: string): Card[];
 
 		/**
 		 * 获取座位号
@@ -2319,6 +2353,24 @@ declare namespace Lib.element {
 		 */
 		$changeZhuanhuanji(skill: string): void;
 
+        /**
+         * 移动牌操作
+         * 
+         * 【v1.9.115.3】 可以给一个操作区域内的牌添加gaintag了（参考赵俨）
+         * 
+         * 【v1.9.116】 修改对话框显示。现在的对话框变得更大了，并且在对话框最下方给予了操作方式的提示
+         * 
+         * 【v1.9.116】 chooseToMove事件可以操作任意格式的buttons了（参考：陆凯〖卜筮〗）
+         */
+        chooseToMove(forced?: boolean, prompt?: string): void;
+
+        /**
+         * 【v1.9.118】判断玩家是否属于某一宗族
+         * @param clan 宗族名称
+         * @param unseen unseen为true的话可以查暗将或者隐匿的是不是家族
+         */
+        hasClan(clan: string, unseen: boolean): boolean;
+
 		/**
 		 * 【国战】玩家是否是大势力角色
 		 */
@@ -2339,9 +2391,17 @@ declare namespace Lib.element {
 		 */
 		logAi(shown: number): void;
 		logAi(targets: Player[], card: Card): void;
+        /**
+         * 【国战】 从lib.character获取势力信息
+         * 
+         * 注: 如果副将是双势力角色，则默认返回主将势力
+         * 
+         * @param num 如果为1，则获取副将势力
+         */
+        getGuozhanGroup(num?: number): string;
     }
 
-    //核心成员属性（暂时先一部分比较核心常用的）
+    // 核心成员属性（暂时先一部分比较核心常用的）
     interface Player extends HTMLDivElement {
         /** 当前显示的武将名(一般是主将名，别的模式下可能是别的，如一号位等) */
         name:string;
@@ -2374,7 +2434,6 @@ declare namespace Lib.element {
          */
         judging:Card[];
 
-        //【v1.9.98.7】废弃
         /**
          * 记录当前事件中得玩家使用中的卡牌
          * 
@@ -2386,7 +2445,7 @@ declare namespace Lib.element {
 		 * 
          * phaseUse（每次出牌阶段使用完一次卡牌后）
 		 * 
-		 * @deprecated
+		 * @deprecated 【v1.9.98.7】废弃
          */
         using?:Card[];
 
@@ -2528,12 +2587,14 @@ declare namespace Lib.element {
         next:Player;
 		
         /**
+         * 竞技模式的身份
+         * 
 		 * 要获取座位号请使用如下方法：
 		 * ```
 		 * player.getSeatNum();
 		 * ```
 		 */
-        side?:number;
+        side?:boolean;
 
         /** 当前玩家是不是主公，可能受玩法模式影响 */
         isZhu?:boolean;
@@ -2592,14 +2653,13 @@ declare namespace Lib.element {
         nickname:string;
 		/** 特殊身份 */
 		special_identity: string;
-
-		noclick: any;
-
+        /** 设置player不可点击(做展示用) */
+		noclick: boolean;
         /** 国战模式下玩家的真实国籍 */
         _group?: string;
 		/** 座位号 */
 		seatNum: number;
-		
+
 		_hookTrigger: any[];
     }
 
@@ -2627,7 +2687,6 @@ declare namespace Lib.element {
         dieAfter2(source:Source):void;
         /** ai日志，要自己实现 */
         logAi(targets:Target[],card:Card):void;
-        logAi(expose:number):void;
 
         /**
          * 给角色设置这一函数,从而在特定场合摸牌和判定时（如智斗三国的个人牌堆）改变牌堆顶牌的获取方式;
@@ -2647,7 +2706,6 @@ type StatInfo = {
     card:SMap<number>;
     /** 使用技能（不同名字的技能单独计数） */
     skill:SMap<number>;
-    
     /** 伤害 */
     damage:number;
     /** 受到伤害 */
@@ -2656,10 +2714,8 @@ type StatInfo = {
     gain:number;
     /** 杀敌 */
     kill:number;
-
     /** 使用技能次数（不区分统一计数） */
     allSkills:number;
-
     /** 额外参数 */
     [key:string]:any
 }
@@ -2675,26 +2731,31 @@ type PlayerStateInfo = {
     name:string;
     name1:string;
     name2:string;
-    handcards:any[];
-    equips:any[];
-    judges:any[];
+    handcards:Card[];
+    equips:Card[];
+    judges:Card[];
+    specials:Card[];
+    expansions:Card[];
+    expansion_gaintag:any[],
+    disableJudge:Card[];
+    disableEquip:Card[];
     views:string[],
     position:number;
     hujia:number;
     side:number;
-    identityShown:string;
+    identityShown: Player['identityShown'];
     identityNode:[any,any];
     identity:string;
     dead:boolean;
     linked:boolean;
     turnedover:boolean;
-
     gaintag:string[];
     disableJudge:boolean;
     disableEquip:boolean;
     phaseNumber:number;
     unseen:boolean;
     unseen2:boolean;
+    seatNum:number;
 }
 
 /**
@@ -2756,7 +2817,7 @@ type ActionHistoryData = {
     sourceDamage:GameEvent[],
     /** 造成伤害 */
     damage:GameEvent[],
-    /** 客户端操作 */
+    /** 扩展自定义操作 */
     custom:any[],
     /** 【v1.9.115】添加 使用技能事件记录 */
     useSkill:HistoryUseSkillData[]

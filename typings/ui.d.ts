@@ -134,4 +134,6 @@ interface UI {
 	fakeme: HTMLDivElement;
 	confirm: HTMLDivElement;
 	skills: HTMLDivElement;
+    /** 显示剩余牌 */
+    cardPileNumber: HTMLDivElement;
 }

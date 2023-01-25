@@ -20,7 +20,7 @@ window.config={
 	zhinang_tricks:['guohe','wuxie','wuzhong','dongzhuxianji'],
 	connect_zhinang_tricks:['guohe','wuxie','wuzhong','dongzhuxianji'],
 	all:{
-		sgscharacters:['standard','shenhua','xinghuoliaoyuan','refresh','yijiang','sp','sp2','extra','old','mobile','tw','yingbian','offline','sb'],
+		sgscharacters:['standard','shenhua','xinghuoliaoyuan','refresh','yijiang','sp','sp2','extra','old','mobile','tw','yingbian','offline','sb','clan'],
 		sgscards:['standard','extra','sp','guozhan','zhulu','yingbian','yongjian'],
 		sgsmodes:['identity','guozhan','versus','doudizhu','single','brawl','connect'],
 		stockmode:['identity','guozhan','versus','boss','doudizhu','single','chess','stone','connect','brawl','tafang'],
@@ -133,11 +133,11 @@ window.config={
 	sort:'type_sort',
 
 	cards:['standard','extra'],
-	characters:['standard','shenhua','sp','sp2','yijiang','refresh','xinghuoliaoyuan','mobile','extra','yingbian','sb','tw','offline'],
+	characters:['standard','shenhua','sp','sp2','yijiang','refresh','xinghuoliaoyuan','mobile','extra','yingbian','sb','tw','offline','clan'],
 	connect_characters:['diy'],
 	connect_cards:['huanlekapai','guozhan','sp','zhulu','yingbian','yongjian'],
 	plays:[],
-	extensions: ['应用配置', '拖拽读取', '在线更新'],
+	extensions:['应用配置', '拖拽读取', '在线更新'],
 	banned:[],
 	bannedcards:[],
 	forbidlist:[],

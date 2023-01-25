@@ -16,6 +16,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 			remote.getCurrentWindow().toggleDevTools();
 		};
 	} else {
+		// @ts-ignore
 		remote = require('electron').remote;
 	}
 	const { dialog } = remote;
@@ -46,14 +47,63 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 			//链接：nonameSKill:?extensionName=全能搜索
 			delete lib.extensionMenu.extension_应用配置.delete;
 			
-			//让无名杀控制台内的文字可选中
 			const fullsize = document.createElement('style');
 			fullsize.innerText = `
-			/* 让无名杀控制台内的文字可选中 */
-			.fullsize {
-				user-select: text;
-				-webkit-user-select: text;
-			}`;
+				/* 让无名杀控制台内的文字可选中 */
+				.fullsize {
+					user-select: text;
+					-webkit-user-select: text;
+				}
+				/* 为hljs设置行号样式 */
+				.hljs-ln-numbers {
+					-webkit-touch-callout: none;
+					-webkit-user-select: none;
+					-khtml-user-select: none;
+					-moz-user-select: none;
+					-ms-user-select: none;
+					user-select: none;
+					text-align: center;
+					color: #ccc;
+					border-right: 1px solid #CCC;
+					vertical-align: top;
+					padding-right: 5px;
+				}
+				.hljs-ln-code {
+					padding-left: 1em;
+				}
+				/* 防止div样式被无名杀修改 */
+				.hljs-ln-n {
+					display: block !important;
+					position: inherit !important;
+					transition: none !important;
+				}
+				.showErrorCode {
+					position: relative;
+					z-index: 10;
+					width: 80%;
+					top: 50%;
+					left: 50%;
+					transform: translate(-50%, -50%);
+					background: white;
+					color: black;
+					text-shadow: none;
+				}
+				.showErrorCode > .txt {
+					user-select: text;
+					position: relative;
+					left: 50%;
+					transform: translate(-50%, 0%);
+					font-size: 22px;
+				}
+				.showErrorCode > .close {
+					float: right;
+					font-size: 22px;
+					margin: 5px;
+				}
+				.errorCodeLine, .errorCodeLine > * {
+					color: red !important;
+				}
+			`;
 			document.body.appendChild(fullsize);
 		},
 		precontent: function() {
@@ -98,12 +148,16 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 							encoding: 'utf-8'
 						});
 						eval(str);
+						// @ts-ignore
 						if(!game.importedPack) throw '扩展代码格式错误';
 						lib.config.extensions.add(extensionName);
 						game.saveConfig('extensions', lib.config.extensions);
 						game.saveConfig('extension_' + extensionName + '_enable', true);
+						// @ts-ignore
 						for (let i in game.importedPack.config) {
+							// @ts-ignore
 							if (game.importedPack.config[i] && game.importedPack.config[i].hasOwnProperty('init')) {
+								// @ts-ignore
 								game.saveConfig('extension_' + extensionName + '_' + i, game.importedPack.config[i].init);
 							}
 						}
@@ -119,8 +173,152 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 				}
 			}
 
+			/**
+			 * 寻找错误文件的代码
+			 * @param { string | undefined } src 
+			 * @param { number } line 
+			 * @param { number } column 
+			 * @param { Error } err 
+			 */
+			function findErrorFileCode(src, line, column, err) {
+				// @ts-ignore
+				if (!window.hljs) return console.warn('hljs is not defind');
+				// 暂停游戏
+				_status.paused3 = true;
+
+				console.log(_status.event);
+				console.dir(err);
+				
+				/**
+				 * 生成高亮代码
+				 * @param { string } code 
+				 */
+				function createHighlightDom(code) {
+					function ready () {
+						// @ts-ignore
+						hljs.initLineNumbersOnLoad();
+						const pre = document.createElement('pre');
+						pre.className = 'hljs language-javascript';
+						pre.style.userSelect = 'text';
+						pre.style.webkitUserSelect = 'text';
+						pre.style.margin = '1em 10px';
+						pre.innerHTML = code;
+						// @ts-ignore
+						hljs.highlightElement(pre);
+						// @ts-ignore
+						hljs.lineNumbersBlock(pre);
+						// 通过setTimeout等待hljs.lineNumbersBlock执行完成
+						setTimeout(() => {
+							// 修改行号
+							const trArray = [...pre.querySelectorAll('tr')];
+							if (line > 5) {
+								trArray.forEach((tr, i) => {
+									// @ts-ignore
+									tr.childNodes[0].dataset.lineNumber = String(line - 4 + i);
+									// @ts-ignore
+									tr.childNodes[0].childNodes[0].dataset.lineNumber = String(line - 4 + i);
+									// @ts-ignore
+									tr.childNodes[0].nextSibling.dataset.lineNumber = String(line - 4 + i);
+									if (i == 4) {
+										const td = tr.childNodes[1];
+										// @ts-ignore
+										td.classList.add('errorCodeLine');
+									}
+								});
+							}
+						}, 30);
+						const path = require('path');
+						const div = document.createElement('div');
+						div.classList.add('showErrorCode');
+						const txt = document.createElement('div');
+						txt.classList.add('txt');
+						txt.innerHTML = `
+							错误信息: <span style="color: red;">${err.message || 'undefined'}</span><br>
+							${ src ? ('错误文件: <a onclick="require(\'electron\').shell.openPath(\'' + decodeURI(src) + '\')" href="javascript:void(0);">' + path.relative(__dirname, decodeURI(src).slice(8)) + '</a><br>') : '注意: 此错误来源是经无名杀转译后的函数代码<br>' }
+							行号: ${line}<br>
+							列号: ${column}
+						`;
+						div.appendChild(txt);
+						const close = document.createElement('button');
+						close.innerText = '关闭';
+						close.classList.add('close');
+						close.addEventListener('click', () => {
+							ui.window.removeChild(div);
+							setTimeout(() => {
+								if (!lib.config.errstop) {
+									_status.withError = true;
+									_status.paused3 = false;
+									game.loop();
+								}
+							}, 500);
+						});
+						div.appendChild(close);
+						div.appendChild(pre);
+						ui.window.appendChild(div);
+					}
+
+					// @ts-ignore
+					if (typeof hljs.initLineNumbersOnLoad == 'function') {
+						ready();
+					} else {
+						lib.init.js('extension/应用配置', 'highlightjs-line-numbers.min', ready);
+					}
+				}
+
+				if (typeof src == 'string') {
+					// 协议名须和html一致，且文件是js
+					if (!src.startsWith(location.protocol) || !src.endsWith('.js')) return;
+					const fs = require('fs');
+					// 去掉file:///
+					const codes = fs.readFileSync(decodeURI(src).slice(8), 'utf8');
+					const lines = codes.split("\n");
+
+					// 设代码片段为10行，出错代码在5行。
+					let showCode = '';
+					if (lines.length >= 10) {
+						if (line > 4) {
+							for (let i = line - 5; i < line + 6 && i < lines.length; i++) {
+								showCode += (lines[i] + '\n');
+							}
+						} else {
+							for (let i = 0; i < line + 6 && i < lines.length; i++) {
+								showCode += (lines[i] + '\n');
+							}
+						}
+					} else {
+						showCode = codes.toString();
+					}
+					createHighlightDom(showCode);
+				} else {
+					// 解析parsex里的content fun内容(通常是技能content)
+					if (!err?.stack?.split('\n')[1].trim().startsWith('at Object.eval [as content]')) return;
+					const codes = _status.event.content;
+					if (typeof codes != 'function') return;
+					/** @type { string[] } */
+					const lines = codes.toString().split("\n");
+
+					// 设代码片段为10行，出错代码在5行。
+					let showCode = '';
+					if (lines.length >= 10) {
+						if (line > 4) {
+							for (let i = line - 5; i < line + 6 && i < lines.length; i++) {
+								showCode += (lines[i] + '\n');
+							}
+						} else {
+							for (let i = 0; i < line + 6 && i < lines.length; i++) {
+								showCode += (lines[i] + '\n');
+							}
+						}
+					} else {
+						showCode = codes.toString();
+					}
+					createHighlightDom(showCode);
+				}
+			};
+
             // 修改window.onerror
             window.onerror = function (msg, src, line, column, err) {
+				// @ts-ignore
                 let str = `错误文件: ${ decodeURI(src) || 'undefined' }\n错误信息: ${msg}`;
                 str += '\n' + `行号: ${line}`;
                 str += '\n' + `列号: ${column}`;
@@ -135,6 +333,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
                     }
 					if (evt.player && lib.translate[evt.player.name]) {
                         str += `\nplayer: ${lib.translate[evt.player.name]}[${evt.player.name}]`;
+						// @ts-ignore
                         let distance = get.distance(_status.roundStart, evt.player, 'absolute');
                         if (distance != Infinity) {
                             str += `\n座位号: ${distance + 1}`;
@@ -171,11 +370,17 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
                 game.print(msg);
                 game.print(line);
                 game.print(column);
-                game.print(decodeURI(err.stack));
-                if (!lib.config.errstop) {
-                    _status.withError = true;
-                    game.loop();
-                }
+				// @ts-ignore
+                game.print(decodeURI(err?.stack));
+				if (game.getExtensionConfig('应用配置', 'showErrorCode')) {
+					// @ts-ignore
+					findErrorFileCode(src || undefined, line, column, err);
+				} else {
+					if (!lib.config.errstop) {
+						_status.withError = true;
+						game.loop();
+					}
+				}
             };
 			
             if (lib.config.extension_应用配置_newExtApi) {
@@ -211,7 +416,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
                     if (!fileName) return;
                     const extName = fileName.slice(0, fileName.indexOf('\\'));
                     const file = fileName.slice(fileName.indexOf('\\') + 1);
-                    
+                    // @ts-ignore
                     if (!game.importedPack && 
                         !lib.config.all.plays.includes(extName) && 
                         lib.config.extensions.includes(extName) && 
@@ -282,6 +487,21 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 					game.saveExtensionConfig('应用配置', 'replaceAppHeight', height);
 				},
 			},
+			showErrorCode: {
+				init: false,
+				name: '报错时显示错误代码',
+				intro: '开启此选项后，显示错误代码会阻塞无名杀代码执行',
+				onclick: (result) => {
+					// @ts-ignore
+					if (!window.hljs && !(lib.config.extensions.includes('全能搜索') && game.getExtensionConfig('全能搜索', 'enable'))) {
+						alert('此功能需要引入highlightjs才能使用(或者安装扩展"全能搜索"并开启)');
+						game.saveExtensionConfig('应用配置', 'showErrorCode', false);
+						return false;
+					}
+					alert('选项修改已生效');
+					game.saveExtensionConfig('应用配置', 'showErrorCode', result);
+				}
+			},
 			//修改原生alert弹窗
 			replaceAlert: {
 				init: true,
@@ -337,7 +557,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 			author: "诗笺",
 			diskURL: "",
 			forumURL: "",
-			version: "1.22",
+			version: "1.3",
 		}
 	}
 });

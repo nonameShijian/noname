@@ -10,6 +10,7 @@ if (electronVersion >= 14) {
 	remote = require('@electron/remote/main');
 	remote.initialize();
 } else {
+	// @ts-ignore
 	remote = require('electron').remote;
 }
 let win, extensionName, updateURL;
@@ -144,6 +145,7 @@ function createMainWindow() {
 			nodeIntegrationInSubFrames: true, //子页面用node
 			contextIsolation: false,//必须为false
 			plugins: true, //启用插件
+			// @ts-ignore
 			enableRemoteModule: true, //可以调用Remote
 			experimentalFeatures: true, //启用Chromium的实验功能
 		}
@@ -191,6 +193,7 @@ function createUpdateWindow() {
 		webPreferences: {
 			nodeIntegration: true, //主页面用node
 			contextIsolation: false, //必须为false
+			// @ts-ignore
 			enableRemoteModule: true, //可以调用Remote
 		}
 	});
@@ -326,7 +329,7 @@ app.whenReady().then(() => {
 		const savePath = path.join(updatePath, fileUrl);
 		item.setSavePath(savePath);
 		const winId = BrowserWindow.fromId(updateWinId);
-		
+		if (!winId) return;
 		item.on('updated', (event, state) => {
 			if(winId.isDestroyed()) {
 				//窗口被关闭

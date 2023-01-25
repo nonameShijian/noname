@@ -117,14 +117,25 @@ declare namespace UI {
          * 创建按钮
          * 
          * type类型与item内容：
-         *  blank：对应item为card，效果：不显示卡面，显示背面；
-         *  card：对应item为card，效果：展示卡牌；
-         *  vcard：对应item为string,则是卡牌名；否则类型为CardBaseUIData或者CardBaseUIData2，效果：展示虚构卡牌（非卡堆里的）；
-         *  character：对应item为string,则是武将名，效果：展示武将并附带一个功能按钮；
-         *  characterx: 对应item为string,则是武将名，效果：展示同名武将，切换同名武将，同名武将配置：lib.characterReplace【v1.9.106.3】；
-         *  player：对应的item为Player，则是玩家，效果：展示玩家的武将；
-         *  text：对应的item为“html文档文本”，则是html文档的显示，效果：展示这段文档；
-         *  textButton：对应的item为“html文档文本”，则是html文档的显示，效果：应该是按钮功能的文本，例如链接，暂不明确，待后期观察
+         * 
+         *  `tdnodes`: 【v1.9.117.2】 对应item为string或[string, string], 如果是数组，第一个元素设置link，第二个元素设置innerhtml。效果: 用span标签展示item内容
+         * 
+         *  `blank`：对应item为card，效果：不显示卡面，显示背面
+         * 
+         *  `card`：对应item为card，效果：展示卡牌
+         * 
+         *  `vcard`：对应item为string,则是卡牌名；否则类型为CardBaseUIData或者CardBaseUIData2，效果：展示虚构卡牌（非卡堆里的）
+         * 
+         *  `character`：对应item为string,则是武将名，效果：展示武将并附带一个功能按钮
+         * 
+         *  `characterx`: 对应item为string,则是武将名，效果：展示同名武将，切换同名武将，同名武将配置：lib.characterReplace【v1.9.106.3】
+         * 
+         *  `player`：对应的item为Player，则是玩家，效果：展示玩家的武将
+         * 
+         *  `text`：于【v1.9.117.2】废弃。对应的item为“html文档文本”，则是html文档的显示，效果：展示这段文档
+         * 
+         *  `textButton`：于【v1.9.117.2】废弃。对应的item为“html文档文本”，则是html文档的显示，效果：应该是按钮功能的文本，例如链接，暂不明确，待后期观察
+         * 
          * @param item 按钮保存的信息内容（根据type不同对应的item也不同）
          * @param type 按钮类型：blank，card，vcard，character，player，text，textButton
          * @param position 位置,即生成的按钮父节点
@@ -151,7 +162,26 @@ declare namespace UI {
 
         //【v1.9.105.9~】增加评级系统：
         /** 为当前显示选项，添加评级相关UI */
-        rarity(button:Button):void;
+        rarity(button: Button): void;
+
+        /**
+         * 【v1.9.117.2】 创建纯文字按钮
+         * 
+         * 示例: 
+         * ```js
+         * var str = '按钮文字';
+         * var link = 'link';
+         * // 设定按钮的显示文字和link
+         * ui.create.textbuttons([ [link, str] ], dialog, noclick);
+         * // 设定link与str一致
+         * ui.create.textbuttons([ str ], dialog, noclick);
+         * ```
+         * 
+         * @param list 设定按钮的显示文字和link
+         * @param dialog 要插入到的dialog
+         * @param noclick 按钮是否不可点击
+         */
+        textbuttons(list: (string | [string, string])[], dialog: Dialog, noclick?: boolean): void;
     }
 
 

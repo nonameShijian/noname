@@ -140,7 +140,8 @@ interface Game extends IDownLoadFun {
 	 * });
 	 * ```
 	 */
-    playAudio(...paths: string | number[], onerror?: VoidFunction): HTMLAudioElement;
+    playAudio(...paths: string, onerror?: VoidFunction): HTMLAudioElement;
+	playAudio(...paths: (string | number)[]): HTMLAudioElement;
     /**
      * 播放技能语音
      * （主要解析技能的audio属性寻找对应文件播放）
@@ -253,7 +254,7 @@ interface Game extends IDownLoadFun {
 
     //下载相关  用于更新信息
     /** 做些处理，调用game.download下载 */
-	multiDownload2(list: string[], onsuccess?: (num: number) => void, onerror?: (num: number) => void, onfinish?: VoidFunction, process?: (current: string) => void, dev: boolean): void;
+	multiDownload2(list: string[], onsuccess?: (num: any) => void, onerror?: (num: any) => void, onfinish?: VoidFunction, process?: (current: string) => void, dev: boolean): void;
     /**
      * 下载列表内所有文件
      * 
@@ -273,7 +274,7 @@ interface Game extends IDownLoadFun {
      * 
      * 主要分Android/ios的本地版FileTransfer（cordova.js），和pc版的nodejs环境
      */
-    download(url, folder, onsuccess, onerror, dev, onprogress);
+    download(url, folder, onsuccess, onerror, dev, onprogress?: Function);
 	/**
 	 * 调用download, 下载url文件，读取后删除
 	 */
@@ -603,7 +604,11 @@ interface Game extends IDownLoadFun {
 	 * "平局"（可以直接填字符串）
      */
     over(result?: boolean | string): void;
-    /** 【核心】游戏循环（核心） */
+    /** 
+	 * 【核心】游戏循环（核心)
+	 * 
+	 * 【v1.9.117.2】修改逻辑，将自调用改为while(true)，减少了爆栈的可能性
+	 */
     loop(): void;
     /**
      * 暂停游戏循环
@@ -896,21 +901,21 @@ interface Game extends IDownLoadFun {
 	 * @param item 键对应的值
 	 * @param callback 回调函数
 	 */
-	putDB(type: DataDbIds, id: string, item: any, callback: Function): void;
+	putDB(type: DataDbIds, id: string, item: any, callback?: Function): void;
 	/**
 	 * 获取indexDB中的数据
 	 * @param type 表名
 	 * @param id 键名
 	 * @param callback 回调函数
 	 */
-	getDB(type: DataDbIds, id: string, callback: Function): void;
+	getDB(type: DataDbIds, id: string, callback?: Function): void;
 	/**
 	 * 删除indexDB中的数据
 	 * @param type 表名
 	 * @param id 键名
 	 * @param callback 回调函数
 	 */
-	deleteDB(type: DataDbIds, id: string, callback: Function): void;
+	deleteDB(type: DataDbIds, id: string, callback?: Function): void;
 	/**
 	 * 如果有indexDB，就把数据存储到indexDB的data表中。
 	 * 
@@ -1121,7 +1126,7 @@ interface Game extends IDownLoadFun {
      * @returns 若两个参数都没有，则返回当前玩家回合的记录，若有key，则获取指定类型的记录
      */
     getGlobalHistory(): GlobalHistoryData;
-    getGlobalHistory(key?: keyof GlobalHistoryData, filter?: OneParmFun<GameEvent, boolean>): GameEvent[];
+    getGlobalHistory(key: keyof GlobalHistoryData, filter?: OneParmFun<GameEvent, boolean>): GameEvent[];
 
     /** 
 	 * 【v1.9.105.9~】增加评级系统：评级仅影响战棋君主模式下的武将价格，无其他实际影响；
@@ -1129,6 +1134,12 @@ interface Game extends IDownLoadFun {
 	 * 获取指定名字的武将的评级
 	 */
     getRarity(name: string): string;
+
+	/**
+	 * 【v1.9.118】 用法同player.getAllHistory()
+	 */
+	getAllGlobalHistory(): GlobalHistoryData;
+	getAllGlobalHistory(key: keyof ActionHistoryData, filter?: OneParmFun<GameEvent, boolean>): GameEvent[];
 }
 
 // Game的核心成员属性
@@ -1289,9 +1300,10 @@ interface Game {
      * 
      * 补充，该方法只是单纯创建一个“loseAsync”事件，其事件的处理方法content，根据需要，需要在创建事件后使用event.setContent，一些预定义，或者自定义的事件处理方法；
      * 
+	 * 【v1.9.118】 添加了一个gainMultiple的loseAsync流程，添加和getl()相对应的getg()。
      */
     loseAsync(arg?: SMap<any>): BaseLoseEventInfo;
-    /** 游戏结束，不提示"再战" */
+    /** 游戏结束后，不提示"再战" */
     no_continue_game: boolean;
 }
 
@@ -1950,6 +1962,9 @@ type GlobalHistoryData = {
     /** （cardsDiscard cardsGotoOrdering cardsGotoSpecial等涉及卡牌位置改变的事件 */
     cardMove: GameEvent[],
     custom: GameEvent[],
+	useCard: GameEvent[],
+	/** if (event.parent._roundStart) == true时，isRound为true */
+	isRound?: boolean,
 }
 
 /** 保存在game的下载方法 */
@@ -1985,7 +2000,7 @@ interface IDownLoadFun {
 	 * @param name 目标地址的文件名
 	 * @param callback 回调函数
 	 */
-	writeFile(data: string | ArrayBuffer, path: string, name: string, callback: (err: NodeJS.ErrnoException | null) => void): void;
+	writeFile(data: string | ArrayBuffer | File, path: string, name: string, callback: (err: NodeJS.ErrnoException | null) => void): void;
     /**
 	 * 删除本地文件
 	 * @param filename 目标地址相对于无名杀根目录的文件地址
@@ -2002,12 +2017,18 @@ interface IDownLoadFun {
 	 */
 	getFileList(dir: string, callback: (folders: string[], files: string[]) => void): void;
 	/**
-	 * 按照list依次创建文件夹
+	 * 按照给定路径依次创建对应文件夹
+	 * ```js
+	 * // 路径不包含文件名: 
+	 * game.ensureDirectory("dir1/dir2", () => {}, false);
+	 * // 路径包含文件名: 
+	 * game.ensureDirectory("dir1/dir2/1.js", () => {}, true);
+	 * ```
 	 * @param list 要创建的目录/目录列表
-	 * @param callback 回调函数
-	 * @param file (可能是最大目录名长度?不清楚)
+	 * @param callback 回调函数，即创建完文件夹之后做什么
+	 * @param file 路径list中是否包含文件名
 	 */
-	ensureDirectory(list: string | string[], callback?: Function, file?: number): void;
+	ensureDirectory(list: string | string[], callback: Function, file?: boolean): void;
 }
 
 /** game.logv创建的div */

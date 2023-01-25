@@ -19,7 +19,7 @@ declare namespace Lib.element {
         getSource(name: string): boolean;
         
         //card的UI，动画操作
-        updateTransform(bool: boolean, delay: number): void;
+        updateTransform(bool: boolean, delay?: number): void;
         moveDelete(player: Player): void;
         moveTo(player: Player): Card;
         
@@ -85,7 +85,7 @@ declare namespace Lib.element {
          * 检测card上是否有指定手牌标记
          * @param tag 
          */
-        hasGaintag(tag:boolean):boolean;
+        hasGaintag(tag: string):boolean;
     }
 
     export interface Card extends HTMLDivElement,IButtonLink,CardBaseUIData {

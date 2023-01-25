@@ -160,7 +160,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					'step 0'
 					player.chooseTarget(get.prompt('zhefu'),'令一名有手牌的其他角色弃置一张【'+get.translation(trigger.card.name)+'】，否则受到你造成的1点伤害。',function(card,player,target){
-						return target!=player&&target.countCards('he')>0;
+						return target!=player&&target.countCards('h')>0;
 					}).set('ai',function(target){
 						var player=_status.event.player;
 						return get.damageEffect(target,player,player)/Math.sqrt(target.countCards('h'));
@@ -369,13 +369,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger:{global:'phaseUseBegin'},
 				direct:true,
 				filter:function(event,player){
-					return player!=event.player&&event.player.countCards('he')>0&&player.countCards('he')>=player.countMark('xiongshu_count');
+					return player!=event.player&&event.player.countCards('h')>0&&player.countCards('he')>=player.countMark('xiongshu_count');
 				},
 				content:function(){
 					'step 0'
 					event.target=trigger.player;
 					var num=player.countMark('xiongshu_count');
-					if(num>0) player.chooseToDiscard('he',num,get.prompt('xiongshu',trigger.player),'弃置'+get.cnNumber(num)+'张牌并展示其一张牌').set('goon',get.attitude(player,event.target)<0).set('ai',function(card){
+					if(num>0) player.chooseToDiscard('he',num,get.prompt('xiongshu',trigger.player),'弃置'+get.cnNumber(num)+'张牌并展示其一张手牌').set('goon',get.attitude(player,event.target)<0).set('ai',function(card){
 						if(!_status.event.goon) return 0;
 						return 6-_status.event.player.countMark('xiongshu_count')-get.value(card);
 					}).logSkill=['xiongshu',trigger.player];
@@ -388,8 +388,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						player.addTempSkill('xiongshu_count','roundStart');
 						player.addMark('xiongshu_count',1,false);
 					}
-					if(result.bool&&target.countCards('he')>0){
-						player.choosePlayerCard(target,true,'he');
+					if(result.bool&&target.countCards('h')>0){
+						player.choosePlayerCard(target,true,'h');
 					}
 					else event.finish();
 					'step 2'
@@ -1132,7 +1132,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							if(result.bool){
 								var target=result.targets[0];
 								player.logSkill('xuanbei_give',target);
-								target.gain(cards,'gain2');
+								target.gain(cards,'gain2').giver=player;
 							}
 							else player.storage.counttrigger.xuanbei_give--;
 						},
@@ -1327,7 +1327,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 									if(!target.storage.caozhao_info) target.storage.caozhao_info={};
 									target.storage.caozhao_info[cards[0].cardid]=lib.skill.caozhao_backup.cardname;
 									target.addSkill('caozhao_info');
-									target.gain(cards,player,'give').gaintag.add('caozhao');
+									player.give(cards,target,'give').gaintag.add('caozhao');
 								}
 								else{
 									if(!player.storage.caozhao_info) player.storage.caozhao_info={};
@@ -1991,7 +1991,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 0'
 					trigger.player.chooseCard('he',true,'将一张牌交给'+get.translation(player));
 					'step 1'
-					if(result.bool) player.gain(result.cards,trigger.player,'giveAuto');
+					if(result.bool) trigger.player.give(result.cards,player);
 					'step 2'
 					var card=player.getEquip('cheliji_feilunzhanyu');
 					if(card) player.discard(card);
@@ -2073,7 +2073,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					var cards=player.getExpansions('qiaoyan');
 					if(cards.length){
 						var source=trigger.source;
-						source.gain(cards,player,'give');
+						source.gain(cards,player,'give','bySelf');
 						event.finish();
 					}
 					else{
@@ -2119,7 +2119,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					'step 0'
 					event.cards=player.getExpansions('qiaoyan');
-					player.chooseTarget(true,'请选择【献珠】的目标','令一名角色获得'+get.translation(event.cards)+'。若该角色不为你自己，则你令其视为对其攻击范围内的另一名角色使用【杀】').set('ai',function(target){
+					player.chooseTarget(true,'请选择【献珠】的目标','将'+get.translation(event.cards)+'交给一名角色。若该角色不为你自己，则你令其视为对其攻击范围内的另一名角色使用【杀】').set('ai',function(target){
 						var player=_status.event.player;
 						var eff=get.sgn(get.attitude(player,target))*get.value(_status.event.getParent().cards[0],target);
 						if(player!=target) eff+=Math.max.apply(null,game.filterPlayer(function(current){
@@ -2134,7 +2134,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						var target=result.targets[0];
 						event.target=target;
 						player.logSkill('xianzhu',target);
-						target.gain(cards,player,'give');
+						player.give(cards,target,'give');
 					}
 					else event.finish();
 					'step 2'
@@ -2607,7 +2607,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return target!=player&&target.hasZhuSkill('ruilve',player)&&!target.hasSkill('ruilve3');
 				},
 				content:function(){
-					target.gain(cards,player,'giveAuto');
+					player.give(cards,target);
 					target.addTempSkill('ruilve3','phaseUseEnd');
 				},
 				ai:{
@@ -2748,8 +2748,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.chooseToCompare(target);
 					'step 1'
 					if(result.bool&&target.isAlive()){
-						var cards=target.getCards('h');
-						if(cards.length) player.gain(cards,target,'giveAuto');
+						var num=target.countCards('h');
+						if(num>0) player.gainPlayerCard(target,true,'h',num);
 					}
 					else event.finish();
 					'step 2'
@@ -2757,7 +2757,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(num&&target.isAlive()) player.chooseCard('h',num,true,'交给'+get.translation(target)+get.cnNumber(num)+'张牌')
 					else event.finish();
 					'step 3'
-					if(result.bool&&result.cards&&result.cards.length) target.gain(result.cards,player,'giveAuto');
+					if(result.bool&&result.cards&&result.cards.length) player.give(result.cards,target);
 				},
 				ai:{
 					order:1,
@@ -3685,10 +3685,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			dezhang:'德彰',
 			dezhang_info:'觉醒技。准备阶段，若你没有“绥”，则你减1点体力上限并获得〖卫戍〗。',
 			weishu:'卫戍',
-			weishu_info:'锁定技。①当你于摸牌阶段外不因〖卫戊①〗而摸牌后，你令一名角色摸一张牌。②当你于弃牌阶段外不因〖卫戊②〗而弃置牌后，你弃置一名其他角色的一张牌。',
+			weishu_info:'锁定技。①当你于摸牌阶段外不因〖卫戍①〗而摸牌后，你令一名角色摸一张牌。②当你于弃牌阶段外不因〖卫戍②〗而弃置牌后，你弃置一名其他角色的一张牌。',
 			jin_jiachong:'贾充',
 			xiongshu:'凶竖',
-			xiongshu_info:'其他角色的出牌阶段开始时，你可弃置X张牌（X为你本轮内此前已发动过此技能的次数，为0则不弃）并展示其一张牌，然后你预测“其本阶段内是否会使用与展示牌牌名相同的牌”。此阶段结束时，若你的预测正确，则你对其造成1点伤害；否则你获得展示牌。',
+			xiongshu_info:'其他角色的出牌阶段开始时，你可弃置X张牌（X为你本轮内此前已发动过此技能的次数，为0则不弃）并展示其一张手牌，然后你预测“其本阶段内是否会使用与展示牌牌名相同的牌”。此阶段结束时，若你的预测正确，则你对其造成1点伤害；否则你获得展示牌。',
 			jianhui:'奸回',
 			jianhui_info:'锁定技。当你造成伤害后，若受伤角色为A，则你摸一张牌；当你受到伤害后，若伤害来源为A，则A弃置一张牌。（A为除本次伤害外最近一次对你造成过伤害的角色）',
 			xinxuanbei:'选备',

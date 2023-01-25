@@ -93,7 +93,9 @@ declare namespace Lib.element {
          * 使用：ui.click.ok,触发技能的info.chooseButton
          * 
          * 实质：在调用skill技能时，重置当前事件的所有filter，seleted，forced......等等一系列条件参数为技能的对应字段，
+         * 
          * 之前的缓存起来，这部分流程后面还是要继续研究下；
+         * 
          * 应该是为了使用skill配置的通用过滤字段，即在技能触发之前的；
          * @param skill 
          */
@@ -157,12 +159,13 @@ declare namespace Lib.element {
 
         //常用于自己设置的事件方法：
         /**
-         * 获取玩家在事件过程中“失去过”的牌【v1.9.105】
+         * 【v1.9.105】获取玩家在事件过程中“失去过”的牌
          * 
          * 关于getl机制
             由于无名杀没有正规的牌移动事件 因此在新版本中 使用getl机制进行拟合
 
             例：孙尚香【枭姬】
+            ```js
             //时机：单纯的“失去牌后”，牌被获得后，牌被人直接插进判定区后，牌被人拿进装备区后
             trigger:{
             player:'loseAfter',
@@ -175,17 +178,39 @@ declare namespace Lib.element {
                 //只有获取的列表存在 并且有失去装备区的牌的记录 才能发动技能
                 return evt&&evt.player==player&&evt.es&&evt.es.length>0;
             },
-
+            ```
             扩展：
+
             除了lose事件，时返回整个GameEvent对象；
+
             其余equip，addJudge，gain都是返回部分自己构造的GameEvent对象部分内容：
-            { player:player, hs:[], es:[], js:[], cards:[], cards2:[] },获取的是player.getHistory('lose')的记录；
+            ```js
+            { player:player, hs:[], es:[], js:[], cards:[], cards2:[] },
+            ```
+            获取的是player.getHistory('lose')的记录；
+
             目前带有该方法，标准失去事件：'gainAfter','equipAfter','addJudgeAfter','loseAsyncAfter','loseAfter';
+            
             扩展2：
+
             注：新版本更新之后，需在global一栏内增加“loseCardAsyncAfter”参数，该参数为拼点，交换手牌等“同时失去牌”；
          * @param player 
          */
         getl(player:Player):GameEvent;
+
+        /**
+         * 【v1.9.117.2】 添加和getl同级的getd，用于判断一个事件中“进入弃牌堆”的牌，并藉此修复一系列“进入弃牌堆”相关武将的bug
+         * @param player 
+         * @param key 默认为'cards'
+         * @param position 默认为ui.discardPile
+         */
+        getd(player: Player, key?: 'cards', position?: HTMLDivElement): Card[];
+        getd(player: Player, key?: string, position?: HTMLDivElement): any[];
+        
+        /**
+         * 【v1.9.118】用于gainMultiple的loseAsync流程。将同步获得牌事件（如界郭嘉〖遗计〗将自己的牌分给多名角色）的所有牌移动时机延后到全部结算结束后，避免出现插入结算导致产生bug
+         */
+        getg(player: Player): Card[];
         
         /**
          * 在使用卡牌时，会产生一些效果；
@@ -195,6 +220,16 @@ declare namespace Lib.element {
          * @param player 
          */
         oncard(card:Card,player:Player):void;
+
+        /** 【v1.9.117.1】 判断此事件是否被抵消 */
+        _neutralized: boolean;
+        /** 【v1.9.117.1】 “抵消”某个牌生效事件（区别于“取消”） */
+        neutralize(): void;
+        /** 【v1.9.117.1】 取消“抵消”某个牌生效事件的效果 */
+        unneutralize(): void;
+
+        /** 【v1.9.118】 用于在一个玩家选择的事件中，在原有的selectCard和selectTarget之外，建立出玩家点击确定键所需要满足的新的制约条件 */
+        filterOk(): boolean;
     }
 
     //event的属性，不过大部分都是动态获取的
@@ -320,8 +355,10 @@ declare namespace Lib.element {
         es:Card[];
         /** 判定区失去的牌 */
         js:Card[];
-        /** 武将上区域（特殊区域）失去的牌 */
+        /** 木牛流马区域失去的牌 */
         ss:Card[];
+        /** 武将上区域（特殊区域）失去的牌 */
+        xs:Card[];
 
         /** 这是gain事件中 如果获得其他角色的卡牌时，其他角色失去卡牌的事件(只在gain事件链中使用) */
         relatedLose:GameEvent;
@@ -574,6 +611,8 @@ declare namespace Lib.element {
 		revealed?: boolean;
 		/** (见于createTrigger) */
 		frequentSkill?: boolean;
+        /** 在chooseControl里使用，用于存储可选项 */
+        controls: string[];
         //自己扩展任意参数
         [key: string]: any;
         
@@ -596,7 +635,7 @@ declare namespace Lib.element {
 
 /** 用于getl,基础“lose”事件失去派记录 */
 interface BaseLoseEventInfo {
-    /** 该事件得player */
+    /** 该事件的player */
     player:Player;
     /** 手牌 */
     hs:Card[];
@@ -604,9 +643,11 @@ interface BaseLoseEventInfo {
     es:Card[];
     /** 判定 */
     js:Card[];
-    /** 武将上（特殊区域） */
+    /** 木牛流马 */
     ss:Card[];
-    /** event.cards,一般指失去得牌 */
+    /** 武将上（特殊区域） */
+    xs: Card[];
+    /** event.cards,一般指失去的牌 */
     cards:Card[];
     /** 手牌+装备 */
     cards2:Card[];

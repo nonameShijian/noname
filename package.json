@@ -6,16 +6,23 @@
     "main": "main.js",
     "scripts": {
         "start": "electron .",
-        "packageWin64": "electron-packager . 无名杀 --platform=win32 --arch=x64 --out=./ --app-version=1.9.0 --icon=noname.ico --overwrite --ignore=./node_modules --ignore=.git --electron-version 16.0.4",
-        "packageWin32": "electron-packager . 无名杀 --platform=win32 --arch=ia32 --out=./ --app-version=1.9.0 --icon=noname.ico --overwrite --ignore=./node_modules --electron-version 16.0.4",
-        "packageLinux": "electron-packager . 无名杀 --platform=linux --arch=x64 --out=./ --app-version=1.9.0 --icon=noname.ico --overwrite --ignore=./node_modules --electron-version 16.0.4"
+        "packageWin64": "electron-packager . 无名杀 --platform=win32 --arch=x64 --out=./ --app-version=1.9.0 --icon=noname.ico --overwrite --ignore=./node_modules --ignore=.git --electron-version 22.0.3",
+        "packageWin32": "electron-packager . 无名杀 --platform=win32 --arch=ia32 --out=./ --app-version=1.9.0 --icon=noname.ico --overwrite --ignore=./node_modules --ignore=.git --electron-version 22.0.3",
+        "packageLinux": "electron-packager . 无名杀 --platform=linux --arch=x64 --out=./ --app-version=1.9.0 --icon=noname.ico --overwrite --ignore=./node_modules --ignore=.git --electron-version 22.0.3"
     },
     "repository": {
         "type": "git",
         "url": "git+https://github.com/nonameShijian/noname.git"
     },
-    "installerVersion": "1.44",
+    "installerVersion": "1.5",
     "installerUpdateContent": [
+        {
+            "version": "1.5",
+            "updateContent": [
+                "【应用配置】扩展v1.3更新，新增“报错时显示错误代码”功能",
+                "【在线更新】扩展v1.48更新，更新内容我忘了"
+            ]
+        },
         {
             "version": "1.44",
             "updateContent": [
@@ -168,7 +175,7 @@
     "author": "诗笺",
     "license": "ISC",
     "devDependencies": {
-        "electron": "^16.0.4",
+        "electron": "^22.0.3",
         "electron-packager": "^15.3.0"
     },
     "dependencies": {

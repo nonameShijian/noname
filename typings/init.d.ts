@@ -55,8 +55,8 @@ declare namespace Lib {
         layout(layout: any, nosave?: any): void;
         background(): void;
 
-        /** 转换content方法（即内部带有step的方法），返回转换后的字符串的方法 */
-        parsex(func: Function): string;
+        /** 转换content方法（即内部带有step的方法），返回转换后的函数的方法 */
+        parsex(func: Function): Function;
         /** 转换content方法（即内部带有step的方法）,返回转换后的方法 */
         parse(func: Function): ContentFunc;
         /** 使用eval立即执行该传入参数（若参数是方法，则使用原生eval立即执行；若参数是一个对象，则遍历调用eval；若都不是则返回参数本身） */
