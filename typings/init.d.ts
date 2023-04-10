@@ -40,7 +40,10 @@ declare namespace Lib {
          * @param onload 加载成功回调
          * @param onerror 加载失败回调
          */
-        js(path: string, file: string | string[], onload?: () => void, onerror?: () => void): HTMLScriptElement;
+        js(path: string, file: string, onload: () => void, onerror: () => void): HTMLScriptElement;
+        js(path: string, file: string[], onload: () => void, onerror: () => void): void;
+        js(path: string, file: string): HTMLScriptElement;
+        js(path: string, file: string[]): void;
 		/**
 		 * 读取外部加载模块js
 		 * @param path 路径
@@ -48,8 +51,10 @@ declare namespace Lib {
 		 * @param onload 加载成功回调
 		 * @param onerror 加载失败回调
 		 */
-		moduleJs(path: string, file: string | string[], onload?: () => void, onerror?: () => void): HTMLScriptElement;
-
+		moduleJs(path: string, file: string, onload?: () => void, onerror?: () => void): HTMLScriptElement;
+        moduleJs(path: string, file: string[], onload?: () => void, onerror?: () => void): void;
+        moduleJs(path: string, file: string): HTMLScriptElement;
+        moduleJs(path: string, file: string[]): void;
         //初始化UI的样式
         cssstyles(): void;
         layout(layout: any, nosave?: any): void;

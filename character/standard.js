@@ -86,7 +86,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			zhouyu:['huanggai','xiaoqiao','zhouyi'],
 			sunquan:['zhoutai'],
 			lvbu:['diaochan','lvlingqi'],
-			machao:['madai','mayunlu'],
+			machao:['madai','mayunlu','yangwan'],
 			zhangliao:['zangba'],
 			ganning:['lingtong','xf_sufei'],
 			guanyu:['zhangfei','liaohua'],
@@ -273,10 +273,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				logTarget:'source',
 				preHidden:true,
 				filter:function(event,player){
-					return (event.source&&event.source.countGainableCards(player,'he')&&event.num>0&&event.source!=player);
+					return (event.source&&event.source.countGainableCards(player,event.source!=player?'he':'e')&&event.num>0);
 				},
 				content:function(){
-					player.gainPlayerCard(true,trigger.source,'he');
+					player.gainPlayerCard(true,trigger.source,trigger.source!=player?'he':'e');
 				},
 				ai:{
 					maixie_defend:true,
@@ -775,6 +775,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				locked:false,
 				audio:2,
+				audioname:['sb_zhenji'],
 				enable:['chooseToRespond','chooseToUse'],
 				filterCard:function(card){
 					return get.color(card)=='black';
@@ -2420,10 +2421,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(event.name=='dying') return true;
 					if(event.giver!=player) return false;
 					if(event.name=='gain'){
-						return event.getg(event.player).length>0;
+						return event.player!=player&&event.getg(event.player).length>0;
 					}
 					return game.hasPlayer(function(current){
-						return event.getg(current).length>0;
+						return current!=player&&event.getg(current).length>0;
 					});
 				},
 				direct:true,
@@ -2431,7 +2432,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 0'
 					if(trigger.name!='loseAsync') event.targets=[trigger.player];
 					else event.targets=game.filterPlayer(function(current){
-						return trigger.getg(current).length>0;
+						return current!=player&&trigger.getg(current).length>0;
 					});
 					'step 1'
 					var target=event.targets.shift();
@@ -2459,15 +2460,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			zhangliao:['re_zhangliao','zhangliao'],
 			sp_zhangliao:['sp_zhangliao','yj_zhangliao'],
 			xiahoudun:['re_xiahoudun','xin_xiahoudun','xiahoudun'],
-			liubei:['re_liubei','liubei'],
+			liubei:['re_liubei','liubei','junk_liubei'],
 			guanyu:['re_guanyu','guanyu'],
-			zhangfei:['re_zhangfei','xin_zhangfei','old_zhangfei','zhangfei'],
+			zhangfei:['re_zhangfei','tw_zhangfei','xin_zhangfei','old_zhangfei','zhangfei'],
 			zhaoyun:['re_zhaoyun','old_zhaoyun','zhaoyun'],
 			sp_zhaoyun:['sp_zhaoyun','jsp_zhaoyun'],
 			machao:['re_machao','machao'],
 			sp_machao:['sp_machao','old_machao'],
 			zhugeliang:['re_zhugeliang','zhugeliang'],
-			huangyueying:['re_huangyueying','huangyueying'],
+			huangyueying:['re_huangyueying','huangyueying','junk_huangyueying'],
 			sunquan:['re_sunquan','sunquan'],
 			zhouyu:['re_zhouyu','zhouyu'],
 			luxun:['re_luxun','luxun'],

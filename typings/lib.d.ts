@@ -4,6 +4,26 @@ declare var lib: Lib;
  * 游戏内的主要信息储存区域，与核心游戏方法对象
  */
 interface Lib {
+	/**
+	 * 武将评级
+	 */
+	rank: {
+		's': string[], 
+		'ap': string[], 
+		'a': string[], 
+		'am': string[], 
+		'bp': string[], 
+		'b': string[], 
+		'bm': string[], 
+		'c': string[], 
+		'd': string[], 
+		'rarity': {
+			'legend': string[], 
+			'epic': string[], 
+			'rare': string[], 
+			'junk': string[]
+		}
+	};
 	/** lib.sort.seat中用到 */
 	tempSortSeat?: Lib.element.Player;
 	/** 当前版本的配置前缀（多用于本地缓存的标签名） */
@@ -168,7 +188,7 @@ interface Lib {
 	/** 设置点击/触摸打开信息面板的节点 */
 	setIntro(node: any, func?: Function, left?: boolean): void;
 	/** 设置弹出的面板节点 */
-	setPopped(node: HTMLElement, func: Function, width: number, height: number, forceclick: any, paused2: any): void;
+	setPopped(node: HTMLDivElement | HTMLElement, func: Function, width?: number, height?: number, forceclick?: any, paused2?: any): void;
 	/** 弹出会话面板 */
 	placePoppedDialog(dialog: Dialog, e: any): void;
 	/** 设置节点的hover（鼠标悬停在上方） */
@@ -190,7 +210,11 @@ interface Lib {
 	init: Lib.Init;
 	/** 游戏作弊 */
 	cheat: Lib.Cheat;
-	/** 游戏的翻译（本地化） */
+	/** 
+	 * 游戏的翻译（本地化）
+	 * 
+	 * '技能描述_append' 会在技能的结尾加一段指定的html文本
+	 */
 	translate: SMap<string>;
 
 	/**
@@ -403,7 +427,7 @@ interface Lib {
 	/** 花色的常量列表 */
 	suit: string[];
 	/** 势力的常量列表 */
-	group: string[];
+	group: HeroGroup[] | string[];
 	/** 属性伤害的常量列表 */
 	nature: string[];
 	/** “连环”状态能传递的伤害属性列表 */
@@ -488,6 +512,9 @@ interface Lib {
 
 	/** 貌似是所有的那些配置的那些选项的状态都保存在这里了 */
 	config: LibConfigData;
+
+	/** 貌似是联机房主的设置 */
+	configOL: any;
 
 	/** 数据库 */
 	db: IDBDatabase;

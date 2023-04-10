@@ -366,6 +366,13 @@ declare namespace Lib.element {
         /** 判定的名字 ,在judge事件中，记录了判定的名字*/
         judgestr:string;
 
+        /** 在judge事件和chooseToPlayBeatmap事件中出现，一般代表了当前lib.status.videoId + 1
+         * ```js
+         * event.videoId = lib.status.videoId++;
+         * ```
+         */
+        videoId: number;
+
         //【v1.9.98.3】
         /** 判断一个出牌阶段「有没有被放弃摸牌」 */
         numFixed:boolean;
@@ -464,10 +471,12 @@ declare namespace Lib.element {
 
         /** 
          * 直接使用该结果的卡牌做为该事件需要的卡牌
+         * 
          * 使用范围：judge(一张牌)，gainPlayerCard，discardPlayerCard，chooseCard;
          * 
          * 注：常用，一般有些技能可以替代判定牌时，可以先检查event.directresult是否已经有值，
          *  没值得情况下将判定牌设置该属性，可以默认使用该属性指定的卡牌作为判定牌；
+         * 
          * 注2：同时也会是xxxSubPlayer常用属性之一，暂时先不讨论；
          */
         directresult:Card|Card[];
@@ -613,6 +622,9 @@ declare namespace Lib.element {
 		frequentSkill?: boolean;
         /** 在chooseControl里使用，用于存储可选项 */
         controls: string[];
+
+        result: BaseResultData;
+
         //自己扩展任意参数
         [key: string]: any;
         

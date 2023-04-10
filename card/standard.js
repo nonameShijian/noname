@@ -2142,6 +2142,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					"step 0"
 					player.chooseToUse(get.prompt('qinglong',trigger.target),function(card,player,event){
 						if(get.name(card)!='sha') return false;
+						if(player.getEquip('qinglong')==card) return false;
 						return lib.filter.filterCard.apply(this,arguments);
 					},trigger.target,-1).set('addCount',false).logSkill='qinglong_skill';
 				}
@@ -2217,7 +2218,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					skillTagFilter:function(player,tag,arg){
 						if(player._guanshi_temp) return;
 						player._guanshi_temp=true;
-						var bool=(get.attitude(player,arg.target)<0&&arg.card.name=='sha'&&player.countCards('he',function(card){
+						var bool=(get.attitude(player,arg.target)<0&&arg.card&&arg.card.name=='sha'&&player.countCards('he',function(card){
 							return card!=player.getEquip('guanshi')&&card!=arg.card&&(!arg.card.cards||!arg.card.cards.contains(card))&&get.value(card)<5;
 						})>1);
 						delete player._guanshi_temp;
@@ -2576,6 +2577,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 						}
 					};
 					event.settle=function(){
+						if(event.respondWuxie) event.trigger('eventNeutralized');
 						if(!event.state){
 							if(event.triggername=='phaseJudge'){
 								trigger.untrigger();
@@ -2642,13 +2644,22 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 							event.wuxieresult=player;
 							event.wuxieresult2=result;
 							game.broadcast('cancel',id);
-							if(_status.event.id==id&&_status.event.name=='chooseToUse'&&_status.paused){
-								return (function(){
-									event.resultOL=_status.event.resultOL;
+							return (function(){
+								if(_status.event.id==id&&_status.event.name=='chooseToUse'&&_status.paused) event.resultOL=_status.event.resultOL;
+								if(_status.event._parent_id==id){
 									ui.click.cancel();
-									if(ui.confirm) ui.confirm.close();
-								});
-							}
+								}
+								if(_status.event.id==id){
+									if(_status.event._backup) ui.click.cancel();
+									ui.click.cancel();
+									if(ui.confirm){
+										ui.confirm.close();
+									}
+									if(_status.event.result){
+										_status.event.result.id=id;
+									}
+								}
+							});
 						}
 						else{
 							if(_status.event.id==id&&_status.event.name=='chooseToUse'&&_status.paused){
@@ -2703,6 +2714,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 						game.players[i].hideTimer();
 					}
 					'step 8'
+					if(event.wuxieresult2&&event.wuxieresult2._sendskill) lib.skill[event.wuxieresult2._sendskill[0]]=event.wuxieresult2._sendskill[1];
 					if(event.wuxieresult&&event.wuxieresult2&&event.wuxieresult2.skill){
 						var info=get.info(event.wuxieresult2.skill);
 						if(info&&info.precontent&&!game.online){
@@ -2715,7 +2727,10 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					'step 9'
 					if(event.wuxieresult){
 						var next=event.wuxieresult.useResult(event.wuxieresult2);
-						if(event.stateplayer&&event.statecard) next.respondTo=[event.stateplayer,event.statecard];
+						if(event.stateplayer&&event.statecard){
+							event.respondWuxie=true;
+							next.respondTo=[event.stateplayer,event.statecard];
+						}
 						else if(event.triggername!='phaseJudge'){
 							next.respondTo=[trigger.player,trigger.card];
 						}
@@ -2828,7 +2843,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			renwang_skill_info:'锁定技，黑色【杀】对你无效',
 			sha_info:'出牌阶段，对你攻击范围内的一名角色使用。其须使用一张【闪】，否则你对其造成1点伤害。',
 			shan_info:'抵消一张【杀】',
-			tao_info:'①出牌阶段，对自己使用，目标角色一点体力。②当有角色处于濒死状态时，对该角色使用。目标角色回复1点体力。',
+			tao_info:'①出牌阶段，对自己使用，目标角色回复1点体力。②当有角色处于濒死状态时，对该角色使用。目标角色回复1点体力。',
 			bagua_info:'当你需要使用或打出一张【闪】时，你可以进行判定。若结果为红色，则你视为使用或打出一张【闪】。',
 			bagua_skill_info:'当你需要使用或打出一张【闪】时，你可以进行判定。若结果为红色，则你视为使用或打出一张【闪】。',
 			jueying_info:'锁定技，其他角色计算与你的距离+1。',

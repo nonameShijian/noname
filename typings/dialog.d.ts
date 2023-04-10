@@ -25,7 +25,7 @@ declare namespace Lib.element {
          * @param zoom 是否是小型布局“smallzoom”的信息
          * @return 返回item
          */
-        add<T extends any>(item: T, noclick?: boolean, zoom?: boolean): T;
+        add(item: any, noclick?: boolean, zoom?: boolean): any;
         /**
          * 添加文本到会话面板里。
          * 
@@ -70,5 +70,9 @@ declare namespace Lib.element {
     interface Dialog {
         /** 当前面板得按钮列表 */
         buttons:Button[];
+        bar1: HTMLDivElement;
+        bar2: HTMLDivElement;
+        contentContainer: HTMLDivElement;
+        content: HTMLDivElement;
     }
 }

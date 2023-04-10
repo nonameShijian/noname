@@ -124,4 +124,4 @@ type SkillAnimateType = (name:string,popname:string,checkShow) => void;
  * @param nature 为不使用特效的情况下卡牌的文字颜色(metal-使用-黄色，wood-打出-绿色)，可以用来判断卡牌是因使用还是因打出而播放特效
  * @param popname
  */
-type CardAnimateType = (card:SkillOrCard,name:string,nature:string,popname:boolean) => void;
+type CardAnimateType = (this: Player, card: Card, name:string, nature:string, popname:boolean) => void;

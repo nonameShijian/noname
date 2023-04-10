@@ -1,9 +1,9 @@
 /** 导入技能包的配置信息 */
 interface ExSkillConifgData extends ExCommonConfig {
     /** 技能 */
-	skill: SMap<ExSkillData | { [key: string]: any }>;
+	skill: SMap<ExSkillData> //| { [key: string]: any }>;
 	/** 技能描述 */
-	translate: SMap<any>;
+	translate: SMap<string>;
 }
 
 /** 技能的配置信息 */

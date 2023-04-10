@@ -3,8 +3,8 @@
 // @ts-check
 game.import("extension", function (lib, game, ui, get, ai, _status) {
 
-	if (!game.getExtensionConfig('在线更新', 'incompatibleExtension') && (game.getExtensionConfig('概念武将', 'enable') || game.getExtensionConfig('假装无敌', 'enable'))) {
-		alert('【在线更新】扩展提示您：\r\n安装【概念武将】和【假装无敌】扩展后，本扩展出现任何bug后果自负');
+	if (!game.getExtensionConfig('在线更新', 'incompatibleExtension') && game.getExtensionConfig('假装无敌', 'enable')) {
+		alert('【在线更新】扩展提示您：\r\n【假装无敌】扩展也覆盖了游戏内的检查更新按钮，使用时请注意避免出现bug。');
 		game.saveExtensionConfig('在线更新', 'incompatibleExtension', true);
 	}
 
@@ -14,16 +14,20 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 	 * @param { fetchOptions } options 配置
 	 * @returns { Promise<Response> }
 	 */
-	function myFetch(url, options = { timeout: game.getExtensionConfig('在线更新', 'timeout') || 3000 }) {
+	function myFetch(url, options = { timeout: typeof game.getExtensionConfig('在线更新', 'timeout') == 'number' ? game.getExtensionConfig('在线更新', 'timeout') : 3000 }) {
 		return new Promise((resolve, reject) => {
+			/** @type { AbortController | undefined } */
 			let myAbortController;
 			/** @type { AbortSignal | undefined } */
 			let signal = undefined;
 
 			if (typeof window.AbortController == 'function') {
-				myAbortController = new AbortController();
-				signal = myAbortController.signal;
-				setTimeout(() => myAbortController.abort(), options.timeout);
+				if (options.timeout > 0) {
+					myAbortController = new AbortController();
+					signal = myAbortController.signal;
+					// @ts-ignore
+					setTimeout(() => myAbortController.abort(), options.timeout);
+				}
 			} else {
 				console.warn('设备不支持AbortController');
 			}
@@ -128,11 +132,12 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 				alert('网络连接超时');
 			} else if (err.message == 'Failed to fetch') {
 				alert('网络请求失败');
+			} else {
+				alert(err.message);
 			}
 		} else if (typeof err == 'string') {
 			alert(err);
 		}
-
 		if (++game.updateErrors > 5) {
 			alert('检测到获取更新失败次数过多，建议您更换无名杀的更新源');
 			game.updateErrors = 0;
@@ -392,6 +397,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 
 				}).catch(console.error);
 			}
+			
 			setInterval(() => {
 				if (game.getExtensionConfig('在线更新', 'auto_check_update')) checkUpdate();
 			}, 1000 * 60 * 10);
@@ -401,7 +407,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 		precontent: function () {
 			// 添加两个更新地址
 			Object.assign(lib.updateURLS, {
-				// fastgit: 'https://raw.fastgit.org/libccy/noname',
+				fastgit: 'https://raw.fgit.ml/libccy/noname',
 				// xuanwu: 'https://kuangthree.coding.net/p/nonamexwjh/d/nonamexwjh/git/raw',
 				URC: 'https://unitedrhythmized.club/libccy/noname'
 			});
@@ -456,7 +462,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 			game.getFastestUpdateURL = function (updateURLS = lib.updateURLS, translate = {
 				coding: 'Coding',
 				github: 'GitHub',
-				// fastgit: 'GitHub镜像',
+				fastgit: 'GitHub镜像',
 				// xuanwu: '玄武镜像',
 				URC: 'URC'
 			}) {
@@ -985,7 +991,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 							}
 						}
 						if (i == 5 && !(window.noname_update && window.noname_source_list)) {
-							reject('达到最大重试次数(5次), 请重试');
+							reject('自动请求5次全部失败, 请重试');
 						} else if (window.noname_update && window.noname_source_list) {
 							resolve({
 								// @ts-ignore
@@ -1065,7 +1071,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 							}
 						}
 						if (i == 5 && !window.noname_asset_list) {
-							reject('达到最大重试次数(5次), 请重试');
+							reject('自动请求5次全部失败, 请重试');
 						} else if (window.noname_asset_list) {
 							resolve({
 								// @ts-ignore
@@ -1087,11 +1093,14 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 			game.updateErrors = 0;
 
 			// 禁用自动检查更新
-			Object.defineProperty(game, 'checkForUpdate', {
+			(window.Reflect || Object).defineProperty(game, 'checkForUpdate', {
 				enumerable: true,
 				get() {
 					return function () {
-						alert('无名杀自带的自动检查更新已禁用，请使用在线更新扩展内的自动检查更新功能');
+						if (!sessionStorage.getItem('在线更新_checkForUpdate')) {
+							alert('无名杀自带的自动检查更新已禁用，请使用在线更新扩展内的自动检查更新功能');
+							sessionStorage.setItem('在线更新_checkForUpdate', '1');
+						}
 						game.saveConfig('auto_check_update', false);
 					};
 				},
@@ -1104,7 +1113,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 			show_version: {
 				clear: true,
 				nopointer: true,
-				name: '扩展版本： v1.48',
+				name: '扩展版本： v1.51',
 			},
 			update_link_explain: {
 				clear: true,
@@ -1136,7 +1145,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 							str = '由寰宇星城创建的更新源，和coding差不多，版本的更新需要他在苏婆更新后手动拉代码到服务器上。目前因coding网址的政策已废弃';
 							break;
 						case 'URC':
-							str = '由Show-K大佬提供，名字取自United Rhythmized Club，推荐使用此更新源';
+							str = '由Show-K大佬提供，名字取自United Rhythmized Club，推荐使用此更新源。此更新源能否连接取决于服务器是否还有剩余流量';
 					}
 					typeof str != 'undefined' && alert(str);
 					return false;
@@ -1159,7 +1168,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 				item: {
 					coding: 'Coding',
 					github: 'GitHub',
-					// fastgit: 'GitHub镜像',
+					fastgit: 'GitHub镜像',
 					// xuanwu: '玄武镜像',
 					URC: 'URC'
 				},
@@ -1216,6 +1225,10 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 					if (isNaN(time)) {
 						target.innerText = '3000';
 						time = 3000;
+					} else if (time == 0) {
+						target.innerText = '0';
+						time = 0;
+						alert('设置为0时将没有超时时间');
 					} else if (time < 300) {
 						alert('暂时不允许超时时间小于300毫秒');
 						target.innerText = '300';
@@ -1278,13 +1291,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 					try {
 						await canUpdate();
 					} catch (e) {
-						if (e.name === 'AbortError') {
-							return alert('网络连接超时');
-						} else if (typeof e == 'number') {
-							return alert(`网络连接失败，HTTP返回码为${e}`);
-						} else {
-							return alert(e);
-						}
+						return response_catch(e);
 					}
 					game.Updating = true;
 					game.unwantedToUpdate = false;
@@ -1587,13 +1594,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 					try {
 						await canUpdate();
 					} catch (e) {
-						if (e.name === 'AbortError') {
-							return alert('网络连接超时');
-						} else if (typeof e == 'number') {
-							return alert(`网络连接失败，HTTP返回码为${e}`);
-						} else {
-							return alert(e);
-						}
+						return response_catch(e);
 					}
 					game.UpdatingForAsset = true;
 					game.unwantedToUpdateAsset = false;
@@ -1897,10 +1898,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 				clear: true,
 				nopointer: true,
 				name: `</br>
-					最新完整包下载地址1：
-					<a target='_self' href='https://hub.fastgit.org/libccy/noname/archive/refs/heads/master.zip'><span style='text-decoration: underline;'>点击下载</span></a></br>
-					最新完整包下载地址2：
-					<a target='_self' href='https://hub.fastgit.xyz/libccy/noname/archive/refs/heads/master.zip'><span style='text-decoration: underline;'>点击下载</span></a>
+					最新完整包下载地址：
+					<a target='_self' href='https://hub.fgit.ml/libccy/noname/archive/refs/heads/master.zip'><span style='text-decoration: underline;'>点击下载</span></a></br>
 					</br>
 				`,
 			}
@@ -1916,7 +1915,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 			author: "诗笺",
 			diskURL: "",
 			forumURL: "",
-			version: "1.48",
+			version: "1.51",
 		},
 		files: { "character": [], "card": [], "skill": [] }
 	}

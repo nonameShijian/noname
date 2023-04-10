@@ -278,8 +278,12 @@ interface Get {
     /**
      * 【v1.9.116.2】 将get.stringifiedResult的默认层数由5改为8，并由此解决部分联机模式的bug（如陆凯〖卜筮〗无法在联机模式下正常发动的bug）
      */
-    stringifiedResult(item, level = 8):any;
-    parsedResult(item):any;
+    stringifiedResult(item: Function | Object | Array, level = 8):any;
+    /**
+     * 当且仅当item的值为Infinity时才能使用这个重载
+     */
+    stringifiedResult(item: Number = Infinity, level = 8): '_noname_infinity';
+    parsedResult(item: string | Array | Object):any;
 
     /** 输出垂直显示字符串 */
     verticalStr(str:string, sp?:boolean):string;
@@ -301,21 +305,32 @@ interface Get {
     utc():number;
 
     //【UI】直接和h5原生事件相关，计算当前的位置
-    evtDistance(e1,e2):any;
-    xyDistance(from,to):any;
+    evtDistance(e1: Element, e2: Element):number;
+    xyDistance(from: [number, number], to: [number, number]): number;
 
     /**
      * 获取对象归属类型：
+     * 
      * 若对象是字符串，长度<=3,其中包含“h,j,e”中一个，则返回类型:position（位置）；
+     * 
      * 若对象是字符串，其值属于lib.nature，则返回类型：nature（伤害属性）；
+     * 
      * 若对象是集合，其集合所有元素都是“player”类型，则返回类型：players；（player列表）
+     * 
      * 若对象是集合，其集合所有元素都是“card”类型，则返回类型：cards；（card列表）
+     * 
      * 若对象是集合，其长度为2，即[num1,num2]，其num1<=num2，则返回类型：select（选择范围）；
+     * 
      * 若对象是集合，其长度为4都是number，即[num1,num2,num3,num4]，则返回类型：divposition（设置div的位置，采用calc()方法运算）；
+     * 
      * 若对象是类型是“div”，则：
+     * 
      *      若class列表有“button”，则返回类型：button（按钮）；
+     * 
      *      若class列表有“card”，则返回类型：card（卡牌）；
+     * 
      *      若class列表有“player”，则返回类型：player（玩家，玩家ui）；
+     * 
      *      若class列表有“dialog”，则返回类型：dialog（对话框，包括提示，弹出框...）；
      * @param obj 
      */
@@ -474,8 +489,8 @@ interface Get {
      * 获取item的信息
      * @param item 若传入的参数是字符串，则返回lib.skill[item]；若传入的参数是一个对象（拥有name属性），则返回lib.card[item.name]；
      */
-    info(item:string):ExSkillData;
-    info(item:{name:string}):ExCardData;
+    info(item:string, player: Player | false):ExSkillData;
+    info(item: { name: string }, player: Player | false):ExCardData;
     /**
      * 获取当前可选择的目标数，范围
      * （具具体而定，不同配置指定的两个数字意义不一致，后面具体分析）。
@@ -652,7 +667,7 @@ interface Get {
      * @param tag 配置中，ai.tag的key
      * @param item2 若返回结果是方法，则把该参数作为该方法的入参:result(item,item2)
      */
-    tag(item:string|{name:string},tag:string,item2?:string):boolean;
+    tag(item: string | { name: string }, tag: string, item2?: string, bool?: Player | false):number;
     /**
      * 获取排序卡牌的方法
      * @param sort 指定排序方法：type_sort，suit_sort，number_sort
@@ -918,8 +933,8 @@ interface Is {
      * 
      * 返回true则是；
      */
-    converted(event): boolean;
-    /** 是否是火狐流浪器 */
+    converted(event: Event): boolean;
+    /** 是否是safari浏览器 */
     safari(): boolean;
     /** 判断这些牌中，有没有不在h，e，j区域中，若都不在，则为true */
     freePosition(cards:Card[]): boolean;

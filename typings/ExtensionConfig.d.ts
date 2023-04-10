@@ -371,6 +371,7 @@ interface newExtensionInfoConfigData extends ExCommonConfig {
  * 要扩充方法，通过对象结构，都会以lib[新对象结构的key]={对象结构}的方式保存在本地。
  */
 interface ExModeConfigData extends ExCommonConfig {
+    onremove?: () => void;
     /** 技能（主要是放些该模式下特有的技能） */
     skill?: SMap<ExSkillData>;
     /** 
@@ -435,26 +436,27 @@ interface ExModeConfigData extends ExCommonConfig {
     help?: SMap<string>;
 
     /**
-     * 对应lib.element,
+     * 对应lib.element
+     * 
      * 若里面是项目内的同名字段，将覆盖原方法
      */
-    element?: SMap<any>;
+    element?: Partial<Lib['element']> | SMap<any>;
     /**
      * 对应ai
      */
-    ai?: SMap<any>;
+    ai?: Partial<AI> | SMap<any>;
     /**
      * 对应ui
      */
-    ui?: SMap<any>;
+    ui?: Partial<UI> | SMap<any>;
     /**
      * 对应game
      */
-    game?: SMap<any>;
+    game?: Partial<Game> | SMap<any>;
     /**
      * 对应get
      */
-    get?: SMap<any>;
+    get?: Partial<Get> | SMap<any>;
 
     /** 
      * 可以继续加入更多对象：
@@ -496,9 +498,9 @@ interface PackageData {
     author?: string,
     /** 扩展描述 */
     intro?: string,
-    /** 讨论地址 */
-    diskURL?: string,
     /** 网盘地址 */
+    diskURL?: string,
+    /** 讨论地址 */
     forumURL?: string,
     /** 扩展版本 */
     version?: string,

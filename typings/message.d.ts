@@ -5,6 +5,8 @@ declare namespace Lib.message {
         inited(): any;
         reinited(): any;
         result(result: any): any;
+        /** 【v1.9.119】 */
+        tempResult(result: any): any;
         startGame(): any;
         changeRoomConfig(config: any): any;
         changeNumConfig(num: any, index: any, bool: any): any;

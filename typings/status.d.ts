@@ -142,6 +142,10 @@ interface Status {
 	 */
 	extensionChangeLog: SMap<string>;
 
+    mode: string;
+
+    discarded: Card[];
+    
     /*  扩展成员  */
     [key:string]:any;
 }

@@ -9,10 +9,12 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 	}
 	
 	const path = require('path');
+	/** @type { import('@electron/remote') } */
 	let remote;
 	if (electronVersion >= 14) {
-		remote =  require('@electron/remote');
+		remote = require('@electron/remote');
 		lib.node.debug = () => {
+			// @ts-ignore
 			remote.getCurrentWindow().toggleDevTools();
 		};
 	} else {
@@ -20,6 +22,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 		remote = require('electron').remote;
 	}
 	const { dialog } = remote;
+	const thisWindow = remote.getCurrentWindow();
 	
 	//保存扩展
     for (let extensionName of ['应用配置', '拖拽读取', '在线更新']) {
@@ -233,7 +236,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 						const txt = document.createElement('div');
 						txt.classList.add('txt');
 						txt.innerHTML = `
-							错误信息: <span style="color: red;">${err.message || 'undefined'}</span><br>
+							错误信息: <span style="color: red;">${err?.message || 'undefined'}</span><br>
 							${ src ? ('错误文件: <a onclick="require(\'electron\').shell.openPath(\'' + decodeURI(src) + '\')" href="javascript:void(0);">' + path.relative(__dirname, decodeURI(src).slice(8)) + '</a><br>') : '注意: 此错误来源是经无名杀转译后的函数代码<br>' }
 							行号: ${line}<br>
 							列号: ${column}
@@ -261,7 +264,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 					if (typeof hljs.initLineNumbersOnLoad == 'function') {
 						ready();
 					} else {
-						lib.init.js('extension/应用配置', 'highlightjs-line-numbers.min', ready);
+						lib.init.js('extension/应用配置', 'highlightjs-line-numbers.min', ready, () => {});
 					}
 				}
 
@@ -417,25 +420,42 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
                     const extName = fileName.slice(0, fileName.indexOf('\\'));
                     const file = fileName.slice(fileName.indexOf('\\') + 1);
                     // @ts-ignore
-                    if (!game.importedPack && 
+                    if (!game.importedPack &&
                         !lib.config.all.plays.includes(extName) && 
                         lib.config.extensions.includes(extName) && 
                         lib.config[`extension_${extName}_enable`] == true &&
                         (extName && file != 'updateContent') &&
-                        !(extName == "拖拽读取" && fileName.slice(fileName.indexOf('\\') + 1) == "tmp.js")
+                        !(extName == "拖拽读取" && fileName.slice(fileName.indexOf('\\') + 1) == "tmp.js") &&
+						extName != '武将界面'
                     ) {
                         console.log(`监听到扩展文件改变，类别: ${event}，扩展名: ${extName}，文件路径: ${fileName} `);
-                        // 符合条件，重启游戏
-                        const thisWindow = remote.getCurrentWindow();
-                        thisWindow.focus();
-                        game.reload();
+                       // css改变的话，重新append css就行了
+						if (fileName.endsWith('.css')) {
+							const links = document.getElementsByTagName('link');
+							for (const link of links) {
+								const href = link.getAttribute('href') || '';
+								if (path.join(href) == path.join(lib.assetURL, 'extension', fileName)) {
+									link.remove();
+									var style = document.createElement("link");
+									style.rel = "stylesheet";
+									style.href = path.join(lib.assetURL, 'extension', fileName);
+									document.head.appendChild(style);
+									console.log('style替换完成');
+									break;
+								}
+							}
+						} else if (fileName.endsWith('.js')) {
+							const thisWindow = remote.getCurrentWindow();
+							thisWindow.focus();
+							game.reload();
+						}
                     }
                 });
             }
 
 			if (!sessionStorage.getItem('setAppSize') && [lib.config.extension_应用配置_replaceAppWidth, lib.config.extension_应用配置_replaceAppHeight].every(v => !isNaN(Number(v)))) {
 				sessionStorage.setItem('setAppSize', 'true');
-				const thisWindow = remote.getCurrentWindow();
+				
 				thisWindow.setSize(Number(lib.config.extension_应用配置_replaceAppWidth), Number(lib.config.extension_应用配置_replaceAppHeight), false);
 				thisWindow.center();
 			}
@@ -557,7 +577,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 			author: "诗笺",
 			diskURL: "",
 			forumURL: "",
-			version: "1.3",
+			version: "1.4",
 		}
 	}
 });

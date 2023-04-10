@@ -218,25 +218,25 @@ interface BaseResultData {
 interface BaseCommonResultData extends BaseResultData {
     //choose系
     /** 记录返回当前事件操作过程中的卡牌 */
-    cards?: Card[];
+    cards: Card[];
     /** 记录返回当前事件操作过程中的目标 */
-    targets?: Player[];
+    targets: Player[];
     /** 记录返回当前事件操作过程中的按钮 */
-    buttons?: Button[];
+    buttons: Button[];
     /** 记录buttons内所有button.link(即该按钮的类型，link的类型很多，参考按钮的item) */
-    links?: any[];
+    links: any[];
 
     //control系(直接control系列没有result.bool)
     /** control操作面板的选中结果，即该按钮的link，即名字 */
-    control? :string;
+    control :string;
     /** 即control的下标 */
-    index? :number;
+    index :number;
 
     //ok系
     /** 记录返回当前事件操作过程中，面板按钮的确定ok取消cancel */
-    confirm?: string;
+    confirm: string;
     /** 一般为触发的“视为”技能 */
-	skill?: string;
+	skill: string;
     /**
      * 当前事件操作的“视为”牌，
 	 * 
@@ -244,7 +244,7 @@ interface BaseCommonResultData extends BaseResultData {
 	 * 
      * 判断是否为视为牌：card.isCard，false为视为牌
      */
-	card?: Card;
+	card: Card;
 
 	[key: string]: any;
 }

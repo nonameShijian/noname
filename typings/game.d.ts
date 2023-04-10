@@ -17,9 +17,9 @@ interface Game extends IDownLoadFun {
      * 
      * 同样是创建“cardsDiscard”事件，触发“addCardToStorage”时机
      * @param cards 
-     * @param bool 默认触发“addCardToStorage”时机，设置值false不触发
+     * @param bool 设置值false不触发“addCardToStorage”时机。设置为'toRenku'改为放置到仁库
      */
-    cardsGotoSpecial(cards: Card | Card[], bool?: boolean): GameEvent;
+	cardsGotoSpecial(cards: Card | Card[], bool?: boolean | 'toRenku'): GameEvent;
     /**
 	 * 20203-5新增
 	 * 
@@ -28,7 +28,7 @@ interface Game extends IDownLoadFun {
      * 
      * 使用方法：通过将relatedEvent设置为当前事件的parent（即useCard），
      *  在这一事件结束时而不是contentBefore结束时再丢弃所有卡牌。例子：
-	 * ```jsx
+	 * ```js
 		contentBefore:function(){
 		...
 		var cards=get.cards(num);
@@ -72,15 +72,15 @@ interface Game extends IDownLoadFun {
      * 
      * 只能主机使用；
      */
-    broadcast(...args): void;
-    broadcast(fun: RestParmFun<void>, ...args): void;
+    broadcast(name: string, ...args): void;
+	broadcast<T>(fun: (...args: T) => void, ...args: T): void;
     /** 
      * 向所有客户端通信（包括自己，发出通信后，自己执行一次函数和参数） 
      * 
      * 只能主机使用；
      */
-    broadcastAll(...args): void;
-    broadcastAll(fun: RestParmFun<void>, ...args): void;
+	broadcastAll(name: string, ...args): void;
+	broadcastAll<T>(fun: (...args: T) => void, ...args: T): void;
     /** 同步state状态 */
     syncState(): void;
     updateWaiting(): void;
@@ -113,14 +113,14 @@ interface Game extends IDownLoadFun {
 	 * 
 	 * 以播放我的扩展中我的语音.mp3为例:
 	 * 
-	 *  ```jsx
+	 *  ```js
 	 * game.playAudio('..', 'extension', '我的扩展', '我的语音.mp3');
 	 * ```
 	 * 
 	 * 最终会解析成 lib.assetURL + 'audio/../extension/我的扩展/我的语音.mp3'。
 	 * 
 	 * 而且你也可以```简写```: 
-	 * ```jsx
+	 * ```js
 	 * game.playAudio('../extension/我的扩展/我的语音');
 	 * ```
 	 * 
@@ -129,18 +129,18 @@ interface Game extends IDownLoadFun {
 	 * @param onerror 音频播放错误回调
 	 * 
 	 * 注：onerror不是你想象的如下代码！
-	 * ```jsx
+	 * ```js
 	 * audio.addEventListener('error', onerror);
 	 * ```
 	 * 而是经过处理后的代码:
-	 * ```jsx
+	 * ```js
 	 * audio.addEventListener('error', () => {
 	 * 	if (!错误处理) { 错误处理 = true; 音频改为ogg形式播放; }
 	 * 	else onerror();
 	 * });
 	 * ```
 	 */
-    playAudio(...paths: string, onerror?: VoidFunction): HTMLAudioElement;
+	playAudio(...paths: string, onerror?: Function): HTMLAudioElement;
 	playAudio(...paths: (string | number)[]): HTMLAudioElement;
     /**
      * 播放技能语音
@@ -227,7 +227,7 @@ interface Game extends IDownLoadFun {
 	 * 当data为一个object，```且参数exportext为true```时执行```导出扩展```逻辑。
 	 * 
 	 * 这时data的结构为: 
-	 * ```jsx
+	 * ```js
 	 * {
 	 * 		'文件名': '文件内容字符串'
 	 * }
@@ -285,7 +285,7 @@ interface Game extends IDownLoadFun {
 	 * 保存video，重启以播放
 	 * @param time 录像id
 	 * 见于:
-	 * ```jsx
+	 * ```js
 	 * document.querySelector('.videonode.active').link.time
 	 * ```
 	 * @param mode 模式id
@@ -309,7 +309,7 @@ interface Game extends IDownLoadFun {
      * @param player 
      * @param content 
      */
-    addVideo(type: string, player: Player, content?: any): void;
+    addVideo(type: string, player?: Player, content?: any): void;
 
     //重来
 	/** 重启游戏(不显示初始的选择模式页面) */
@@ -349,7 +349,7 @@ interface Game extends IDownLoadFun {
     unupdate(func: Function): void;
 	/**
 	 * 调用如下代码:
-	 * ```jsx
+	 * ```js
 	 * cancelAnimationFrame(lib.status.frameId);
 	 * ```
 	 */
@@ -360,7 +360,7 @@ interface Game extends IDownLoadFun {
     run(): void;
 	/**
 	 * lib.canvasUpdates中push传入的func。然后如果没有lib.status.canvas，则执行一次
-	 * ```jsx 
+	 * ```js 
 	 * game.update(lib.updateCanvas);
 	 * ```
 	 */
@@ -374,11 +374,11 @@ interface Game extends IDownLoadFun {
 	 * 注: 由于参数列表是随意的，在这里我准备限制一下这个函数的参数顺序
 	 * 
 	 * @param title 设置prompt标题与input内容。格式如下:
-	 * ```jsx
+	 * ```js
 	 * // 只设置标题(但是input的初始值就变成了undefined)
-	 * game.prompt('###prompt标题', value => {console.log(value)});
+	 * game.prompt('###prompt标题', value => console.log(value));
 	 * // 设置标题和input初始内容
-	 * game.prompt('###prompt标题###input初始内容', value => {console.log(value)});
+	 * game.prompt('###prompt标题###input初始内容', value => console.log(value));
 	 * ```
 	 * @param callback 回调函数，将input的值作为函数参数返回
 	 */
@@ -389,11 +389,11 @@ interface Game extends IDownLoadFun {
 	* 注: 由于参数列表是随意的，在这里我准备限制一下这个函数的参数顺序
 	* 
 	* @param title 设置prompt标题与input内容。格式如下:
-	* ```jsx
-	* // 只设置标题(但是input的初始值就变成了undefined)
-	* game.prompt('###prompt标题', value => {console.log(value)});
+	* ```js
+	* // 只设置标题(但是input的初始值就变成了'undefined')
+	* game.prompt('###prompt标题', value => console.log(value));
 	* // 设置标题和input初始内容
-	* game.prompt('###prompt标题###input初始内容', value => {console.log(value)});
+	* game.prompt('###prompt标题###input初始内容', value => console.log(value));
 	* ```
 	* @param forced 为true的话将没有"取消按钮"
 	* @param callback 回调函数，将input的值作为函数参数返回
@@ -405,17 +405,17 @@ interface Game extends IDownLoadFun {
 	* 注: 由于参数列表是随意的，在这里我准备限制一下这个函数的参数顺序
 	* 
 	* @param title 设置prompt标题。格式如下:
-	* ```jsx
+	* ```js
 	* game.prompt('alert', 'prompt标题');
 	* ```
-	* @param forced 默认为true。如果设置为false将出"取消按钮"
+	* @param forced 默认为true。如果设置为false将有"取消按钮"
 	*/
 	prompt(isAlert: 'alert', title: string, forced?: boolean): void;
     /** 
 	 * 模仿alert提示框
 	 * 
 	 * 调用如下代码:
-	 * ```jsx
+	 * ```js
 	 * game.prompt(str, 'alert');
 	 * ```
 	 */
@@ -502,7 +502,11 @@ interface Game extends IDownLoadFun {
      * @param info 模式内容
      * @param info2 模式的config扩展内容
      */
-    addMode(name: string, info: ExModeConfigData, info2: ExtensionInfoConfigData): void;
+    addMode(name: string, info: ExModeConfigData, info2: {
+		extension: string,
+		translate: string,
+		config: SMap<SelectConfigData>,
+	}): void;
 
     /**
      * 添加全局技能
@@ -699,7 +703,7 @@ interface Game extends IDownLoadFun {
      * @param name 
      * @param configx 
      */
-    switchMode(name: string, configx: SMap<any>): void;
+    switchMode(name: string, configx?: SMap<any>): void;
     /**
      * 读取玩法mode。
      * 创建“loadMode”事件，加载指定mode的js。
@@ -854,7 +858,7 @@ interface Game extends IDownLoadFun {
      *  其余类型参数，直接拼接
 	 * 
 	 * 代码示例: 
-	 * ```jsx
+	 * ```js
 	 * game.log(player, '摸了两张牌');
 	 * ```
      */
@@ -915,14 +919,14 @@ interface Game extends IDownLoadFun {
 	 * @param id 键名
 	 * @param callback 回调函数
 	 */
-	deleteDB(type: DataDbIds, id: string, callback?: Function): void;
+	deleteDB(type: DataDbIds, id?: string, callback?: Function): void;
 	/**
 	 * 如果有indexDB，就把数据存储到indexDB的data表中。
 	 * 
 	 * 如果没有，存储到localStorage
 	 * 
 	 * 如下方式存储:
-	 * ```jsx
+	 * ```js
 	 * // indexdb -> data表：
 	 * 键名: mode
 	 * 键值: {
@@ -948,7 +952,7 @@ interface Game extends IDownLoadFun {
 	 * 2. `_status.extensionChangeLog`存在时, 将展示扩展更新内容
 	 * 
 	 * 加入扩展更新内容示例: 
-	 * ```jsx
+	 * ```js
 	 * _status.extensionChangeLog = { 
 	 * 	'扩展名': '我的扩展', 
 	 * 	'版本号': 'v1.23',
@@ -1140,6 +1144,8 @@ interface Game extends IDownLoadFun {
 	 */
 	getAllGlobalHistory(): GlobalHistoryData;
 	getAllGlobalHistory(key: keyof ActionHistoryData, filter?: OneParmFun<GameEvent, boolean>): GameEvent[];
+
+	importedPack?: ExtensionInfoConfigData;
 }
 
 // Game的核心成员属性
@@ -1231,7 +1237,7 @@ interface Game {
     /** 添加胜负场次结算(见于菜单-其他-战绩) */
     addRecord(resultbool: boolean): void;
     /** 所有角色显示身份 */
-    showIdentity(): void;
+	showIdentity(me?: boolean): void;
     /**
      * 【联机】检查最终结果
      * 
@@ -1303,8 +1309,12 @@ interface Game {
 	 * 【v1.9.118】 添加了一个gainMultiple的loseAsync流程，添加和getl()相对应的getg()。
      */
     loseAsync(arg?: SMap<any>): BaseLoseEventInfo;
+
     /** 游戏结束后，不提示"再战" */
     no_continue_game: boolean;
+
+	/** 【国战】判断(亮将后)游戏是否应该结束 */
+	tryResult(): void;
 }
 
 /** 回放录像的模式中用此信息初始化一个player */
@@ -1353,28 +1363,28 @@ interface VideoContent {
 	newcard(content: VideoCardInfo[]): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * game.changeLand(url, player);
 	 * ```
 	 */
 	changeLand(player: Player, url: string): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * ui.land?.destroy();
 	 * ```
 	 */
 	destroyLand(): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * game.playAudio(str,'video');
 	 * ```
 	 */
 	playAudio(str: string): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * game.playSkillAudio(name,'video');
 	 * ```
 	 */
@@ -1387,7 +1397,7 @@ interface VideoContent {
 	phaseChange(player: Player): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * player?.playerfocus?.(time);
 	 * ```
 	 */
@@ -1398,14 +1408,14 @@ interface VideoContent {
 	playerfocus2(): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * player.node.identity.firstChild.innerHTML = str;
 	 * ```
 	 */
 	identityText(player: Player, str: string): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * player.node.identity.dataset.color = str;
 	 * ```
 	 */
@@ -1414,7 +1424,7 @@ interface VideoContent {
 	 * 应该是战旗模式的替换"正在行动角色"的样式
 	 * 
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * game.playerMap[content[0]].classList.remove('current_action');
 	 * game.playerMap[content[1]].classList.add('current_action');
 	 * ```
@@ -1424,7 +1434,7 @@ interface VideoContent {
 	chessSwap(content: [number, number]): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * infos = get.infoCards(infos);
 	 * player?.$gainmod?.(infos);
 	 * ```
@@ -1434,7 +1444,7 @@ interface VideoContent {
 	 * pos类型还没有查清楚
 	 * 
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * player?.moveTo?.(pos[0],pos[1]);
 	 * ```
 	 */
@@ -1443,7 +1453,7 @@ interface VideoContent {
 	 * pos类型还没有查清楚
 	 * 
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * game.addObstacle?.(pos[0],pos[1]);
 	 * ```
 	 */
@@ -1452,7 +1462,7 @@ interface VideoContent {
 	 * pos类型还没有查清楚
 	 * 
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * game.removeObstacle(pos);
 	 * ```
 	 */
@@ -1461,7 +1471,7 @@ interface VideoContent {
 	 * pos类型还没有查清楚
 	 * 
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * game.moveObstacle(pos[0], pos[1], pos[2]);
 	 * ```
 	 */
@@ -1470,35 +1480,35 @@ interface VideoContent {
 	 * pos类型还没有查清楚
 	 * 
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * game.colorObstacle(pos[0], pos[1], pos[2]);
 	 * ```
 	 */
 	colorObstacle(pos: any[]): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * ui.arena.classList.add('thrownhighlight');
 	 * ```
 	 */
 	thrownhighlight1(): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * ui.arena.classList.remove('thrownhighlight');
 	 * ```
 	 */
 	thrownhighlight2(): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * player.chessFocus();
 	 * ```
 	 */
     chessFocus(player: Player): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * game.playerMap[pos].delete();
 	 * delete game.playerMap[pos];
 	 * ```
@@ -1506,14 +1516,14 @@ interface VideoContent {
 	removeTreasure(pos: number): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * obs.forEach(ob => game.addObstacle(ob));
 	 * ```
 	 */
 	initobs(obs: any[]): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * let player = game.playerMap[content[0]];
      * if(player){
      * 	delete game.playerMap[content[0]];
@@ -1534,14 +1544,14 @@ interface VideoContent {
 	stoneSwap(info: VideoStonePlayerInfo): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * player.storage.tongshuai.owned = content;
 	 * ```
 	 */
 	chess_tongshuai(player: Player, content): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * player.marks.tongshuai.firstChild?.remove();
 	 * player.marks.tongshuai.setBackground(content[0], 'character');
 	 * player.additionalSkills.tongshuai = content[1];
@@ -1555,7 +1565,7 @@ interface VideoContent {
 	smoothAvatar(player: Player, vice: boolean): void;
 	/**
 	 * 武将更换皮肤
-	 * ```jsx
+	 * ```js
 	 * // 即 player.setAvatar(name, name2);
 	 * player.setAvatar(content[0], content[1]);
 	 * ```
@@ -1563,7 +1573,7 @@ interface VideoContent {
 	setAvatar(playerr: Player, content: [string, string | undefined]): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * // 即 player.setAvatarQueue(name, list);
 	 * player.setAvatarQueue(content[0], content[1]);
 	 * ```
@@ -1571,7 +1581,7 @@ interface VideoContent {
 	setAvatarQueue(playerr: Player, content: [string, string | undefined]): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * var skill = content[0];
 	 * lib.skill[skill] = content[1];
 	 * lib.character[skill] = content[2];
@@ -1582,14 +1592,14 @@ interface VideoContent {
 	addSubPlayer(player: Player, content: [string, ExSkillData, HeroData, string, any]): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * ui.arena.dataset.number = content;
 	 * ```
 	 */
 	arenaNumber(content: string): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * source.uninit();
 	 * source.init(content[0]);
 	 * source.node.identity.dataset.color = content[1];
@@ -1598,7 +1608,7 @@ interface VideoContent {
 	reinit(source: Player, content: [string, string]): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * source.init(name);
 	 * ```
 	 */
@@ -1612,7 +1622,7 @@ interface VideoContent {
 	}): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * if (typeof content == 'string') lib.skill[content]?.video(player);
 	 * else if(Array.isArray(content)) lib.skill[content[0]]?.video(player, content[1]);
 	 * ```
@@ -1620,7 +1630,7 @@ interface VideoContent {
 	skill(player: Player, content: string | [string, any]): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * const player = game.addFellow(content[0], content[1], content[2]);
 	 * game.playerMap[player.dataset.position] = player;
 	 * ```
@@ -1628,7 +1638,7 @@ interface VideoContent {
 	addFellow(content: [any, any, any]): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * ui.window.style.transition='all 0.5s';
 	 * ui.window.classList.add('zoomout3');
 	 * ui.window.hide();
@@ -1637,7 +1647,7 @@ interface VideoContent {
 	windowzoom1(): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * ui.window.style.transition='all 0s';
 	 * ui.refresh(ui.window);
 	 * ```
@@ -1645,7 +1655,7 @@ interface VideoContent {
 	windowzoom2(): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * ui.window.classList.remove('zoomout3');
 	 * ui.window.classList.add('zoomin3');
 	 * ```
@@ -1653,7 +1663,7 @@ interface VideoContent {
 	windowzoom3(): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * ui.window.style.transition='all 0.5s';
 	 * ui.refresh(ui.window);
 	 * ui.window.show();
@@ -1663,14 +1673,14 @@ interface VideoContent {
 	windowzoom4(): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * ui.window.style.transition='';
 	 * ```
 	 */
 	windowzoom5(): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * player.updateActCount(content[0], content[1], content[2]);
 	 * ```
 	 */
@@ -1686,42 +1696,42 @@ interface VideoContent {
 	draw(player: Player, info: any[][]): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * player.$draw(get.infoCards(info));
 	 * ```
 	 */
 	drawCard(player: Player, info: any[][]): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * player.$throw(get.infoCards(info[0]) ,info[1], null, info[2]);
 	 * ```
 	 */
 	throw(player: Player, info: [any, any, any]): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * player.$compare(get.infoCard(info[0]), game.playerMap[info[1]], get.infoCard(info[2]));
 	 * ```
 	 */
 	compare(player: Player, info: [any[][], number, any[][]]): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * player.$compareMultiple(get.infoCard(info[0]), get.infoTargets(info[1]), get.infoCards(info[2]));
 	 * ```
 	 */
 	compareMultiple(player: Player, info): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * player.$give(info[0], game.playerMap[info[1]]);
 	 * ```
 	 */
 	give(player: Player, info: [Player, number]): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * player.$give(get.infoCards(info[0]), game.playerMap[info[1]]);
 	 * ```
 	 */
@@ -1729,14 +1739,14 @@ interface VideoContent {
 	gain(player: Player, info): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * player.$gain(get.infoCards(info));
 	 * ```
 	 */
 	gainCard(player: Player, info): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * const nodes = [...document.querySelectorAll('#arena>.card,#chess>.card')];
 	 * // 经过一些条件后
 	 * player.$draw(get.infoCards(cards));
@@ -1753,14 +1763,14 @@ interface VideoContent {
 	judge2(videoId: string): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * player.unmark(name);
 	 * ```
 	 */
 	unmarkname(player: Player, name: string): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * player.marks[name].delete();
 	 * player.marks[name].style.transform += ' scale(0.2)';
 	 * delete player.marks[name];
@@ -1770,14 +1780,14 @@ interface VideoContent {
 	unmark(player: Player, name: string): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * player['$' + type]();
 	 * ```
 	 */
 	flame(player: Player, type: string): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * player.$throwEmotion(game.playerMap[content[0]], content[1]);
 	 * ```
 	 */
@@ -1786,28 +1796,28 @@ interface VideoContent {
 	removeGaintag(player: Player, content): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * player.line(game.playerMap[content[0]], content[1]);
 	 * ```
 	 */
 	line(player: Player, content: [number, any]): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * player.$fullscreenpop(content[0], content[1], content[2]);
 	 * ```
 	 */
 	fullscreenpop(player: Player, content: [any, any, any]): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * player.$damagepop(content[0], content[1], content[2]);
 	 * ```
 	 */
 	damagepop(player: Player, content: [any, any, any]): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 *  player.$damage(game.playerMap[source]);
 	 * ```
 	 */
@@ -1819,7 +1829,7 @@ interface VideoContent {
 	deleteChessPlayer(player: Player): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * game.addChessPlayer.apply(this,content);
 	 * ```
 	 */
@@ -1829,7 +1839,7 @@ interface VideoContent {
 	revive(player: Player): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * player.hp=info[1];
 	 * player.maxHp=info[2];
 	 * player.hujia=info[3];
@@ -1842,14 +1852,14 @@ interface VideoContent {
 	phaseJudge(player, card): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * player.directgain(get.infoCards(cards));
 	 * ```
 	 */
 	directgain(player: Player, cards): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * player.directequip(get.infoCards(cards));
 	 * ```
 	 */
@@ -1874,7 +1884,7 @@ interface VideoContent {
 	unmarkSkill(player: Player, name: string): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * if(content[2]){
 	 * 	switch(content[2]){
 	 * 		case 'cards': content[1] = get.infoCards(content[1]); break;
@@ -1894,7 +1904,7 @@ interface VideoContent {
 	turnOver(player: Player, bool: boolean): void;
 	/**
 	 * 调用如下代码: 
-	 * ```jsx
+	 * ```js
 	 * var dialog = ui.create.dialog(info[0], get.infoCards(info[1]));
 	 * setTimeout(() => dialog.close()),1000);
 	 * ```
@@ -1966,6 +1976,12 @@ type GlobalHistoryData = {
 	/** if (event.parent._roundStart) == true时，isRound为true */
 	isRound?: boolean,
 }
+
+// 定义类型为-1到1000的类型NumberRange，保留以后可能用得到
+/*
+type Range<From extends number, To extends number> = From extends To ? readonly [To] : [From, ...Range<From extends keyof any ? From + 1 : never, To >];
+type NumberRange = Range<-1, 1000>[number];
+*/
 
 /** 保存在game的下载方法 */
 interface IDownLoadFun {

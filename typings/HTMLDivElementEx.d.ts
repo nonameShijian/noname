@@ -1,5 +1,6 @@
 ////noname内扩展的一些HTMLDivElement方法：
 interface HTMLDivElement {
+    _link: any;
     /**
      * 增加一个动画（增加className动画标记）
      * 
@@ -21,6 +22,7 @@ interface HTMLDivElement {
      * @param callback 删除后的回调
      */
     delete(time: number, callback: () => void):HTMLDivElement;
+    delete(): HTMLDivElement;
     /**
      * 将该节点div移除，并添加到目标处
      * 
@@ -55,7 +57,7 @@ interface HTMLDivElement {
      * 设置触摸/点击监听
      * @param func 
      */
-    listen(func:(target: HTMLDivElement, event: any) => void):HTMLDivElement;
+    listen(func: (this: HTMLDivElement, event: Event) => void):HTMLDivElement;
     /**
      * 设置转换结束（webkitTransitionEnd）监听
      * @param func 
@@ -71,7 +73,9 @@ interface HTMLDivElement {
      * 添加css样式
      * @param style 
      */
-    css(style: SMap<any>):HTMLDivElement;
+    css<T extends keyof CSSStyleDeclaration>(style: {
+        [key in T]?: string
+    }): void;
 }
 
 interface HTMLTableElement {

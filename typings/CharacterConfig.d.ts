@@ -56,31 +56,27 @@ type HeroSex = 'male' | 'female' | 'dobule' | 'none';
 /** 武将体力 */
 type HeroHp = number | string;
 
+/** 武将势力 */
+type HeroGroup = 'wei' | 'shu' | 'wu' | 'qun' | 'jin' | 'shen' | 'key' | 'ye';
+
 /** 
  * 武将信息:
  * 
- * [ 0 string, 1 string, 2 number/string, 3 string[], 4 string[],.....其他特殊扩展 ]
+ * 0：性别
  * 
- * 0："性别"
+ * 1：势力
  * 
- * 1："势力",
- * 
- * 2：体力【体力可以支持分开独立显示："初始hp/血量上限", 加上护甲就是"初始hp/血量上限/护甲值"】
+ * 2：体力 (体力可以支持分开独立显示："初始hp/血量上限", 加上护甲就是"初始hp/血量上限/护甲值")
  * 
  * 3：["技能"]
  * 
- * 4：[可以保持图片，一些卡片标记，如："zhu","boss",""...,或者一些带前缀的特殊文本，例如：des:xxxx，表示描述] 
- *      【v1.9.108.6~：支持国战模式下，多势力，格式“doublegroup:xx:xx”，例如“doublegroup:wei:wu”】
+ * 4：[可以设置图片，或一些特别标记，如："zhu","boss"...,或者一些带前缀的特殊文本，例如：des:xxxx，表示人物生平简介] 
  * 
- * ===============
- * 额外增加个人需要的特殊信息：
+ * 【v1.9.108.6~】 character[4]设置国战模式双势力: 格式 “doublegroup:xx:xx”，例如“doublegroup:wei:wu”。但是武将的id前缀必须是"gz_"或者"db_"
  * 
- * 在4中，拥有"ZJNGEx"标记，表示这位zjsha扩展人物，5为扩展内容:[zjsha势力,血槽]
- * 
- * 1属性（即原势力），7zj杀势力，8血槽（体力可以支持双配置，所以这个没什么用了），9zj杀角色标记，暂时未想好 （从倒数开始数，倒数三个）
  */
-type HeroData = [HeroSex, string, HeroHp, string[], string[], ...any[]] | 
-				[HeroSex, string, HeroHp, string[],  ...any[]];
+type HeroData = [HeroSex, HeroGroup | string, HeroHp, string[], string[], ...any[]] |
+				[HeroSex, HeroGroup | string, HeroHp, string[],  ...any[]];
 
 /** 武将信息索引 */
 declare const enum HeroDataFields {

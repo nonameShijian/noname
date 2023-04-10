@@ -1,7 +1,7 @@
 declare var ui: UI;
 interface UI {
     updates: any[];
-    thrown: any[];
+    thrown: Card[];
     touchlines: any[];
     todiscard: SMap<any>;
     /** 
@@ -116,6 +116,7 @@ interface UI {
 	/** 背景div */
 	background: HTMLDivElement;
 	
+    system: HTMLDivElement;
 	system1: HTMLDivElement;
 	system2: HTMLDivElement;
 
@@ -136,4 +137,21 @@ interface UI {
 	skills: HTMLDivElement;
     /** 显示剩余牌 */
     cardPileNumber: HTMLDivElement;
+    coin?: HTMLDivElement;
+
+    /** 联机模式-退出房间 */
+    exitroom?: HTMLDivElement;
+    /** 联机模式-启动服务器 */
+    startServer?: HTMLDivElement;
+    /** 联机模式-联机大厅 */
+    hall_button?: HTMLDivElement;
+    /** 联机模式-最近连接 */
+    recentIP?: HTMLDivElement;
+    /** 联机模式-房间列表dialog */
+    roombase?: Dialog;
+    /** 联机模式-房间列表 */
+    rooms?: HTMLDivElement[];
+
+    wuxie: HTMLDivElement;
+    tempnowuxie: HTMLDivElement;
 }

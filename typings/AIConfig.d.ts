@@ -197,8 +197,9 @@ interface ExAIData {
      */
     order?: number | TwoParmFun<SkillOrCard,Player,number>;
     /** 
-     * 发动技能是身份暴露度（0~1，相当于概率）
-     * 取值范围为0~1,用于帮助AI判断身份,AI中未写expose其他AI将会无法判断其身份
+     * 发动技能是身份暴露度（0到1，相当于概率）
+     * 
+     * 取值范围为0到1,用于帮助AI判断身份,AI中未写expose其他AI将会无法判断其身份
      */
     expose?: number;
     /** 

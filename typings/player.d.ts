@@ -94,7 +94,7 @@ declare namespace Lib.element {
         /**
          * 判断指定装备区的指定类型区域是否为空的（即既没有被废除 栏内也没有装备牌）
 		 * 
-         * 例如：防具区（equip6）是否有防具
+         * 例如：防具区（equip2）是否有防具
          * @param num 
          */
         isEmpty(num: number|string): boolean;
@@ -110,7 +110,7 @@ declare namespace Lib.element {
         /**
          * 玩家初始化
          */
-        init(character: string, character2?: string | boolean, skill?: string | boolean): Player;
+        init(character: string, character2?: string | boolean, skill?: string | boolean, update?: boolean): Player;
         /** 玩家初始化后依次执行这里的函数 */
 		inits: ((player: Player) => void)[];
         /** 玩家初始化后依次执行这里的函数 */
@@ -119,7 +119,10 @@ declare namespace Lib.element {
         //联机相关初始化
         initOL(name: any, character: any): any;
         uninitOL(): any;
-        initRoom(info: any, info2: any): any;
+        /**
+         * 联机模式，创建房间样式
+         */
+        initRoom(this: Player, info?: initRoomInfo | 'server', info2?: any): Player;
 
         /**
          * 单个武将重新初始化
@@ -290,10 +293,10 @@ declare namespace Lib.element {
         /**
          * 获取当前玩家的牌(根据类型指定)
 		 * 
-         * @param arg1 获取玩家身上牌的类型：h手牌，e装备牌，j判定牌，s木牛流马上盖的牌，x武将牌上的牌。可以多个拼接。【神雷Zero个人扩充：增加“s”,"o"两个区域】
-         * @param arg2 获取牌的详细过滤条件（若是字符串则是卡牌名，若是对象是个cardSimpInfo结构）。【神雷Zero个人扩充：方法增加多一个参数--当前玩家】
+         * @param arg1 获取玩家身上牌的类型：h手牌，e装备牌，j判定牌，s木牛流马上盖的牌，x武将牌上的牌。可以多个拼接。
+         * @param arg2 获取牌的详细过滤条件（若是字符串则是卡牌名，若是对象是个cardSimpInfo结构）。
          */
-        getCards(arg1?: string, arg2?: string | CardBaseUIData |OneParmFun<Card,boolean>|TwoParmFun<Card,Player,boolean>): Card[];
+        getCards(arg1?: string = 'h', arg2?: string | CardBaseUIData | OneParmFun<Card,boolean>): Card[];
         /**
          * 获取指定玩家可以弃置的当前玩家的牌
 		 * 
@@ -327,7 +330,7 @@ declare namespace Lib.element {
 		 * 
          * @param arg2 获取牌的详细过滤条件（若是字符串则是卡牌名，若是对象是个cardSimpInfo结构）
          */
-        countCards(arg1: string, arg2?: string | CardBaseUIData|OneParmFun<Card,boolean>): number;
+        countCards(arg1: string, arg2?: string | CardBaseUIData| OneParmFun<Card,boolean>): number;
         /**
          * 获取获取指定玩家可以弃置的当前玩家的牌的数量
          * @param player 
@@ -1451,6 +1454,8 @@ declare namespace Lib.element {
         //【联机】等待与取消等待
         wait(callback: Function): void;
         unwait(result: any): void;
+        /** 【v1.9.119】 */
+        tempUnwait(result: any): void;
 
         /**
          * 技能日志
@@ -1649,7 +1654,7 @@ declare namespace Lib.element {
          * @param skill 技能
          * @param target 是否要另外移除目标技能（需要skill是一组技能时）
          */
-        removeAdditionalSkill(skill: string|string[], target?: string): Player;
+        removeAdditionalSkill(skill: string, target?: string): Player;
         /**
          * 限定技能
          * (应该是包括了限定技，觉醒技)
@@ -2371,6 +2376,36 @@ declare namespace Lib.element {
          */
         hasClan(clan: string, unseen: boolean): boolean;
 
+        /**
+         * 【v1.9.120.1】协力
+         * @param target 协力目标
+         * @param type 协力合作类型
+         * @param reason 触发协力的原因(id)？
+         */
+        cooperationWith(target: Player, type: string, reason: string): void;
+
+        /**
+         * 【v1.9.120.1】选择协力目标
+         * @param { Player } target 
+         * @param { string[] } cardlist 默认值为: ['cooperation_damage', 'cooperation_draw', 'cooperation_discard', 'cooperation_use']
+         * @param { string } reason  
+         */
+        chooseCooperationFor(...args: any[]): GameEvent;
+
+        /**
+         * 【v1.9.120.1】判断协力状态
+         */
+        checkCooperationStatus(target: Player, reason: string): boolean;
+
+        /**
+         * 【v1.9.120.1】移除协力状态
+         */
+        removeCooperation(info: {
+            target: Player,
+            type: string,
+            reason: string,
+        }): void;
+
 		/**
 		 * 【国战】玩家是否是大势力角色
 		 */
@@ -2399,6 +2434,34 @@ declare namespace Lib.element {
          * @param num 如果为1，则获取副将势力
          */
         getGuozhanGroup(num?: number): string;
+
+        /**
+         * 添加技能屏蔽器
+         * 
+		 * 对一名角色添加技能屏蔽器，无效化其符合筛选条件的技能，直到技能屏蔽器被移除。
+         */
+        addSkillBlocker(skill: string): void;
+
+        /**
+         * 移除技能屏蔽器
+         */
+        removeSkillBlocker(skill: string): void;
+
+        /**
+         * 【国战】判断武将是否是珠联璧合
+         */
+        perfectPair(choosing?: boolean): boolean;
+
+        /**
+         * 牌置入指定区域
+         * @param player 设置失去来源
+         * @param cards 设置失去的卡牌数组
+         * @param card 设置失去的卡牌
+         * @param { boolean } animate 设置动画
+         * @param { HTMLDivElement } position 设置失去位置
+         * @param { 'notBySelf' } notBySelf 设置notBySelf
+         */
+        loseToDiscardpile(...args: any[]): GameEvent;
     }
 
     // 核心成员属性（暂时先一部分比较核心常用的）
@@ -2648,7 +2711,7 @@ declare namespace Lib.element {
          */
         ws:PlayerWs;
         /** 玩家的唯一标识id，客机的ws.id就是playerid */
-        playerid:number;
+        playerid: string;
         /** 玩家的昵称，客机的ws.nickname就是nickname */
         nickname:string;
 		/** 特殊身份 */
@@ -2661,6 +2724,44 @@ declare namespace Lib.element {
 		seatNum: number;
 
 		_hookTrigger: any[];
+
+        /**
+         * 见于player.initRoom(info, info2);
+         */
+        serving: boolean;
+        /**
+         * 见于player.initRoom(info, info2);
+         */
+        roomempty: boolean;
+        /**
+         * 见于player.initRoom(info, info2);
+         */
+        roomfull: boolean;
+        /**
+         * 见于player.initRoom(info, info2);
+         */
+        roomgaming: boolean;
+        /**
+         * 见于player.initRoom(info, info2);
+         */
+        key: any;
+        /**
+         * 见于player.initRoom(info, info2);
+         */
+        version: string;
+        /**
+         * 见于player.initRoom(info, info2);
+         */
+        config: {};
+
+        /** 【国战】野心家标志？ */
+        _ye?: boolean;
+
+        /** 【国战】是否替换过副将 */
+        viceChanged: boolean;
+
+        /** 【国战】是否首次亮将 */
+        _mingzhied: boolean;
     }
 
     //由玩法模式自己扩展实现的方法接口：
@@ -2836,3 +2937,49 @@ type HistoryUseSkillData = {
     /** 技能类型 */
     type: "global" | "player";
 };
+
+/** 联机玩家名称 */
+type initRoomInfoPlayerName = string;
+/** 联机玩家所用头像 */
+type initRoomInfoPlayerAvatar = string;
+/** 联机房间设置 */
+type initRoomInfoPlayerConfig = {
+    /** 禁用的武将 */
+    banned: string[];
+    /** 禁用的卡牌 */
+    bannedcards: string[];
+    /** 使用的卡牌 */
+    cardPack: string[];
+    /** 不清楚 */
+    change_card: boolean;
+    /** 使用的武将包 */
+    characterPack: string[];
+    /** 出牌时间 */
+    choose_timeout: number;
+    /** 是否是双将模式 */
+    double_character: boolean;
+    /** 不清楚 */
+    doudizhu_mode: "huanle" | string;
+    /** 游戏是否已经开始 */
+    gameStarted: boolean;
+    /** 联机模式 */
+    mode: string;
+    /** 联机房间最大人数 */
+    number: number;
+    /** 允许观战 */
+    observe: boolean;
+    /** 此时是否可以被观战(选将阶段是不能观战的) */
+    observeReady: boolean;
+    /** 允许观战者看到手牌 */
+    observe_handcard: boolean;
+    /** 联机版本 */
+    version: number;
+    /** 不清楚 */
+    zhinang_tricks: string[];
+};
+/** 联机玩家数量 */
+type initRoomInfoMaxPlayer = number;
+/** 联机玩家id */
+type initRoomInfoPlayerId = string;
+
+type initRoomInfo = [initRoomInfoPlayerName, initRoomInfoPlayerAvatar, initRoomInfoPlayerConfig, initRoomInfoMaxPlayer, initRoomInfoPlayerId];

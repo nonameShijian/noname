@@ -431,7 +431,7 @@ interface ExCardData {
     //以下部分貌似都是是用于显示信息的：
     addinfomenu?: string;
     //来源
-    derivation?: boolean | string;
+    derivation?: string;
     derivationpack?: string;
 
     //似乎没有用上，不知有什么用
@@ -442,7 +442,10 @@ interface ExCardData {
      * 用于展示卡牌长按时的应变描述。
      * 可以为函数（参数为卡牌）或者字符串。
      */
-     yingbian_prompt?:string|OneParmFun<Card,string>;
+    yingbian_prompt?:string|OneParmFun<Card,string>;
+
+    judge?(): number;
+    judge2?(result: JudgeResultData): boolean;
 
     //日后还有很多属性要添加的
     [key: string]: any;

@@ -1504,6 +1504,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						return hs.contains(card);
 					});
 					event.cards=cards;
+					event.rawCards=cards.slice(0);
 					player.loseToDiscardpile(cards);
 					if(_status.currentPhase!=player) event.finish();
 					"step 1"
@@ -1512,9 +1513,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					var number=get.number(event.card);
 					for(var i=0;i<ui.discardPile.childNodes.length;i++){
 						var current=ui.discardPile.childNodes[i];
-						if((!trigger.cards.contains(current))&&get.number(current)==number) event.togain.push(current);
+						if((!event.rawCards.contains(current))&&get.number(current)==number) event.togain.push(current);
 					}
-					if(!event.togain.length) event.goto(5);
+					if(!event.togain.length) event.goto(4);
 					"step 2"
 					player.chooseButton(['是否获得其中的一张牌？',event.togain]).ai=function(button){
 						return get.value(button.link);
@@ -1524,7 +1525,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						player.gain(result.links[0],'gain2').type='xinmanjuan';
 					}
 					"step 4"
-					if(event.cards.length) event.goto(2);
+					if(event.cards.length) event.goto(1);
 				},
 				ai:{
 					threaten:4.2,
@@ -1908,9 +1909,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						return player.canEquip(card,true);
 					});
 					if(cards.length){
-						player.$give(card,player,false);
+						player.$give(cards[0],player,false);
 						game.delay(0.5);
-						player.equip(card);
+						player.equip(cards[0]);
 						event.redo();
 					}
 					'step 1'
@@ -2616,7 +2617,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			suiren_info:'限定技，准备阶段开始时，你可以失去技能〖义从〗，然后加1点体力上限并回复1点体力，然后令一名角色摸三张牌。',
 			huangjinleishi:'黄巾雷使',
 			fulu:'符箓',
-			fulu_info:'当你声明使用普通【杀】时，你可以将此【杀】改为雷【杀】。',
+			fulu_info:'当你声明使用普通【杀】后，你可以将此【杀】改为雷【杀】。',
 			fuji:'助祭',
 			fuji_info:'当一名角色造成雷属性伤害时，你可以令其进行判定，若结果为黑色，此伤害+1；若结果为红色，该角色获得判定牌。',
 			sp_pangtong:'SP庞统',

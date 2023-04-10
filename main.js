@@ -143,6 +143,7 @@ function createMainWindow() {
 			preload: path.join(__dirname, 'app', 'menu.js'), //页面运行其他脚本之前预先加载指定的脚本
 			nodeIntegration: true, //主页面用node
 			nodeIntegrationInSubFrames: true, //子页面用node
+			nodeIntegrationInWorker: true, //worker用node
 			contextIsolation: false,//必须为false
 			plugins: true, //启用插件
 			// @ts-ignore

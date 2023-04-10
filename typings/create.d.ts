@@ -5,10 +5,15 @@ declare namespace UI {
          * 创建一个div
          * 
          * 其参数列表：
+         * 
          *  若为div，table，tr，td，body等这些类型html节点对象，则设置为position，即创建div即将插入到的父节点；
+         * 
          *  若为number类型，则设置为position2，即将创建的div插入到position的第n个子节点之前；
+         * 
          *  若为“divposition”类型，则设置为divposition，即设置div的坐标位置；
+         * 
          *  若为“object”类型（即json格式对象），则设置为style，即设置div的style；
+         * 
          *  若为“function”类型，则设置为listen，即设置该div的“点击/触摸”事件的回调方法；
          */
         div(...args): HTMLDivElement;
@@ -30,7 +35,7 @@ declare namespace UI {
          * （内部过于复杂，似乎时8000多行代码的一个方法，暂时UI方面看不懂）
          * @param connectMenu 
          */
-        menu(connectMenu:SelectConfigData): void;
+        menu(connectMenu:SelectConfigData | boolean): void;
         /** 创建table */
         table(): HTMLTableElement;
         /** 投降的system选项 */
@@ -45,13 +50,13 @@ declare namespace UI {
         /**
          * 创建弹出面板
          * 
-         * item参数列表：
-         *  boolean类型：设置dialog.static；
-         *  特殊string类型：
-         *      'hidden'：设置创建该面板不open，而是隐藏起来，默认是直接执行open；
-         *      'notouchscroll'：设置该面板不可拖动（现在面板默认是可以随意拖动的）；
-         *      'forcebutton'：非常核心的一个设置，暂时不清楚具体作用，字面上是强制选项？
-         *  非以上类型，则参考Dialog的add方法的item参数列表：有string，div,cards,players,和自由配置的混合数组生成按钮；
+         * @param { boolean } static 设置dialog.static
+         * @param { 'hidden' } hidden 设置创建该面板不open，而是隐藏起来，默认是直接执行open
+         * @param { 'notouchscroll' } notouchscroll 设置该面板不可拖动（现在面板默认是可以随意拖动的）
+         * @param { 'forcebutton' } notouchscroll 非常核心的一个设置，暂时不清楚具体作用，字面上是强制选项
+         * @param { 'noforcebutton' } noforcebutton 【v1.9.120】新增，还未探究。应该是forcebutton的对立面
+         * 
+         * 非以上类型，则参考Dialog的add方法的item参数列表：有string，div,cards,players,和自由配置的混合数组生成按钮；
          */
         dialog(...item): Lib.element.Dialog;
         //应该是和config配置相关的
@@ -151,7 +156,7 @@ declare namespace UI {
          * @param noclick 语button一致
          * @param zoom 没用到，无用参数
          */
-        buttons(list:any[], type:string, position:HTMLElement, noclick?:boolean, zoom?:any): Button[];
+        buttons(list:any[], type:string, position: ParentNode, noclick?:boolean, zoom?:any): Button[];
 		player(position?: any, noclick?: any): Player;
         connectPlayers(ip): any;
         players(num): any;
@@ -182,6 +187,8 @@ declare namespace UI {
          * @param noclick 按钮是否不可点击
          */
         textbuttons(list: (string | [string, string])[], dialog: Dialog, noclick?: boolean): void;
+    
+        connectRooms(list: initRoomInfo): void;
     }
 
 

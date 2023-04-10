@@ -1,7 +1,7 @@
-//noname内扩展的一些array方法：
+// noname内扩展的一些array方法：
 declare interface Array<T> {
     /** 是否包含这一元素(被无名杀覆盖的原生方法) */
-    find(item): boolean;
+    // find(item): boolean;
     /**
      * 是否包含这一元素
      * @param item 
@@ -57,16 +57,18 @@ declare interface Array<T> {
     randomSort(): Array<T>;
     /**
      * 随机获取数组的元素
+     * 
      * 返回的是一个重新整合的数组
      * @param num 获取的数量, 不传参视为0
      */
     randomGets(num?: number): Array<T>;
     /**
      * 对所有玩家进行排序
+     * 
      * 其排序，使用的是lib.sort.seat方法，按座位排序
      * @param target 目标玩家
      */
-    sortBySeat(target?: Player): Array<T>;
+    sortBySeat(target?: Player): Player[];
     /**
      * 将一个Array中所有位于处理区的卡牌过滤出来
      * 
@@ -78,7 +80,7 @@ declare interface Array<T> {
      * 例：list.filterInD('h') 即判断数组中所有位于手牌区的卡牌
      * @param poiston 指定的区域，默认是 'o'
      */
-    filterInD(poiston?: string);
+    filterInD(poiston?: string): Card[];
 
     //关于处理区：
     /*

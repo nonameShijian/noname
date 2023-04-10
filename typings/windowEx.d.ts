@@ -49,6 +49,12 @@ declare interface Window {
     get: Get;
     ai: AI;
 
+    saveNonameInput?: Function;
+    /** 是否处于启动页 */
+    inSplash: boolean;
+    /** 游戏是否正常启动？ */
+    resetExtension: Function;
+
 	/** 【应用配置扩展】从该路径获取无名杀的变量信息 */
 	newExtApiUrl: string;
 	/** 【应用配置扩展】全局变量获取无名杀的变量 */

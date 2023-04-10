@@ -9,7 +9,8 @@ declare namespace UI {
 		identitycircle(): void;
         /** 联机约战 */
         connectEvents(): void;
-        connectClients(): void;
+        /** 联机在线列表 */
+        connectClients(this: HTMLDivElement): void;
         //切换皮肤相关
         autoskin(): any;
         skin(avatar, name, callback): any;
@@ -150,5 +151,10 @@ declare namespace UI {
         autoskill2(e): any;
         rightplayer(e): any;
         right(e): any;
+
+        /** 联机模式创建房间 */
+        connectMenu(): void;
+        /** 联机模式尝试加入房间 */
+        connectroom(e): void;
     }
 }
