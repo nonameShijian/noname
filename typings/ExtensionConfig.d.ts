@@ -494,7 +494,7 @@ interface PlayerConfigData extends ExCommonConfig {
  * （主要是通过系统内部自带编译器编辑的代码，导入逻辑其实基本一致）
  */
 interface PackageData {
-    /** 扩展制作作者名 */
+    /** 扩展作者名 */
     author?: string,
     /** 扩展描述 */
     intro?: string,

@@ -40,7 +40,7 @@ declare namespace Lib.element {
         set(key: string | [string, any][], value?: any): Event;
         /**
          * 设置content（核心）
-         * @param name 如果是方法类型，则使用lib.init.parse转成指定结构方法；如果是字符串，则是使用lib.element.content预定义好的content
+         * @param name 如果是方法类型，则使用lib.init.parsex转成指定结构方法；如果是字符串，则是使用lib.element.content预定义好的content
          */
         setContent(name: Function|string): Event;
         /**
@@ -65,8 +65,12 @@ declare namespace Lib.element {
         resume(): void;
         /**
          * 获取该事件的父节点。
+         * 
          * 默认获取上一个父节点（核心）。
-         * @param level 获取的父节点的深度（number），或者指定名字父节点（string，最多可以查找20代内）
+         * 
+         * 【v1.9.121】取消最大层次为20层的限制
+         * 
+         * @param level 获取的父节点的深度（number），或者指定名字父节点（string）
          * @param forced 是否强制其获取不到父节点，返回null（不知有什么意义）
          */
         getParent(level?: number|string, forced?: boolean): Event;
@@ -624,6 +628,10 @@ declare namespace Lib.element {
         controls: string[];
 
         result: BaseResultData;
+
+        /** 当前事件，是否不触发濒死阶段 */
+        nodying: boolean;
+        _dyinged: boolean;
 
         //自己扩展任意参数
         [key: string]: any;

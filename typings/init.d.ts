@@ -35,6 +35,8 @@ declare namespace Lib {
         css(): HTMLLinkElement;
         /**
          * 读取外部加载js (动态加载js扩展)
+         * 
+         * 【v1.9.122】增加检测加密扩展js的内容
          * @param path 路径
          * @param file 文件名，数组的话，就是读取一些列该路径下的文件
          * @param onload 加载成功回调
@@ -62,7 +64,9 @@ declare namespace Lib {
 
         /** 转换content方法（即内部带有step的方法），返回转换后的函数的方法 */
         parsex(func: Function): Function;
-        /** 转换content方法（即内部带有step的方法）,返回转换后的方法 */
+        /** 
+         * @deprecated 转换content方法（即内部带有step的方法）,返回转换后的方法
+         **/
         parse(func: Function): ContentFunc;
         /** 使用eval立即执行该传入参数（若参数是方法，则使用原生eval立即执行；若参数是一个对象，则遍历调用eval；若都不是则返回参数本身） */
         eval(func: Function|Object): any;

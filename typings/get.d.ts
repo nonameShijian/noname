@@ -277,8 +277,9 @@ interface Get {
     infoFuncOL(info):any;
     /**
      * 【v1.9.116.2】 将get.stringifiedResult的默认层数由5改为8，并由此解决部分联机模式的bug（如陆凯〖卜筮〗无法在联机模式下正常发动的bug）
+     * 【v1.9.120.3】 添加nomore参数，当item为'event'时且nomore为false返回空字符串
      */
-    stringifiedResult(item: Function | Object | Array, level = 8):any;
+    stringifiedResult(item: Function | Object | Array, level = 8, nomore?: boolean):any;
     /**
      * 当且仅当item的值为Infinity时才能使用这个重载
      */
@@ -908,7 +909,17 @@ interface Get {
      * 操作选项：手牌，装备区，判定区......卡牌选项
      * @param button 
      */
-    buttonValue(button:Button):number;
+    buttonValue(button: Button): number;
+    /**
+     * 【v1.9.120.3】 添加nomore参数
+     */
+    eventInfoOL(item: object, level: any, nomore?: boolean): string;
+    /**
+     * 【v1.9.122】获取技能标签(中文)
+     * @param skill 技能id
+     * @param player 对应的玩家
+     */
+    skillCategoriesOf(skill: ExSkillData, player: Player): string[];
 }
 
 //由玩法模式自己扩展实现的方法接口：
@@ -940,7 +951,7 @@ interface Is {
     freePosition(cards:Card[]): boolean;
     /** 判断是否有菜单 */
     nomenu(name:string, item): boolean;
-    altered(skill): boolean;//无用
+    altered(skill): boolean;//无用，无能，这里，就此消失！
 
     /** 判断当前对象是html文档节点 */
     node(obj:Object): boolean;
@@ -1006,6 +1017,7 @@ interface SkillStateData {
     /** 获取lib.playerOL所有玩家技能相关信息保存 */
     [key:string]:{
         skills:ExSkillData[];
+        invisibleSkills: ExSkillData[];
         hiddenSkills:ExSkillData[];
         additionalSkills:ExSkillData[];
         disabledSkills:ExSkillData[];

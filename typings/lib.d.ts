@@ -429,7 +429,7 @@ interface Lib {
 	/** 势力的常量列表 */
 	group: HeroGroup[] | string[];
 	/** 属性伤害的常量列表 */
-	nature: string[];
+	nature: string[]; /*["fire", "thunder", "kami", "ice", "stab", "poison"];*/
 	/** “连环”状态能传递的伤害属性列表 */
 	linked: string[];
 	/** 游戏内的标准阶段名 */
@@ -665,6 +665,7 @@ interface LibConfigData {
 	forbidlist: any[],
 	forbidstone: string[],
 	forbidthreecard: string[],
+	fuck_sojson: boolean,
 	game: string,
 	gameRecord: SMap<any>,
 	game_speed: string,

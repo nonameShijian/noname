@@ -631,7 +631,15 @@ interface Game extends IDownLoadFun {
      * 游戏继续2（联机模式下无效）
      * 设置pause2为false，重新loop
      */
-    resume2(): void;
+	resume2(): void;
+	/**
+	 * 【v1.9.121】game.delay的事件版本。参数同game.delay
+	 */
+	delaye(...args: any): GameEvent;
+	/**
+	 * 【v1.9.121】game.delayx的事件版本。参数同game.delayx
+	 */
+	delayex(...args: any): GameEvent;
     /**
      * 游戏延迟
      * 延迟结束后继续游戏(先暂停游戏循环loop，待x秒后resume继续游戏)
@@ -2010,7 +2018,16 @@ interface IDownLoadFun {
 	 */
 	readFile(filename: string, callback: (data: Buffer | ArrayBuffer) => void, onerror: (err: Error) => void): void;
 	/**
+	 * 【v1.9.122】以文本格式读取本地文件
+	 * @param filename 文件相对于无名杀根目录的地址
+	 * @param callback 回调函数
+	 * @param onerror 失败回调
+	 */
+	readFileAsText(filename: string, callback: (data: string) => void, onerror: (err: Error) => void): void;
+	/**
 	 * 将数据写入本地文件
+	 * 
+	 * 【v1.9.122】修复异步未等待文件夹创建完成的问题
 	 * @param data 数据内容
 	 * @param path 目标地址文件的父文件夹
 	 * @param name 目标地址的文件名

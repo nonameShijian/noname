@@ -8,10 +8,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				standard_2008:["caocao","simayi","xiahoudun","zhangliao","xuzhu","guojia","zhenji","liubei","guanyu","zhangfei","zhugeliang","zhaoyun","machao","huangyueying","sunquan","ganning","lvmeng","huanggai","zhouyu","daqiao","luxun","sunshangxiang","huatuo","lvbu","diaochan","re_lidian"],
 				standard_2013:["huaxiong","re_yuanshu","re_xushu"],
 				standard_2019:["gongsunzan","xf_yiji"],
+				standard_2023:["std_panfeng"],
 			},
 		},
 		character:{
-			re_lidian:['male','wei',3,['xunxun','wangxi']],
+			std_panfeng:['male','qun',4,['stdkuangfu']],
+			re_lidian:['male','wei',3,['xunxun','xinwangxi']],
 			re_xushu:['male','shu',4,['zhuhai','qianxin']],
 			caocao:['male','wei',4,['jianxiong','hujia'],['zhu']],
 			simayi:['male','wei',3,['fankui','guicai']],
@@ -92,6 +94,22 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			guanyu:['zhangfei','liaohua'],
 		},
 		skill:{
+			stdkuangfu:{
+				audio:'xinkuangfu',
+				trigger:{source:'damageSource'},
+				forced:true,
+				usable:1,
+				filter:function(event,player){
+					return player.isPhaseUsing()&&event.card&&event.card.name=='sha'&&event.player!=player&&event.player.isIn();
+				},
+				content:function(){
+					if(trigger.player.hp<player.hp) player.draw(2);
+					else player.loseHp();
+				},
+				ai:{
+					halfneg:true,
+				}
+			},
 			rewangzun:{
 				trigger:{global:'phaseZhunbeiBegin'},
 				forced:true,
@@ -994,7 +1012,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			wusheng:{
 				audio:2,
 				audioname2:{old_guanzhang:'old_fuhun'},
-				audioname:['re_guanyu','guanzhang','jsp_guanyu','guansuo'],
+				audioname:['re_guanyu','guanzhang','jsp_guanyu','guansuo','re_guanzhang'],
 				enable:['chooseToRespond','chooseToUse'],
 				filterCard:function(card,player){
 					if(get.zhu(player,'shouyue')) return true;
@@ -1717,7 +1735,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			liuli:{
 				audio:2,
-				audioname:['re_daqiao','daxiaoqiao'],
+				audioname:['re_daqiao','daxiaoqiao','sb_daqiao'],
 				trigger:{target:'useCardToTarget'},
 				direct:true,
 				preHidden:true,
@@ -2452,38 +2470,39 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		},
 		characterReplace:{
 			caocao:['re_caocao','caocao'],
-			guojia:['re_guojia','guojia'],
-			simayi:['re_simayi','simayi'],
-			jin_simayi:['jin_simayi','junk_simayi'],
-			zhenji:['re_zhenji','zhenji'],
+			guojia:['re_guojia','guojia','ps1059_guojia','ps2070_guojia'],
+			simayi:['re_simayi','simayi','ps_simayi','ps2068_simayi'],
+			jin_simayi:['jin_simayi','junk_simayi','ps_jin_simayi'],
+			zhenji:['re_zhenji','yj_zhenji','zhenji'],
 			xuzhu:['re_xuzhu','xuzhu'],
 			zhangliao:['re_zhangliao','zhangliao'],
 			sp_zhangliao:['sp_zhangliao','yj_zhangliao'],
 			xiahoudun:['re_xiahoudun','xin_xiahoudun','xiahoudun'],
 			liubei:['re_liubei','liubei','junk_liubei'],
-			guanyu:['re_guanyu','guanyu'],
-			zhangfei:['re_zhangfei','tw_zhangfei','xin_zhangfei','old_zhangfei','zhangfei'],
-			zhaoyun:['re_zhaoyun','old_zhaoyun','zhaoyun'],
+			guanyu:['re_guanyu','guanyu','ps_guanyu'],
+			zhangfei:['re_zhangfei','tw_zhangfei','xin_zhangfei','old_zhangfei','zhangfei','yj_zhangfei'],
+			zhaoyun:['re_zhaoyun','old_zhaoyun','zhaoyun','ps2063_zhaoyun','ps2067_zhaoyun'],
 			sp_zhaoyun:['sp_zhaoyun','jsp_zhaoyun'],
-			machao:['re_machao','machao'],
+			machao:['re_machao','machao','ps_machao'],
 			sp_machao:['sp_machao','old_machao'],
-			zhugeliang:['re_zhugeliang','zhugeliang'],
+			zhugeliang:['re_zhugeliang','zhugeliang','ps2066_zhugeliang','ps_zhugeliang'],
 			huangyueying:['re_huangyueying','huangyueying','junk_huangyueying'],
 			sunquan:['re_sunquan','sunquan'],
-			zhouyu:['re_zhouyu','zhouyu'],
+			zhouyu:['re_zhouyu','zhouyu','ps1062_zhouyu','ps2080_zhouyu'],
 			luxun:['re_luxun','luxun'],
 			lvmeng:['re_lvmeng','lvmeng'],
 			huanggai:['re_huanggai','huanggai'],
 			daqiao:['re_daqiao','daqiao'],
 			sunshangxiang:['re_sunshangxiang','sunshangxiang'],
-			ganning:['re_ganning','ganning'],
+			ganning:['re_ganning','ganning','yongjian_ganning'],
 			yj_ganning:['yj_ganning','sp_ganning'],
-			lvbu:['re_lvbu','lvbu'],
+			lvbu:['re_lvbu','lvbu','ps_lvbu'],
 			diaochan:['re_diaochan','diaochan'],
 			huatuo:['re_huatuo','old_huatuo','huatuo'],
 			huaxiong:['re_huaxiong','old_huaxiong','huaxiong','ol_huaxiong'],
 			yuanshu:['yl_yuanshu','yuanshu','re_yuanshu','old_yuanshu','ol_yuanshu'],
 			gongsunzan:['dc_gongsunzan','re_gongsunzan','xin_gongsunzan','gongsunzan'],
+			re_lidian:['re_lidian','old_re_lidian','junk_lidian'],
 		},
 		translate:{
 			caocao:'曹操',
@@ -2620,7 +2639,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			kurou_info:'出牌阶段，你可以失去一点体力，然后摸两张牌。',
 			yingzi_info:'摸牌阶段，你可以多摸一张牌。',
 			fanjian_info:'出牌阶段限一次。你可以令一名角色选择一种花色，然后其获得你的一张手牌。若其以此法选择的花色与其获得的牌花色不同，则你对其造成1点伤害。',
-			guose_info:'你可以将一张方片手牌当做【乐不思蜀】使用。',
+			guose_info:'你可以将一张方片牌当做【乐不思蜀】使用。',
 			liuli_info:'当你成为【杀】的目标时，你可以弃置一张牌并将此【杀】转移给攻击范围内的一名其他角色（不能是此【杀】的使用者）。',
 			qianxun_info:'锁定技，你不能成为【顺手牵羊】和【乐不思蜀】的目标。',
 			lianying_info:'当你失去最后的手牌时，你可以摸一张牌。',
@@ -2661,10 +2680,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			retongji_info:'攻击范围内包含你的角色成为【杀】的目标时，若你不是此【杀】的使用者或目标，其可弃置一张牌，然后将此【杀】转移给你。',
 			re_xushu:'徐庶',
 			re_lidian:'李典',
+			std_panfeng:'潘凤',
+			stdkuangfu:'狂斧',
+			stdkuangfu_info:'锁定技。出牌阶段限一次。当你使用【杀】对其他角色造成伤害后，若其体力值：小于你，你摸两张牌；不小于你，你失去1点体力。',
 			
 			standard_2008:"2008版标准包",
 			standard_2013:"2013版标准包",
 			standard_2019:"2019版标准包",
+			standard_2023:"2023版标准包",
 		},
 	};
 });

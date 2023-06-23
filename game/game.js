@@ -2,7 +2,7 @@
 (function(){
 	if(!localStorage.getItem('noname_alerted')){
 		localStorage.setItem('noname_alerted',true);
-		alert('无名杀官方发布地址仅有GitHub仓库！\n其他所有的所谓“无名杀”社群（包括但不限于绝大多数“官方”QQ群、QQ频道等）均为粉丝自发组织，与无名杀官方无关！');
+		alert('无名杀官方发布地址仅有GitHub仓库！\n其他所有的所谓“无名杀”社群（包括但不限于绝大多数“官方”QQ群、QQ频道等）均为玩家自发组织，与无名杀官方无关！');
 	}
 	var _status={
 		paused:false,
@@ -535,6 +535,10 @@
 							}
 						},
 						unfrequent:true,
+					},
+					fuck_sojson:{
+						name:'检测加密扩展',
+						init:false,
 					},
 					errstop:{
 						name:'出错时停止游戏',
@@ -4280,6 +4284,7 @@
 					update:function(config,map){
 						if(config.connect_identity_mode=='zhong'){
 							map.connect_player_number.hide();
+							map.connect_limit_zhu.hide();
 							map.connect_enhance_zhu.hide();
 							map.connect_double_nei.hide();
 							map.connect_zhong_card.show();
@@ -4288,6 +4293,7 @@
 						}
 						else if(config.connect_identity_mode=='purple'){
 							map.connect_player_number.hide();
+							map.connect_limit_zhu.hide();
 							map.connect_enhance_zhu.hide();
 							map.connect_double_nei.hide();
 							map.connect_zhong_card.hide();
@@ -4297,6 +4303,7 @@
 						else{
 							map.connect_double_character.show();
 							map.connect_player_number.show();
+							map.connect_limit_zhu.show();
 							map.connect_enhance_zhu.show();
 							if(config.connect_player_number!='2'){
 								map.connect_double_nei.show();
@@ -4340,6 +4347,18 @@
 						},
 						frequent:true,
 						restart:true,
+					},
+					connect_limit_zhu:{
+						name:'常备主候选武将数',
+						init:'group',
+						restart:true,
+						item:{
+							off:'不限制',
+							group:'按势力筛选',
+							'4':'四',
+							'6':'六',
+							'8':'八',
+						},
 					},
 					connect_zhong_card:{
 						name:'明忠卡牌替换',
@@ -4398,6 +4417,7 @@
 							map.double_nei.hide();
 							map.auto_identity.hide();
 							map.choice_zhu.hide();
+							map.limit_zhu.hide();
 							map.choice_zhong.hide();
 							map.choice_nei.hide();
 							map.choice_fan.hide();
@@ -4426,6 +4446,7 @@
 							map.double_nei.hide();
 							map.auto_identity.hide();
 							map.choice_zhu.hide();
+							map.limit_zhu.hide();
 							map.choice_zhong.hide();
 							map.choice_nei.hide();
 							map.choice_fan.hide();
@@ -4455,6 +4476,7 @@
 								map.double_nei.hide();
 							}
 							map.choice_zhu.show();
+							map.limit_zhu.show();
 							map.choice_zhong.show();
 							map.choice_nei.show();
 							map.choice_fan.show();
@@ -4785,6 +4807,18 @@
 							'6':'六',
 							'8':'八',
 							'10':'十',
+						},
+					},
+					limit_zhu:{
+						name:'常备主候选武将数',
+						init:'group',
+						restart:true,
+						item:{
+							off:'不限制',
+							group:'按势力筛选',
+							'4':'四',
+							'6':'六',
+							'8':'八',
 						},
 					},
 					choice_zhong:{
@@ -6662,7 +6696,7 @@
 			globalId:0,
 		},
 		help:{
-			'关于游戏':'<div style="margin:10px">关于无名杀</div><ul style="margin-top:0"><li>无名杀官方发布地址仅有GitHub仓库！<br><a href="https://github.com/libccy/noname">点击前往Github仓库</a><br><li>其他所有的所谓“无名杀”社群（包括但不限于绝大多数“官方”QQ群、QQ频道等）均为粉丝自发组织，与无名杀官方无关！',
+			'关于游戏':'<div style="margin:10px">关于无名杀</div><ul style="margin-top:0"><li>无名杀官方发布地址仅有GitHub仓库！<br><a href="https://github.com/libccy/noname">点击前往Github仓库</a><br><li>无名杀基于GPLv3开源协议。<br><a href="https://www.gnu.org/licenses/gpl-3.0.html">点击查看GPLv3协议</a><br><li>其他所有的所谓“无名杀”社群（包括但不限于绝大多数“官方”QQ群、QQ频道等）均为粉丝自发组织，与无名杀官方无关！',
 			'游戏操作':'<ul><li>长按/鼠标悬停/右键单击显示信息。<li>触屏模式中，双指点击切换暂停；下划显示菜单，上划切换托管。<li>键盘快捷键<br>'+
 			'<table><tr><td>A<td>切换托管<tr><td>W<td>切换不询问无懈<tr><td>空格<td>暂停</table><li>编辑牌堆<br>在卡牌包中修改牌堆后，将自动创建一个临时牌堆，在所有模式中共用，当保存当前牌堆后，临时牌堆被清除。每个模式可设置不同的已保存牌堆，设置的牌堆优先级大于临时牌堆。</ul>',
 			'游戏命令':'<div style="margin:10px">变量名</div><ul style="margin-top:0"><li>场上角色<br>game.players<li>阵亡角色<br>game.dead'+
@@ -7956,9 +7990,22 @@
 								},onerror);
 							},onerror);
 						};
+						game.readFileAsText=function(filename,callback,onerror){
+							window.resolveLocalFileSystemURL(lib.assetURL,function(entry){
+								entry.getFile(filename,{},function(fileEntry){
+									fileEntry.file(function(fileToLoad){
+										var fileReader = new FileReader();
+										fileReader.onload = function(e){
+											callback(e.target.result);
+										};
+										fileReader.readAsText(fileToLoad, "UTF-8");
+									},onerror);
+								},onerror);
+							},onerror);
+						};
 						game.writeFile=function(data,path,name,callback){
-							game.ensureDirectory(path,function(){});
-							if(Object.prototype.toString.call(data)=='[object File]'){
+							game.ensureDirectory(path,function(){
+								if(Object.prototype.toString.call(data)=='[object File]'){
 								var fileReader = new FileReader();
 								fileReader.onload = function(e){
 									game.writeFile(e.target.result,path,name,callback);
@@ -7975,6 +8022,7 @@
 									});
 								});
 							}
+							});
 						};
 						game.removeFile=function(dir,callback){
 							window.resolveLocalFileSystemURL(lib.assetURL,function(entry){
@@ -8144,8 +8192,18 @@
 							}
 						});
 					};
+					game.readFileAsText=function(filename,callback,onerror){
+						lib.node.fs.readFile(__dirname+'/'+filename,'utf-8',function(err,data){
+							if(err){
+								onerror(err);
+							}
+							else{
+								callback(data);
+							}
+						});
+					};
 					game.writeFile=function(data,path,name,callback){
-						game.ensureDirectory(path,function(){});
+						game.ensureDirectory(path,function(){
 						if(Object.prototype.toString.call(data)=='[object File]'){
 							var fileReader = new FileReader();
 							fileReader.onload = function(e){
@@ -8159,6 +8217,7 @@
 								lib.node.fs.writeFile(__dirname+'/'+path+'/'+name,zip.files.i.asNodeBuffer(),null,callback);
 							});
 						}
+						});
 					};
 					game.removeFile=function(filename,callback){
 						lib.node.fs.unlink(__dirname+'/'+filename,callback||function(){});
@@ -9240,15 +9299,29 @@
 					}
 				}
 				else{
-					var script=document.createElement('script');
+					var script_src;
 					if(!file){
-						script.src = path;
+						script_src = path;
 					}
 					else{
-						script.src = path+'/'+file+".js";
+						script_src = path+'/'+file+".js";
 					}
 					if(path.indexOf('http')==0){
-						script.src+='?rand='+get.id();
+						script_src+='?rand='+get.id();
+					}
+					else{
+						if(game.readFile&&lib.config.fuck_sojson&&script_src.includes('extension')!=-1&&script_src.indexOf(lib.assetURL)==0){
+							var path_to_read=script_src.slice(lib.assetURL.length);
+							game.readFileAsText(path_to_read,function(result){
+								if(result.includes('sojson')||result.includes('jsjiami')||result.includes('var _0x')) alert('检测到您安装了使用免费版sojson进行加密的扩展。请谨慎使用这些扩展，避免游戏数据遭到破坏。\n扩展文件：'+path_to_read);
+							},function(){
+							
+							});
+						}
+					}
+					var script=document.createElement('script');
+					script.src=script_src;
+					if(path.indexOf('http')==0){
 						script.addEventListener('load',function(){
 							script.remove();
 						});
@@ -10409,6 +10482,106 @@
 			content:{
 				emptyEvent:function(){
 					event.trigger(event.name);
+				},
+				chooseToDebate:function(){
+					'step 0'
+					event.targets=event.list.filter(function(i){
+						return i.countCards('h')>0;
+					});
+					if(!event.targets.length) event.result={bool:false};
+					else{
+						var next=player.chooseCardOL(event.targets,get.translation(player)+'发起了议事，请选择展示的手牌',true).set('type','debate').set('source',player).set('ai',event.ai||function(card){
+							return Math.random();
+						}).set('aiCard',event.aiCard||function(target){
+							var hs=target.getCards('h');
+							return {bool:true,cards:[hs.randomGet()]};
+						});
+						next._args.remove('glow_result');
+					}
+					'step 1'
+					var red=[],black=[];
+					event.videoId=lib.status.videoId++;
+					for(var i=0;i<event.targets.length;i++){
+						var card=result[i].cards[0],target=event.targets[i];
+						if(get.color(card,target)=='red') red.push([target,card]);
+						else black.push([target,card]);
+					}
+					event.red=red; event.black=black;
+					if(red.length){
+						game.log(red.map(function(i){
+							return i[0];
+						}),'意见为<span class="firetext">红色</span>，展示了',red.map(function(i){
+							return i[1];
+						}));
+					}
+					else game.log('#b无人','意见为<span class="firetext">红色</span>');
+					if(black.length){
+						game.log(black.map(function(i){
+							return i[0];
+						}),'意见为','#g黑色','，展示了',black.map(function(i){
+							return i[1];
+						}));
+					}
+					else game.log('#b无人','意见为','#g黑色');
+					game.broadcastAll(function(name,id,redArgs,blackArgs){
+						var dialog=ui.create.dialog(name+'发起了议事','hidden','forcebutton');
+						dialog.videoId=id;
+						dialog.classList.add('scroll1');
+						dialog.classList.add('scroll2');
+						dialog.classList.add('fullwidth');
+						dialog.buttonss=[];
+						
+						var list=['意见为红色的角色','意见为黑色的角色']
+						for(var i=0;i<list.length;i++){
+							dialog.add('<div class="text center">'+list[i]+'</div>');
+							var buttons=ui.create.div('.buttons',dialog.content);
+							dialog.buttonss.push(buttons);
+							buttons.classList.add('popup');
+							buttons.classList.add('guanxing');
+						}
+						var func=function(target){
+							if(target._tempTranslate) return target._tempTranslate;
+							var name=target.name;
+							if(lib.translate[name+'_ab']) return lib.translate[name+'_ab'];
+							return get.translation(name);
+						};
+						for(var i=0;i<redArgs.length;i++){
+							var list=redArgs[i];
+							var button=ui.create.button(list[1],'card',dialog.buttonss[0]);
+							button.querySelector('.info').innerHTML=func(list[0]);
+						}
+						for(var i=0;i<blackArgs.length;i++){
+							var list=blackArgs[i];
+							var button=ui.create.button(list[1],'card',dialog.buttonss[1]);
+							button.querySelector('.info').innerHTML=func(list[0]);
+						}
+						dialog.open();
+					},get.translation(player),event.videoId,red,black);
+					game.delay(4);
+					'step 2'
+					game.broadcastAll('closeDialog',event.videoId);
+					var opinion=null;
+					if(event.red.length>event.black.length) opinion='red';
+					else if(event.red.length<event.black.length) opinion='black';
+					if(opinion) game.log(player,'本次发起的议事结果为',opinion=='red'?'<span class="firetext">红色</span>':'#g黑色');
+					else game.log(player,'本次发起的议事无结果');
+					event.result={
+						bool:true,
+						opinion:opinion,
+						red:event.red,
+						black:event.black,
+						targets:event.targets
+					}
+					'step 3'
+					if(event.callback){
+						var next=game.createEvent('debateCallback',false);
+						next.player=player;
+						next.debateResult=get.copy(event.result);
+						next.setContent(event.callback);
+					}
+				},
+				delay:function(){
+					game[event.name].apply(game,event._args)
 				},
 				chooseCooperationFor:function(){
 					'step 0'
@@ -11885,7 +12058,9 @@
 						if(!fullskills.contains(event.skill)){
 							var info=get.info(event.skill);
 							var hidden=player.hiddenSkills.slice(0);
+							var invisible=player.invisibleSkills.slice(0);
 							game.expandSkills(hidden);
+							game.expandSkills(invisible);
 							if(hidden.contains(event.skill)){
 								if(!info.silent&&player.hasSkillTag('nomingzhi',false,null,true)){
 									event.finish();
@@ -11896,6 +12071,9 @@
 								else{
 									event.skillHidden=true;
 								}
+							}
+							else if(invisible.contains(event.skill)){
+								event.trigger('triggerInvisible');
 							}
 							else{
 								var keep=false;
@@ -12482,9 +12660,11 @@
 					event.num=player.needsToDiscard();
 					if(event.num<=0) event.finish();
 					else{
-						if(lib.config.show_phase_prompt){
-							player.popup('弃牌阶段');
-						}
+						game.broadcastAll(function(player){
+							if(lib.config.show_phase_prompt){
+								player.popup('弃牌阶段',null,false);
+							}
+						},player);
 					}
 					event.trigger('phaseDiscard');
 					"step 1"
@@ -12502,7 +12682,7 @@
 					if(game.modeSwapPlayer&&!_status.auto&&player.isUnderControl()&&!lib.filter.wuxieSwap(event)){
 						game.modeSwapPlayer(player);
 					}
-					var skills=player.getSkills(true);
+					var skills=player.getSkills('invisible').concat(lib.skill.global);
 					game.expandSkills(skills);
 					for(var i=0;i<skills.length;i++){
 						var info=lib.skill[skills[i]];
@@ -12620,8 +12800,8 @@
 						if(ok){
 							ui.click.ok();
 						}
-						else if(ai.basic.chooseCard(event.ai1)){
-							if(ai.basic.chooseTarget(event.ai2)&&(!event.filterOk||event.filterOk())){
+						else if(ai.basic.chooseCard(event.ai1)||forced){
+							if((ai.basic.chooseTarget(event.ai2)||forced)&&(!event.filterOk||event.filterOk())){
 								ui.click.ok();
 								event._aiexcludeclear=true;
 							}
@@ -12757,7 +12937,7 @@
 						delete event.dialog;
 						return;
 					}
-					var skills=player.getSkills(true);
+					var skills=player.getSkills('invisible').concat(lib.skill.global);
 					game.expandSkills(skills);
 					for(var i=0;i<skills.length;i++){
 						var info=lib.skill[skills[i]];
@@ -12805,8 +12985,8 @@
 						if(ok){
 							ui.click.ok();
 						}
-						else if(ai.basic.chooseCard(event.ai1||event.ai)){
-							if(ai.basic.chooseTarget(event.ai2)&&(!event.filterOk||event.filterOk())){
+						else if(ai.basic.chooseCard(event.ai1||event.ai)||forced){
+							if((ai.basic.chooseTarget(event.ai2)||forced)&&(!event.filterOk||event.filterOk())){
 								ui.click.ok();
 								event._aiexcludeclear=true;
 							}
@@ -13147,6 +13327,7 @@
 								if(shown.length>0) player.$give(shown,i[0]);
 								if(hidden.length>0) player.$giveAuto(hidden,i[0]);
 							}
+							break;
 						default:
 							event.finish();
 					}
@@ -14091,8 +14272,8 @@
 					"step 1"
 					if(event.result=='ai'){
 						game.check();
-						if(ai.basic.chooseCard(event.ai1)){
-							if(ai.basic.chooseTarget(event.ai2)&&(!event.filterOk||event.filterOk())){
+						if(ai.basic.chooseCard(event.ai1)||forced){
+							if((ai.basic.chooseTarget(event.ai2)||forced)&&(!event.filterOk||event.filterOk())){
 								ui.click.ok();
 								_status.event._aiexclude.length=0;
 							}
@@ -14249,7 +14430,7 @@
 							else if(event.prompt){
 								event.dialog=ui.create.dialog(event.prompt);
 								if(event.prompt2){
-									event.dialog.addText(event.prompt2,event.prompt2.length<=20||event.centerprompt2);
+									event.dialog.addText(event.prompt2,Boolean(event.prompt2.length<=20||event.centerprompt2));
 								}
 							}
 						}
@@ -15623,7 +15804,7 @@
 						player.markSkill(roundname);
 					}
 					var name=event.skill;
-					var players=player.getSkills(null,false,false);
+					var players=player.getSkills(false,false,false);
 					var equips=player.getSkills('e');
 					var global=lib.skill.global.slice(0);
 					var logInfo={
@@ -15632,14 +15813,14 @@
 						event:_status.event,
 					};
 					if(info.sourceSkill){
-						logInfo.sourceSkill=name;
-						if(global.contains(name)){
+						logInfo.sourceSkill=info.sourceSkill;
+						if(global.contains(info.sourceSkill)){
 							logInfo.type='global';
 						}
-						else if(players.contains(name)){
+						else if(players.contains(info.sourceSkill)){
 							logInfo.type='player';
 						}
-						else if(equips.contains(name)){
+						else if(equips.contains(info.sourceSkill)){
 							logInfo.type='equip';
 						}
 					}
@@ -16026,14 +16207,18 @@
 							var owner=get.owner(i,'judge');
 							if(owner&&(owner!=player||get.position(i)!='h')){
 								var id=owner.playerid;
-								if(!map[id]) map[id]=[];
-								map[id].push(i);
+								if(!map[id]) map[id]=[[],[],[]];
+								map[id][0].push(i);
+								var position=get.position(i);
+								if(position=='h') map[id][1].push(i);
+								else map[id][2].push(i);
 							}
 							else if(!event.updatePile&&get.position(i)=='c') event.updatePile=true;
 						}
+						event.losing_map=map;
 						for(var i in map){
 							var owner=(_status.connectMode?lib.playerOL:game.playerMap)[i];
-							var next=owner.lose(map[i],ui.special).set('type','gain').set('forceDie',true).set('getlx',false);
+							var next=owner.lose(map[i][0],ui.special).set('type','gain').set('forceDie',true).set('getlx',false);
 							if(event.visible==true) next.visible=true;
 							event.relatedLose=next;
 						}
@@ -16149,22 +16334,20 @@
 							game.resume();
 						},get.delayx(gain2t,gain2t));
 					}
-					else if(event.source&&(event.animate=='give'||event.animate=='giveAuto')){
-						var evtmap=event.relatedLose;
+					else if(event.animate=='give'||event.animate=='giveAuto'){
+						var evtmap=event.losing_map;
 						if(event.animate=='give'){
-							if(evtmap&&evtmap.cards&&evtmap.cards.length>0) event.source.$give(evtmap.cards,player);
-							else event.source.$give(cards,player);
+							for(var i in evtmap){
+								var source=(_status.connectMode?lib.playerOL:game.playerMap)[i];
+								source.$give(evtmap[i][0],player)
+							}
 						}
 						else{
-							var givemap={hs:[],ots:[]};
-							if(evtmap&&evtmap.hs&&evtmap.cards){
-								for(var i=0;i<cards.length;i++){
-									if(evtmap.hs.contains(cards[i])) givemap.hs.push(cards[i]);
-									else if(evtmap.cards.contains(cards[i])) givemap.ots.push(cards[i]);
-								}
+							for(var i in evtmap){
+								var source=(_status.connectMode?lib.playerOL:game.playerMap)[i];
+								if(evtmap[i][1].length) source.$giveAuto(evtmap[i][1],player);
+								if(evtmap[i][2].length) source.$give(evtmap[i][2],player);
 							}
-							if(givemap.hs.length) event.source.$giveAuto(givemap.hs,player);
-							if(givemap.ots.length) event.source.$give(givemap.ots,player);
 						}
 						game.pause();
 						setTimeout(function(){
@@ -16176,6 +16359,19 @@
 							broadcast();
 							game.resume();
 						},get.delayx(500,500));
+					}
+					else if(typeof event.animate=='function'){
+						var time=event.animate(event);
+						game.pause();
+						setTimeout(function(){
+							addv();
+							player.node.handcards1.insertBefore(frag1,player.node.handcards1.firstChild);
+							player.node.handcards2.insertBefore(frag2,player.node.handcards2.firstChild);
+							player.update();
+							if(player==game.me) ui.updatehl();
+							broadcast();
+							game.resume();
+						},get.delayx(time,time));
 					}
 					else{
 						addv();
@@ -16200,16 +16396,20 @@
 						var map={};
 						for(var i of cards){
 							var owner=get.owner(i,'judge');
-							if(owner&&get.position(i)!='x'){
+							if(owner&&(owner!=player||get.position(i)!='x')){
 								var id=owner.playerid;
-								if(!map[id]) map[id]=[];
-								map[id].push(i);
+								if(!map[id]) map[id]=[[],[],[]];
+								map[id][0].push(i);
+								var position=get.position(i);
+								if(position=='h') map[id][1].push(i);
+								else map[id][2].push(i);
 							}
 							else if(!event.updatePile&&get.position(i)=='c') event.updatePile=true;
 						}
+						event.losing_map=map;
 						for(var i in map){
 							var owner=(_status.connectMode?lib.playerOL:game.playerMap)[i];
-							var next=owner.lose(map[i],ui.special).set('type','loseToExpansion').set('forceDie',true).set('getlx',false);
+							var next=owner.lose(map[i][0],ui.special).set('type','loseToExpansion').set('forceDie',true).set('getlx',false);
 							if(event.visible==true) next.visible=true;
 							event.relatedLose=next;
 						}
@@ -16280,20 +16480,26 @@
 							game.resume();
 						},get.delayx(gain2t,gain2t));
 					}
-					else if(event.source&&(event.animate=='give'||event.animate=='giveAuto')){
-						if(event.animate=='give') event.source['$'+event.animate](cards,player,false);
+					else if(event.animate=='give'||event.animate=='giveAuto'){
+						var evtmap=event.losing_map;
+						if(event.animate=='give'){
+							for(var i in evtmap){
+								var source=(_status.connectMode?lib.playerOL:game.playerMap)[i];
+								source.$give(evtmap[i][0],player);
+								game.log(player,'将',get.cnNumber(evtmap[i][0]),'置于了武将牌上');
+							}
+						}
 						else{
-							var givemap={hs:[],ots:[]};
-							for(var i=0;i<cards.length;i++){
-								givemap[event.relatedLose&&event.relatedLose.hs&&event.relatedLose.hs.contains(cards[i])?'hs':'ots'].push(cards[i]);
-							}
-							if(givemap.hs.length){
-								event.source.$giveAuto(givemap.hs,player,false);
-								game.log(player,'将',get.cnNumber(givemap.hs.length),'张牌置于了武将牌上');
-							}
-							if(givemap.ots.length){
-								event.source.$give(givemap.ots,player,false);
-								game.log(player,'将',givemap.ots,'置于了武将牌上');
+							for(var i in evtmap){
+								var source=(_status.connectMode?lib.playerOL:game.playerMap)[i];
+								if(evtmap[i][1].length){
+									source.$giveAuto(evtmap[i][1],player,false);
+									game.log(player,'将',get.cnNumber(evtmap[i][1].length),'张牌置于了武将牌上');
+								}
+								if(evtmap[i][2].length){
+									source.$give(evtmap[i][2],player,false);
+									game.log(player,'将',get.cnNumber(evtmap[i][2]),'置于了武将牌上');
+								}
 							}
 						}
 						game.pause();
@@ -16302,6 +16508,15 @@
 							for(var i of event.gaintag) player.markSkill(i);
 							game.resume();
 						},get.delayx(500,500));
+					}
+					else if(typeof event.animate=='function'){
+						var time=event.animate(event);
+						game.pause();
+						setTimeout(function(){
+							player.$addToExpansion(cards,null,event.gaintag);
+							for(var i of event.gaintag) player.markSkill(i);
+							game.resume();
+						},get.delayx(time,time));
 					}
 					else{
 						player.$addToExpansion(cards,null,event.gaintag);
@@ -16634,7 +16849,7 @@
 						}
 					}
 					"step 5"
-					if(player.hp<=0&&player.isAlive()){
+					if(player.hp<=0&&player.isAlive()&&!event.nodying){
 						game.delayx();
 						event._dyinged=true;
 						player.dying(event);
@@ -16719,7 +16934,7 @@
 					game.log(player,'失去了'+get.cnNumber(num)+'点体力')
 					player.changeHp(-num);
 					"step 1"
-					if(player.hp<=0){
+					if(player.hp<=0&&!event.nodying){
 						game.delayx();
 						event._dyinged=true;
 						player.dying(event);
@@ -16807,7 +17022,7 @@
 					game.log(player,'濒死');
 					"step 1"
 					delete event.filterStop;
-					if(player.hp>0){
+					if(player.hp>0||event.nodying){
 						_status.dying.remove(player);
 						game.broadcast(function(list){
 							_status.dying=list;
@@ -16834,7 +17049,7 @@
 					game.broadcast(function(list){
 						_status.dying=list;
 					},_status.dying);
-					if(player.hp<=0&&!player.nodying) player.die(event.reason);
+					if(player.hp<=0&&!event.nodying&&!player.nodying) player.die(event.reason);
 				},
 				die:function(){
 					"step 0"
@@ -17381,6 +17596,21 @@
 			},
 			player:{
 				//新函数
+				chooseToDebate:function(){
+					var next=game.createEvent('chooseToDebate');
+					next.player=this;
+					next._args=[];
+					for(var i=0;i<arguments.length;i++){
+						if(get.itemtype(arguments[i])=='players'){
+							next.list=arguments[i].slice(0);
+						}
+						else{
+							next._args.push(arguments[i]);
+						}
+					}
+					next.setContent('chooseToDebate');
+					return next;
+				},
 				cooperationWith:function(target,type,reason){
 					var player=this;
 					if(!player.storage.cooperation) player.storage.cooperation=[];
@@ -17575,7 +17805,7 @@
 					next.player=this;
 					next.num=num;
 					next.toShow=toShow;
-					next._args=arguments;
+					next._args=Array.from(arguments);
 					next.setContent('showCharacter');
 					var evt=_status.event;
 					evt.next.remove(next);
@@ -17764,7 +17994,7 @@
 				hasUsableCard:function(name){
 					var player=this;
 					if(player.countCards('hs',name)) return true;
-					var skills=player.getSkills(true).concat(lib.skill.global);
+					var skills=player.getSkills('invisible').concat(lib.skill.global);
 					game.expandSkills(skills);
 					for(var i=0;i<skills.length;i++){
 						var ifo=get.info(skills[i]);
@@ -19315,6 +19545,7 @@
 						skills.add(i);
 					}
 					if(arg2) skills.addArray(this.hiddenSkills);
+					if(arg2===false||arg2=='invisible') skills.addArray(this.invisibleSkills);
 					if(arg3!==false) skills.addArray(es);
 					for(var i in this.forbiddenSkills){
 						skills.remove(i);
@@ -19853,7 +20084,7 @@
 								var ais=lib.skill[card].check||function(){return 0};
 								return ais();
 							}
-							var addi=(get.value(card)>=8&&get.type(card)!='equip')?-6:0;
+							var addi=(get.value(card)>=8&&get.type(card)!='equip')?-3:0;
 							if(card.name=='du') addi-=3;
 							var source=_status.event.source;
 							var player=_status.event.player;
@@ -19863,7 +20094,11 @@
 								return get.number(card)*(Boolean(event.small)?-1:1);
 							}
 							if(source&&source!=player){
-								if((get.attitude(player,source)>1)==Boolean(event.small)) return -getn(card)-get.value(card)/2+addi;
+								if(get.attitude(player,source)>1){
+									if(Boolean(event.small)) return getn(card)-get.value(card)/2+addi;
+									return -getn(card)-get.value(card)/2+addi;
+								}
+								if(Boolean(event.small)) return -getn(card)-get.value(card)/2+addi;
 								return getn(card)-get.value(card)/2+addi;
 							}
 							else{
@@ -21152,7 +21387,7 @@
 						return map;
 					};
 					next.getg=function(player){
-						if(this.getlx===false||player!=this.player) return [];
+						if(this.getlx===false||player!=this.player||!this.cards) return [];
 						return this.cards.slice(0);
 					}
 					next.gaintag=[];
@@ -21576,7 +21811,7 @@
 					if(reason&&reason.source) next.source=reason.source;
 					next.setContent('dying');
 					next.filterStop=function(){
-						if(this.player.hp>0){
+						if(this.player.hp>0||this.nodying){
 							delete this.filterStop;
 							return true;
 						}
@@ -22065,7 +22300,7 @@
 					}
 					if(info){
 						var player=this;
-						var players=player.getSkills(null,false,false);
+						var players=player.getSkills(false,false,false);
 						var equips=player.getSkills('e');
 						var global=lib.skill.global.slice(0);
 						var logInfo={
@@ -22074,14 +22309,14 @@
 							event:_status.event,
 						};
 						if(info.sourceSkill){
-							logInfo.sourceSkill=name;
-							if(global.contains(name)){
+							logInfo.sourceSkill=info.sourceSkill;
+							if(global.contains(info.sourceSkill)){
 								logInfo.type='global';
 							}
-							else if(players.contains(name)){
+							else if(players.contains(info.sourceSkill)){
 								logInfo.type='player';
 							}
-							else if(equips.contains(name)){
+							else if(equips.contains(info.sourceSkill)){
 								logInfo.type='equip';
 							}
 						}
@@ -22782,6 +23017,41 @@
 					this.popup(skill);
 					game.log(this,'获得了技能','#g【'+get.translation(skill)+'】');
 				},
+				addInvisibleSkill:function(skill){
+					if(Array.isArray(skill)){
+						for(var i=0;i<skill.length;i++){
+							this.addInvisibleSkill(skill[i]);
+						}
+					}
+					else{
+						if(this.invisibleSkills.contains(skill)) return;
+						var info=lib.skill[skill];
+						if(!info) return;
+						this.invisibleSkills.add(skill);
+						this.addSkillTrigger(skill);
+						if(this.awakenedSkills.contains(skill)){
+							this.awakenSkill(skill);
+							return;
+						}
+					}
+				},
+				removeInvisibleSkill:function(skill){
+					if(!skill) return;
+					if(Array.isArray(skill)){
+						for(var i=0;i<skill.length;i++){
+							this.removeSkill(skill[i]);
+						}
+					}
+					else{
+						var info=lib.skill[skill];
+						if(info&&info.fixed&&arguments[1]!==true) return skill;
+						game.broadcastAll(function(player,skill){
+							player.invisibleSkills.remove(skill);
+						},this,skill);
+						if(!player.hasSkill(skill,true)) player.removeSkill(skill);
+					}
+					return skill;
+				},
 				addSkill:function(skill,checkConflict,nobroadcast,addToSkills){
 					if(Array.isArray(skill)){
 						for(var i=0;i<skill.length;i++){
@@ -23099,6 +23369,7 @@
 						game.broadcastAll(function(player,skill){
 							player.skills.remove(skill);
 							player.hiddenSkills.remove(skill);
+							player.invisibleSkills.remove(skill);
 							delete player.tempSkills[skill];
 							for(var i in player.additionalSkills){
 								player.additionalSkills[i].remove(skill);
@@ -23998,7 +24269,7 @@
 				},
 				hasWuxie:function(){
 					if(this.countCards('hs','wuxie')) return true;
-					var skills=this.getSkills(true).concat(lib.skill.global);
+					var skills=this.getSkills('invisible').concat(lib.skill.global);
 					game.expandSkills(skills);
 					for(var i=0;i<skills.length;i++){
 						var ifo=get.info(skills[i]);
@@ -24021,13 +24292,13 @@
 					if(this.countCards('hs','hufu')) return true;
 					if(!noauto&&this.countCards('hs','yuchanqian')) return true;
 					if(this.hasSkillTag('respondSha',true,respond?'respond':'use',true)) return true;
-					return false;
+					return this.hasUsableCard('sha');
 				},
 				hasShan:function(){
 					if(this.countCards('hs','shan')) return true;
 					if(this.countCards('hs','hufu')) return true;
 					if(this.hasSkillTag('respondShan',true,null,true)) return true;
-					return false;
+					return this.hasUsableCard('shan');
 				},
 				mayHaveShan:function(){
 					return this.hasShan();
@@ -25592,8 +25863,11 @@
 					else this.gaintag.add(gaintag);
 					var str='';
 					for(var gi=0;gi<this.gaintag.length;gi++){
-						str+=get.translation(this.gaintag[gi]);
-						if(gi<this.gaintag.length-1) str+=' ';
+						var translate=get.translation(this.gaintag[gi]);
+						if(translate!='invisible'){
+							str+=translate;
+							if(gi<this.gaintag.length-1) str+=' ';
+						}
 					}
 					this.node.gaintag.innerHTML=str;
 				},
@@ -26241,7 +26515,7 @@
 					delete this._skillChoice;
 				},
 				getParent:function(level,forced){
-					var parent;
+					var parent,historys=[];
 					if(this._modparent&&game.online){
 						parent=this._modparent;
 					}
@@ -26260,10 +26534,12 @@
 						}
 					}
 					else if(typeof level=='string'){
-						for(var i=0;i<20;i++){
+						while(true){
 							if(!parent) return toreturn;
+							historys.push(parent);
 							if(parent.name==level) return parent;
 							parent=parent.parent;
+							if(historys.contains(parent)) return toreturn;
 						}
 						if(!parent) return toreturn;
 					}
@@ -26357,7 +26633,7 @@
 							else this.filterOk=info.filterOk;
 							if(info.selectCard!=undefined) this.selectCard=info.selectCard;
 							if(info.position!=undefined) this.position=info.position;
-							if(info.forced!=undefined) this.forced=info.forced;
+							//if(info.forced!=undefined) this.forced=info.forced;
 							if(info.complexSelect!=undefined) this.complexSelect=info.complexSelect;
 							if(info.complexCard!=undefined) this.complexCard=info.complexCard;
 							if(info.complexTarget!=undefined) this.complexTarget=info.complexTarget;
@@ -26394,7 +26670,7 @@
 							else this.filterOk=info.filterOk;
 							if(info.selectCard!=undefined) this.selectCard=info.selectCard;
 							if(info.position!=undefined) this.position=info.position;
-							if(info.forced!=undefined) this.forced=info.forced;
+							//if(info.forced!=undefined) this.forced=info.forced;
 							if(info.complexSelect!=undefined) this.complexSelect=info.complexSelect;
 							if(info.complexCard!=undefined) this.complexCard=info.complexCard;
 							if(info.complexTarget!=undefined) this.complexTarget=info.complexTarget;
@@ -26409,7 +26685,7 @@
 							this.filterCard=info.filterCard?get.filter(info.filterCard):undefined;
 							this.selectCard=info.selectCard;
 							this.position=info.position;
-							this.forced=info.forced;
+							//this.forced=info.forced;
 							this.complexSelect=info.complexSelect;
 							this.complexCard=info.complexCard;
 							this.complexTarget=info.complexTarget;
@@ -26630,7 +26906,7 @@
 						}
 						if(lib.config.compatiblemode){
 							(function(){
-								var skills=player.getSkills(true).concat(lib.skill.global);
+								var skills=player.getSkills('invisible').concat(lib.skill.global);
 								game.expandSkills(skills);
 								for(var i=0;i<skills.length;i++){
 									var info=get.info(skills[i]);
@@ -27182,7 +27458,7 @@
 						}
 					}
 				}
-				var fullskills=game.expandSkills(player.getSkills().concat(lib.skill.global));
+				var fullskills=game.expandSkills(player.getSkills(false).concat(lib.skill.global));
 				var info=get.info(skill);
 				if((info.noHidden||get.mode()!='guozhan')&&!fullskills.contains(skill)){
 					return false;
@@ -28731,7 +29007,8 @@
 					}
 					"step 2"
 					if(result.bool){
-						if(trigger.player.hp<=0&&!trigger.player.nodying&&trigger.player.isAlive()&&!trigger.player.isOut()&&!trigger.player.removed) event.goto(0);
+						var player=trigger.player;
+						if(player.hp<=0&&!trigger.nodying&&!player.nodying&&player.isAlive()&&!player.isOut()&&!player.removed) event.goto(0);
 						else trigger.untrigger();
 					}
 					else{
@@ -31045,6 +31322,8 @@
 					zip.file(i,data[i]);
 					filelist.push(i);
 				}
+				game.print(filelist);
+				game.print(filelist2);
 				if(exportext){
 					if(pkg){
 						filelist.remove('extension.js');
@@ -32751,21 +33030,43 @@
 			}
 		},
 		exit:function(){
-			if(lib.device=='ios'){
-				game.saveConfig('mode');
-				if(_status){
-					if(_status.reloading) return;
-					_status.reloading=true;
+			//安卓 / ios
+			if(lib.device) {
+				if(lib.device=='ios'){
+					game.saveConfig('mode');
+					if(_status){
+						if(_status.reloading)return;
+						_status.reloading=true;
+					}
+					if(_status.video&&!_status.replayvideo) {
+						localStorage.removeItem(lib.configprefix + 'playbackmode');
+					}
+					window.location.reload();
 				}
-				if(_status.video&&!_status.replayvideo){
-					localStorage.removeItem(lib.configprefix+'playbackmode');
+				else{
+					if(navigator.app&&navigator.app.exitApp){
+						navigator.app.exitApp();
+					}
 				}
-				window.location.reload();
 			}
-			else{
-				if(navigator.app&&navigator.app.exitApp){
-					navigator.app.exitApp();
+			//electron
+			else if(typeof process=='function'){
+				var versions=window.process.versions;
+				var electronVersion=parseFloat(versions.electron);
+				var remote;
+				if(electronVersion>=14){
+					remote=require('@electron/remote');
+				}else{
+					remote=require('electron').remote;
 				}
+				var thisWindow=remote.getCurrentWindow();
+				thisWindow.destroy();
+				window.process.exit();
+			}
+			//网页版
+			else{
+				window.onbeforeunload = null;
+				window.close();
 			}
 		},
 		open:function(url){
@@ -34618,6 +34919,18 @@
 				game.loop();
 			}
 		},
+		delaye:function(){
+			var next=game.createEvent('delay',false);
+			next.setContent('delay');
+			next._args=Array.from(arguments);
+			return next;
+		},
+		delayex:function(){
+			var next=game.createEvent('delayx',false);
+			next.setContent('delay');
+			next._args=Array.from(arguments);
+			return next;
+		},
 		delay:function(time,time2){
 			if(_status.paused) return;
 			game.pause();
@@ -34913,7 +35226,7 @@
 						skills2=player.getSkills(false,true,false);
 					}
 					else{
-						skills2=player.getSkills(true,true,false);
+						skills2=player.getSkills('invisible',true,false);
 					}
 					skills2=game.filterSkills(skills2.concat(lib.skill.global),player,player.getSkills('e').concat(lib.skill.global));
 					event._skillChoice=[];
@@ -34926,7 +35239,7 @@
 						else if(info.enable=='phaseUse') enable=(event.type=='phase');
 						else if(typeof info.enable=='string') enable=(info.enable==event.name);
 						if(enable){
-							if(!game.expandSkills(player.getSkills().concat(lib.skill.global)).contains(skills2[i])&&(info.noHidden||get.mode()!='guozhan'||player.hasSkillTag('nomingzhi',false,null,true))) enable=false;
+							if(!game.expandSkills(player.getSkills(false).concat(lib.skill.global)).contains(skills2[i])&&(info.noHidden||get.mode()!='guozhan'||player.hasSkillTag('nomingzhi',false,null,true))) enable=false;
 							if(info.filter&&!info.filter(event,player)) enable=false;
 							if(info.viewAs&&typeof info.viewAs!='function'&&event.filterCard&&!event.filterCard(info.viewAs,player,event)) enable=false;
 							if(info.viewAs&&typeof info.viewAs!='function'&&info.viewAsFilter&&info.viewAsFilter(player)==false) enable=false;
@@ -34952,7 +35265,7 @@
 					}
 				}
 				var equipskills=[];
-				var ownedskills=player.getSkills(true,false);
+				var ownedskills=player.getSkills('invisible',false);
 				game.expandSkills(ownedskills);
 				for(var i=0;i<skills.length;i++){
 					if(!ownedskills.contains(skills[i])){
@@ -41021,31 +41334,37 @@
 								for(var i in dash2.content.image){
 									extension[i]=dash2.content.image[i];
 								}
-								if(exportext){
-									var proexport=function(){
-										game.importExtension(extension,null,page.currentExtension,{
-											intro:introExtLine.querySelector('input').value||'',
-											author:authorExtLine.querySelector('input').value||'',
-											netdisk:diskExtLine.querySelector('input').value||'',
-											forum:forumExtLine.querySelector('input').value||'',
-											version:versionExtLine.querySelector('input').value||'',
-										});
-									};
-									if(game.getFileList){
-										game.getFileList('extension/'+page.currentExtension,function(folders,files){
-											extension._filelist=files;
+								game.readFile('LICENSE',function(data){
+									extension['LICENSE']=data;
+									game.writeFile(data,'extension/'+page.currentExtension,'LICENSE',function(){})
+									if(exportext){
+										var proexport=function(){
+											game.importExtension(extension,null,page.currentExtension,{
+												intro:introExtLine.querySelector('input').value||'',
+												author:authorExtLine.querySelector('input').value||'',
+												netdisk:diskExtLine.querySelector('input').value||'',
+												forum:forumExtLine.querySelector('input').value||'',
+												version:versionExtLine.querySelector('input').value||'',
+											});
+										};
+										if(game.getFileList){
+											game.getFileList('extension/'+page.currentExtension,function(folders,files){
+												extension._filelist=files;
+												proexport();
+											});
+										}
+										else{
 											proexport();
-										});
+										}
 									}
 									else{
-										proexport();
+										game.importExtension(extension,function(){
+											exportExtLine.style.display='';
+										});
 									}
-								}
-								else{
-									game.importExtension(extension,function(){
-										exportExtLine.style.display='';
-									});
-								}
+								},function(){
+									alert('许可证文件丢失，无法导出扩展');
+								});
 							},500);
 						};
 						var buttonConfirm=document.createElement('button');
@@ -42946,6 +43265,9 @@
 						importExtension.style.width='100%';
 						importExtension.style.textAlign='left';
 						ui.create.div('','<input type="file" accept="application/zip" style="width:153px"><button>确定</button>',importExtension);
+						ui.create.div('.config','修改下载地址',page,function(){
+							alert('您可以在“设置→通用→获取扩展地址”中，修改下载扩展时所采用的地址。')
+						})
 
 						var extensionURL;
 						var source=lib.config.extension_sources,index=lib.config.extension_source;
@@ -46305,7 +46627,15 @@
 					for(var i=0;i<hs.length;i++){
 						hs[i].goto(ui.special);
 					}
-					hs.sort(function(b,a){
+					if(game.me.hasSkillTag('sortCardByNum')){
+						var getn=function(card){
+							var num=get.number(card,game.me);
+							if(num<3) return 13+num;
+							return num;
+						}
+						hs.sort((a,b)=>(getn(b)-getn(a)));
+					}
+					else hs.sort(function(b,a){
 						if(a.name!=b.name) return lib.sort.card(a.name,b.name);
 						else if(a.suit!=b.suit) return lib.suit.indexOf(a)-lib.suit.indexOf(b);
 						else return a.number-b.number;
@@ -46552,6 +46882,14 @@
 						node.firstChild.innerHTML='正在测试';
 						node.removeEventListener('click',ui.click.resume);
 					},500);
+				}
+				if(!localStorage.getItem('gplv3_alerted')){
+					if(confirm('无名杀是一款基于GPLv3协议的开源软件！\n你可以在遵守GPLv3协议的基础上任意使用，修改并转发《无名杀》，以及所有基于《无名杀》开发的拓展。\n点击“确定”即代表您认可并接受GPLv3协议↓️\nhttps://www.gnu.org/licenses/gpl-3.0.html')){
+						localStorage.setItem('gplv3_alerted',true);
+					}
+					else{
+						game.exit();
+					}
 				}
 			},
 			system:function(str,func,right,before){
@@ -46958,6 +47296,7 @@
 				node.phaseNumber=0;
 				node.skipList=[];
 				node.skills=[];
+				node.invisibleSkills=[];
 				node.initedSkills=[];
 				node.additionalSkills={};
 				node.disabledSkills={};
@@ -50626,7 +50965,7 @@
 				}
 			},
 			auto:function(){
-				if(ui.auto.classList.contains('hidden')&&arguments[0]!=='forced') return;
+				if(!ui||!ui.auto||ui.auto.classList.contains('hidden')&&arguments[0]!=='forced') return;
 				if(_status.paused2) return;
 				ui.click.shortcut(false);
 				if(!_status.auto){
@@ -50700,7 +51039,7 @@
 				}
 			},
 			pause:function(){
-				if(_status.paused2||_status.pausing||_status.nopause) return;
+				if(_status.paused2||_status.pausing||_status.nopause||!ui.pause) return;
 				if(!_status.video){
 					if(ui.pause.classList.contains('hidden')) return;
 					if(!_status.gameStarted) return;
@@ -51472,6 +51811,29 @@
 		},
 	};
 	var get={
+		skillCategoriesOf:function(skill,player){
+			var list=[],info=get.info(skill);
+			if(!info) return list;
+			if(get.is.locked(skill,player)) list.add('锁定技');
+			if(info.zhuSkill) list.add('主公技');
+			if(info.limited) list.add('限定技');
+			if(info.juexingji||info.limited) list.add('觉醒技');
+			if(info.limited) list.add('限定技');
+			if(info.zhuanhuanji) list.add('转换技');
+			if(info.hiddenSkill) list.add('隐匿技');
+			if(info.clanSkill) list.add('宗族技');
+			if(info.groupSkill) list.add('势力技');
+			if(info.dutySkill) list.add('使命技');
+			if(info.chargeSkill) list.add('蓄力技');
+			if(info.zhenfa) list.add('阵法技');
+			if(info.mainSkill) list.add('主将技');
+			if(info.viceSkill) list.add('副将技');
+			if(info.lordSkill) list.add('君主技');
+			if(info.chargingSkill) list.add('蓄能技');
+			if(info.charlotte) list.add('Charlotte');
+			if(info.categories) list.addArray(info.categories(skill,player));
+			return list;
+		},
 		numOf:function(obj,item){
 			var num=0;
 			for(var i=0;i<obj.length;i++){
@@ -52422,6 +52784,7 @@
 				skills[i]={
 					skills:lib.playerOL[i].skills,
 					hiddenSkills:lib.playerOL[i].hiddenSkills,
+					invisibleSkills:lib.playerOL[i].invisibleSkills,
 					additionalSkills:lib.playerOL[i].additionalSkills,
 					disabledSkills:lib.playerOL[i].disabledSkills,
 					tempSkills:lib.playerOL[i].tempSkills,
@@ -52761,15 +53124,16 @@
 			}
 			return func;
 		},
-		eventInfoOL:function(item,level){
+		eventInfoOL:function(item,level,nomore){
 			if(Object.prototype.toString.call(item)=='[object Object]'){
 				var item2={};
 				for(var i in item){
 					if(i=='_trigger'){
-						if(level!==false) item2[i]=get.eventInfoOL(item[i],false);
+						if(nomore===false) continue;
+						else item2[i]=get.eventInfoOL(item[i],null,false);
 					}
 					else if(lib.element.event[i]||i=='content'||get.itemtype(item[i])=='event') continue;
-					else item2[i]=get.stringifiedResult(item[i],level-1);
+					else item2[i]=get.stringifiedResult(item[i],null,false);
 				}
 				return '_noname_event:'+JSON.stringify(item2);
 			}
@@ -52791,7 +53155,7 @@
 			}
 			return evt||item;
 		},
-		stringifiedResult:function(item,level){
+		stringifiedResult:function(item,level,nomore){
 			if(!item) return item;
 			if(typeof item=='function'){
 				return get.funcInfoOL(item);
@@ -52802,7 +53166,9 @@
 					case 'cards': return get.cardsInfoOL(item);
 					case 'player': return get.playerInfoOL(item);
 					case 'players': return get.playersInfoOL(item);
-					case 'event': return get.eventInfoOL(item);
+					case 'event': 
+						if(nomore===false) return '';
+						return get.eventInfoOL(item);
 					default:
 					if(typeof level!='number'){
 						level=8;
@@ -52813,7 +53179,7 @@
 						}
 						var item2=[];
 						for(var i=0;i<item.length;i++){
-							item2.push(get.stringifiedResult(item[i],level-1));
+							item2.push(get.stringifiedResult(item[i],level-1,nomore));
 						}
 						return item2;
 					}
@@ -52823,7 +53189,7 @@
 						}
 						var item2={};
 						for(var i in item){
-							item2[i]=get.stringifiedResult(item[i],level-1);
+							item2[i]=get.stringifiedResult(item[i],level-1,nomore);
 						}
 						return item2;
 					}
@@ -55825,7 +56191,7 @@
 				name='icedamage';
 			}
 			var eff=get.effect(target,{name:name},player,viewer);
-			if(eff>0&&target.hujia>0) return 0;
+			if(eff>0&&target.hujia>0) return eff/1.3;
 			return eff;
 		},
 		recoverEffect:function(target,player,viewer){
@@ -55885,6 +56251,9 @@
 				var iwhile=100;
 				while(iwhile--){
 					range=get.select(event.selectButton);
+					if(ui.selected.buttons.length>=range[0]){
+						ok=true;
+					}
 					if(range[1]<=-1){
 						j=0;
 						for(i=0;i<ui.selected.buttons.length;i++){

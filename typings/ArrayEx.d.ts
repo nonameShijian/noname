@@ -6,7 +6,7 @@ declare interface Array<T> {
      * 是否包含这一元素
      * @param item 
      */
-    contains(item): boolean;
+    contains(item: T): boolean;
     /**
      * 添加任意元素进数组中
      * @param args 

@@ -455,7 +455,7 @@ interface ExCardData {
 type CardBaseNumber = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13;
 
 /** 卡牌花色 */
-type CardBaseSuit = 'heart' | 'diamond' | 'club' | 'spade';
+type CardBaseSuit = 'heart' | 'diamond' | 'club' | 'spade' | 'none';
 
 /**
  * 卡牌基础配置信息(记录与牌堆list中基本结构)：
@@ -474,7 +474,7 @@ type CardBaseSuit = 'heart' | 'diamond' | 'club' | 'spade';
  * 
  * [suit花色, number数字, name卡牌名, nature伤害类型，......[tag列表]]
  */
-type CardBaseData = [string, CardBaseNumber, string, string];
+type CardBaseData = [CardBaseSuit, CardBaseNumber, string, string, any[] | undefined];
 
 /**
  * 联网模式下卡牌基础配置信息

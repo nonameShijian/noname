@@ -14,9 +14,17 @@ declare namespace Lib.element {
      */
     interface Content {
         /**
+         * 【v1.9.121】议事 (议笨)
+         */
+        chooseToDebate: ContentFuncByAll;
+        /**
          * 无处理方法，直接触发事件名
          */
         emptyEvent: ContentFuncByAll;
+        /**
+         * 【v1.9.121】游戏暂停也有evt了
+         */
+        delay: ContentFuncByAll;
         /**
          * 【v1.9.120.1】协力
          */

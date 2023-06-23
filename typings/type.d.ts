@@ -1,5 +1,4 @@
 //这里主要是声明各种游戏内常用的对象的结构
-
 type listeners = {
     [key in keyof HTMLElementEventMap]?: EventListener;
 };
@@ -125,3 +124,18 @@ type SkillAnimateType = (name:string,popname:string,checkShow) => void;
  * @param popname
  */
 type CardAnimateType = (this: Player, card: Card, name:string, nature:string, popname:boolean) => void;
+
+// 将字符串数组的所有元素作为类型
+type StrArrToUnion<T extends string[]> = T extends Array<infer E> ? E : never;
+type nature = StrArrToUnion<["fire", "thunder", "kami", "ice", "stab", "poison"]>;
+
+/*
+// 0-N的数字
+type GetIntegerUnion<N extends number, R extends number = 0, Arr extends any[] = []>
+    = Arr['length'] extends N
+    ? R
+    : GetIntegerUnion<N, R | Arr['length'], [any, ...Arr]>
+*/
+
+type damageArgs = Card[] | Card | number | Player | { name: string } |
+    'nocard' | 'nosource' | 'notrigger' | nature;

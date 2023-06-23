@@ -20,6 +20,8 @@ interface progress extends HTMLDivElement {
 	getProgressMax: () => number;
 	/** 修改下载文件总数 */
 	setProgressMax: (max: number) => void;
+	/** 通过数组自动解析文件名 */
+	autoSetFileNameFromArray: (fileNameList: string[]) => void;
 }
 
 interface notLogin {
@@ -81,21 +83,45 @@ declare interface LibConfigData {
 	 * 更新地址说明
 	 */
 	"extension_在线更新_update_link_explain": string;
+	/**
+	 * 是否覆盖游戏的更新按钮
+	 */
+	"extension_在线更新_rewriteUpdateButton": boolean;
+	/**
+	 * 请求最大并发数
+	 */
+	"extension_在线更新_maxFetchNum": number;
 }
+
+type AsyncFunction<A, O> = (...args: A) => Promise<O>;
 
 declare interface Lib {
 	updateURLS: {
-		coding: "https://nakamurayuri.coding.net/p/noname/d/noname/git/raw",
-		fastgit: "https://raw.fastgit.org/libccy/noname",
+		coding: "https://ghproxy.com/https://raw.githubusercontent.com/libccy/noname",
+		fastgit: "https://raw.fgit.ml/libccy/noname",
 		github: "https://raw.githubusercontent.com/libccy/noname",
 		/** 感谢寰宇星城 */
-		xuanwu: "https://kuangthree.coding.net/p/nonamexwjh/d/nonamexwjh/git/raw",
+		// xuanwu: "https://kuangthree.coding.net/p/nonamexwjh/d/nonamexwjh/git/raw",
 		/** 感谢Show-K */
 		URC: "https://unitedrhythmized.club/libccy/noname",
 	},
+	/**
+	 * 游戏更新完成后覆盖文件(于v1.6添加)
+	 * ```
+	 * lib.updateReady.push({ 'extension/在线更新/extension.js': 'a.js' });
+	 * ```
+	 */
+	updateReady: { [key: string]: string }[];
+	/**
+	 * 游戏素材更新完成后覆盖文件(于v1.6添加)
+	 * ```
+	 * lib.updateReady.push({ 'extension/在线更新/extension.js': 'a.js' });
+	 * ```
+	 */
+	updateAssetReady: { [key: string]: string }[];
 }
 
-declare interface Game {
+declare interface Game { 
 	/**
 	 * 请求错误达到5次提示更换更新源
 	 */
@@ -113,11 +139,11 @@ declare interface Game {
 	 */
 	UpdatingForAsset?: boolean;
 	/**
-	 * 游戏更新完毕
+	 * 游戏是否更新完毕
 	 */
 	unwantedToUpdate?: boolean;
 	/**
-	 * 素材已是最新
+	 * 素材是否更新完毕
 	 */
 	unwantedToUpdateAsset?: boolean;
 	/**
@@ -127,7 +153,6 @@ declare interface Game {
 		coding: 'Coding',
 		github: 'GitHub',
 		fastgit: 'GitHub镜像',
-		xuanwu: '玄武镜像',
 		URC: 'URC'
 	}
 	 */
@@ -135,7 +160,7 @@ declare interface Game {
 		coding: 'Coding',
 		github: 'GitHub',
 		fastgit: 'GitHub镜像',
-		xuanwu: '玄武镜像',
+		// xuanwu: '玄武镜像',
 		URC: 'URC'
 	}) => never | 
 		Promise<{ 
@@ -151,23 +176,26 @@ declare interface Game {
 
 	/**
 	 * 将current分别显示在无名杀控制台中，比game.shijianDownload做出了更细致的错误划分
+	 * 
 	 * onsuccess中的bool代表当前文件是否下载了（即是否是404）
+	 * 
 	 * @deprecated 在v1.4及以后的在线更新扩展中弃用此函数
 	 */
 	shijianDownloadFile: (current: string, onsuccess: (current: string, bool?: boolean) => void, onerror: (current: string) => void, onprogress?: (current: string, loaded: number, total: number) => void) => void;
 
 	/**
 	 * 根据字符串数组下载文件
-	 * @param [onprogress] 下载一个文件的进度(手机端不触发)
+	 * 
+	 * v1.6: 改为多线程下载，保证同时请求下载多个文件
 	 */
-	shijianMultiDownload: (list: string[], onsuccess: VoidFunction, onerror: (e: FileTransferError | Error, message?: string) => void, onfinish: VoidFunction, onprogress?: (current: string, loaded: number, total: number) => void) => void;
+	shijianMultiDownload: (list: string[], onsuccess: (fileNameList: string[]) => void, onerror: (e: FileTransferError | Error, message?: string) => void, onfinish: VoidFunction, onprogress?: (current: string, loaded: number, total: number) => void) => void;
 
 	/**
-	 * 显示下载进度
+	 * 显示一个进度条，后续需要开发者手动控制
 	 * @param title 标题
 	 * @param max 文件总数
-	 * @param [fileName] 当前下载的文件名
-	 * @param [value] 当前下载进度
+	 * @param fileName 当前下载的文件名
+	 * @param value 当前下载进度
 	 */
 	shijianCreateProgress: (title: string, max: number, fileName?: string, value?: number) => progress;
 
@@ -201,7 +229,7 @@ declare interface Game {
 	shijianHasLocalNotification: () => boolean;
 
 	/**
-	 * 在线更新扩展安装后，禁用此函数
+	 * 在线更新扩展安装后，禁用此函数，使此函数无效果
 	 */
 	checkForUpdate: VoidFunction;
 }

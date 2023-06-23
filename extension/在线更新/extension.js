@@ -14,7 +14,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 	 * @param { fetchOptions } options 配置
 	 * @returns { Promise<Response> }
 	 */
-	function myFetch(url, options = { timeout: typeof game.getExtensionConfig('在线更新', 'timeout') == 'number' ? game.getExtensionConfig('在线更新', 'timeout') : 3000 }) {
+	function myFetch(url, options = { timeout: typeof game.getExtensionConfig('在线更新', 'timeout') == 'number' ? game.getExtensionConfig('在线更新', 'timeout') : 5000 }) {
 		return new Promise((resolve, reject) => {
 			/** @type { AbortController | undefined } */
 			let myAbortController;
@@ -33,6 +33,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 			}
 
 			fetch(url, { signal }).then(response => {
+				if (response.redirected) {
+					console.warn(`${url}\n请求已被重定向为:\n${response.url}`);
+				}
 				if (!response.ok) {
 					return reject(response);
 				}
@@ -113,6 +116,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 					github: 'GitHub',
 					fastgit: 'GitHub镜像',
 					// xuanwu: '玄武镜像'
+					URC: 'URC'
 				};
 				let url_in_updateURLS;
 				for (const updateURL in lib.updateURLS) {
@@ -155,84 +159,86 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 			window.removeEventListener('beforeunload', window.saveBrokenFile);
 		},
 		content: function (config, pack) {
-			// 替换无名杀自带的更新功能
-			// 取消复选框和扩展的绑定
-			const { checkForUpdate, checkForAssetUpdate } = this[4].code.config;
+			if (game.getExtensionConfig('在线更新', 'rewriteUpdateButton')) {
+				// 替换无名杀自带的更新功能
+				// 取消复选框和扩展的绑定
+				const { checkForUpdate, checkForAssetUpdate } = this[4].code.config;
 
-			/** @type HTMLButtonElement */
-			let updateButton;
-			/** @type HTMLButtonElement */
-			let assetUpdateButton;
+				/** @type HTMLButtonElement */
+				let updateButton;
+				/** @type HTMLButtonElement */
+				let assetUpdateButton;
 
-			const interval = setInterval(() => {
-				if (typeof game.download != 'function' || typeof game.writeFile != 'function') return clearInterval(interval);
-				if (!ui.menuContainer || !ui.menuContainer.firstElementChild) return;
-				const menu = ui.menuContainer.firstElementChild;
-				/** @type HTMLDivElement[] */
-				// @ts-ignore
-				const active = [...menu.querySelectorAll('.active')];
-				if (active.length < 2) return;
-				if (active[0].innerText != '其它' || active[1].innerText != '更新') return;
-				/** @type Element */
-				// @ts-ignore
-				const help = menu.querySelector('.menu-help');
-				const liArray = Array.from(help.querySelectorAll('li'));
-				if (!liArray.length) return;
-
-				try {
+				const interval = setInterval(() => {
+					if (typeof game.download != 'function' || typeof game.writeFile != 'function') return clearInterval(interval);
+					if (!ui.menuContainer || !ui.menuContainer.firstElementChild) return;
+					const menu = ui.menuContainer.firstElementChild;
+					/** @type HTMLDivElement[] */
 					// @ts-ignore
-					updateButton = liArray[0].childNodes[1].firstElementChild;
+					const active = [...menu.querySelectorAll('.active')];
+					if (active.length < 2) return;
+					if (active[0].innerText != '其它' || active[1].innerText != '更新') return;
+					/** @type Element */
 					// @ts-ignore
-					assetUpdateButton = liArray[1].childNodes[1].firstElementChild;
-				} catch (error) {
-					console.log("获取按钮异常：", {
-						error,
-						liArray,
-						updateButton,
-						assetUpdateButton
+					const help = menu.querySelector('.menu-help');
+					const liArray = Array.from(help.querySelectorAll('li'));
+					if (!liArray.length) return;
+
+					try {
+						// @ts-ignore
+						updateButton = liArray[0].childNodes[1].firstElementChild;
+						// @ts-ignore
+						assetUpdateButton = liArray[1].childNodes[1].firstElementChild;
+					} catch (error) {
+						console.log("获取按钮异常：", {
+							error,
+							liArray,
+							updateButton,
+							assetUpdateButton
+						});
+						clearInterval(interval);
+						return alert('【在线更新】扩展提示您：\r\n获取按钮异常,覆盖游戏更新操作失败');
+					}
+
+					if (
+						updateButton && updateButton.innerText == "检查游戏更新"
+						&&
+						assetUpdateButton && assetUpdateButton.innerText == "检查素材更新"
+					) {
+						updateButton.onclick = checkForUpdate.onclick.bind(updateButton);
+						assetUpdateButton.onclick = checkForAssetUpdate.onclick.bind(assetUpdateButton);
+					} else {
+						console.log("获取按钮异常：", {
+							liArray,
+							updateButton,
+							assetUpdateButton
+						});
+						clearInterval(interval);
+						return alert('【在线更新】扩展提示您：\r\n获取按钮异常,覆盖游戏更新操作失败');
+					}
+
+					// 插入一条修改说明
+					const ul = help.querySelector('ul');
+					/** @type HTMLUListElement  */
+					// @ts-ignore
+					const insertLi = ul.insertBefore(document.createElement('li'), ul.firstElementChild);
+					insertLi.innerHTML = "<span class='bluetext'>更新功能已由【在线更新】扩展覆盖</span></br>";
+					// a标签跳转到扩展界面
+					const jumpToExt = document.createElement('a');
+					jumpToExt.href = "javascript:void(0)";
+					jumpToExt.onclick = () => ui.click.extensionTab('在线更新');
+
+					HTMLDivElement.prototype.css.call(jumpToExt, {
+						color: 'white',
+						innerHTML: '点击跳转至扩展界面'
 					});
+
+					insertLi.appendChild(jumpToExt);
+
 					clearInterval(interval);
-					return alert('【在线更新】扩展提示您：\r\n获取按钮异常,覆盖游戏更新操作失败');
-				}
-
-				if (
-					updateButton && updateButton.innerText == "检查游戏更新"
-					&&
-					assetUpdateButton && assetUpdateButton.innerText == "检查素材更新"
-				) {
-					updateButton.onclick = checkForUpdate.onclick.bind(updateButton);
-					assetUpdateButton.onclick = checkForAssetUpdate.onclick.bind(assetUpdateButton);
-				} else {
-					console.log("获取按钮异常：", {
-						liArray,
-						updateButton,
-						assetUpdateButton
-					});
-					clearInterval(interval);
-					return alert('【在线更新】扩展提示您：\r\n获取按钮异常,覆盖游戏更新操作失败');
-				}
-
-				// 插入一条修改说明
-				const ul = help.querySelector('ul');
-				/** @type HTMLUListElement  */
-				// @ts-ignore
-				const insertLi = ul.insertBefore(document.createElement('li'), ul.firstElementChild);
-				insertLi.innerHTML = "<span class='bluetext'>更新功能已由【在线更新】扩展覆盖</span></br>";
-				// a标签跳转到扩展界面
-				const jumpToExt = document.createElement('a');
-				jumpToExt.href = "javascript:void(0)";
-				jumpToExt.onclick = () => ui.click.extensionTab('在线更新');
-
-				HTMLDivElement.prototype.css.call(jumpToExt, {
-					color: 'white',
-					innerHTML: '点击跳转至扩展界面'
-				});
-
-				insertLi.appendChild(jumpToExt);
-
-				clearInterval(interval);
-				console.log("【在线更新】扩展已修改更新界面");
-			}, 500);
+					console.log("【在线更新】扩展已修改更新界面");
+				}, 500);
+			}
 
 			// 重启前下载失败的文件名(去除重复的)
 			if (!Array.isArray(lib.config.extension_在线更新_brokenFile)) {
@@ -262,10 +268,10 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 						// 下载之前保留下载列表
 						brokenFileArr.forEach(v => lib.config.extension_在线更新_brokenFile.add(v));
 						game.saveConfigValue('extension_在线更新_brokenFile');
-						game.shijianMultiDownload(brokenFileArr, () => {
+						game.shijianMultiDownload(brokenFileArr, (fileNameList) => {
 							// 下载成功，更新进度
 							progress.setProgressValue(++index);
-							progress.setFileName(copyList[index]);
+							progress.autoSetFileNameFromArray(fileNameList);
 						}, (err, message) => {
 							// 下载失败
 							if (message == '用户未登录') {
@@ -398,11 +404,15 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 				}).catch(console.error);
 			}
 			
-			setInterval(() => {
-				if (game.getExtensionConfig('在线更新', 'auto_check_update')) checkUpdate();
-			}, 1000 * 60 * 10);
 			// 刚开启时候的网络请求不会成功
-			if (game.getExtensionConfig('在线更新', 'auto_check_update')) setTimeout(checkUpdate, 10000);
+			if (game.getExtensionConfig('在线更新', 'auto_check_update')) {
+				setTimeout(() => {
+					checkUpdate();
+					setInterval(() => {
+						if (game.getExtensionConfig('在线更新', 'auto_check_update')) checkUpdate();
+					}, 1000 * 60 * 10);
+				}, 10000);
+			}
 		},
 		precontent: function () {
 			// 添加两个更新地址
@@ -675,7 +685,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 								}, download);
 							}, download);
 						}, download);
-				} else {
+				} else if (typeof window.require == 'function'){
 					const fetch = myFetch(`${url}?date=${(new Date()).getTime()}`);
 
 					// if (typeof onprogress == 'function') {
@@ -763,33 +773,30 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 			};
 
 			game.shijianMultiDownload = (list, onsuccess, onerror, onfinish, onprogress) => {
+				// 不修改原数组
+				let list2 = list.slice(0);
+				// 正在并发下载的文件名数组
+				let list3 = [];
+				// 已经下载的数量
+				let length = 0;
+				// 最大并发量
+				let max = game.getExtensionConfig('在线更新', 'maxFetchNum') || 5;
 				/**
 				 * 下载文件，失败后300ms重新下载
 				 * @param { string } current 文件名 
 				 */
-				let reload = (current) => {
-					// game.print会导致游戏越来越卡
-					/*
-					let str1 = "正在下载：";
-					let current3 = current.replace(lib.updateURL, '');
-
-					if (current3.indexOf('theme') == 0) {
-						game.print(str1 + current3.slice(6));
-					} else if (current3.indexOf('image/skin') == 0) {
-						game.print(str1 + current3.slice(11));
-					} else {
-						game.print(str1 + current3.slice(current3.lastIndexOf('/') + 1));
-					}*/
-
+				let reload = current => {
 					game.shijianDownload(current, skipDownload => {
 						if (skipDownload === true) {
 							game.print(`跳过下载: ${current}`);
 							console.log(`跳过下载: ${current}`);
-						} /* else {
-							game.print(`下载成功: ${current}`);
+						} else {
+							// game.print(`下载成功: ${current}`);
 							console.log(`下载成功: ${current}`);
-						} */
-						onsuccess();
+						}
+						length++;
+						list3.remove(current);
+						onsuccess(list3);
 						//自调用
 						download();
 					}, (e, message) => {
@@ -799,23 +806,29 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 						if (message !== '用户未登录') {
 							setTimeout(() => reload(current), 300);
 						}
-					}, (loaded, total) => {
+					}/*, (loaded, total) => {
 						if (!game.getExtensionConfig('在线更新', 'logProgress')) return;
 						if (typeof onprogress == 'function') {
 							onprogress(current, loaded, total);
 						}
-					});
+					}*/);
 				};
-
-				// 不修改原数组
-				list = list.slice(0);
+				
 				let download = () => {
-					if (list.length) {
-						/** @type string 正在下载的文件名 */
-						// @ts-ignore
-						let current = list.shift();
-						reload(current);
-					} else {
+					if (length < list.length) {
+						let num_copy = list3.length;
+						for (let i = 1; i <= max - num_copy; i++) {
+							/** 正在下载的文件名 */
+							let current = list2.shift();
+							if (current) {
+								// console.log('正在下载:' + current + ` (${list.indexOf(current) + 1}/${list.length}) (${i}/${max - num_copy})`);
+								list3.push(current);
+								reload(current);
+							} else {
+								break;
+							}
+						}
+					} else if (!list3.length) {
 						onfinish();
 					}
 				};
@@ -836,7 +849,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 					zIndex: '10',
 					boxShadow: 'rgb(0 0 0 / 40 %) 0 0 0 1px, rgb(0 0 0 / 20 %) 0 3px 10px',
 					backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4))',
-					borderRadius: '8px'
+					borderRadius: '8px',
+					overflow: 'hidden scroll'
 				});
 
 				// 可拖动
@@ -885,13 +899,24 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 				progress.setAttribute('max', max);
 
 				parent.getTitle = () => caption.innerText;
-				parent.setTitle = (title) => caption.innerText = title;
+				parent.setTitle = title => caption.innerHTML = title;
 				parent.getFileName = () => file.innerText;
-				parent.setFileName = (name) => file.innerText = name;
+				parent.setFileName = name => file.innerHTML = name;
 				parent.getProgressValue = () => progress.value;
-				parent.setProgressValue = (value) => progress.value = index.innerText = value;
+				parent.setProgressValue = value => progress.value = index.innerHTML = value;
 				parent.getProgressMax = () => progress.max;
-				parent.setProgressMax = (max) => progress.max = maxSpan.innerText = max;
+				parent.setProgressMax = max => progress.max = maxSpan.innerHTML = max;
+				parent.autoSetFileNameFromArray = fileNameList => {
+					if (fileNameList.length > 2) {
+						parent.setFileName(fileNameList.slice(0, 2).concat(`......等${fileNameList.length - 2}个文件`).join('<br/>'));
+					} else if (fileNameList.length == 2) {
+						parent.setFileName(fileNameList.join('<br/>'));
+					} else if (fileNameList.length == 1) {
+						parent.setFileName(fileNameList[0]);
+					} else {
+						parent.setFileName('当前没有正在下载的文件');
+					}
+				};
 				return parent;
 			};
 
@@ -1106,6 +1131,114 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 				},
 				set(v) {}
 			});
+			
+			if (!Array.isArray(lib.updateReady)) lib.updateReady = [];
+			if (!Array.isArray(lib.updateAssetReady)) lib.updateAssetReady = [];
+
+			/**
+			 * @param { DirectoryEntry } [entry] 
+			 * @param { string } [name] 
+			 * @return { Promise<DirectoryEntry | FileEntry> }
+			 */
+			function getEntry(entry, name) {
+				return new Promise((resolve, reject) => {
+					if (!entry) {
+						window.resolveLocalFileSystemURL(lib.assetURL,
+							/** @param { DirectoryEntry } entry */
+							entry => resolve(entry)
+						);
+					} else if (typeof name == 'string') {
+						entry.getFile(name, { create: true }, e => resolve(e), e => reject(e));
+					} else {
+						resolve(entry);
+					}
+				});
+			}
+			/**
+			 * 
+			 * @param { FileEntry } entry 
+			 * @returns { Promise<ArrayBuffer> }
+			 */
+			function readFile(entry) {
+				return new Promise((resolve, reject) => {
+					entry.file(file => {
+						let fileReader = new FileReader();
+						// @ts-ignore
+						fileReader.onload = e => resolve(e.target.result);
+						fileReader.onerror = reject;
+						fileReader.readAsArrayBuffer(file);
+					}, reject);
+				});
+			}
+			/**
+			 * 
+			 * @param { FileEntry } entry 
+			 * @param { ArrayBuffer } arrayBuffer 
+			 * @returns 
+			 */
+			function writeToFile(entry, arrayBuffer) {
+				return new Promise((resolve, reject) => {
+					entry.createWriter(writer => {
+						writer.onwriteend = () => resolve(null);
+						writer.onerror = e => reject(e);
+						writer.write(arrayBuffer);
+					});
+				});
+			}
+
+			/**
+			 * @param {{ [key: string]: string; }[]} arr
+			 */
+			async function rewrite(arr) {
+				for (let obj of arr) {
+					for (const [from, to] of Object.entries(obj)) {
+						if (typeof window.require == 'function') {
+							const fs = require('fs').promises;
+							const buffer = await fs.readFile(__dirname + `/${from}`);
+							await fs.writeFile(__dirname + `/${to}`, buffer);
+						} else if (window.cordova) {
+							/** @type { DirectoryEntry } */
+							// @ts-ignore
+							const root = await getEntry();
+							/** @type { FileEntry } */
+							// @ts-ignore
+							const file = await getEntry(root, from);
+							/** @type { FileEntry } */
+							// @ts-ignore
+							const targetFile = await getEntry(root, to);
+							await writeToFile(targetFile, await readFile(file));
+						}
+					}
+				}
+			}
+
+			let unwantedToUpdate = false;
+			(window.Reflect || Object).defineProperty(game, 'unwantedToUpdate', {
+				enumerable: true,
+				get() {
+					return unwantedToUpdate;
+				},
+				set(newVal) {
+					unwantedToUpdate = newVal;
+					if (newVal === true) {
+						rewrite(lib.updateReady);
+					}
+				}
+			});
+
+			let unwantedToUpdateAsset = false;
+			(window.Reflect || Object).defineProperty(game, 'unwantedToUpdateAsset', {
+				enumerable: true,
+				get() {
+					return unwantedToUpdateAsset;
+				},
+				set(newVal) {
+					unwantedToUpdateAsset = newVal;
+					if (newVal === true) {
+						rewrite(lib.updateAssetReady);
+					}
+				}
+			});
 
 			lib.init.css(lib.assetURL + 'extension/在线更新', 'extension');
 		},
@@ -1113,7 +1246,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 			show_version: {
 				clear: true,
 				nopointer: true,
-				name: '扩展版本： v1.51',
+				name: '扩展版本： v1.6',
 			},
 			update_link_explain: {
 				clear: true,
@@ -1249,6 +1382,36 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 					game.saveExtensionConfig('在线更新', 'logProgress', bool);
 				}
 			},*/
+			maxFetchNum: {
+				init: 5,
+				name: '下载多个文件的最大并发数',
+				input: true,
+				onblur: function (e) {
+					/**
+					 * @type { HTMLDivElement }
+					 */
+					// @ts-ignore
+					let target = e.target;
+					let num = Number(target.innerText);
+					if (isNaN(num)) {
+						target.innerText = '5';
+						num = 5;
+					} else if (num < 1) {
+						alert('并发数最小为1');
+						target.innerText = '1';
+						num = 1;
+					} else {
+						num = Math.floor(num);
+					}
+					game.saveExtensionConfig('在线更新', 'maxFetchNum', num);
+				},
+			},
+			rewriteUpdateButton: {
+				init: true,
+				name: '覆盖更新按钮',
+				intro: '覆盖无名杀自带的更新按钮',
+				onclick: assetConfigFun('rewriteUpdateButton'),
+			},
 			auto_check_update: {
 				init: (() => {
 					return lib.config['auto_check_update'] == true;
@@ -1420,12 +1583,12 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 								updates.forEach(v => lib.config.extension_在线更新_brokenFile.add(v));
 								game.saveConfigValue('extension_在线更新_brokenFile');
 								
-								game.shijianMultiDownload(updates, () => {
+								game.shijianMultiDownload(updates, (fileNameList) => {
 									n1++;
 									span.innerHTML = `正在下载文件（${n1}/${n2}）`;
 									// 更新进度
 									progress.setProgressValue(n1);
-									progress.setFileName(copyList[n1]);
+									progress.autoSetFileNameFromArray(fileNameList);
 									if (game.shijianHasLocalNotification()) {
 										cordova.plugins.notification.local.update({
 											id: 2,
@@ -1735,12 +1898,12 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 								updates.forEach(v => lib.config.extension_在线更新_brokenFile.add(v));
 								game.saveConfigValue('extension_在线更新_brokenFile');
 
-								game.shijianMultiDownload(updates, () => {
+								game.shijianMultiDownload(updates, (fileNameList) => {
 									n1++;
 									span.innerHTML = `正在下载文件（${n1}/${n2}）`;
 									// 更新进度
 									progress.setProgressValue(n1);
-									progress.setFileName(copyList[n1]);
+									progress.autoSetFileNameFromArray(fileNameList);
 									// app创建通知
 									if (game.shijianHasLocalNotification()) {
 										cordova.plugins.notification.local.update({
@@ -1907,7 +2070,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 		help: {},
 		package: {
 			intro: `
-				<span style='font-weight: bold;'>※本扩展不与【概念武将】和【假装无敌】扩展兼容，若同时安装本扩展和那两个扩展，后果自负</span></br>
+				<span style='font-weight: bold;'>※【假装无敌】扩展也覆盖了游戏内的检查更新按钮，使用时请注意避免出现bug。</span></br>
 				安装本扩展后会自动覆盖【自动检测更新】的功能，不论扩展是否开启</br>
 				点击按钮即可在线更新，文件下载失败会自动重新下载。目前已经覆盖了游戏自带的更新按钮</br>
 				<span style='color:red'>※请不要在更新时关闭游戏或主动断网，否则后果自负</span></br>
@@ -1915,7 +2078,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 			author: "诗笺",
 			diskURL: "",
 			forumURL: "",
-			version: "1.51",
+			version: "1.6",
 		},
 		files: { "character": [], "card": [], "skill": [] }
 	}

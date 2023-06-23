@@ -1121,7 +1121,11 @@ declare interface ExSkillData {
      */
     chongzhu?:boolean|ThreeParmFun<Card,GameEvent,Player,boolean>;
     /** 扩展，用于某些属性boss技，直接使用game.addGlobalSkill添加该技能 */
-    isAddGlobalSkill?:boolean;
+    isAddGlobalSkill?: boolean;
+    /**
+     * 【v1.9.122】与skillCategoriesOf配合。在get.skillCategoriesOf调用时，这里的函数自动调用。作用为读取自定义技能标签名
+     */
+    categories?(skill: ExSkillData, player: Player): string[];
 
     //日后还有很多属性要添加的
     [key: string]: any;

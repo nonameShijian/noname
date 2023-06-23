@@ -75,6 +75,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			db_key_liyingxia:['female','shu',3,['liyingxia_sanli','liyingxia_zhenjun','liyingxia_wumai'],['doublegroup:shu:key']],
 			key_erika:['female','key','3/3/2',['erika_shisong','erika_yousheng']],
 			key_satomi:['female','key',3,['satomi_luodao','satomi_daohai']],
+			key_iriya:['female','key',3,['iriya_yinji','iriya_haozhi'],['unseen']],
 			
 			key_kud:['female','key',3,['kud_qiaoshou','kud_buhui']],
 			key_misuzu:['female','key',3,['misuzu_hengzhou','misuzu_nongyin','misuzu_zhongxing']],
@@ -184,6 +185,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			ol_maliang:['male','shu',3,['zishu','xinyingyuan']],
 			junk_liubei:['male','shu',4,['junkrende','jijiang'],['zhu']],
 			junk_huangyueying:['female','shu',3,['junkjizhi','junkqicai']],
+			junk_lidian:['male','wei',3,['xunxun','junkwangxi']],
+			junk_duanwei:['male','qun',4,['junklangmie']],
 		},
 		characterFilter:{
 			key_jojiro:function(mode){
@@ -218,7 +221,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				diy_default:["diy_yuji","diy_caiwenji","diy_lukang","diy_zhenji"],
 				diy_noname:['noname'],
 				diy_key:["key_lucia","key_kyousuke","key_yuri","key_haruko","key_umi","key_rei","key_komari","key_yukine","key_yusa","key_misa","key_masato","key_iwasawa","key_kengo","key_yoshino","key_yui","key_tsumugi","key_saya","key_harukakanata","key_inari","key_shiina","key_sunohara","key_rin","key_sasami","key_akane","key_doruji","key_yuiko","key_riki","key_hisako","key_hinata","key_noda","key_tomoya","key_nagisa","key_ayato","key_ao","key_yuzuru","sp_key_kanade","key_mio","key_midori","key_kyoko","key_shizuru","key_shiorimiyuki","key_miki","key_shiori","key_kaori","sp_key_yuri","key_akiko","key_abyusa","key_godan","key_yuu","key_ryoichi","key_kotori","key_jojiro","key_shiroha","key_shizuku","key_hiroto","key_sakuya","key_youta","key_rumi","key_chihaya","key_yukito","key_asara","key_kotomi","key_mia","key_kano","db_key_liyingxia","key_erika","key_satomi"],
-				diy_trashbin:['old_jiakui','ol_guohuai','junk_zhangrang','old_bulianshi','junk_sunquan','ol_maliang','junk_liubei','junk_huangyueying'],
+				diy_trashbin:['old_jiakui','ol_guohuai','junk_zhangrang','old_bulianshi','junk_sunquan','ol_maliang','junk_liubei','junk_huangyueying','junk_lidian'],
 			},
 		},
 		characterIntro:{
@@ -540,6 +543,341 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			key_lucia:['key_shizuru'],
 		},
 		skill:{
+			//伊莉雅
+			iriya_yinji:{
+				trigger:{player:'phaseUseBegin'},
+				forced:true,
+				filter:function(event,player){
+					return player.countCards('h')<17;
+				},
+				content:function(){
+					player.drawTo(17).gaintag=['iriya_yinji_tag'];
+					player.addSkill('iriya_yinji_tag');
+				},
+				subSkill:{
+					tag:{
+						charlotte:true,
+						mod:{
+							cardEnabled:function(card){
+								if(get.itemtype(card)=='card'){
+									if(card.hasGaintag('iriya_yinji_tag')) return false;
+								}
+								else if(card.isCard&&card.cards){
+									if(card.cards.some(card=>card.hasGaintag('iriya_yinji_tag'))) return false;
+								}
+							},
+						},
+					},
+				},
+			},
+			iriya_haozhi:{
+				enable:'phaseUse',
+				filterCard:true,
+				selectCard:[2,Infinity],
+				promptfunc:()=>'出牌阶段，你可以按照斗地主牌型弃置至少两张牌，且其他角色可以依次对其进行一轮响应。最后一名进行响应的角色可以根据对应牌型执行对应效果。',
+				position:'he',
+				getType:function(cards,player){
+					var nums=cards.map(card=>{
+						var num=get.number(card,player);
+						if(num<=2) return num+13;
+						return num;
+					}).sort((a,b)=>(a-b)),len=nums.length;
+					if(len==1) return ['单张',nums[0],1];
+					if(len==2) return nums[1]==nums[0]?['对子',nums[0],1]:null;
+					var map={};
+					for(var i=0;i<len;i++){
+						var count=get.numOf(nums,nums[i]);
+						if(!map[count]) map[count]=[];
+						map[count].push(nums[i]);
+						i+=(count-1);
+					}
+					if(len==3){
+						if(map[3]) return ['三张',nums[0],1];
+						return null;
+					}
+					if(map[len]){
+						return ['炸弹',nums[0],length];
+					}
+					if(map[1]){
+						if(map[1].length==len&&len>4){
+							for(var i=0;i<map[1].length-1;i++){
+							 if(map[1][i+1]-map[1][i]!=1) return null;
+							 if(map[1][i+1]==15) return null;
+							}
+							return ['单顺',nums[0],len];
+						}
+						else if(map[1].length==2&&map[4]&&len==6){
+							return ['四带二',map[4][0],1]
+						}
+						else if(map[3]&&map[1].length==map[3].length&&len==map[1].length*4){
+							if(map[3].length==1) return ['三带一',map[3][0],1];
+							for(var i=0;i<map[3].length-1;i++){
+							 if(map[3][i+1]-map[3][i]!=1) return null;
+							}
+							return ['单带飞机',map[3][0],map[3].length];
+						}
+						return null;
+					}
+					if(map[2]){
+						if(map[2].length*2==len&&len>5){
+							for(var i=0;i<map[2].length-1;i++){
+							 if(map[2][i+1]-map[2][i]!=1) return null;
+							 if(map[2][i+1]==15) return null;
+							}
+							return ['双顺',nums[0],len];
+						}
+						else if(map[4]&&len==6){
+							return ['四带二',map[4][0],1]
+						}
+						else if(map[3]&&map[2].length==map[3].length&&len==map[2].length*5){
+							if(map[3].length==1) return ['三带二',map[3][0],1];
+							for(var i=0;i<map[3].length-1;i++){
+							 if(map[3][i+1]-map[3][i]!=1) return null;
+							 if(map[3][i+1]==15) return null;
+							}
+							return ['双带飞机',map[3][0],map[3].length];
+						}
+						return null;
+					}
+					if(map[3]){
+						if(map[3].length*3==len&&len>5){
+							for(var i=0;i<map[3].length-1;i++){
+							 if(map[3][i+1]-map[3][i]!=1) return null;
+							 if(map[3][i+1]==15) return null;
+							}
+							return ['三顺',nums[0],len];
+						}
+						return null;
+					}
+					return null;
+				},
+				filterOk:function(){
+					return Array.isArray(lib.skill.iriya_haozhi.getType(ui.selected.cards,_status.event.player));
+				},
+				content:function(){
+					'step 0'
+					var players=game.filterPlayer().sortBySeat(player.getNext());
+					event.players=players;
+					event.current=player;
+					event.current_type=lib.skill.iriya_haozhi.getType(cards,player);
+					event.current_cards=cards.slice(0);
+					if(!event.current_type) event.finish();
+					'step 1'
+					var target=event.players.shift();
+					if((target!=player||event.current!=player)&&target.isIn()&&target.countCards('h')>=Math.min(cards.length,4)){
+						event.target=target;
+						target.addTempSkill('iriya_haozhi_temp',{global:['discardBefore','chooseToDiscardEnd','phaseAfter']});
+						var trans=get.translation(event.current);
+						var cardsn=function(cards,player){
+							var getn=(card,player)=>{
+								var num=get.number(card,player);
+								if(num<=2) return num+13;
+								return num;
+							};
+							cards.sort(function(a,b){
+								var numa=getn(a,player),numb=getn(b,player);
+								if(numa!=numb) return numa-numb;
+								return lib.suit.indexOf(get.suit(a,player)-get.suit(b,player));
+							});
+							var str='';
+							for(var i of cards){
+								str+=',';
+								str+=get.strNumber(get.number(i,player));
+								str+=get.translation(get.suit(i,player));
+							}
+							return str.slice(1);
+						}(event.current_cards,event.current);
+						var next=target.chooseToDiscard(
+							'是否响应'+trans+'的'+get.translation(event.current_type[0])+'？',
+							trans+'的牌组为'+cardsn+'。您此时可以点击“整理手牌”，将手牌按点数排序。',[2,Infinity],'he');
+						next.set('type',event.current_type);
+						next.set('filterOk',function(){
+							var type=lib.skill.iriya_haozhi.getType(ui.selected.cards,_status.event.player);
+							if(!type) return false;
+							var ptype=_status.event.type;
+							if(type[0]=='炸弹'){
+								if(ptype[0]=='炸弹'){
+									if(type[2]>ptype[2]) return true;
+									return type[1]>ptype[1]&&type[2]==ptype[2];
+								}
+								return true;
+							}
+							return type[0]==ptype[0]&&type[2]==ptype[2]&&type[1]>ptype[1];
+						});
+					}
+					else if(event.players.length>0) event.redo();
+					else event.goto(3);
+					'step 2'
+					if(result.bool){
+						event.current=target;
+						event.current_type=lib.skill.iriya_haozhi.getType(result.cards.slice(0),target);
+						if(!event.current_type) event.finish();
+					}
+					if(event.players.length>0) event.goto(1);
+					'step 3'
+					var current=event.current,type=0;
+					if(!current.isIn()) return;
+					switch(event.current_type[0]){
+						case '对子':
+							type=1;break;
+						case '三张': case '三带一': case '三带二':
+							type=2;break;
+						case '单顺':
+							type=3;break;
+						case '双顺':
+							type=4;break;
+						case '三顺': case '单带飞机': case '双带飞机':
+							type=5;break;
+						case '炸弹': case'四带二':
+							type=6;break;
+					}
+					if(type==2){
+						current.addSkill('iriya_haozhi_extra');
+						current.addMark('iriya_haozhi_extra',1,false);
+					}
+					else if(type>0){
+						var next=game.createEvent('iriya_haozhi_effect',false);
+						next.player=current;
+						next.setContent(lib.skill.iriya_haozhi['content'+type]);
+					}
+				},
+				content1:function(){
+					'step 0'
+					player.chooseTarget([1,2],'是否令至多两名角色各摸一张牌？');
+					'step 1'
+					if(result.bool){
+						var targets=result.targets.sortBySeat();
+						player.line(targets);
+						game.asyncDraw(targets);
+						game.delayex();
+					}
+				},
+				content3:function(){
+					'step 0'
+					player.chooseTarget([1,2],'是否对至多两名其他角色造成1点伤害？',lib.filter.notMe);
+					'step 1'
+					if(result.bool){
+						var targets=result.targets.sortBySeat();
+						player.line(targets);
+						event.targets=targets;
+					}
+					'step 2'
+					var target=targets.shift();
+					target.damage();
+					game.delayex();
+					if(targets.length>0) event.redo();
+				},
+				content4:function(){
+					'step 0'
+					player.chooseTarget([1,2],'是否弃置至多两名其他角色的各一张牌并造成1点伤害？',lib.filter.notMe);
+					'step 1'
+					if(result.bool){
+						var targets=result.targets.sortBySeat();
+						player.line(targets);
+						event.targets=targets;
+					}
+					'step 2'
+					var target=targets.shift();
+					player.discardPlayerCard(target,true,'he');
+					target.damage();
+					game.delayex();
+					if(targets.length>0) event.redo();
+				},
+				content5:function(){
+					'step 0'
+					player.chooseTarget([1,2],'是否令至多两名其他角色翻面，弃置其的各一张牌并造成1点伤害？',lib.filter.notMe);
+					'step 1'
+					if(result.bool){
+						var targets=result.targets.sortBySeat();
+						player.line(targets);
+						event.targets=targets;
+					}
+					'step 2'
+					var target=targets.shift();
+					target.turnOver();
+					player.discardPlayerCard(target,true,'e',5);
+					player.discardPlayerCard(target,true,'h');
+					target.damage();
+					game.delayex();
+					if(targets.length>0) event.redo();
+				},
+				content6:function(){
+					'step 0'
+					player.chooseTarget([1,2],'是否令至多两名其他角色翻面，弃置其装备区内的所有牌和一张手牌，并造成1点伤害？',lib.filter.notMe);
+					'step 1'
+					if(result.bool){
+						var targets=result.targets.sortBySeat();
+						player.line(targets);
+						event.targets=targets;
+					}
+					'step 2'
+					var target=targets.shift();
+					target.turnOver();
+					player.discardPlayerCard(target,true,'he');
+					target.damage();
+					game.delayex();
+					if(targets.length>0) event.redo();
+				},
+				ai:{sortCardByNum:true},
+				subSkill:{
+					extra:{
+						charlotte:true,
+						mod:{
+							targetInRange:()=>true,
+							cardUsable:()=>Infinity,
+						},
+						trigger:{player:'useCard2'},
+						forced:true,
+						onremove:true,
+						content:function(){
+							'step 0'
+							var num=player.countMark('iriya_haozhi_extra');
+							player.removeSkill('iriya_haozhi_extra');
+							var card=trigger.card;
+							if(trigger.addCount!==false){
+								trigger.addCount=false;
+								var stat=player.getStat().card;
+								if(stat[card.name]&&stat[card.name]>0) stat[card.name]--;
+							}
+							var info=get.info(card);
+							if(info.allowMultiple==false) event.finish();
+							if(trigger.targets&&!info.multitarget){
+								if(game.hasPlayer(function(current){
+									return !trigger.targets.contains(current)&&lib.filter.targetEnabled2(card,player,current);
+								})){
+									var prompt2='为'+get.translation(card)+'增加'+(num>1?'至多':'')+get.cnNumber(num)+'个目标'
+									player.chooseTarget(get.prompt('iriya_haozhi_extra'),[1,num],function(card,player,target){
+										var player=_status.event.player;
+										return !_status.event.targets.contains(target)&&lib.filter.targetEnabled2(_status.event.card,player,target);
+									}).set('prompt2',prompt2).set('ai',function(target){
+										var trigger=_status.event.getTrigger();
+										var player=_status.event.player;
+										return get.effect(target,trigger.card,player,player);
+									}).set('card',trigger.card).set('targets',trigger.targets);
+								}
+							}
+							'step 1'
+							if(result.bool){
+								if(!event.isMine()&&!event.isOnline()) game.delayx();
+								event.targets=result.targets;
+							}
+							else{
+								event.finish();
+							}
+							'step 2'
+							if(event.targets){
+								player.logSkill('iriya_haozhi_extra',event.targets);
+								trigger.targets.addArray(event.targets);
+							}
+						},
+						intro:{content:'使用下一张牌无距离和次数限制，且可以增加#个目标'},
+					},
+					temp:{
+						ai:{sortCardByNum:true},
+						charlotte:true,
+					}
+				},
+			},
 			//远野美凪&远野小满
 			minagi_peiquan:{
 				enable:'phaseUse',
@@ -8461,8 +8799,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				enable:'phaseUse',
 				discard:false,
 				line:true,
-				direct:true,
-				clearTime:true,
+				log:false,
 				delay:false,
 				lose:false,
 				prepare:function(cards,player,targets){
@@ -10006,6 +10343,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger:{global:'die'},
 				forced:true,
 				skillAnimation:true,
+				chargingSkill:true,
 				filter:function(event,player){
 					return player.hp>0;
 				},
@@ -11724,6 +12062,138 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			
+			//削弱版段煨
+			junklangmie:{
+				audio:'langmie',
+				trigger:{global:'phaseJieshuBegin'},
+				direct:true,
+				filter:function(event,player){
+					if(player==event.player||player.countCards('he')==0) return false;
+					var num=0;
+					if(event.player.hasHistory('sourceDamage',function(evt){
+						num+=evt.num;
+						return num>=2;
+					})) return true;
+					var map={};
+					return event.player.hasHistory('useCard',function(i){
+						var name=get.type2(i.card,false);
+						if(!map[name]){
+							map[name]=true;
+							return false;
+						}
+						return true;
+					});
+				},
+				content:function(){
+					'step 0'
+					var list=[],num=0,target=trigger.player;
+					event.target=target;
+					event.choices=[];
+					var map={};
+					if(target.hasHistory('useCard',function(i){
+						var name=get.type2(i.card,false);
+						if(!map[name]){
+							map[name]=true;
+							return false;
+						}
+						return true;
+					})){
+						list.push('弃置一张牌，然后摸两张牌');
+						event.choices.push('draw');
+					}
+					if(target.hasHistory('sourceDamage',function(evt){
+						num+=evt.num;
+						return num>=2;
+					})){
+						list.push('弃置一张牌，对'+get.translation(target)+'造成1点伤害');
+						event.choices.push('damage');
+					}
+					player.chooseControl('cancel2').set('choiceList',list).set('ai',function(){
+						var player=_status.event.player;
+						var choices=_status.event.getParent().choices.slice(0);
+						choices.push('cancel');
+						choicex=choices.slice(0);
+						var getx=function(a){
+							switch(a){
+								case 'draw':return get.effect(player,{name:'wuzhong'},player,player);
+								case 'damage':return get.damageEffect(_status.event.getParent().target,player,player);
+								default:return 0;
+							}
+						}
+						choices.sort(function(a,b){
+							return getx(b)-getx(a);
+						});
+						return choicex.indexOf(choices[0]);
+					}).set('prompt',get.prompt('junklangmie',target));
+					'step 1'
+					if(result.control=='cancel2') event.finish();
+					else{
+						event.choice=event.choices[result.index];
+						player.chooseToDiscard('he').set('ai',card=>(7-get.value(card))).logSkill=(event.choice=='draw'?'junklangmie':['junklangmie',target]);
+					}
+					'step 2'
+					if(result.bool){
+						if(event.choice=='draw') player.draw(2);
+						else target.damage();
+					}
+				},
+			},
+			//李典光速通渠传说
+			junkwangxi:{
+				audio:'wangxi',
+				trigger:{player:'damageEnd',source:'damageSource'},
+				filter:function(event){
+					if(event._notrigger.contains(event.player)) return false;
+					return event.num&&event.source&&event.player&&
+					event.player.isAlive()&&event.source.isAlive()&&event.source!=event.player;
+				},
+				check:function(event,player){
+					if(player.isPhaseUsing()) return true;
+					if(event.player==player) return get.attitude(player,event.source)>-5;
+					return get.attitude(player,event.player)>-5;
+				},
+				logTarget:function(event,player){
+					if(event.player==player) return event.source;
+					return event.player;
+				},
+				preHidden:true,
+				content:function(){
+					'step 0'
+					event.count=trigger.num;
+					event.target=lib.skill.junkwangxi.logTarget(trigger,player);
+					'step 1'
+					player.draw(2).gaintag=['junkwangxi_tag'];
+					event.count--;
+					'step 2'
+					var cards=player.getCards('he',(card)=>card.hasGaintag('junkwangxi_tag'));
+					if(cards.length>0&&target.isAlive()){
+						if(cards.length==1) event._result={bool:true,cards:cards};
+						else player.chooseCard('he','忘隙：交给'+get.translation(target)+'一张牌',true,function(card){
+							return card.hasGaintag('junkwangxi_tag');
+						});
+					}
+					else event.goto(4);
+					'step 3'
+					if(result.bool){
+						player.give(result.cards,target);
+					}
+					'step 4'
+					player.removeGaintag('junkwangxi_tag');
+					if(event.count&&target.isAlive()){
+						player.chooseBool(get.prompt2('junkwangxi',target));
+					}
+					else event.finish();
+					'step 5'
+					if(result.bool){
+						player.logSkill('junkwangxi',target);
+						event.goto(1);
+					}
+				},
+				ai:{
+					maixie:true,
+					maixie_hp:true
+				}
+			},
 			//2013标准包双蜀黑
 			junkjizhi:{
 				audio:'jizhi',
@@ -17304,6 +17774,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			db_key_liyingxia:'李映夏',
 			key_erika:'苍井绘梨花',
 			key_satomi:'藏里见',
+			key_iriya:'喵呜·喵呼',
+			key_iriya_ab:'喵呜喵呼',
 			lucia_duqu:'毒躯',
 			lucia_duqu_info:'锁定技，①当你对其他角色造成伤害或受到其他角色的伤害时，你令对方获得一张花色点数随机的【毒】。<br>②当你因【毒】失去体力时，你改为回复等量的体力。',
 			lucia_zhenren:'振刃',
@@ -17390,6 +17862,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			saya_nodis:'破围',
 			//〖破围〗不会因为〖铁骑〗无效
 			inari_baiwei:'摆尾',
+			inari_baiwei_draw:'摆尾',
 			inari_baiwei_info:'你可以将一张♦牌当做任意基本牌使用或打出。此牌结算完成后，你摸一张牌。',
 			//你不能以此法使用【毒】
 			inari_baiwei_backup:'摆尾',
@@ -17673,6 +18146,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			tenzen_fenghuan_info:'其他角色使用的【杀】或伤害性锦囊牌结算结束后，若你是此牌的唯一目标，则你可以弃置任意张点数之和大于等于此牌点数两倍的牌，然后视为对其使用一张名称相同的牌。',
 			tenzen_retianquan:'天全',
 			tenzen_retianquan_info:'每回合限一次。当你使用【杀】指定目标后，你可失去1点体力或弃置一张牌，然后展示牌堆顶的三张牌（若你的体力值小于体力上限的50%，则改为展示五张牌）。这些牌中每有一张基本牌，响应此牌所需的【闪】的数量便+1。此牌结算结束后，若此牌造成过伤害，则你获得展示牌中的所有非基本牌。',
+			iriya_yinji:'殷极',
+			iriya_yinji_info:'锁定技。出牌阶段开始时，你将手牌摸至17张。你不能直接使用以此法获得的牌。',
+			iriya_haozhi:'豪掷',
+			iriya_haozhi_info:'出牌阶段，你可以按照斗地主牌型弃置至少两张牌，且其他角色可以依次对其进行一轮响应。最后一名进行响应的角色可以根据对应牌型执行对应效果。'
+			+'对子：其可以令至多两名角色各摸一张牌。'
+			+'三带：其使用的下一张牌可以多指定一个目标且无距离和次数限制。'
+			+'单顺：其可以对至多2名其他角色造成1点伤害。'
+			+'双顺：其可以弃置至多2名其他角色的一张牌并对其造成1点伤害。'
+			+'三顺/飞机：其可以令至多2名其他角色翻面，弃置其的一张牌并对其造成1点伤害。'
+			+'炸弹/四带二：其可以令至多2名其他角色翻面，弃置这些角色装备区内的所有牌和一张手牌，对这些角色造成1点伤害。',
 
 			key_kud:'库特莉亚芙卡',
 			kud_qiaoshou:'巧手',
@@ -18135,6 +18618,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			junkjizhi_info:'当你使用非转化的普通锦囊牌时，你可以展示牌堆顶的一张牌A。若A不为基本牌，则你获得A。否则你选择一项：⒈将A置入弃牌堆。⒉将一张手牌置于牌堆顶，然后获得A。',
 			junkqicai:'奇才',
 			junkqicai_info:'锁定技。①你使用锦囊牌无距离限制。②你装备区内的非坐骑牌不能被其他角色弃置。',
+			junkwangxi:'忘隙',
+			junkwangxi_info:'当你对其他角色造成1点伤害后，或受到其他角色造成的1点伤害后，你可以摸两张牌，然后交给其其中一张牌。',
+			junkwangxi_tag:'invisible',
+			junklangmie:'狼灭',
+			junklangmie_info:'其他角色的结束阶段开始时，你可以选择一项：⒈若其本回合内使用过某种类型的牌超过一张，则你弃置一张牌并摸两张牌。⒉若其本回合累计造成过的伤害大于1，则你弃置一张牌，然后对其造成1点伤害。',
 			ol_guohuai_ab:'郭淮',
 			old_jiakui:'通渠贾逵',
 			ol_guohuai:'三血郭淮',
@@ -18143,6 +18631,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			old_bulianshi:'削弱步练师',
 			ol_maliang:'削弱马良',
 			ol_maliang_ab:'马良',
+			junk_lidian:'削弱李典',
+			junk_lidian_ab:'李典',
+			junk_duanwei:'削弱段煨',
+			junk_duanwei_ab:'段煨',
 			
 			diy_tieba:'吧友设计',
 			diy_xushi:'玩点论杀·虚实篇',

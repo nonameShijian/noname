@@ -154,4 +154,7 @@ interface UI {
 
     wuxie: HTMLDivElement;
     tempnowuxie: HTMLDivElement;
+
+    /** 整理手牌按钮 */
+    sortCard: HTMLDivElement;
 }
