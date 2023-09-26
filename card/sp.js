@@ -47,7 +47,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				enable:true,
 				filterTarget:function(card,player,target){
 					if(target==player) return false;
-					if(target.getEquip(5)){
+					if(target.getEquips(5).length){
 						return target.countCards('e')>1;
 					}
 					else{
@@ -259,7 +259,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				enable:function(){
 					return game.countPlayer()>2;
 				},
-				chongzhu:function(){
+				recastable:function(){
 					return game.countPlayer()<=2;
 				},
 				singleCard:true,
@@ -467,11 +467,11 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				trigger:{player:'damageBegin4'},
 				forced:true,
 				filter:function(event,player){
-					return event.card&&event.card.name=='sha'&&player.getEquip('lanyinjia');
+					return event.card&&event.card.name=='sha'&&player.getEquips('lanyinjia').length>0;
 				},
 				content:function(){
-					var card=player.getEquip('lanyinjia');
-					if(card){
+					var card=player.getEquips('lanyinjia');
+					if(card.length){
 						player.discard(card);
 					}
 				},
@@ -525,6 +525,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			},
 			qibaodao2:{
 				inherit:'qinggang_skill',
+				audio:true,
 			},
 			g_jinchan:{
 				cardSkill:true,

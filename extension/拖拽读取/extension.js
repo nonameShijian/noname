@@ -140,7 +140,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 				const str = e.data;
 				try {
 					try {
-						eval(str);
+						// 解决新版本的game.import改为promise的问题
+						await eval(str);
 					} catch (error) {
 						if (
 							!lib.config.extension_应用配置_newExtApi ||
@@ -417,7 +418,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 						lib.init.css(lib.assetURL + "extension/拖拽读取", "extension");
 						loadCSS = true;
 					}
-					fetch(__dirname + '/extension/拖拽读取/updateContent')
+					fetch(__dirname + '/extension/拖拽读取/updateContent.md')
 						.then(response => response.text()).then(txt => {
 							let layer = ui.create.div(ui.window, '.updateContent');
 							let close = ui.create.div(layer, '.updateContentClose', () => {
@@ -588,7 +589,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 			author: "诗笺",
 			diskURL: "",
 			forumURL: "",
-			version: "2.0",
+			version: "2.1",
 		},
 	};
 });

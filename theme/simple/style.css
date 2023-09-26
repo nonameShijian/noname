@@ -30,6 +30,7 @@ html{
 #arena.mobile.textequip:not(.chess) .player[data-position='0'] .equips{
 	background-image: none;
 	box-shadow: rgba(0, 0, 0, 0.2) -1px 0px 0px 0px;
+	overflow-y: scroll;
 }
 #arena:not(.chess).textequip .player[data-position='0'] .equips>.card{
 	background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)) !important;
@@ -143,6 +144,7 @@ html{
 }
 
 .player .marks>div:first-child>div{
+	filter: invert(0.8) sepia(1);
 	-webkit-filter: invert(0.8) sepia(1);
 }
 
@@ -200,6 +202,7 @@ html{
 	transition-property: transform;
 	transition-duration: 0s;
 	background-size: cover;
+	filter: blur(3px);
 	-webkit-filter: blur(3px);
 }
 .popup-container>.prompt-container>div>div{

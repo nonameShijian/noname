@@ -1,9 +1,10 @@
 window.config={
 	extension_sources:{
-		GitHub:'https://raw.githubusercontent.com/libccy/noname-extension/master/',
+		Coding:'https://raw.fgit.cf/libccy/noname-extension/master/',
+		GitHub:'https://raw.githubusercontent.com/libccy/noname-extension/master/'
 	},
 	extension_source:'Coding',
-	forbidai:['ns_liuzhang','yuji','re_yuji'],
+	forbidai:['ns_liuzhang'],
 	forbidai_user:[],
 	forbidall:[],
 	forbidstone:['zhugedan','pal_xuanxiao','hs_malfurion','lusu','chenlin','hs_siwangzhiyi',
@@ -20,7 +21,7 @@ window.config={
 	zhinang_tricks:['guohe','wuxie','wuzhong','dongzhuxianji'],
 	connect_zhinang_tricks:['guohe','wuxie','wuzhong','dongzhuxianji'],
 	all:{
-		sgscharacters:['standard','shenhua','xinghuoliaoyuan','refresh','yijiang','sp','sp2','extra','old','mobile','tw','yingbian','offline','sb','clan'],
+		sgscharacters:['standard','shenhua','xinghuoliaoyuan','refresh','yijiang','sp','sp2','xianding','huicui','extra','old','mobile','shiji','tw','yingbian','offline','jsrg','sb','clan','collab'],
 		sgscards:['standard','extra','sp','guozhan','zhulu','yingbian','yongjian'],
 		sgsmodes:['identity','guozhan','versus','doudizhu','single','brawl','connect'],
 		stockmode:['identity','guozhan','versus','boss','doudizhu','single','chess','stone','connect','brawl','tafang'],
@@ -133,11 +134,14 @@ window.config={
 	sort:'type_sort',
 
 	cards:['standard','extra'],
-	characters:['standard','shenhua','sp','sp2','yijiang','refresh','xinghuoliaoyuan','mobile','extra','yingbian','sb','tw','offline','clan'],
+	characters:['standard','shenhua','sp','sp2','yijiang','refresh','xinghuoliaoyuan','mobile','extra','yingbian','sb','tw','offline','clan','collab','xianding','huicui','shiji','jsrg'],
 	connect_characters:['diy'],
 	connect_cards:['huanlekapai','guozhan','sp','zhulu','yingbian','yongjian'],
 	plays:[],
-	extensions:['应用配置', '拖拽读取', '在线更新'],
+	extensions:['应用配置','拖拽读取','在线更新'],
+	'extension_应用配置_enable':true,
+	'extension_拖拽读取_enable':true,
+	'extension_在线更新_enable':true,
 	banned:[],
 	bannedcards:[],
 	forbidlist:[],

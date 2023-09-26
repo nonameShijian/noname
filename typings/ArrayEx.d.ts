@@ -14,12 +14,12 @@ declare interface Array<T> {
      * 1. 当添加成功时，返回此数组 
      * 2. 添加失败(已有此元素)时返回false，若传入多个参数，且添加失败时，后面的元素不再进行添加操作
      */
-    add(...args: any): Array<T> | false;
+    add(...args: T[]): Array<T> | false;
     /**
      * 添加一个数组的所有元素到该数组中(循环执行this.add)，此时参数arr中若有一个数组元素可能会出现bug
      * @param arr 
      */
-    addArray(arr: any[]): Array<T>;
+    addArray(arr: T[]): Array<T>;
     /**
      * 移除一个元素出该数组(该元素不能是数组)
      * @param item 
@@ -28,19 +28,19 @@ declare interface Array<T> {
      * 2. 移除失败(没有此元素)时返回false 
      * 3. 传入参数为一个数组时，返回undefined
      */
-    remove(item: any): Array<T> | false;
+    remove(item: T): Array<T> | false;
 
-    remove(item: any[]): void;
+    remove(item: T[]): void;
     /**
      * 将一个数组的所有元素移除出该数组(循环执行this.remove)，此时参数arr中若有一个数组元素可能会出现bug
      * @param arr 
      */
-    removeArray(arr: any[]): Array<T>;
+    removeArray(arr: T[]): Array<T>;
     /**
      * 随机获得该数组的一个元素
      * @param args 设置需要排除掉的部分元素；
      */
-    randomGet(...args: any): T;
+    randomGet(...args: T[]): T;
     /**
      * 随机移除数组的一个/多个元素
      * @param num 若num为数字的情况下，则移除num个元素，否则移除一个
@@ -49,8 +49,8 @@ declare interface Array<T> {
      * 2. 移除多个元素，返回一个被移除元素组成的数组
      * 3. 数组无元素返回undefined
      */
-    randomRemove(num: number): T | T[] | void;
-    randomRemove(num: any): T | void;
+    randomRemove(num: number): T | T[];
+    randomRemove(num: T): T | undefined;
     /**
      * 随机重新排序数组（数组乱序）
      */
@@ -103,5 +103,5 @@ declare interface Array<T> {
     /**
      * 获取 item 在数组中出现的次数
      */
-    numOf(item: any): number
+    numOf(item: T): number
 }

@@ -3,7 +3,7 @@ interface ExCommonConfig {
     /** 扩展名 */
     name?: string;
     /** 其余的全部保存到lib中，若有则覆盖，若没有则添加 */
-    [key: string]: any;
+    [key: string]: any | undefined;
 }
 
 /** 
@@ -19,7 +19,7 @@ interface SelectConfigData {
      * 【核心】初始化时默认的选项/配置/模式（对应下面item的key）
      */
     // init?: boolean | string | number;
-	init?: any;
+    init?: any;
     /** 
      * 【核心】二级菜单配置(当前config内容的菜单)
      */
@@ -71,13 +71,13 @@ interface SelectConfigData {
      * 点击触发事件
      * 
      * 若有返回值false，则当前点击事件的toggle切换无效
-	 * 
-	 * 有时候不需要返回值，但是函数需要用async， 所以返回值我加了个Promise<any>
-	 * 
-	 * @this HTMLDivElement
+     * 
+     * 有时候不需要返回值，但是函数需要用async， 所以返回值我加了个Promise<any>
+     * 
+     * @this HTMLDivElement
      */
-	onclick?(item?: any): boolean | Promise<any> | void;
-	onclick?(link: any, node: HTMLDivElement): void | boolean | Promise<any>;
+    onclick?(item?: any): boolean | Promise<any> | void;
+    onclick?(link: any, node: HTMLDivElement): void | boolean | Promise<any>;
 
     /** 当前没有onclick方法时，除了默认game.saveConfig保存数据配置key的数据，可以使用该方法进行数据处理啊 */
     onsave?(reslut: any): void;
@@ -146,7 +146,7 @@ interface ExtensionMenuConfigData {
     /** 隐藏此扩展(代码内部添加) */
     hide?: SelectConfigData,
     /** 其余配置 */
-    [key: string]: SelectConfigData,
+    [key: string]: SelectConfigData | undefined,
 }
 
 /** 扩展回调方法 */
@@ -179,9 +179,9 @@ interface ExtensionInfoConfigData extends ExCommonConfig {
      * 该扩展菜单的配置 
      * 
      * 名字："extension_" + key
-	 * 
-	 * 内容： value
-	 * 
+     * 
+     * 内容： value
+     * 
      * (也是游戏编辑器中的选项代码部分)
      */
     config?: SMap<SelectConfigData>;
@@ -195,14 +195,14 @@ interface ExtensionInfoConfigData extends ExCommonConfig {
 
     /**
      * 扩展的包信息。
-	 * 
-	 * 包括卡牌，技能，人物的代码以及中文翻译
+     * 
+     * 包括卡牌，技能，人物的代码以及中文翻译
      */
     package: PackageData;
 
     /**
      * 函数执行时机为游戏数据加载之后、界面加载之前
-	 * 
+     * 
      * （游戏编辑器中的主代码部分）
      * 
      * 注：即选择了玩法模式之后加载的内容部分；
@@ -215,7 +215,7 @@ interface ExtensionInfoConfigData extends ExCommonConfig {
      * （也是游戏编辑器中的启动代码部分）
      * 
      * 注：game.import添加扩展时就加载，即当前游戏加载菜单界面时就已经加载；
-	 * 
+     * 
      * 注2：当前扩展联机时，需要直接再此扩展；为了方便扩展，大部分扩展直接在这里扩展；
      * @param data 保存在lib.config中”extension_扩展名“为前缀的配置
      */
@@ -244,9 +244,9 @@ interface ExtensionInfoConfigData extends ExCommonConfig {
     help?: SMap<string>;
 
     /** 相关文件名 */
-    files?: { 
-        character?: string[], 
-        card?: string[], 
+    files?: {
+        character?: string[],
+        card?: string[],
         skill?: string[]
     };
 
@@ -254,7 +254,7 @@ interface ExtensionInfoConfigData extends ExCommonConfig {
      * 【特殊】用于game.addMode添加时，
      * 用于显示模式icon，所有的图片路径的imgsrc，指定外层扩展文件名；
      */
-    extension?:string;
+    extension?: string;
 
     //基本无用，一般配置直接在package中
     // /** 技能配置 */
@@ -301,60 +301,60 @@ interface ExtensionInfoConfigData extends ExCommonConfig {
  * 新写法extentsion扩展的配置（import:extentsion）
  */
 interface newExtensionInfoConfigData extends ExCommonConfig {
-	/** 扩展描述 */
-	intro: string;
-	/** 扩展作者 */
-	author: string;
-	/** 扩展版本 */
-	version: string;
-	/** 扩展更新内容 */
-	changeLog: string[];
-	/** 
-	 * 该扩展菜单的配置 
-	 * 
-	 * 名字："extension_" + key
-	 * 
-	 * 内容： value
-	 * 
-	 * (也是游戏编辑器中的选项代码部分)
-	 */
-	config?: SMap<SelectConfigData>;
-	/**
-	 * 扩展的包信息。
-	 * 
-	 * 包括卡牌，技能，人物的代码以及中文翻译
-	 */
-	package: {
-		/** 武将导入信息 */
-		character?: CharacterConfigData;
-		/** 卡牌导入信息 */
-		card?: CardHolderConfigData;
-		/** 技能导入信息 */
-		skill?: ExSkillConifgData;
-	}
+    /** 扩展描述 */
+    intro: string;
+    /** 扩展作者 */
+    author: string;
+    /** 扩展版本 */
+    version: string;
+    /** 扩展更新内容 */
+    changeLog: string[];
+    /** 
+     * 该扩展菜单的配置 
+     * 
+     * 名字："extension_" + key
+     * 
+     * 内容： value
+     * 
+     * (也是游戏编辑器中的选项代码部分)
+     */
+    config?: SMap<SelectConfigData>;
+    /**
+     * 扩展的包信息。
+     * 
+     * 包括卡牌，技能，人物的代码以及中文翻译
+     */
+    package: {
+        /** 武将导入信息 */
+        character?: CharacterConfigData;
+        /** 卡牌导入信息 */
+        card?: CardHolderConfigData;
+        /** 技能导入信息 */
+        skill?: ExSkillConifgData;
+    }
 
-	/**
-	 * 函数执行时机为游戏数据加载之后、界面加载之前
-	 * 
-	 * （游戏编辑器中的主代码部分）
-	 * 
-	 * 注：即选择了玩法模式之后加载的内容部分；
-	 * @param config 扩展选项/配置
-	 * @param pack 扩展定义的武将、卡牌和技能等
-	 */
-	content?(config: SMap<any>, pack: PackageData): void;
-	/**
-	 * 函数执行时机为游戏数据加载之前，且不受禁用扩展的限制，除添加模式外请慎用
-	 * （也是游戏编辑器中的启动代码部分）
-	 * 
-	 * 注：game.import添加扩展时就加载，即当前游戏加载菜单界面时就已经加载；
-	 * 
-	 * 注2：当前扩展联机时，需要直接再此扩展；为了方便扩展，大部分扩展直接在这里扩展；
-	 * @param data 保存在lib.config中”extension_扩展名“为前缀的配置
-	 */
-	precontent?(data?: SMap<any>): void;
-	/** 删除该扩展后调用 */
-	onremove?(): void;
+    /**
+     * 函数执行时机为游戏数据加载之后、界面加载之前
+     * 
+     * （游戏编辑器中的主代码部分）
+     * 
+     * 注：即选择了玩法模式之后加载的内容部分；
+     * @param config 扩展选项/配置
+     * @param pack 扩展定义的武将、卡牌和技能等
+     */
+    content?(config: SMap<any>, pack: PackageData): void;
+    /**
+     * 函数执行时机为游戏数据加载之前，且不受禁用扩展的限制，除添加模式外请慎用
+     * （也是游戏编辑器中的启动代码部分）
+     * 
+     * 注：game.import添加扩展时就加载，即当前游戏加载菜单界面时就已经加载；
+     * 
+     * 注2：当前扩展联机时，需要直接再此扩展；为了方便扩展，大部分扩展直接在这里扩展；
+     * @param data 保存在lib.config中”extension_扩展名“为前缀的配置
+     */
+    precontent?(data?: SMap<any>): void;
+    /** 删除该扩展后调用 */
+    onremove?(): void;
 }
 
 /**
@@ -402,7 +402,7 @@ interface ExModeConfigData extends ExCommonConfig {
     /**
      * mode的start启动方法
      */
-	start: ContentFuncByAll;
+    start: ContentFuncByAll;
     /**
      * mode的start启动之前的处理方法
      */
@@ -519,17 +519,17 @@ interface PackageData {
         skill: string[];
     }
 
-	/** 主代码中，pack.code包括以下属性： */
-	code?: {
-		/** 扩展的config配置信息 */
-		config?: SMap<SelectConfigData>;
-		/** 扩展主代码 */
-		content?: (config: SMap<any>, pack: PackageData) => void;
-		/** 扩展帮助信息 */
-		help?: SMap<string>;
-		/** 扩展启动代码 */
-		precontent?: (data?: SMap<any>) => void;
-	}
+    /** 主代码中，pack.code包括以下属性： */
+    code?: {
+        /** 扩展的config配置信息 */
+        config?: SMap<SelectConfigData>;
+        /** 扩展主代码 */
+        content?: (config: SMap<any>, pack: PackageData) => void;
+        /** 扩展帮助信息 */
+        help?: SMap<string>;
+        /** 扩展启动代码 */
+        precontent?: (data?: SMap<any>) => void;
+    }
 }
 
 
@@ -542,7 +542,7 @@ interface ExtensionItemData {
     /** 网盘地址 */
     netdisk: string;
     /** 来源地址/反馈地址 */
-    forum:string;
+    forum: string;
     /** 版本 */
     version: string;
     /** 文件列表（下载的文件列表） */

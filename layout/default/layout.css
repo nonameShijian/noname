@@ -387,6 +387,9 @@ table {
 	right: 7px;
 	bottom: 7px;
 	z-index: 1;
+	white-space: nowrap;
+	writing-mode: vertical-rl;
+	-webkit-writing-mode: vertical-rl;
 }
 #splash>div>.avatar {
 	width: 86px;
@@ -1319,6 +1322,9 @@ body>.background.land {
 	top: 9px;
 	left: 6px;
 	text-align: center;
+	white-space: nowrap;
+	writing-mode: vertical-rl;
+	-webkit-writing-mode: vertical-rl;
 }
 .card.fullimage>.name.long {
 	top: 6px;
@@ -1732,15 +1738,19 @@ div:not(.handcards)>.card>.info>span,
 	width: 100%
 }
 .content>div {
-	position: relative;
 	margin-top: 8px;
 	margin-bottom: 8px;
 	margin-left: 4px;
 	margin-right: 4px;
+	position: relative;
+	/* width: calc(100% - 8px); */
 }
 .content>.caption + .buttons:not(*:last-child){
 	margin-top: 0;
 	margin-bottom: 0;
+}
+.content>.caption + .buttons:last-child{
+	margin-top: 0;
 }
 .content>.config {
 	height: 20px;
@@ -1934,6 +1944,9 @@ div:not(.handcards)>.card>.info>span,
 	top: 22px;
 	max-height: 68px;
 	overflow: hidden;
+	white-space: nowrap;
+	writing-mode: vertical-rl;
+	-webkit-writing-mode: vertical-rl;
 }
 .button.character>.hp {
 	left: 5px;
@@ -1957,8 +1970,12 @@ div:not(.handcards)>.card>.info>span,
 	left: 0;
 }
 .button.character>.identity {
-	top: -6px;
+	align-items: flex-end;
+	display: flex;
+	flex-direction: column;
+	flex-wrap: wrap-reverse;
 	left: 72px;
+	top: -6px;
 }
 .button.character.newstyle>.identity{
 	/*display: none;*/
@@ -1966,8 +1983,8 @@ div:not(.handcards)>.card>.info>span,
 	background: none !important;
 	/*box-shadow: none;*/
 	left: auto;
-	right: 3px;
-	top: 3px;
+	right: 6px;
+	top: 5px;
 	/*font-size: 20px;*/
 }
 .button.newstyle>.name{
@@ -2074,7 +2091,10 @@ div:not(.handcards)>.card>.info>span,
 	position: absolute;
 	left: 50%;
 }
-#arena.choose-to-move>#control{
+#arena.choose-to-move>#control,
+#arena.discard-player-card>#control,
+#arena.gain-player-card>#control,
+#arena.choose-player-card>#control{
 	top: calc(80%) !important;
 }
 /*--------角色--------*/
@@ -2164,6 +2184,9 @@ div:not(.handcards)>.card>.info>span,
 	top: 24px;
 	font-size: 20px;
 	font-family: 'xinwei';
+	white-space: nowrap;
+	writing-mode: vertical-rl;
+	-webkit-writing-mode: vertical-rl;
 }
 .player>.name.name2 {
 	left: 81px
@@ -2195,7 +2218,7 @@ div:not(.handcards)>.card>.info>span,
 }
 
 .button.character>.name {
-	font-family: 'xinwei'
+	font-family: 'xinwei';
 }
 .player>.intro {
 	top: 87px;
@@ -2221,9 +2244,11 @@ div:not(.handcards)>.card>.info>span,
 	text-shadow: none;
 }
 .player>.turned>div{
-	top:calc(50% - 50px);
-    width: 100%;
-    left: 0;
+	top: calc(50% - 50px);
+    left: calc(50% - 25px);
+	white-space: nowrap;
+	writing-mode: vertical-rl;
+	-webkit-writing-mode: vertical-rl;
 }
 .player>.chain{
 	top: calc(50% - 10px);
@@ -2747,11 +2772,11 @@ div:not(.handcards)>.card>.info>span,
 }
 .identity {
 	text-align: center;
-	width: 22px;
-	height: 22px;
 }
 .identity>div {
+	line-height: 16px;
 	position: relative;
+	text-align: right;
 	top: 2px;
 }
 
@@ -2823,6 +2848,9 @@ div:not(.handcards)>.card>.info>span,
 
 .player>.name_seat {
 	opacity: 0;
+	white-space: nowrap;
+	writing-mode: vertical-rl;
+	-webkit-writing-mode: vertical-rl;
 }
 .player:not([data-position='0']).unseen.unseen2>.name_seat,
 .player:not([data-position='0']):not(.fullskin2).unseen>.name_seat {
@@ -2841,7 +2869,7 @@ div:not(.handcards)>.card>.info>span,
 .linked>.count {
 	right: 154px;
 }
-.acted>.identity {
+.acted>.identity>div {
 	transform: rotate(180deg);
 }
 
@@ -3759,6 +3787,9 @@ div:hover>.intro {
 #window>.choosedouble.character>.name {
 	left: 6%;
 	top: 8%;
+	white-space: nowrap;
+	writing-mode: vertical-rl;
+	-webkit-writing-mode: vertical-rl;
 }
 
 .hrefnode{
@@ -3806,19 +3837,19 @@ div:hover>.intro {
 }
 
 .player .identity {
+	align-items: flex-end;
 	border: none;
-	width: 24px;
-	height: 24px;
 	border-radius: 100%;
-	display: inline-flex;
+	display: flex;
+	flex-direction: column;
 	transition: all 0.2s;
 }
 
 .player .identity>div {
-	margin: auto;
 	position: relative;
 	font-family: 'huangcao','xinwei';
 	font-size: 24px;
+	line-height: 24px;
 	top: 0;
 }
 .player .identity.animate {
@@ -4205,10 +4236,8 @@ div[data-decoration="bronze"]::after{
 	left: 7px;
 	/*border:1px solid #631515;*/
 	border-radius: 4px;
-	padding-top: 2px;
-	padding-bottom: 2px;
-	padding-left: 1px;
-	padding-right: 1px;
+	padding-top: 3px;
+	padding-bottom: 3px;
 	/*color:#631515;*/
 	border: 1px solid rgb(74, 29, 1);
 	color: rgb(74, 29, 1);
@@ -4448,7 +4477,6 @@ div[data-decoration="bronze"]::after{
 }
 .coin_menu .content>.caption>.coin_buy>.menubutton {
 	width: auto;
-	display: inline-block;
 	position: relative;
 	float: right;
 	padding-left: 5px;
@@ -4507,12 +4535,58 @@ div[data-decoration="bronze"]::after{
 	top: 74px;
 	right: 6px;
 }
-.card .tempname {
-	top: 6px;
-	left: 6px;
-	font-size: 22px;
+.tempname {
 	color: white !important;
+	font-size: 22px;
+	left: 6px;
 	pointer-events: none;
+	top: 6px;
+}
+.tempname.vertical {
+	left: 4px;
+	top: 8px;
+	writing-mode: vertical-rl;
+	-webkit-writing-mode: vertical-rl;
+}
+.tempname.tempimage {
+	top: calc(50% - 12.5px);
+	left: 2px;
+	width: calc(100% - 4px);
+	height: 25px;
+	background-image: url('../../image/card/cardtempname_bg.png');
+	background-size: 100% 100%;
+	text-align: right;
+	writing-mode: horizontal-tb;
+	-webkit-writing-mode: horizontal-tb;
+}
+.tempname.tempimage:not([data-nature]) {
+	color: black !important;
+	text-shadow: white 0 0 2px, white 0 0 3px;
+}
+.tempname.tempimage>div {
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	background-size: 100%;
+	background-position: -20px -30px;
+	background-repeat: no-repeat;
+}
+.tempname.tempimage>span {
+	position: relative;
+	z-index: 1;
+	line-height: 25px;
+}
+.button>.tempname {
+	font-size: 17px;
+}
+.button>.tempname:not(.tempimage) {
+	left: 5px;
+	top: 5px;
+}
+.button>.tempname .vertical {
+	left: 3px;
+	top: 6px;
 }
 /*.card.equip1 .wunature,
 .card.equip3 .wunature,
@@ -4555,6 +4629,8 @@ div[data-decoration="bronze"]::after{
 .timerbar>div:last-child {
 	background: linear-gradient(#FFDA47, #CE0404);
 	transition-timing-function: linear;
+	float: left;
+	transform-origin: left;
 }
 /*.timerbar>div:last-child{background: linear-gradient(#FFFFFF,#F0F0F0);}
 .timerbar[data-color="red"]>div:last-child{background: linear-gradient(#FF0000, #CE0404)}
@@ -5367,5 +5443,4 @@ div[data-decoration="bronze"]::after{
 /*--------其它--------*/
 ::-webkit-scrollbar {
 	display: none;
-}
 }

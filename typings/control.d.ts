@@ -29,6 +29,6 @@ declare namespace Lib.element {
          *  其他类型（目前来看选项只有string类型）：
          *      使用control.add，设置面板的选项；
          */
-        replace(...item): Control;
+        replace(...item: any[]): Control;
     }
 }

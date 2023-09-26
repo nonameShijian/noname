@@ -176,7 +176,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				enable:true,
 				//cardnature:'fire',
 				filterTarget:function(card,player,target){
-					if(player!=game.me&&player.countCards('h')<2) return false;
+					//if(player!=game.me&&player.countCards('h')<2) return false;
 					return target.countCards('h')>0;
 				},
 				content:function(){
@@ -185,7 +185,8 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 						event.finish();
 						return;
 					}
-					target.chooseCard(true).ai=function(card){
+					else if(target.countCards('h')==1) event._result={cards:target.getCards('h')};
+					else target.chooseCard(true).ai=function(card){
 						if(_status.event.getRand()<0.5) return Math.random();
 						return get.value(card);
 					};
@@ -280,7 +281,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					target.link();
 				},
-				chongzhu:true,
+				recastable:true,
 				ai:{
 					wuxie:function(target,card,player,viewer){
 						if(_status.event.getRand()<0.5) return 0;
@@ -398,7 +399,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				ai:{
 					value:function(card,player,index,method){
 						if(player.isDisabled(2)) return 0.01;
-						if(card==player.getEquip(2)){
+						if(player.getEquips('tengjia').contains(card)){
 							if(player.hasSkillTag('noDirectDamage')) return 10;
 							if(game.hasPlayer(function(current){
 								return current!=player&&get.attitude(current,player)<0&&current.hasSkillTag('fireAttack',null,null,true);
@@ -452,20 +453,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				subtype:'equip2',
 				loseDelay:false,
 				onLose:function(){
-					var next=game.createEvent('baiyin_recover');
-					event.next.remove(next);
-					var evt=event.getParent();
-					if(evt.getlx===false) evt=evt.getParent();
-					evt.after.push(next);
-					next.player=player;
-					next.setContent(function(){
-						if(player.isDamaged()) player.logSkill('baiyin_skill');
-						player.recover();
-					});
-				},
-				filterLose:function(card,player){
-					if(player.hasSkillTag('unequip2')) return false;
-					return true;
+					player.addTempSkill('baiyin_skill_lose')
 				},
 				skills:['baiyin_skill'],
 				tag:{
@@ -554,7 +542,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 							cards.splice(i--,1);
 						}
 					}
-					var muniu=player.getEquip(5);
+					var muniu=player.getEquip('muniu');
 					if(!muniu||!cards.length){
 						for(var i=0;i<cards.length;i++){
 							cards[i].discard();
@@ -569,8 +557,9 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					},muniu,muniu.cards);
 					game.delayx();
 					"step 2"
+					var muniu=player.getEquip('muniu');
 					var players=game.filterPlayer(function(current){
-						if(!current.getEquip(5)&&current!=player&&!current.isTurnedOver()&&
+						if(current.canEquip(muniu)&&current!=player&&!current.isTurnedOver()&&
 							get.attitude(player,current)>=3&&get.attitude(current,player)>=3){
 							return true;
 						}
@@ -578,15 +567,15 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					players.sort(lib.sort.seat);
 					var choice=players[0];
 					var next=player.chooseTarget('是否移动木牛流马？',function(card,player,target){
-						return !target.isMin()&&player!=target&&target.isEmpty(5);
-					});
+						return !target.isMin()&&player!=target&&target.canEquip(_status.event.muniu);
+					}).set('muniu',muniu)
 					next.set('ai',function(target){
 						return target==_status.event.choice?1:-1;
 					});
 					next.set('choice',choice);
 					"step 3"
 					if(result.bool){
-						var card=player.getEquip(5);
+						var card=player.getEquip('muniu');
 						result.targets[0].equip(card);
 						player.$give(card,result.targets[0]);
 						player.line(result.targets,'green');
@@ -615,9 +604,10 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					},
 				},
 				mark:true,
+				markimage2:'image/card/muniu_small.png',
 				intro:{
 					content:function(storage,player){
-						var muniu=player.getEquip(5);
+						var muniu=player.getEquip('muniu');
 						if(!muniu||!muniu.cards||!muniu.cards.length) return '共有〇张牌';
 						if(player.isUnderControl(true)){
 							return get.translation(muniu.cards);
@@ -627,7 +617,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 						}
 					},
 					mark:function(dialog,storage,player){
-						var muniu=player.getEquip(5);
+						var muniu=player.getEquip('muniu');
 						if(!muniu||!muniu.cards||!muniu.cards.length) return '共有〇张牌';
 						if(player.isUnderControl(true)){
 							dialog.addAuto(muniu.cards);
@@ -637,7 +627,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 						}
 					},
 					markcount:function(storage,player){
-						var muniu=player.getEquip(5);
+						var muniu=player.getEquip('muniu');
 						if(muniu&&muniu.cards) return muniu.cards.length;
 						return 0;
 					}
@@ -657,7 +647,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					}).length>0;
 				},
 				content:function(){
-					var muniu=player.getEquip(5);
+					var muniu=player.getEquip('muniu');
 					if(muniu&&muniu.cards){
 						muniu.cards.removeArray(trigger.ss);
 						lib.skill.muniu_skill.sync(muniu);
@@ -708,7 +698,8 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				priority:2,
 				firstDo:true,
 				charlotte:true,
-				filter:function(event){
+				filter:function(event,player){
+					if(player.hasSkillTag('jiuSustain',null,event.name)) return false;
 					if(event.name=='useCard') return (event.card&&(event.card.name=='sha'));
 					return true;
 				},
@@ -785,7 +776,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 							//if(card.name=='nanman'||card.name=='wanjian'||card.name=='chuqibuyi') return 'zerotarget';
 							if(card.name=='nanman'||card.name=='wanjian') return 'zerotarget';
 							if(card.name=='sha'){
-								var equip1=player.getEquip(1);
+								var equip1=player.getEquip('zhuque');
 								if(equip1&&equip1.name=='zhuque') return 1.9;
 								if(!card.nature) return 'zerotarget';
 							}
@@ -862,6 +853,31 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					trigger.num=1;
 				},
+				subSkill:{
+					lose:{
+						audio:'baiyin_skill',
+						forced:true,
+						charlotte:true,
+						equipSkill:true,
+						trigger:{
+							player:'loseAfter',
+							global:['equipAfter','addJudgeAfter','gainAfter','loseAsyncAfter','addToExpansionAfter'],
+						},
+						filter:(event,player)=>{
+							if(player.isHealthy()||player.hasSkillTag('unequip2')) return false;
+							var evt=event.getl(player);
+							return evt&&evt.es.some(card=>card.name=='baiyin')
+						},
+						content:function(){
+							var evt=trigger.getl(player);
+							evt.es.forEach(card=>{
+								if(card.name=='baiyin'){
+									player.recover();
+								}
+							})
+						},
+					},
+				},
 				ai:{
 					filterDamage:true,
 					skillTagFilter:function(player,tag,arg){
@@ -929,7 +945,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 		},
 		translate:{
 			jiu:'酒',
-			jiu_info:'①每回合限一次。出牌阶段，对你自己使用。目标角色使用的下一张【杀】的伤害值基数+1。②当你处于濒死状态时，对你自己使用。目标角色回复1点体力。',
+			jiu_info:'①每回合限一次。出牌阶段，对你自己使用。本回合目标角色使用的下一张【杀】的伤害值基数+1。②当你处于濒死状态时，对你自己使用。目标角色回复1点体力。',
 			huogong:'火攻',
 			tiesuo:'铁索连环',
 			tiesuo_info:'此牌可被重铸。出牌阶段，对至多两名角色使用。目标角色横置。',

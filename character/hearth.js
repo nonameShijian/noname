@@ -8466,27 +8466,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				filterTarget:true,
 				content:function(){
 					'step 0'
-					target.chooseCard('h',true,'重铸一张手牌');
+					target.chooseCard('h',true,'重铸一张手牌',lib.filter.cardRecastable);
 					'step 1'
 					if(result.bool&&result.cards.length){
-						target.$throw(result.cards);
-						target.lose(result.cards,ui.discardPile);
-						var type=get.type(result.cards[0],'trick');
-						var name=result.cards[0].name;
-						var card2=get.cardPile(function(card){
-							return get.type(card,'trick')==type&&card.name!=name;
+						target.recast(result.cards,null,(player,cards)=>{
+							var type=get.type(cards[0],'trick'),name=cards[0].name,card2=get.cardPile(card=>get.type(card,'trick')==type&&card.name!=name);
+							if(!card2) card2=get.cardPile(card=>get.type(card,'trick')==type);
+							if(card2) player.gain(card2,'draw');
+							else player.draw().log=false;
 						});
-						if(!card2){
-							card2=get.cardPile(function(card){
-								return get.type(card,'trick')==type;
-							});
-						}
-						if(card2){
-							target.gain(card2,'draw');
-						}
-						else{
-							target.draw();
-						}
 						var clone=game.createCard(card);
 						player.gain(clone,'gain2');
 						clone.classList.add('glow');

@@ -480,7 +480,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 								hhzz_toulianghuanzhu:{
 									enable:true,
 									cardimage:"toulianghuanzhu",
-									chongzhu:true,
+									recastable:true,
 									type:'trick',
 									filterTarget:function(card,player,target){
 										return target.skillH.length>0;
@@ -954,7 +954,6 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 								}
 							},
 							logAi:function(){},
-							hasZhuSkill:function(){return false},
 							changeLingli:function(num){
 								if(typeof num!='number') num=1;
 								if(typeof this.storage._lingli!='number') this.storage._lingli=0;
@@ -1005,7 +1004,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 								return dialog;
 							},
 							chooseCharacter:function(){
-								var next=game.createEvent('chooseCharacter',false);
+								var next=game.createEvent('chooseCharacter');
 								next.showConfig=true;
 								next.setContent(function(){
 									'step 0'
@@ -1221,7 +1220,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				content:{
 					chooseCharacterBefore:function(){
 						game.chooseCharacter=function(){
-				var next=game.createEvent('chooseCharacter',false);
+				var next=game.createEvent('chooseCharacter');
 				next.showConfig=true;
 				next.addPlayer=true;
 				next.ai=function(player,list,back){
@@ -2417,7 +2416,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
  						_jiazu_jin:{
  							trigger:{player:'phaseDrawEnd'},
  							popup:'晋势',
- 							prompt2:'摸牌阶段结束时，你可以展示你于此阶段内因摸牌而获得的牌。若这些牌的花色均不同，则你摸一张牌。',
+ 							prompt2:'摸牌阶段结束时，你可以展示你于此阶段内因摸牌而得到的牌。若这些牌的花色均不同，则你摸一张牌。',
  							filter:function(event,player){
  								var hs=player.getCards('h');
  								return player.group=='jin'&&hs.length>0&&player.getHistory('gain',function(evt){
@@ -2628,7 +2627,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
   						},
   						_jiazu_jin:{
  								popup:'晋势',
- 								prompt2:'摸牌阶段结束时，你可以展示你于此阶段内因摸牌而获得的牌。若这些牌的花色均不同，则你摸一张牌。',
+ 								prompt2:'摸牌阶段结束时，你可以展示你于此阶段内因摸牌而得到的牌。若这些牌的花色均不同，则你摸一张牌。',
  							},
   						_jiazu_key:{
   							popup:'键魂',
@@ -2798,7 +2797,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
    			},
    			game.addGlobalSkill('_changeCharacter');
    			game.chooseCharacterTwo=function(){
-   				var next=game.createEvent('chooseCharacter',false);
+   				var next=game.createEvent('chooseCharacter');
    				next.setContent(function(){
    					'step 0'
    					ui.arena.classList.add('choose-character');
@@ -3263,7 +3262,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
    			game.identityVideoName='千里单骑';
    			game.saveConfig('player_number',_status.qianlidanji.player_number,'identity');
    			game.chooseCharacter=function(){
-      	var next=game.createEvent('chooseCharacter',false);
+      	var next=game.createEvent('chooseCharacter');
    				next.showConfig=true;
    				next.setContent(function(){
    					"step 0"
@@ -3775,7 +3774,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
    			]
    			game.liangjunduilei=list;
    			game.chooseCharacterTwo=function(){
-   				var next=game.createEvent('chooseCharacter',false);
+   				var next=game.createEvent('chooseCharacter');
    				next.setContent(function(){
    					'step 0'
    					for(var i in lib.skill){
@@ -4093,7 +4092,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 										}
 									}
 								}
-								if(info.linked) target.classList.add('linked');
+								if(info.linked) target.classList.add('linked'+(get.is.linked2(target)?'2':''));
 								if(info.turnedover) target.classList.add('turnedover');
 								if(info.position<_status.firstAct.brawlinfo.position) _status.firstAct=target;
 								var hs=[];

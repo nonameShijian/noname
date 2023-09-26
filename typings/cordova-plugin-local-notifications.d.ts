@@ -23,7 +23,7 @@ interface LocalNotification {
 	 * @param scope    The callback function's scope.
 	 */
 	requestPermission: (callback?: Callback, scope?: any) => void;
-	
+
 	/**
 	 * Schedule notifications.
 	 *
@@ -157,13 +157,13 @@ interface LocalNotification {
 	 * @param scope    The callback function's scope.
 	 */
 
-	get: (ids: number[], callback: (notifications: Object[]) => void, scope?: any) => void;
+	get(ids: number[], callback: (notifications: Object[]) => void, scope?: any): void;
 
 	/**
 	 * List of local notifications specified by id.
 	 * If called without IDs, all notification will be returned.
 	 */
-	get: (callback: (notifications: Object[]) => void, scope?: any) => void;
+	get(callback: (notifications: Object[]) => void, scope?: any): void;
 
 	/**
 	 * List for all notifications.
@@ -286,7 +286,7 @@ interface LocalNotification {
 	 * @param event The event's name.
 	 * @param args  The callback's arguments.
 	 */
-	fireEvent: (event: string, ...args) => void;
+	fireEvent: (event: string, ...args: any[]) => void;
 
 	/**
 	 * Fire queued events once the device is ready and all listeners are registered.
@@ -345,7 +345,7 @@ interface privateFunction {
 	 *
 	 * @return [ Function ]
 	 */
-	_createCallbackFn: (fn: Function, scope?: any) => (...args) => void;
+	_createCallbackFn: (fn: Function, scope?: any) => (...args: any[]) => void;
 
 	/**
 	 * Convert the IDs to numbers.
@@ -360,7 +360,7 @@ interface privateFunction {
 	 * @param options Object with key-value properties.
 	 * @param keys    List of keys.
 	 */
-	_getValueFor: (options: object, ...keys) => object | null;
+	_getValueFor: (options: object, ...keys: any[]) => object | null;
 
 	/**
 	 * Convert a value to an array.

@@ -1,6 +1,6 @@
 declare namespace Lib.element {
 
-    interface Button extends HTMLDivElement,IButtonLink {
+    interface Button extends HTMLDivElement, IButtonLink {
         /**
          * 设置当前按钮进_status.event.excludeButton排除列表中
          */
@@ -34,7 +34,7 @@ declare namespace Lib.element {
             【v1.9.106.3】characterx：对应item为string,则是武将名，效果：添加同名武将替换机制，点击武将按钮左下角的“替换”键即可切换同名武将；
                 注：替换武将需要满足get.slimName的转化规则；
          */
-        link:Card|Player|string|CardBaseData;
+        link: Card | Player | string | CardBaseData;
     }
 
     // interface CardButton extends Card {

@@ -27,15 +27,15 @@ interface ExCardData {
     cardimage?: string;
     /** 
      * 卡牌的卡面
-	 * 
+     * 
      * 注：需要fullskin为true
-	 * 
+     * 
      * 带“ext:”前缀的，其文件夹路径：extension/卡牌的image。没有则路径是：卡牌的image
-	 * 
+     * 
      * 若值为“background”：则调用setBackground，设置对应类型的卡面；
-	 * 
+     * 
      * 若值为“card”：..........
-	 * 
+     * 
      * 注：判断比较复杂，有优先级顺序，之后在独立详细讨论
      */
     image?: string;
@@ -92,13 +92,13 @@ interface ExCardData {
      */
     cardnature?: string;
     /** 【个人框架扩展】指定卡牌构建的优先顺序，默认0最低 */
-    cardOrder?:number;
+    cardOrder?: number;
     /** 【个人框架扩展】指定卡牌花色 */
-    cardcolor2?:string[];
+    cardcolor2?: string[];
     /** 【个人框架扩展】指定卡牌的数字 */
     cardnum?: number[];
     /** 【个人框架扩展】自动生成，无需配置，该name即为该card配置的key */
-    _name?:string;
+    _name?: string;
 
     //功能上（也影响UI）
     /** 类型 */
@@ -156,11 +156,11 @@ interface ExCardData {
      */
     filterTarget?: boolean | ThreeParmFun<Card, Player, Target, boolean>;
     /**
-	 * 这个应该是指先指定A再指定B的动作（和铁索不同）
-	 * 
+     * 这个应该是指先指定A再指定B的动作（和铁索不同）
+     * 
      * 目前只有【借刀杀人】，【隔岸观火】，【声东击西】有这个属性
-	 * 
-	 * 于【v1.9.113.4】修改实现，董允的舍宴可以为有这个属性的卡牌添加目标
+     * 
+     * 于【v1.9.113.4】修改实现，董允的舍宴可以为有这个属性的卡牌添加目标
      */
     singleCard?: boolean;
 
@@ -279,7 +279,7 @@ interface ExCardData {
     /**
      * 应该是在执行该卡牌content之前执行的事件content
      */
-    contentBefore?(player, targets): ContentFunc;
+    contentBefore?(player: Player, targets: Target[]): ContentFunc;
     /**
      * 核心：触发内容
      * 
@@ -388,44 +388,44 @@ interface ExCardData {
      * 若不填，则默认播放该卡牌名字的音频；
      * 若值为true，则默认设置为：“ext:扩展名”；
      */
-    audio?: string|boolean;
+    audio?: string | boolean;
 
     /** 一次性卡牌，只能使用一次，使用完，移除出卡牌外（不置入弃牌堆中的） */
     vanish?: boolean;
-    
+
     /** 
      * 卡牌的基础伤害数值，不填时默认为1 
      * 
      * 在useCard事件中使用，在event中传递
      */
-    baseDamage?:number;
+    baseDamage?: number;
 
     /** 
      * 添加updateUsable:'phaseUse'机制，用于区分【出牌阶段限一次】和【每回合限一次】的卡牌 ；
      * 注：目前就固定一个值，phaseUse【出牌阶段限一次】；
      * 注：当一张牌的updateUsable为'phaseUse'时，会在出牌阶段结束时，而不是回合结束时更新使用数据，比如杀是出牌阶段限一次，酒是每回合限一次；
      */
-    updateUsable?:string;
-    
+    updateUsable?: string;
+
     /**
      * 强制加载该card配置，
      * 例如，一些原本不用于contect模式得卡，设置该值可强制加载该card
      */
-    forceLoad?:boolean;
+    forceLoad?: boolean;
 
     /**
      * 是否，触发game.logv，取值不为false时触发；
      */
-    logv?:boolean;
-    
+    logv?: boolean;
+
     //ai部分
     ai?: ExAIData,
     postAi?(targets: Target[]): boolean;
     //一般用于createCard时，为其添加一些动态ai值
     /** 用于get.useful,优先度较高 */
-    _modUseful?():number;
+    _modUseful?(): number;
     /** 用于get.value,优先度最高 */
-    _modValue?(player?:Player,method?:any):number;
+    _modValue?(player?: Player, method?: any): number;
 
 
     //以下部分貌似都是是用于显示信息的：
@@ -439,13 +439,12 @@ interface ExCardData {
 
     /**
      * 【应变模式相关】
-     * 用于展示卡牌长按时的应变描述。
-     * 可以为函数（参数为卡牌）或者字符串。
      */
-    yingbian_prompt?:string|OneParmFun<Card,string>;
+    defaultYingbianEffect?: string;
 
-    judge?(): number;
     judge2?(result: JudgeResultData): boolean;
+
+    nature: string[];
 
     //日后还有很多属性要添加的
     [key: string]: any;
@@ -496,7 +495,7 @@ interface CardBaseUIData {
     //基本结构（UI一般会有的结构）
     name?: string;
     suit?: string;
-	number?: CardBaseNumber;
+    number?: CardBaseNumber;
     nature?: string;
 
     //用于某些方法，用于过滤卡牌的额外结构
@@ -511,10 +510,11 @@ interface CardBaseUIData {
      * 在useCard使用时，作为视为牌，会把next.cards,设置为card.cards;
      * 
      */
-    isCard?:boolean;
+    isCard?: boolean;
 
     /** 真实使用的卡牌 */
     cards?: Card[];
+    storage?: SMap<any>;
 }
 
 /** 范围信息 */
@@ -538,38 +538,38 @@ type DistanceData = {
 
 /** 新增一个game.addCard的info2类型 */
 interface CardConfigInfo {
-	/** 来源扩展 */
-	extension?: string;
-	/** 是否有卡牌音效 */
-	audio?: boolean;
-	/** 是否有卡牌图片 */
-	fullskin?: boolean;
-	/** 是否有卡牌图片 */
-	fullimage?: boolean;
-	/** 卡牌中文名 */
-	translate: string;
-	/** 卡牌效果描述 */
-	description: string;
-	/** 卡牌点数 */
-	number?: CardBaseNumber;
-	/** 卡牌颜色 */
-	color?: 'red' | 'black';
+    /** 来源扩展 */
+    extension?: string;
+    /** 是否有卡牌音效 */
+    audio?: boolean;
+    /** 是否有卡牌图片 */
+    fullskin?: boolean;
+    /** 是否有卡牌图片 */
+    fullimage?: boolean;
+    /** 卡牌中文名 */
+    translate: string;
+    /** 卡牌效果描述 */
+    description: string;
+    /** 卡牌点数 */
+    number?: CardBaseNumber;
+    /** 卡牌颜色 */
+    color?: 'red' | 'black';
 }
 
 /** 新增卡包类型 */
 interface CardPackConfigInfo {
-	mode?: any;
-	forbid?: any;
-	/**
-	 * [花色, 点数, 卡牌名, 属性, 其他标签]
-	 */
-	list: [CardBaseSuit, CardBaseNumber, string, string | null | undefined, string[]][];
-	card?: {
-		[key: string]: CardConfigInfo;
-	},
-	skill?: {
-		[key: string]: ExSkillData;
-	},
-	/** 其他属性覆盖lib同属性内容 */
-	[key: string]: object;
+    mode?: any;
+    forbid?: any;
+    /**
+     * [花色, 点数, 卡牌名, 属性, 其他标签]
+     */
+    list: [CardBaseSuit, CardBaseNumber, string, string | null | undefined, string[]][];
+    card?: {
+        [key: string]: CardConfigInfo;
+    },
+    skill?: {
+        [key: string]: ExSkillData;
+    },
+    /** 其他属性覆盖lib同属性内容 */
+    [key: string]: object | undefined;
 }

@@ -3,7 +3,7 @@
 // Definitions by: The Electron Team <https://github.com/electron/electron>
 // Definitions: https://github.com/electron/electron-typescript-definitions
 
-/// <reference types="node" />
+/// @ts-nocheck
 
 type GlobalEvent = Event & { returnValue: any };
 
@@ -26,25 +26,25 @@ declare namespace Electron {
      * @platform darwin,win32
      */
     on(event: 'accessibility-support-changed', listener: (event: Event,
-                                                          /**
-                                                           * `true` when Chrome's accessibility support is enabled, `false` otherwise.
-                                                           */
-                                                          accessibilitySupportEnabled: boolean) => void): this;
+      /**
+       * `true` when Chrome's accessibility support is enabled, `false` otherwise.
+       */
+      accessibilitySupportEnabled: boolean) => void): this;
     once(event: 'accessibility-support-changed', listener: (event: Event,
-                                                          /**
-                                                           * `true` when Chrome's accessibility support is enabled, `false` otherwise.
-                                                           */
-                                                          accessibilitySupportEnabled: boolean) => void): this;
+      /**
+       * `true` when Chrome's accessibility support is enabled, `false` otherwise.
+       */
+      accessibilitySupportEnabled: boolean) => void): this;
     addListener(event: 'accessibility-support-changed', listener: (event: Event,
-                                                          /**
-                                                           * `true` when Chrome's accessibility support is enabled, `false` otherwise.
-                                                           */
-                                                          accessibilitySupportEnabled: boolean) => void): this;
+      /**
+       * `true` when Chrome's accessibility support is enabled, `false` otherwise.
+       */
+      accessibilitySupportEnabled: boolean) => void): this;
     removeListener(event: 'accessibility-support-changed', listener: (event: Event,
-                                                          /**
-                                                           * `true` when Chrome's accessibility support is enabled, `false` otherwise.
-                                                           */
-                                                          accessibilitySupportEnabled: boolean) => void): this;
+      /**
+       * `true` when Chrome's accessibility support is enabled, `false` otherwise.
+       */
+      accessibilitySupportEnabled: boolean) => void): this;
     /**
      * Emitted when the application is activated. Various actions can trigger this
      * event, such as launching the application for the first time, attempting to
@@ -54,13 +54,13 @@ declare namespace Electron {
      * @platform darwin
      */
     on(event: 'activate', listener: (event: Event,
-                                     hasVisibleWindows: boolean) => void): this;
+      hasVisibleWindows: boolean) => void): this;
     once(event: 'activate', listener: (event: Event,
-                                     hasVisibleWindows: boolean) => void): this;
+      hasVisibleWindows: boolean) => void): this;
     addListener(event: 'activate', listener: (event: Event,
-                                     hasVisibleWindows: boolean) => void): this;
+      hasVisibleWindows: boolean) => void): this;
     removeListener(event: 'activate', listener: (event: Event,
-                                     hasVisibleWindows: boolean) => void): this;
+      hasVisibleWindows: boolean) => void): this;
     /**
      * Emitted during Handoff after an activity from this device was successfully
      * resumed on another one.
@@ -68,41 +68,41 @@ declare namespace Electron {
      * @platform darwin
      */
     on(event: 'activity-was-continued', listener: (event: Event,
-                                                   /**
-                                                    * A string identifying the activity. Maps to `NSUserActivity.activityType`.
-                                                    */
-                                                   type: string,
-                                                   /**
-                                                    * Contains app-specific state stored by the activity.
-                                                    */
-                                                   userInfo: unknown) => void): this;
+      /**
+       * A string identifying the activity. Maps to `NSUserActivity.activityType`.
+       */
+      type: string,
+      /**
+       * Contains app-specific state stored by the activity.
+       */
+      userInfo: unknown) => void): this;
     once(event: 'activity-was-continued', listener: (event: Event,
-                                                   /**
-                                                    * A string identifying the activity. Maps to `NSUserActivity.activityType`.
-                                                    */
-                                                   type: string,
-                                                   /**
-                                                    * Contains app-specific state stored by the activity.
-                                                    */
-                                                   userInfo: unknown) => void): this;
+      /**
+       * A string identifying the activity. Maps to `NSUserActivity.activityType`.
+       */
+      type: string,
+      /**
+       * Contains app-specific state stored by the activity.
+       */
+      userInfo: unknown) => void): this;
     addListener(event: 'activity-was-continued', listener: (event: Event,
-                                                   /**
-                                                    * A string identifying the activity. Maps to `NSUserActivity.activityType`.
-                                                    */
-                                                   type: string,
-                                                   /**
-                                                    * Contains app-specific state stored by the activity.
-                                                    */
-                                                   userInfo: unknown) => void): this;
+      /**
+       * A string identifying the activity. Maps to `NSUserActivity.activityType`.
+       */
+      type: string,
+      /**
+       * Contains app-specific state stored by the activity.
+       */
+      userInfo: unknown) => void): this;
     removeListener(event: 'activity-was-continued', listener: (event: Event,
-                                                   /**
-                                                    * A string identifying the activity. Maps to `NSUserActivity.activityType`.
-                                                    */
-                                                   type: string,
-                                                   /**
-                                                    * Contains app-specific state stored by the activity.
-                                                    */
-                                                   userInfo: unknown) => void): this;
+      /**
+       * A string identifying the activity. Maps to `NSUserActivity.activityType`.
+       */
+      type: string,
+      /**
+       * Contains app-specific state stored by the activity.
+       */
+      userInfo: unknown) => void): this;
     /**
      * Emitted before the application starts closing its windows. Calling
      * `event.preventDefault()` will prevent the default behavior, which is terminating
@@ -123,92 +123,92 @@ declare namespace Electron {
      * Emitted when a browserWindow gets blurred.
      */
     on(event: 'browser-window-blur', listener: (event: Event,
-                                                window: BrowserWindow) => void): this;
+      window: BrowserWindow) => void): this;
     once(event: 'browser-window-blur', listener: (event: Event,
-                                                window: BrowserWindow) => void): this;
+      window: BrowserWindow) => void): this;
     addListener(event: 'browser-window-blur', listener: (event: Event,
-                                                window: BrowserWindow) => void): this;
+      window: BrowserWindow) => void): this;
     removeListener(event: 'browser-window-blur', listener: (event: Event,
-                                                window: BrowserWindow) => void): this;
+      window: BrowserWindow) => void): this;
     /**
      * Emitted when a new browserWindow is created.
      */
     on(event: 'browser-window-created', listener: (event: Event,
-                                                   window: BrowserWindow) => void): this;
+      window: BrowserWindow) => void): this;
     once(event: 'browser-window-created', listener: (event: Event,
-                                                   window: BrowserWindow) => void): this;
+      window: BrowserWindow) => void): this;
     addListener(event: 'browser-window-created', listener: (event: Event,
-                                                   window: BrowserWindow) => void): this;
+      window: BrowserWindow) => void): this;
     removeListener(event: 'browser-window-created', listener: (event: Event,
-                                                   window: BrowserWindow) => void): this;
+      window: BrowserWindow) => void): this;
     /**
      * Emitted when a browserWindow gets focused.
      */
     on(event: 'browser-window-focus', listener: (event: Event,
-                                                 window: BrowserWindow) => void): this;
+      window: BrowserWindow) => void): this;
     once(event: 'browser-window-focus', listener: (event: Event,
-                                                 window: BrowserWindow) => void): this;
+      window: BrowserWindow) => void): this;
     addListener(event: 'browser-window-focus', listener: (event: Event,
-                                                 window: BrowserWindow) => void): this;
+      window: BrowserWindow) => void): this;
     removeListener(event: 'browser-window-focus', listener: (event: Event,
-                                                 window: BrowserWindow) => void): this;
+      window: BrowserWindow) => void): this;
     /**
      * Emitted when failed to verify the `certificate` for `url`, to trust the
      * certificate you should prevent the default behavior with
      * `event.preventDefault()` and call `callback(true)`.
      */
     on(event: 'certificate-error', listener: (event: Event,
-                                              webContents: WebContents,
-                                              url: string,
-                                              /**
-                                               * The error code
-                                               */
-                                              error: string,
-                                              certificate: Certificate,
-                                              callback: (isTrusted: boolean) => void,
-                                              isMainFrame: boolean) => void): this;
+      webContents: WebContents,
+      url: string,
+      /**
+       * The error code
+       */
+      error: string,
+      certificate: Certificate,
+      callback: (isTrusted: boolean) => void,
+      isMainFrame: boolean) => void): this;
     once(event: 'certificate-error', listener: (event: Event,
-                                              webContents: WebContents,
-                                              url: string,
-                                              /**
-                                               * The error code
-                                               */
-                                              error: string,
-                                              certificate: Certificate,
-                                              callback: (isTrusted: boolean) => void,
-                                              isMainFrame: boolean) => void): this;
+      webContents: WebContents,
+      url: string,
+      /**
+       * The error code
+       */
+      error: string,
+      certificate: Certificate,
+      callback: (isTrusted: boolean) => void,
+      isMainFrame: boolean) => void): this;
     addListener(event: 'certificate-error', listener: (event: Event,
-                                              webContents: WebContents,
-                                              url: string,
-                                              /**
-                                               * The error code
-                                               */
-                                              error: string,
-                                              certificate: Certificate,
-                                              callback: (isTrusted: boolean) => void,
-                                              isMainFrame: boolean) => void): this;
+      webContents: WebContents,
+      url: string,
+      /**
+       * The error code
+       */
+      error: string,
+      certificate: Certificate,
+      callback: (isTrusted: boolean) => void,
+      isMainFrame: boolean) => void): this;
     removeListener(event: 'certificate-error', listener: (event: Event,
-                                              webContents: WebContents,
-                                              url: string,
-                                              /**
-                                               * The error code
-                                               */
-                                              error: string,
-                                              certificate: Certificate,
-                                              callback: (isTrusted: boolean) => void,
-                                              isMainFrame: boolean) => void): this;
+      webContents: WebContents,
+      url: string,
+      /**
+       * The error code
+       */
+      error: string,
+      certificate: Certificate,
+      callback: (isTrusted: boolean) => void,
+      isMainFrame: boolean) => void): this;
     /**
      * Emitted when the child process unexpectedly disappears. This is normally because
      * it was crashed or killed. It does not include renderer processes.
      */
     on(event: 'child-process-gone', listener: (event: Event,
-                                               details: Details) => void): this;
+      details: Details) => void): this;
     once(event: 'child-process-gone', listener: (event: Event,
-                                               details: Details) => void): this;
+      details: Details) => void): this;
     addListener(event: 'child-process-gone', listener: (event: Event,
-                                               details: Details) => void): this;
+      details: Details) => void): this;
     removeListener(event: 'child-process-gone', listener: (event: Event,
-                                               details: Details) => void): this;
+      details: Details) => void): this;
     /**
      * Emitted during Handoff when an activity from a different device wants to be
      * resumed. You should call `event.preventDefault()` if you want to handle this
@@ -222,45 +222,45 @@ declare namespace Electron {
      * @platform darwin
      */
     on(event: 'continue-activity', listener: (event: Event,
-                                              /**
-                                               * A string identifying the activity. Maps to `NSUserActivity.activityType`.
-                                               */
-                                              type: string,
-                                              /**
-                                               * Contains app-specific state stored by the activity on another device.
-                                               */
-                                              userInfo: unknown,
-                                              details: ContinueActivityDetails) => void): this;
+      /**
+       * A string identifying the activity. Maps to `NSUserActivity.activityType`.
+       */
+      type: string,
+      /**
+       * Contains app-specific state stored by the activity on another device.
+       */
+      userInfo: unknown,
+      details: ContinueActivityDetails) => void): this;
     once(event: 'continue-activity', listener: (event: Event,
-                                              /**
-                                               * A string identifying the activity. Maps to `NSUserActivity.activityType`.
-                                               */
-                                              type: string,
-                                              /**
-                                               * Contains app-specific state stored by the activity on another device.
-                                               */
-                                              userInfo: unknown,
-                                              details: ContinueActivityDetails) => void): this;
+      /**
+       * A string identifying the activity. Maps to `NSUserActivity.activityType`.
+       */
+      type: string,
+      /**
+       * Contains app-specific state stored by the activity on another device.
+       */
+      userInfo: unknown,
+      details: ContinueActivityDetails) => void): this;
     addListener(event: 'continue-activity', listener: (event: Event,
-                                              /**
-                                               * A string identifying the activity. Maps to `NSUserActivity.activityType`.
-                                               */
-                                              type: string,
-                                              /**
-                                               * Contains app-specific state stored by the activity on another device.
-                                               */
-                                              userInfo: unknown,
-                                              details: ContinueActivityDetails) => void): this;
+      /**
+       * A string identifying the activity. Maps to `NSUserActivity.activityType`.
+       */
+      type: string,
+      /**
+       * Contains app-specific state stored by the activity on another device.
+       */
+      userInfo: unknown,
+      details: ContinueActivityDetails) => void): this;
     removeListener(event: 'continue-activity', listener: (event: Event,
-                                              /**
-                                               * A string identifying the activity. Maps to `NSUserActivity.activityType`.
-                                               */
-                                              type: string,
-                                              /**
-                                               * Contains app-specific state stored by the activity on another device.
-                                               */
-                                              userInfo: unknown,
-                                              details: ContinueActivityDetails) => void): this;
+      /**
+       * A string identifying the activity. Maps to `NSUserActivity.activityType`.
+       */
+      type: string,
+      /**
+       * Contains app-specific state stored by the activity on another device.
+       */
+      userInfo: unknown,
+      details: ContinueActivityDetails) => void): this;
     /**
      * Emitted during Handoff when an activity from a different device fails to be
      * resumed.
@@ -268,41 +268,41 @@ declare namespace Electron {
      * @platform darwin
      */
     on(event: 'continue-activity-error', listener: (event: Event,
-                                                    /**
-                                                     * A string identifying the activity. Maps to `NSUserActivity.activityType`.
-                                                     */
-                                                    type: string,
-                                                    /**
-                                                     * A string with the error's localized description.
-                                                     */
-                                                    error: string) => void): this;
+      /**
+       * A string identifying the activity. Maps to `NSUserActivity.activityType`.
+       */
+      type: string,
+      /**
+       * A string with the error's localized description.
+       */
+      error: string) => void): this;
     once(event: 'continue-activity-error', listener: (event: Event,
-                                                    /**
-                                                     * A string identifying the activity. Maps to `NSUserActivity.activityType`.
-                                                     */
-                                                    type: string,
-                                                    /**
-                                                     * A string with the error's localized description.
-                                                     */
-                                                    error: string) => void): this;
+      /**
+       * A string identifying the activity. Maps to `NSUserActivity.activityType`.
+       */
+      type: string,
+      /**
+       * A string with the error's localized description.
+       */
+      error: string) => void): this;
     addListener(event: 'continue-activity-error', listener: (event: Event,
-                                                    /**
-                                                     * A string identifying the activity. Maps to `NSUserActivity.activityType`.
-                                                     */
-                                                    type: string,
-                                                    /**
-                                                     * A string with the error's localized description.
-                                                     */
-                                                    error: string) => void): this;
+      /**
+       * A string identifying the activity. Maps to `NSUserActivity.activityType`.
+       */
+      type: string,
+      /**
+       * A string with the error's localized description.
+       */
+      error: string) => void): this;
     removeListener(event: 'continue-activity-error', listener: (event: Event,
-                                                    /**
-                                                     * A string identifying the activity. Maps to `NSUserActivity.activityType`.
-                                                     */
-                                                    type: string,
-                                                    /**
-                                                     * A string with the error's localized description.
-                                                     */
-                                                    error: string) => void): this;
+      /**
+       * A string identifying the activity. Maps to `NSUserActivity.activityType`.
+       */
+      type: string,
+      /**
+       * A string with the error's localized description.
+       */
+      error: string) => void): this;
     /**
      * Emitted when mac application become active. Difference from `activate` event is
      * that `did-become-active` is emitted every time the app becomes active, not only
@@ -332,13 +332,13 @@ declare namespace Electron {
      * @deprecated
      */
     on(event: 'gpu-process-crashed', listener: (event: Event,
-                                                killed: boolean) => void): this;
+      killed: boolean) => void): this;
     once(event: 'gpu-process-crashed', listener: (event: Event,
-                                                killed: boolean) => void): this;
+      killed: boolean) => void): this;
     addListener(event: 'gpu-process-crashed', listener: (event: Event,
-                                                killed: boolean) => void): this;
+      killed: boolean) => void): this;
     removeListener(event: 'gpu-process-crashed', listener: (event: Event,
-                                                killed: boolean) => void): this;
+      killed: boolean) => void): this;
     /**
      * Emitted when `webContents` wants to do basic auth.
      *
@@ -351,25 +351,25 @@ declare namespace Electron {
      * page.
      */
     on(event: 'login', listener: (event: Event,
-                                  webContents: WebContents,
-                                  authenticationResponseDetails: AuthenticationResponseDetails,
-                                  authInfo: AuthInfo,
-                                  callback: (username?: string, password?: string) => void) => void): this;
+      webContents: WebContents,
+      authenticationResponseDetails: AuthenticationResponseDetails,
+      authInfo: AuthInfo,
+      callback: (username?: string, password?: string) => void) => void): this;
     once(event: 'login', listener: (event: Event,
-                                  webContents: WebContents,
-                                  authenticationResponseDetails: AuthenticationResponseDetails,
-                                  authInfo: AuthInfo,
-                                  callback: (username?: string, password?: string) => void) => void): this;
+      webContents: WebContents,
+      authenticationResponseDetails: AuthenticationResponseDetails,
+      authInfo: AuthInfo,
+      callback: (username?: string, password?: string) => void) => void): this;
     addListener(event: 'login', listener: (event: Event,
-                                  webContents: WebContents,
-                                  authenticationResponseDetails: AuthenticationResponseDetails,
-                                  authInfo: AuthInfo,
-                                  callback: (username?: string, password?: string) => void) => void): this;
+      webContents: WebContents,
+      authenticationResponseDetails: AuthenticationResponseDetails,
+      authInfo: AuthInfo,
+      callback: (username?: string, password?: string) => void) => void): this;
     removeListener(event: 'login', listener: (event: Event,
-                                  webContents: WebContents,
-                                  authenticationResponseDetails: AuthenticationResponseDetails,
-                                  authInfo: AuthInfo,
-                                  callback: (username?: string, password?: string) => void) => void): this;
+      webContents: WebContents,
+      authenticationResponseDetails: AuthenticationResponseDetails,
+      authInfo: AuthInfo,
+      callback: (username?: string, password?: string) => void) => void): this;
     /**
      * Emitted when the user clicks the native macOS new tab button. The new tab button
      * is only visible if the current `BrowserWindow` has a `tabbingIdentifier`
@@ -396,13 +396,13 @@ declare namespace Electron {
      * @platform darwin
      */
     on(event: 'open-file', listener: (event: Event,
-                                      path: string) => void): this;
+      path: string) => void): this;
     once(event: 'open-file', listener: (event: Event,
-                                      path: string) => void): this;
+      path: string) => void): this;
     addListener(event: 'open-file', listener: (event: Event,
-                                      path: string) => void): this;
+      path: string) => void): this;
     removeListener(event: 'open-file', listener: (event: Event,
-                                      path: string) => void): this;
+      path: string) => void): this;
     /**
      * Emitted when the user wants to open a URL with the application. Your
      * application's `Info.plist` file must define the URL scheme within the
@@ -418,13 +418,13 @@ declare namespace Electron {
      * @platform darwin
      */
     on(event: 'open-url', listener: (event: Event,
-                                     url: string) => void): this;
+      url: string) => void): this;
     once(event: 'open-url', listener: (event: Event,
-                                     url: string) => void): this;
+      url: string) => void): this;
     addListener(event: 'open-url', listener: (event: Event,
-                                     url: string) => void): this;
+      url: string) => void): this;
     removeListener(event: 'open-url', listener: (event: Event,
-                                     url: string) => void): this;
+      url: string) => void): this;
     /**
      * Emitted when the application is quitting.
      *
@@ -432,13 +432,13 @@ declare namespace Electron {
      * a shutdown/restart of the system or a user logout.
      */
     on(event: 'quit', listener: (event: Event,
-                                 exitCode: number) => void): this;
+      exitCode: number) => void): this;
     once(event: 'quit', listener: (event: Event,
-                                 exitCode: number) => void): this;
+      exitCode: number) => void): this;
     addListener(event: 'quit', listener: (event: Event,
-                                 exitCode: number) => void): this;
+      exitCode: number) => void): this;
     removeListener(event: 'quit', listener: (event: Event,
-                                 exitCode: number) => void): this;
+      exitCode: number) => void): this;
     /**
      * Emitted once, when Electron has finished initializing. On macOS, `launchInfo`
      * holds the `userInfo` of the `NSUserNotification` or information from
@@ -448,29 +448,29 @@ declare namespace Electron {
      * fulfilled when Electron is initialized.
      */
     on(event: 'ready', listener: (event: Event,
-                                  launchInfo: (Record<string, any>) | (NotificationResponse)) => void): this;
+      launchInfo: (Record<string, any>) | (NotificationResponse)) => void): this;
     once(event: 'ready', listener: (event: Event,
-                                  launchInfo: (Record<string, any>) | (NotificationResponse)) => void): this;
+      launchInfo: (Record<string, any>) | (NotificationResponse)) => void): this;
     addListener(event: 'ready', listener: (event: Event,
-                                  launchInfo: (Record<string, any>) | (NotificationResponse)) => void): this;
+      launchInfo: (Record<string, any>) | (NotificationResponse)) => void): this;
     removeListener(event: 'ready', listener: (event: Event,
-                                  launchInfo: (Record<string, any>) | (NotificationResponse)) => void): this;
+      launchInfo: (Record<string, any>) | (NotificationResponse)) => void): this;
     /**
      * Emitted when the renderer process unexpectedly disappears.  This is normally
      * because it was crashed or killed.
      */
     on(event: 'render-process-gone', listener: (event: Event,
-                                                webContents: WebContents,
-                                                details: RenderProcessGoneDetails) => void): this;
+      webContents: WebContents,
+      details: RenderProcessGoneDetails) => void): this;
     once(event: 'render-process-gone', listener: (event: Event,
-                                                webContents: WebContents,
-                                                details: RenderProcessGoneDetails) => void): this;
+      webContents: WebContents,
+      details: RenderProcessGoneDetails) => void): this;
     addListener(event: 'render-process-gone', listener: (event: Event,
-                                                webContents: WebContents,
-                                                details: RenderProcessGoneDetails) => void): this;
+      webContents: WebContents,
+      details: RenderProcessGoneDetails) => void): this;
     removeListener(event: 'render-process-gone', listener: (event: Event,
-                                                webContents: WebContents,
-                                                details: RenderProcessGoneDetails) => void): this;
+      webContents: WebContents,
+      details: RenderProcessGoneDetails) => void): this;
     /**
      * Emitted when the renderer process of `webContents` crashes or is killed.
      *
@@ -482,17 +482,17 @@ declare namespace Electron {
      * @deprecated
      */
     on(event: 'renderer-process-crashed', listener: (event: Event,
-                                                     webContents: WebContents,
-                                                     killed: boolean) => void): this;
+      webContents: WebContents,
+      killed: boolean) => void): this;
     once(event: 'renderer-process-crashed', listener: (event: Event,
-                                                     webContents: WebContents,
-                                                     killed: boolean) => void): this;
+      webContents: WebContents,
+      killed: boolean) => void): this;
     addListener(event: 'renderer-process-crashed', listener: (event: Event,
-                                                     webContents: WebContents,
-                                                     killed: boolean) => void): this;
+      webContents: WebContents,
+      killed: boolean) => void): this;
     removeListener(event: 'renderer-process-crashed', listener: (event: Event,
-                                                     webContents: WebContents,
-                                                     killed: boolean) => void): this;
+      webContents: WebContents,
+      killed: boolean) => void): this;
     /**
      * This event will be emitted inside the primary instance of your application when
      * a second instance has been executed and calls `app.requestSingleInstanceLock()`.
@@ -511,57 +511,57 @@ declare namespace Electron {
      * `--original-process-start-time`.
      */
     on(event: 'second-instance', listener: (event: Event,
-                                            /**
-                                             * An array of the second instance's command line arguments
-                                             */
-                                            argv: string[],
-                                            /**
-                                             * The second instance's working directory
-                                             */
-                                            workingDirectory: string,
-                                            /**
-                                             * A JSON object of additional data passed from the second instance
-                                             */
-                                            additionalData: unknown) => void): this;
+      /**
+       * An array of the second instance's command line arguments
+       */
+      argv: string[],
+      /**
+       * The second instance's working directory
+       */
+      workingDirectory: string,
+      /**
+       * A JSON object of additional data passed from the second instance
+       */
+      additionalData: unknown) => void): this;
     once(event: 'second-instance', listener: (event: Event,
-                                            /**
-                                             * An array of the second instance's command line arguments
-                                             */
-                                            argv: string[],
-                                            /**
-                                             * The second instance's working directory
-                                             */
-                                            workingDirectory: string,
-                                            /**
-                                             * A JSON object of additional data passed from the second instance
-                                             */
-                                            additionalData: unknown) => void): this;
+      /**
+       * An array of the second instance's command line arguments
+       */
+      argv: string[],
+      /**
+       * The second instance's working directory
+       */
+      workingDirectory: string,
+      /**
+       * A JSON object of additional data passed from the second instance
+       */
+      additionalData: unknown) => void): this;
     addListener(event: 'second-instance', listener: (event: Event,
-                                            /**
-                                             * An array of the second instance's command line arguments
-                                             */
-                                            argv: string[],
-                                            /**
-                                             * The second instance's working directory
-                                             */
-                                            workingDirectory: string,
-                                            /**
-                                             * A JSON object of additional data passed from the second instance
-                                             */
-                                            additionalData: unknown) => void): this;
+      /**
+       * An array of the second instance's command line arguments
+       */
+      argv: string[],
+      /**
+       * The second instance's working directory
+       */
+      workingDirectory: string,
+      /**
+       * A JSON object of additional data passed from the second instance
+       */
+      additionalData: unknown) => void): this;
     removeListener(event: 'second-instance', listener: (event: Event,
-                                            /**
-                                             * An array of the second instance's command line arguments
-                                             */
-                                            argv: string[],
-                                            /**
-                                             * The second instance's working directory
-                                             */
-                                            workingDirectory: string,
-                                            /**
-                                             * A JSON object of additional data passed from the second instance
-                                             */
-                                            additionalData: unknown) => void): this;
+      /**
+       * An array of the second instance's command line arguments
+       */
+      argv: string[],
+      /**
+       * The second instance's working directory
+       */
+      workingDirectory: string,
+      /**
+       * A JSON object of additional data passed from the second instance
+       */
+      additionalData: unknown) => void): this;
     /**
      * Emitted when a client certificate is requested.
      *
@@ -571,25 +571,25 @@ declare namespace Electron {
      * certificate from the store.
      */
     on(event: 'select-client-certificate', listener: (event: Event,
-                                                      webContents: WebContents,
-                                                      url: string,
-                                                      certificateList: Certificate[],
-                                                      callback: (certificate?: Certificate) => void) => void): this;
+      webContents: WebContents,
+      url: string,
+      certificateList: Certificate[],
+      callback: (certificate?: Certificate) => void) => void): this;
     once(event: 'select-client-certificate', listener: (event: Event,
-                                                      webContents: WebContents,
-                                                      url: string,
-                                                      certificateList: Certificate[],
-                                                      callback: (certificate?: Certificate) => void) => void): this;
+      webContents: WebContents,
+      url: string,
+      certificateList: Certificate[],
+      callback: (certificate?: Certificate) => void) => void): this;
     addListener(event: 'select-client-certificate', listener: (event: Event,
-                                                      webContents: WebContents,
-                                                      url: string,
-                                                      certificateList: Certificate[],
-                                                      callback: (certificate?: Certificate) => void) => void): this;
+      webContents: WebContents,
+      url: string,
+      certificateList: Certificate[],
+      callback: (certificate?: Certificate) => void) => void): this;
     removeListener(event: 'select-client-certificate', listener: (event: Event,
-                                                      webContents: WebContents,
-                                                      url: string,
-                                                      certificateList: Certificate[],
-                                                      callback: (certificate?: Certificate) => void) => void): this;
+      webContents: WebContents,
+      url: string,
+      certificateList: Certificate[],
+      callback: (certificate?: Certificate) => void) => void): this;
     /**
      * Emitted when Electron has created a new `session`.
      */
@@ -607,52 +607,52 @@ declare namespace Electron {
      * @platform darwin
      */
     on(event: 'update-activity-state', listener: (event: Event,
-                                                  /**
-                                                   * A string identifying the activity. Maps to `NSUserActivity.activityType`.
-                                                   */
-                                                  type: string,
-                                                  /**
-                                                   * Contains app-specific state stored by the activity.
-                                                   */
-                                                  userInfo: unknown) => void): this;
+      /**
+       * A string identifying the activity. Maps to `NSUserActivity.activityType`.
+       */
+      type: string,
+      /**
+       * Contains app-specific state stored by the activity.
+       */
+      userInfo: unknown) => void): this;
     once(event: 'update-activity-state', listener: (event: Event,
-                                                  /**
-                                                   * A string identifying the activity. Maps to `NSUserActivity.activityType`.
-                                                   */
-                                                  type: string,
-                                                  /**
-                                                   * Contains app-specific state stored by the activity.
-                                                   */
-                                                  userInfo: unknown) => void): this;
+      /**
+       * A string identifying the activity. Maps to `NSUserActivity.activityType`.
+       */
+      type: string,
+      /**
+       * Contains app-specific state stored by the activity.
+       */
+      userInfo: unknown) => void): this;
     addListener(event: 'update-activity-state', listener: (event: Event,
-                                                  /**
-                                                   * A string identifying the activity. Maps to `NSUserActivity.activityType`.
-                                                   */
-                                                  type: string,
-                                                  /**
-                                                   * Contains app-specific state stored by the activity.
-                                                   */
-                                                  userInfo: unknown) => void): this;
+      /**
+       * A string identifying the activity. Maps to `NSUserActivity.activityType`.
+       */
+      type: string,
+      /**
+       * Contains app-specific state stored by the activity.
+       */
+      userInfo: unknown) => void): this;
     removeListener(event: 'update-activity-state', listener: (event: Event,
-                                                  /**
-                                                   * A string identifying the activity. Maps to `NSUserActivity.activityType`.
-                                                   */
-                                                  type: string,
-                                                  /**
-                                                   * Contains app-specific state stored by the activity.
-                                                   */
-                                                  userInfo: unknown) => void): this;
+      /**
+       * A string identifying the activity. Maps to `NSUserActivity.activityType`.
+       */
+      type: string,
+      /**
+       * Contains app-specific state stored by the activity.
+       */
+      userInfo: unknown) => void): this;
     /**
      * Emitted when a new webContents is created.
      */
     on(event: 'web-contents-created', listener: (event: Event,
-                                                 webContents: WebContents) => void): this;
+      webContents: WebContents) => void): this;
     once(event: 'web-contents-created', listener: (event: Event,
-                                                 webContents: WebContents) => void): this;
+      webContents: WebContents) => void): this;
     addListener(event: 'web-contents-created', listener: (event: Event,
-                                                 webContents: WebContents) => void): this;
+      webContents: WebContents) => void): this;
     removeListener(event: 'web-contents-created', listener: (event: Event,
-                                                 webContents: WebContents) => void): this;
+      webContents: WebContents) => void): this;
     /**
      * Emitted during Handoff before an activity from a different device wants to be
      * resumed. You should call `event.preventDefault()` if you want to handle this
@@ -661,25 +661,25 @@ declare namespace Electron {
      * @platform darwin
      */
     on(event: 'will-continue-activity', listener: (event: Event,
-                                                   /**
-                                                    * A string identifying the activity. Maps to `NSUserActivity.activityType`.
-                                                    */
-                                                   type: string) => void): this;
+      /**
+       * A string identifying the activity. Maps to `NSUserActivity.activityType`.
+       */
+      type: string) => void): this;
     once(event: 'will-continue-activity', listener: (event: Event,
-                                                   /**
-                                                    * A string identifying the activity. Maps to `NSUserActivity.activityType`.
-                                                    */
-                                                   type: string) => void): this;
+      /**
+       * A string identifying the activity. Maps to `NSUserActivity.activityType`.
+       */
+      type: string) => void): this;
     addListener(event: 'will-continue-activity', listener: (event: Event,
-                                                   /**
-                                                    * A string identifying the activity. Maps to `NSUserActivity.activityType`.
-                                                    */
-                                                   type: string) => void): this;
+      /**
+       * A string identifying the activity. Maps to `NSUserActivity.activityType`.
+       */
+      type: string) => void): this;
     removeListener(event: 'will-continue-activity', listener: (event: Event,
-                                                   /**
-                                                    * A string identifying the activity. Maps to `NSUserActivity.activityType`.
-                                                    */
-                                                   type: string) => void): this;
+      /**
+       * A string identifying the activity. Maps to `NSUserActivity.activityType`.
+       */
+      type: string) => void): this;
     /**
      * Emitted when the application has finished basic startup. On Windows and Linux,
      * the `will-finish-launching` event is the same as the `ready` event; on macOS,
@@ -1615,25 +1615,25 @@ declare namespace Electron {
      * downloaded update will still be applied the next time the application starts.
      */
     on(event: 'update-downloaded', listener: (event: Event,
-                                              releaseNotes: string,
-                                              releaseName: string,
-                                              releaseDate: Date,
-                                              updateURL: string) => void): this;
+      releaseNotes: string,
+      releaseName: string,
+      releaseDate: Date,
+      updateURL: string) => void): this;
     once(event: 'update-downloaded', listener: (event: Event,
-                                              releaseNotes: string,
-                                              releaseName: string,
-                                              releaseDate: Date,
-                                              updateURL: string) => void): this;
+      releaseNotes: string,
+      releaseName: string,
+      releaseDate: Date,
+      updateURL: string) => void): this;
     addListener(event: 'update-downloaded', listener: (event: Event,
-                                              releaseNotes: string,
-                                              releaseName: string,
-                                              releaseDate: Date,
-                                              updateURL: string) => void): this;
+      releaseNotes: string,
+      releaseName: string,
+      releaseDate: Date,
+      updateURL: string) => void): this;
     removeListener(event: 'update-downloaded', listener: (event: Event,
-                                              releaseNotes: string,
-                                              releaseName: string,
-                                              releaseDate: Date,
-                                              updateURL: string) => void): this;
+      releaseNotes: string,
+      releaseName: string,
+      releaseDate: Date,
+      updateURL: string) => void): this;
     /**
      * Emitted when there is no available update.
      */
@@ -1748,13 +1748,13 @@ declare namespace Electron {
      * Emitted when the window is set or unset to show always on top of other windows.
      */
     on(event: 'always-on-top-changed', listener: (event: Event,
-                                                  isAlwaysOnTop: boolean) => void): this;
+      isAlwaysOnTop: boolean) => void): this;
     once(event: 'always-on-top-changed', listener: (event: Event,
-                                                  isAlwaysOnTop: boolean) => void): this;
+      isAlwaysOnTop: boolean) => void): this;
     addListener(event: 'always-on-top-changed', listener: (event: Event,
-                                                  isAlwaysOnTop: boolean) => void): this;
+      isAlwaysOnTop: boolean) => void): this;
     removeListener(event: 'always-on-top-changed', listener: (event: Event,
-                                                  isAlwaysOnTop: boolean) => void): this;
+      isAlwaysOnTop: boolean) => void): this;
     /**
      * Emitted when an App Command is invoked. These are typically related to keyboard
      * media keys or browser commands, as well as the "Back" button built into some
@@ -1772,13 +1772,13 @@ declare namespace Electron {
      * @platform win32,linux
      */
     on(event: 'app-command', listener: (event: Event,
-                                        command: string) => void): this;
+      command: string) => void): this;
     once(event: 'app-command', listener: (event: Event,
-                                        command: string) => void): this;
+      command: string) => void): this;
     addListener(event: 'app-command', listener: (event: Event,
-                                        command: string) => void): this;
+      command: string) => void): this;
     removeListener(event: 'app-command', listener: (event: Event,
-                                        command: string) => void): this;
+      command: string) => void): this;
     /**
      * Emitted when the window loses focus.
      */
@@ -1903,17 +1903,17 @@ declare namespace Electron {
      * when title is synthesized from file URL.
      */
     on(event: 'page-title-updated', listener: (event: Event,
-                                               title: string,
-                                               explicitSet: boolean) => void): this;
+      title: string,
+      explicitSet: boolean) => void): this;
     once(event: 'page-title-updated', listener: (event: Event,
-                                               title: string,
-                                               explicitSet: boolean) => void): this;
+      title: string,
+      explicitSet: boolean) => void): this;
     addListener(event: 'page-title-updated', listener: (event: Event,
-                                               title: string,
-                                               explicitSet: boolean) => void): this;
+      title: string,
+      explicitSet: boolean) => void): this;
     removeListener(event: 'page-title-updated', listener: (event: Event,
-                                               title: string,
-                                               explicitSet: boolean) => void): this;
+      title: string,
+      explicitSet: boolean) => void): this;
     /**
      * Emitted when the web page has been rendered (while not being shown) and window
      * can be displayed without a visual flash.
@@ -1970,13 +1970,13 @@ declare namespace Electron {
      * @platform darwin
      */
     on(event: 'rotate-gesture', listener: (event: Event,
-                                           rotation: number) => void): this;
+      rotation: number) => void): this;
     once(event: 'rotate-gesture', listener: (event: Event,
-                                           rotation: number) => void): this;
+      rotation: number) => void): this;
     addListener(event: 'rotate-gesture', listener: (event: Event,
-                                           rotation: number) => void): this;
+      rotation: number) => void): this;
     removeListener(event: 'rotate-gesture', listener: (event: Event,
-                                           rotation: number) => void): this;
+      rotation: number) => void): this;
     /**
      * Emitted when scroll wheel event phase has begun.
      *
@@ -2068,13 +2068,13 @@ declare namespace Electron {
      * @platform darwin
      */
     on(event: 'swipe', listener: (event: Event,
-                                  direction: string) => void): this;
+      direction: string) => void): this;
     once(event: 'swipe', listener: (event: Event,
-                                  direction: string) => void): this;
+      direction: string) => void): this;
     addListener(event: 'swipe', listener: (event: Event,
-                                  direction: string) => void): this;
+      direction: string) => void): this;
     removeListener(event: 'swipe', listener: (event: Event,
-                                  direction: string) => void): this;
+      direction: string) => void): this;
     /**
      * Emitted when the system context menu is triggered on the window, this is
      * normally only triggered when the user right clicks on the non-client area of
@@ -2086,25 +2086,25 @@ declare namespace Electron {
      * @platform win32
      */
     on(event: 'system-context-menu', listener: (event: Event,
-                                                /**
-                                                 * The screen coordinates the context menu was triggered at
-                                                 */
-                                                point: Point) => void): this;
+      /**
+       * The screen coordinates the context menu was triggered at
+       */
+      point: Point) => void): this;
     once(event: 'system-context-menu', listener: (event: Event,
-                                                /**
-                                                 * The screen coordinates the context menu was triggered at
-                                                 */
-                                                point: Point) => void): this;
+      /**
+       * The screen coordinates the context menu was triggered at
+       */
+      point: Point) => void): this;
     addListener(event: 'system-context-menu', listener: (event: Event,
-                                                /**
-                                                 * The screen coordinates the context menu was triggered at
-                                                 */
-                                                point: Point) => void): this;
+      /**
+       * The screen coordinates the context menu was triggered at
+       */
+      point: Point) => void): this;
     removeListener(event: 'system-context-menu', listener: (event: Event,
-                                                /**
-                                                 * The screen coordinates the context menu was triggered at
-                                                 */
-                                                point: Point) => void): this;
+      /**
+       * The screen coordinates the context menu was triggered at
+       */
+      point: Point) => void): this;
     /**
      * Emitted when the window exits from a maximized state.
      */
@@ -2129,25 +2129,25 @@ declare namespace Electron {
      * @platform darwin,win32
      */
     on(event: 'will-move', listener: (event: Event,
-                                      /**
-                                       * Location the window is being moved to.
-                                       */
-                                      newBounds: Rectangle) => void): this;
+      /**
+       * Location the window is being moved to.
+       */
+      newBounds: Rectangle) => void): this;
     once(event: 'will-move', listener: (event: Event,
-                                      /**
-                                       * Location the window is being moved to.
-                                       */
-                                      newBounds: Rectangle) => void): this;
+      /**
+       * Location the window is being moved to.
+       */
+      newBounds: Rectangle) => void): this;
     addListener(event: 'will-move', listener: (event: Event,
-                                      /**
-                                       * Location the window is being moved to.
-                                       */
-                                      newBounds: Rectangle) => void): this;
+      /**
+       * Location the window is being moved to.
+       */
+      newBounds: Rectangle) => void): this;
     removeListener(event: 'will-move', listener: (event: Event,
-                                      /**
-                                       * Location the window is being moved to.
-                                       */
-                                      newBounds: Rectangle) => void): this;
+      /**
+       * Location the window is being moved to.
+       */
+      newBounds: Rectangle) => void): this;
     /**
      * Emitted before the window is resized. Calling `event.preventDefault()` will
      * prevent the window from being resized.
@@ -2167,29 +2167,29 @@ declare namespace Electron {
      * @platform darwin,win32
      */
     on(event: 'will-resize', listener: (event: Event,
-                                        /**
-                                         * Size the window is being resized to.
-                                         */
-                                        newBounds: Rectangle,
-                                        details: WillResizeDetails) => void): this;
+      /**
+       * Size the window is being resized to.
+       */
+      newBounds: Rectangle,
+      details: WillResizeDetails) => void): this;
     once(event: 'will-resize', listener: (event: Event,
-                                        /**
-                                         * Size the window is being resized to.
-                                         */
-                                        newBounds: Rectangle,
-                                        details: WillResizeDetails) => void): this;
+      /**
+       * Size the window is being resized to.
+       */
+      newBounds: Rectangle,
+      details: WillResizeDetails) => void): this;
     addListener(event: 'will-resize', listener: (event: Event,
-                                        /**
-                                         * Size the window is being resized to.
-                                         */
-                                        newBounds: Rectangle,
-                                        details: WillResizeDetails) => void): this;
+      /**
+       * Size the window is being resized to.
+       */
+      newBounds: Rectangle,
+      details: WillResizeDetails) => void): this;
     removeListener(event: 'will-resize', listener: (event: Event,
-                                        /**
-                                         * Size the window is being resized to.
-                                         */
-                                        newBounds: Rectangle,
-                                        details: WillResizeDetails) => void): this;
+      /**
+       * Size the window is being resized to.
+       */
+      newBounds: Rectangle,
+      details: WillResizeDetails) => void): this;
     /**
      * BrowserWindow
      */
@@ -3322,25 +3322,25 @@ declare namespace Electron {
      * follow and no response object will be provided.
      */
     on(event: 'error', listener: (
-                                  /**
-                                   * an error object providing some information about the failure.
-                                   */
-                                  error: Error) => void): this;
+      /**
+       * an error object providing some information about the failure.
+       */
+      error: Error) => void): this;
     once(event: 'error', listener: (
-                                  /**
-                                   * an error object providing some information about the failure.
-                                   */
-                                  error: Error) => void): this;
+      /**
+       * an error object providing some information about the failure.
+       */
+      error: Error) => void): this;
     addListener(event: 'error', listener: (
-                                  /**
-                                   * an error object providing some information about the failure.
-                                   */
-                                  error: Error) => void): this;
+      /**
+       * an error object providing some information about the failure.
+       */
+      error: Error) => void): this;
     removeListener(event: 'error', listener: (
-                                  /**
-                                   * an error object providing some information about the failure.
-                                   */
-                                  error: Error) => void): this;
+      /**
+       * an error object providing some information about the failure.
+       */
+      error: Error) => void): this;
     /**
      * Emitted just after the last chunk of the `request`'s data has been written into
      * the `request` object.
@@ -3361,13 +3361,13 @@ declare namespace Electron {
      * error on the response object:
      */
     on(event: 'login', listener: (authInfo: AuthInfo,
-                                  callback: (username?: string, password?: string) => void) => void): this;
+      callback: (username?: string, password?: string) => void) => void): this;
     once(event: 'login', listener: (authInfo: AuthInfo,
-                                  callback: (username?: string, password?: string) => void) => void): this;
+      callback: (username?: string, password?: string) => void) => void): this;
     addListener(event: 'login', listener: (authInfo: AuthInfo,
-                                  callback: (username?: string, password?: string) => void) => void): this;
+      callback: (username?: string, password?: string) => void) => void): this;
     removeListener(event: 'login', listener: (authInfo: AuthInfo,
-                                  callback: (username?: string, password?: string) => void) => void): this;
+      callback: (username?: string, password?: string) => void) => void): this;
     /**
      * Emitted when the server returns a redirect response (e.g. 301 Moved
      * Permanently). Calling `request.followRedirect` will continue with the
@@ -3375,41 +3375,41 @@ declare namespace Electron {
      * **synchronously**, otherwise the request will be cancelled.
      */
     on(event: 'redirect', listener: (statusCode: number,
-                                     method: string,
-                                     redirectUrl: string,
-                                     responseHeaders: Record<string, string[]>) => void): this;
+      method: string,
+      redirectUrl: string,
+      responseHeaders: Record<string, string[]>) => void): this;
     once(event: 'redirect', listener: (statusCode: number,
-                                     method: string,
-                                     redirectUrl: string,
-                                     responseHeaders: Record<string, string[]>) => void): this;
+      method: string,
+      redirectUrl: string,
+      responseHeaders: Record<string, string[]>) => void): this;
     addListener(event: 'redirect', listener: (statusCode: number,
-                                     method: string,
-                                     redirectUrl: string,
-                                     responseHeaders: Record<string, string[]>) => void): this;
+      method: string,
+      redirectUrl: string,
+      responseHeaders: Record<string, string[]>) => void): this;
     removeListener(event: 'redirect', listener: (statusCode: number,
-                                     method: string,
-                                     redirectUrl: string,
-                                     responseHeaders: Record<string, string[]>) => void): this;
+      method: string,
+      redirectUrl: string,
+      responseHeaders: Record<string, string[]>) => void): this;
     on(event: 'response', listener: (
-                                     /**
-                                      * An object representing the HTTP response message.
-                                      */
-                                     response: IncomingMessage) => void): this;
+      /**
+       * An object representing the HTTP response message.
+       */
+      response: IncomingMessage) => void): this;
     once(event: 'response', listener: (
-                                     /**
-                                      * An object representing the HTTP response message.
-                                      */
-                                     response: IncomingMessage) => void): this;
+      /**
+       * An object representing the HTTP response message.
+       */
+      response: IncomingMessage) => void): this;
     addListener(event: 'response', listener: (
-                                     /**
-                                      * An object representing the HTTP response message.
-                                      */
-                                     response: IncomingMessage) => void): this;
+      /**
+       * An object representing the HTTP response message.
+       */
+      response: IncomingMessage) => void): this;
     removeListener(event: 'response', listener: (
-                                     /**
-                                      * An object representing the HTTP response message.
-                                      */
-                                     response: IncomingMessage) => void): this;
+      /**
+       * An object representing the HTTP response message.
+       */
+      response: IncomingMessage) => void): this;
     /**
      * ClientRequest
      */
@@ -3786,57 +3786,57 @@ declare namespace Electron {
      * expired.
      */
     on(event: 'changed', listener: (event: Event,
-                                    /**
-                                     * The cookie that was changed.
-                                     */
-                                    cookie: Cookie,
-                                    /**
-                                     * The cause of the change with one of the following values:
-                                     */
-                                    cause: ('explicit' | 'overwrite' | 'expired' | 'evicted' | 'expired-overwrite'),
-                                    /**
-                                     * `true` if the cookie was removed, `false` otherwise.
-                                     */
-                                    removed: boolean) => void): this;
+      /**
+       * The cookie that was changed.
+       */
+      cookie: Cookie,
+      /**
+       * The cause of the change with one of the following values:
+       */
+      cause: ('explicit' | 'overwrite' | 'expired' | 'evicted' | 'expired-overwrite'),
+      /**
+       * `true` if the cookie was removed, `false` otherwise.
+       */
+      removed: boolean) => void): this;
     once(event: 'changed', listener: (event: Event,
-                                    /**
-                                     * The cookie that was changed.
-                                     */
-                                    cookie: Cookie,
-                                    /**
-                                     * The cause of the change with one of the following values:
-                                     */
-                                    cause: ('explicit' | 'overwrite' | 'expired' | 'evicted' | 'expired-overwrite'),
-                                    /**
-                                     * `true` if the cookie was removed, `false` otherwise.
-                                     */
-                                    removed: boolean) => void): this;
+      /**
+       * The cookie that was changed.
+       */
+      cookie: Cookie,
+      /**
+       * The cause of the change with one of the following values:
+       */
+      cause: ('explicit' | 'overwrite' | 'expired' | 'evicted' | 'expired-overwrite'),
+      /**
+       * `true` if the cookie was removed, `false` otherwise.
+       */
+      removed: boolean) => void): this;
     addListener(event: 'changed', listener: (event: Event,
-                                    /**
-                                     * The cookie that was changed.
-                                     */
-                                    cookie: Cookie,
-                                    /**
-                                     * The cause of the change with one of the following values:
-                                     */
-                                    cause: ('explicit' | 'overwrite' | 'expired' | 'evicted' | 'expired-overwrite'),
-                                    /**
-                                     * `true` if the cookie was removed, `false` otherwise.
-                                     */
-                                    removed: boolean) => void): this;
+      /**
+       * The cookie that was changed.
+       */
+      cookie: Cookie,
+      /**
+       * The cause of the change with one of the following values:
+       */
+      cause: ('explicit' | 'overwrite' | 'expired' | 'evicted' | 'expired-overwrite'),
+      /**
+       * `true` if the cookie was removed, `false` otherwise.
+       */
+      removed: boolean) => void): this;
     removeListener(event: 'changed', listener: (event: Event,
-                                    /**
-                                     * The cookie that was changed.
-                                     */
-                                    cookie: Cookie,
-                                    /**
-                                     * The cause of the change with one of the following values:
-                                     */
-                                    cause: ('explicit' | 'overwrite' | 'expired' | 'evicted' | 'expired-overwrite'),
-                                    /**
-                                     * `true` if the cookie was removed, `false` otherwise.
-                                     */
-                                    removed: boolean) => void): this;
+      /**
+       * The cookie that was changed.
+       */
+      cookie: Cookie,
+      /**
+       * The cause of the change with one of the following values:
+       */
+      cause: ('explicit' | 'overwrite' | 'expired' | 'evicted' | 'expired-overwrite'),
+      /**
+       * `true` if the cookie was removed, `false` otherwise.
+       */
+      removed: boolean) => void): this;
     /**
      * A promise which resolves when the cookie store has been flushed
      *
@@ -3996,88 +3996,88 @@ declare namespace Electron {
      * `webContents` is closed or devtools is invoked for the attached `webContents`.
      */
     on(event: 'detach', listener: (event: Event,
-                                   /**
-                                    * Reason for detaching debugger.
-                                    */
-                                   reason: string) => void): this;
+      /**
+       * Reason for detaching debugger.
+       */
+      reason: string) => void): this;
     once(event: 'detach', listener: (event: Event,
-                                   /**
-                                    * Reason for detaching debugger.
-                                    */
-                                   reason: string) => void): this;
+      /**
+       * Reason for detaching debugger.
+       */
+      reason: string) => void): this;
     addListener(event: 'detach', listener: (event: Event,
-                                   /**
-                                    * Reason for detaching debugger.
-                                    */
-                                   reason: string) => void): this;
+      /**
+       * Reason for detaching debugger.
+       */
+      reason: string) => void): this;
     removeListener(event: 'detach', listener: (event: Event,
-                                   /**
-                                    * Reason for detaching debugger.
-                                    */
-                                   reason: string) => void): this;
+      /**
+       * Reason for detaching debugger.
+       */
+      reason: string) => void): this;
     /**
      * Emitted whenever the debugging target issues an instrumentation event.
      */
     on(event: 'message', listener: (event: Event,
-                                    /**
-                                     * Method name.
-                                     */
-                                    method: string,
-                                    /**
-                                     * Event parameters defined by the 'parameters' attribute in the remote debugging
-                                     * protocol.
-                                     */
-                                    params: any,
-                                    /**
-                                     * Unique identifier of attached debugging session, will match the value sent from
-                                     * `debugger.sendCommand`.
-                                     */
-                                    sessionId: string) => void): this;
+      /**
+       * Method name.
+       */
+      method: string,
+      /**
+       * Event parameters defined by the 'parameters' attribute in the remote debugging
+       * protocol.
+       */
+      params: any,
+      /**
+       * Unique identifier of attached debugging session, will match the value sent from
+       * `debugger.sendCommand`.
+       */
+      sessionId: string) => void): this;
     once(event: 'message', listener: (event: Event,
-                                    /**
-                                     * Method name.
-                                     */
-                                    method: string,
-                                    /**
-                                     * Event parameters defined by the 'parameters' attribute in the remote debugging
-                                     * protocol.
-                                     */
-                                    params: any,
-                                    /**
-                                     * Unique identifier of attached debugging session, will match the value sent from
-                                     * `debugger.sendCommand`.
-                                     */
-                                    sessionId: string) => void): this;
+      /**
+       * Method name.
+       */
+      method: string,
+      /**
+       * Event parameters defined by the 'parameters' attribute in the remote debugging
+       * protocol.
+       */
+      params: any,
+      /**
+       * Unique identifier of attached debugging session, will match the value sent from
+       * `debugger.sendCommand`.
+       */
+      sessionId: string) => void): this;
     addListener(event: 'message', listener: (event: Event,
-                                    /**
-                                     * Method name.
-                                     */
-                                    method: string,
-                                    /**
-                                     * Event parameters defined by the 'parameters' attribute in the remote debugging
-                                     * protocol.
-                                     */
-                                    params: any,
-                                    /**
-                                     * Unique identifier of attached debugging session, will match the value sent from
-                                     * `debugger.sendCommand`.
-                                     */
-                                    sessionId: string) => void): this;
+      /**
+       * Method name.
+       */
+      method: string,
+      /**
+       * Event parameters defined by the 'parameters' attribute in the remote debugging
+       * protocol.
+       */
+      params: any,
+      /**
+       * Unique identifier of attached debugging session, will match the value sent from
+       * `debugger.sendCommand`.
+       */
+      sessionId: string) => void): this;
     removeListener(event: 'message', listener: (event: Event,
-                                    /**
-                                     * Method name.
-                                     */
-                                    method: string,
-                                    /**
-                                     * Event parameters defined by the 'parameters' attribute in the remote debugging
-                                     * protocol.
-                                     */
-                                    params: any,
-                                    /**
-                                     * Unique identifier of attached debugging session, will match the value sent from
-                                     * `debugger.sendCommand`.
-                                     */
-                                    sessionId: string) => void): this;
+      /**
+       * Method name.
+       */
+      method: string,
+      /**
+       * Event parameters defined by the 'parameters' attribute in the remote debugging
+       * protocol.
+       */
+      params: any,
+      /**
+       * Unique identifier of attached debugging session, will match the value sent from
+       * `debugger.sendCommand`.
+       */
+      sessionId: string) => void): this;
     /**
      * Attaches the debugger to the `webContents`.
      */
@@ -4567,25 +4567,25 @@ declare namespace Electron {
      * * `interrupted` - The download has interrupted and can not resume.
      */
     on(event: 'done', listener: (event: Event,
-                                 /**
-                                  * Can be `completed`, `cancelled` or `interrupted`.
-                                  */
-                                 state: ('completed' | 'cancelled' | 'interrupted')) => void): this;
+      /**
+       * Can be `completed`, `cancelled` or `interrupted`.
+       */
+      state: ('completed' | 'cancelled' | 'interrupted')) => void): this;
     once(event: 'done', listener: (event: Event,
-                                 /**
-                                  * Can be `completed`, `cancelled` or `interrupted`.
-                                  */
-                                 state: ('completed' | 'cancelled' | 'interrupted')) => void): this;
+      /**
+       * Can be `completed`, `cancelled` or `interrupted`.
+       */
+      state: ('completed' | 'cancelled' | 'interrupted')) => void): this;
     addListener(event: 'done', listener: (event: Event,
-                                 /**
-                                  * Can be `completed`, `cancelled` or `interrupted`.
-                                  */
-                                 state: ('completed' | 'cancelled' | 'interrupted')) => void): this;
+      /**
+       * Can be `completed`, `cancelled` or `interrupted`.
+       */
+      state: ('completed' | 'cancelled' | 'interrupted')) => void): this;
     removeListener(event: 'done', listener: (event: Event,
-                                 /**
-                                  * Can be `completed`, `cancelled` or `interrupted`.
-                                  */
-                                 state: ('completed' | 'cancelled' | 'interrupted')) => void): this;
+      /**
+       * Can be `completed`, `cancelled` or `interrupted`.
+       */
+      state: ('completed' | 'cancelled' | 'interrupted')) => void): this;
     /**
      * Emitted when the download has been updated and is not done.
      *
@@ -4595,25 +4595,25 @@ declare namespace Electron {
      * * `interrupted` - The download has interrupted and can be resumed.
      */
     on(event: 'updated', listener: (event: Event,
-                                    /**
-                                     * Can be `progressing` or `interrupted`.
-                                     */
-                                    state: ('progressing' | 'interrupted')) => void): this;
+      /**
+       * Can be `progressing` or `interrupted`.
+       */
+      state: ('progressing' | 'interrupted')) => void): this;
     once(event: 'updated', listener: (event: Event,
-                                    /**
-                                     * Can be `progressing` or `interrupted`.
-                                     */
-                                    state: ('progressing' | 'interrupted')) => void): this;
+      /**
+       * Can be `progressing` or `interrupted`.
+       */
+      state: ('progressing' | 'interrupted')) => void): this;
     addListener(event: 'updated', listener: (event: Event,
-                                    /**
-                                     * Can be `progressing` or `interrupted`.
-                                     */
-                                    state: ('progressing' | 'interrupted')) => void): this;
+      /**
+       * Can be `progressing` or `interrupted`.
+       */
+      state: ('progressing' | 'interrupted')) => void): this;
     removeListener(event: 'updated', listener: (event: Event,
-                                    /**
-                                     * Can be `progressing` or `interrupted`.
-                                     */
-                                    state: ('progressing' | 'interrupted')) => void): this;
+      /**
+       * Can be `progressing` or `interrupted`.
+       */
+      state: ('progressing' | 'interrupted')) => void): this;
     /**
      * Cancels the download operation.
      */
@@ -5002,25 +5002,25 @@ declare namespace Electron {
      * applicative code.
      */
     on(event: 'data', listener: (
-                                 /**
-                                  * A chunk of response body's data.
-                                  */
-                                 chunk: Buffer) => void): this;
+      /**
+       * A chunk of response body's data.
+       */
+      chunk: Buffer) => void): this;
     once(event: 'data', listener: (
-                                 /**
-                                  * A chunk of response body's data.
-                                  */
-                                 chunk: Buffer) => void): this;
+      /**
+       * A chunk of response body's data.
+       */
+      chunk: Buffer) => void): this;
     addListener(event: 'data', listener: (
-                                 /**
-                                  * A chunk of response body's data.
-                                  */
-                                 chunk: Buffer) => void): this;
+      /**
+       * A chunk of response body's data.
+       */
+      chunk: Buffer) => void): this;
     removeListener(event: 'data', listener: (
-                                 /**
-                                  * A chunk of response body's data.
-                                  */
-                                 chunk: Buffer) => void): this;
+      /**
+       * A chunk of response body's data.
+       */
+      chunk: Buffer) => void): this;
     /**
      * Indicates that response body has ended. Must be placed before 'data' event.
      */
@@ -6181,25 +6181,25 @@ declare namespace Electron {
     // Docs: https://electronjs.org/docs/api/notification
 
     on(event: 'action', listener: (event: Event,
-                                   /**
-                                    * The index of the action that was activated.
-                                    */
-                                   index: number) => void): this;
+      /**
+       * The index of the action that was activated.
+       */
+      index: number) => void): this;
     once(event: 'action', listener: (event: Event,
-                                   /**
-                                    * The index of the action that was activated.
-                                    */
-                                   index: number) => void): this;
+      /**
+       * The index of the action that was activated.
+       */
+      index: number) => void): this;
     addListener(event: 'action', listener: (event: Event,
-                                   /**
-                                    * The index of the action that was activated.
-                                    */
-                                   index: number) => void): this;
+      /**
+       * The index of the action that was activated.
+       */
+      index: number) => void): this;
     removeListener(event: 'action', listener: (event: Event,
-                                   /**
-                                    * The index of the action that was activated.
-                                    */
-                                   index: number) => void): this;
+      /**
+       * The index of the action that was activated.
+       */
+      index: number) => void): this;
     /**
      * Emitted when the notification is clicked by the user.
      */
@@ -6224,25 +6224,25 @@ declare namespace Electron {
      * @platform win32
      */
     on(event: 'failed', listener: (event: Event,
-                                   /**
-                                    * The error encountered during execution of the `show()` method.
-                                    */
-                                   error: string) => void): this;
+      /**
+       * The error encountered during execution of the `show()` method.
+       */
+      error: string) => void): this;
     once(event: 'failed', listener: (event: Event,
-                                   /**
-                                    * The error encountered during execution of the `show()` method.
-                                    */
-                                   error: string) => void): this;
+      /**
+       * The error encountered during execution of the `show()` method.
+       */
+      error: string) => void): this;
     addListener(event: 'failed', listener: (event: Event,
-                                   /**
-                                    * The error encountered during execution of the `show()` method.
-                                    */
-                                   error: string) => void): this;
+      /**
+       * The error encountered during execution of the `show()` method.
+       */
+      error: string) => void): this;
     removeListener(event: 'failed', listener: (event: Event,
-                                   /**
-                                    * The error encountered during execution of the `show()` method.
-                                    */
-                                   error: string) => void): this;
+      /**
+       * The error encountered during execution of the `show()` method.
+       */
+      error: string) => void): this;
     /**
      * Emitted when the user clicks the "Reply" button on a notification with
      * `hasReply: true`.
@@ -6250,25 +6250,25 @@ declare namespace Electron {
      * @platform darwin
      */
     on(event: 'reply', listener: (event: Event,
-                                  /**
-                                   * The string the user entered into the inline reply field.
-                                   */
-                                  reply: string) => void): this;
+      /**
+       * The string the user entered into the inline reply field.
+       */
+      reply: string) => void): this;
     once(event: 'reply', listener: (event: Event,
-                                  /**
-                                   * The string the user entered into the inline reply field.
-                                   */
-                                  reply: string) => void): this;
+      /**
+       * The string the user entered into the inline reply field.
+       */
+      reply: string) => void): this;
     addListener(event: 'reply', listener: (event: Event,
-                                  /**
-                                   * The string the user entered into the inline reply field.
-                                   */
-                                  reply: string) => void): this;
+      /**
+       * The string the user entered into the inline reply field.
+       */
+      reply: string) => void): this;
     removeListener(event: 'reply', listener: (event: Event,
-                                  /**
-                                   * The string the user entered into the inline reply field.
-                                   */
-                                  reply: string) => void): this;
+      /**
+       * The string the user entered into the inline reply field.
+       */
+      reply: string) => void): this;
     /**
      * Emitted when the notification is shown to the user, note this could be fired
      * multiple times as a notification can be shown multiple times through the
@@ -7300,41 +7300,41 @@ declare namespace Electron {
      * Emitted when `newDisplay` has been added.
      */
     on(event: 'display-added', listener: (event: Event,
-                                          newDisplay: Display) => void): this;
+      newDisplay: Display) => void): this;
     once(event: 'display-added', listener: (event: Event,
-                                          newDisplay: Display) => void): this;
+      newDisplay: Display) => void): this;
     addListener(event: 'display-added', listener: (event: Event,
-                                          newDisplay: Display) => void): this;
+      newDisplay: Display) => void): this;
     removeListener(event: 'display-added', listener: (event: Event,
-                                          newDisplay: Display) => void): this;
+      newDisplay: Display) => void): this;
     /**
      * Emitted when one or more metrics change in a `display`. The `changedMetrics` is
      * an array of strings that describe the changes. Possible changes are `bounds`,
      * `workArea`, `scaleFactor` and `rotation`.
      */
     on(event: 'display-metrics-changed', listener: (event: Event,
-                                                    display: Display,
-                                                    changedMetrics: string[]) => void): this;
+      display: Display,
+      changedMetrics: string[]) => void): this;
     once(event: 'display-metrics-changed', listener: (event: Event,
-                                                    display: Display,
-                                                    changedMetrics: string[]) => void): this;
+      display: Display,
+      changedMetrics: string[]) => void): this;
     addListener(event: 'display-metrics-changed', listener: (event: Event,
-                                                    display: Display,
-                                                    changedMetrics: string[]) => void): this;
+      display: Display,
+      changedMetrics: string[]) => void): this;
     removeListener(event: 'display-metrics-changed', listener: (event: Event,
-                                                    display: Display,
-                                                    changedMetrics: string[]) => void): this;
+      display: Display,
+      changedMetrics: string[]) => void): this;
     /**
      * Emitted when `oldDisplay` has been removed.
      */
     on(event: 'display-removed', listener: (event: Event,
-                                            oldDisplay: Display) => void): this;
+      oldDisplay: Display) => void): this;
     once(event: 'display-removed', listener: (event: Event,
-                                            oldDisplay: Display) => void): this;
+      oldDisplay: Display) => void): this;
     addListener(event: 'display-removed', listener: (event: Event,
-                                            oldDisplay: Display) => void): this;
+      oldDisplay: Display) => void): this;
     removeListener(event: 'display-removed', listener: (event: Event,
-                                            oldDisplay: Display) => void): this;
+      oldDisplay: Display) => void): this;
     /**
      * Converts a screen DIP point to a screen physical point. The DPI scale is
      * performed relative to the display containing the DIP point.
@@ -7487,50 +7487,50 @@ declare namespace Electron {
      * Emitted when a service worker logs something to the console.
      */
     on(event: 'console-message', listener: (event: Event,
-                                            /**
-                                             * Information about the console message
-                                             */
-                                            messageDetails: MessageDetails) => void): this;
+      /**
+       * Information about the console message
+       */
+      messageDetails: MessageDetails) => void): this;
     once(event: 'console-message', listener: (event: Event,
-                                            /**
-                                             * Information about the console message
-                                             */
-                                            messageDetails: MessageDetails) => void): this;
+      /**
+       * Information about the console message
+       */
+      messageDetails: MessageDetails) => void): this;
     addListener(event: 'console-message', listener: (event: Event,
-                                            /**
-                                             * Information about the console message
-                                             */
-                                            messageDetails: MessageDetails) => void): this;
+      /**
+       * Information about the console message
+       */
+      messageDetails: MessageDetails) => void): this;
     removeListener(event: 'console-message', listener: (event: Event,
-                                            /**
-                                             * Information about the console message
-                                             */
-                                            messageDetails: MessageDetails) => void): this;
+      /**
+       * Information about the console message
+       */
+      messageDetails: MessageDetails) => void): this;
     /**
      * Emitted when a service worker has been registered. Can occur after a call to
      * `navigator.serviceWorker.register('/sw.js')` successfully resolves or when a
      * Chrome extension is loaded.
      */
     on(event: 'registration-completed', listener: (event: Event,
-                                                   /**
-                                                    * Information about the registered service worker
-                                                    */
-                                                   details: RegistrationCompletedDetails) => void): this;
+      /**
+       * Information about the registered service worker
+       */
+      details: RegistrationCompletedDetails) => void): this;
     once(event: 'registration-completed', listener: (event: Event,
-                                                   /**
-                                                    * Information about the registered service worker
-                                                    */
-                                                   details: RegistrationCompletedDetails) => void): this;
+      /**
+       * Information about the registered service worker
+       */
+      details: RegistrationCompletedDetails) => void): this;
     addListener(event: 'registration-completed', listener: (event: Event,
-                                                   /**
-                                                    * Information about the registered service worker
-                                                    */
-                                                   details: RegistrationCompletedDetails) => void): this;
+      /**
+       * Information about the registered service worker
+       */
+      details: RegistrationCompletedDetails) => void): this;
     removeListener(event: 'registration-completed', listener: (event: Event,
-                                                   /**
-                                                    * Information about the registered service worker
-                                                    */
-                                                   details: RegistrationCompletedDetails) => void): this;
+      /**
+       * Information about the registered service worker
+       */
+      details: RegistrationCompletedDetails) => void): this;
     /**
      * A ServiceWorkerInfo object where the keys are the service worker version ID and
      * the values are the information about that service worker.
@@ -7578,37 +7578,37 @@ declare namespace Electron {
      *   * if the extension requested it (`chrome.runtime.reload()`).
      */
     on(event: 'extension-loaded', listener: (event: Event,
-                                             extension: Extension) => void): this;
+      extension: Extension) => void): this;
     once(event: 'extension-loaded', listener: (event: Event,
-                                             extension: Extension) => void): this;
+      extension: Extension) => void): this;
     addListener(event: 'extension-loaded', listener: (event: Event,
-                                             extension: Extension) => void): this;
+      extension: Extension) => void): this;
     removeListener(event: 'extension-loaded', listener: (event: Event,
-                                             extension: Extension) => void): this;
+      extension: Extension) => void): this;
     /**
      * Emitted after an extension is loaded and all necessary browser state is
      * initialized to support the start of the extension's background page.
      */
     on(event: 'extension-ready', listener: (event: Event,
-                                            extension: Extension) => void): this;
+      extension: Extension) => void): this;
     once(event: 'extension-ready', listener: (event: Event,
-                                            extension: Extension) => void): this;
+      extension: Extension) => void): this;
     addListener(event: 'extension-ready', listener: (event: Event,
-                                            extension: Extension) => void): this;
+      extension: Extension) => void): this;
     removeListener(event: 'extension-ready', listener: (event: Event,
-                                            extension: Extension) => void): this;
+      extension: Extension) => void): this;
     /**
      * Emitted after an extension is unloaded. This occurs when
      * `Session.removeExtension` is called.
      */
     on(event: 'extension-unloaded', listener: (event: Event,
-                                               extension: Extension) => void): this;
+      extension: Extension) => void): this;
     once(event: 'extension-unloaded', listener: (event: Event,
-                                               extension: Extension) => void): this;
+      extension: Extension) => void): this;
     addListener(event: 'extension-unloaded', listener: (event: Event,
-                                               extension: Extension) => void): this;
+      extension: Extension) => void): this;
     removeListener(event: 'extension-unloaded', listener: (event: Event,
-                                               extension: Extension) => void): this;
+      extension: Extension) => void): this;
     /**
      * Emitted after `navigator.hid.requestDevice` has been called and
      * `select-hid-device` has fired if a new device becomes available before the
@@ -7617,13 +7617,13 @@ declare namespace Electron {
      * the newly added device.
      */
     on(event: 'hid-device-added', listener: (event: Event,
-                                             details: HidDeviceAddedDetails) => void): this;
+      details: HidDeviceAddedDetails) => void): this;
     once(event: 'hid-device-added', listener: (event: Event,
-                                             details: HidDeviceAddedDetails) => void): this;
+      details: HidDeviceAddedDetails) => void): this;
     addListener(event: 'hid-device-added', listener: (event: Event,
-                                             details: HidDeviceAddedDetails) => void): this;
+      details: HidDeviceAddedDetails) => void): this;
     removeListener(event: 'hid-device-added', listener: (event: Event,
-                                             details: HidDeviceAddedDetails) => void): this;
+      details: HidDeviceAddedDetails) => void): this;
     /**
      * Emitted after `navigator.hid.requestDevice` has been called and
      * `select-hid-device` has fired if a device has been removed before the callback
@@ -7632,70 +7632,70 @@ declare namespace Electron {
      * specified device.
      */
     on(event: 'hid-device-removed', listener: (event: Event,
-                                               details: HidDeviceRemovedDetails) => void): this;
+      details: HidDeviceRemovedDetails) => void): this;
     once(event: 'hid-device-removed', listener: (event: Event,
-                                               details: HidDeviceRemovedDetails) => void): this;
+      details: HidDeviceRemovedDetails) => void): this;
     addListener(event: 'hid-device-removed', listener: (event: Event,
-                                               details: HidDeviceRemovedDetails) => void): this;
+      details: HidDeviceRemovedDetails) => void): this;
     removeListener(event: 'hid-device-removed', listener: (event: Event,
-                                               details: HidDeviceRemovedDetails) => void): this;
+      details: HidDeviceRemovedDetails) => void): this;
     /**
      * Emitted after `HIDDevice.forget()` has been called.  This event can be used to
      * help maintain persistent storage of permissions when
      * `setDevicePermissionHandler` is used.
      */
     on(event: 'hid-device-revoked', listener: (event: Event,
-                                               details: HidDeviceRevokedDetails) => void): this;
+      details: HidDeviceRevokedDetails) => void): this;
     once(event: 'hid-device-revoked', listener: (event: Event,
-                                               details: HidDeviceRevokedDetails) => void): this;
+      details: HidDeviceRevokedDetails) => void): this;
     addListener(event: 'hid-device-revoked', listener: (event: Event,
-                                               details: HidDeviceRevokedDetails) => void): this;
+      details: HidDeviceRevokedDetails) => void): this;
     removeListener(event: 'hid-device-revoked', listener: (event: Event,
-                                               details: HidDeviceRevokedDetails) => void): this;
+      details: HidDeviceRevokedDetails) => void): this;
     /**
      * Emitted when a render process requests preconnection to a URL, generally due to
      * a resource hint.
      */
     on(event: 'preconnect', listener: (event: Event,
-                                       /**
-                                        * The URL being requested for preconnection by the renderer.
-                                        */
-                                       preconnectUrl: string,
-                                       /**
-                                        * True if the renderer is requesting that the connection include credentials (see
-                                        * the spec for more details.)
-                                        */
-                                       allowCredentials: boolean) => void): this;
+      /**
+       * The URL being requested for preconnection by the renderer.
+       */
+      preconnectUrl: string,
+      /**
+       * True if the renderer is requesting that the connection include credentials (see
+       * the spec for more details.)
+       */
+      allowCredentials: boolean) => void): this;
     once(event: 'preconnect', listener: (event: Event,
-                                       /**
-                                        * The URL being requested for preconnection by the renderer.
-                                        */
-                                       preconnectUrl: string,
-                                       /**
-                                        * True if the renderer is requesting that the connection include credentials (see
-                                        * the spec for more details.)
-                                        */
-                                       allowCredentials: boolean) => void): this;
+      /**
+       * The URL being requested for preconnection by the renderer.
+       */
+      preconnectUrl: string,
+      /**
+       * True if the renderer is requesting that the connection include credentials (see
+       * the spec for more details.)
+       */
+      allowCredentials: boolean) => void): this;
     addListener(event: 'preconnect', listener: (event: Event,
-                                       /**
-                                        * The URL being requested for preconnection by the renderer.
-                                        */
-                                       preconnectUrl: string,
-                                       /**
-                                        * True if the renderer is requesting that the connection include credentials (see
-                                        * the spec for more details.)
-                                        */
-                                       allowCredentials: boolean) => void): this;
+      /**
+       * The URL being requested for preconnection by the renderer.
+       */
+      preconnectUrl: string,
+      /**
+       * True if the renderer is requesting that the connection include credentials (see
+       * the spec for more details.)
+       */
+      allowCredentials: boolean) => void): this;
     removeListener(event: 'preconnect', listener: (event: Event,
-                                       /**
-                                        * The URL being requested for preconnection by the renderer.
-                                        */
-                                       preconnectUrl: string,
-                                       /**
-                                        * True if the renderer is requesting that the connection include credentials (see
-                                        * the spec for more details.)
-                                        */
-                                       allowCredentials: boolean) => void): this;
+      /**
+       * The URL being requested for preconnection by the renderer.
+       */
+      preconnectUrl: string,
+      /**
+       * True if the renderer is requesting that the connection include credentials (see
+       * the spec for more details.)
+       */
+      allowCredentials: boolean) => void): this;
     /**
      * Emitted when a HID device needs to be selected when a call to
      * `navigator.hid.requestDevice` is made. `callback` should be called with
@@ -7705,17 +7705,17 @@ declare namespace Electron {
      * ses.setDevicePermissionHandler(handler)`.
      */
     on(event: 'select-hid-device', listener: (event: Event,
-                                              details: SelectHidDeviceDetails,
-                                              callback: (deviceId?: (string) | (null)) => void) => void): this;
+      details: SelectHidDeviceDetails,
+      callback: (deviceId?: (string) | (null)) => void) => void): this;
     once(event: 'select-hid-device', listener: (event: Event,
-                                              details: SelectHidDeviceDetails,
-                                              callback: (deviceId?: (string) | (null)) => void) => void): this;
+      details: SelectHidDeviceDetails,
+      callback: (deviceId?: (string) | (null)) => void) => void): this;
     addListener(event: 'select-hid-device', listener: (event: Event,
-                                              details: SelectHidDeviceDetails,
-                                              callback: (deviceId?: (string) | (null)) => void) => void): this;
+      details: SelectHidDeviceDetails,
+      callback: (deviceId?: (string) | (null)) => void) => void): this;
     removeListener(event: 'select-hid-device', listener: (event: Event,
-                                              details: SelectHidDeviceDetails,
-                                              callback: (deviceId?: (string) | (null)) => void) => void): this;
+      details: SelectHidDeviceDetails,
+      callback: (deviceId?: (string) | (null)) => void) => void): this;
     /**
      * Emitted when a serial port needs to be selected when a call to
      * `navigator.serial.requestPort` is made. `callback` should be called with
@@ -7724,21 +7724,21 @@ declare namespace Electron {
      * using ses.setPermissionCheckHandler(handler) with the `serial` permission.
      */
     on(event: 'select-serial-port', listener: (event: Event,
-                                               portList: SerialPort[],
-                                               webContents: WebContents,
-                                               callback: (portId: string) => void) => void): this;
+      portList: SerialPort[],
+      webContents: WebContents,
+      callback: (portId: string) => void) => void): this;
     once(event: 'select-serial-port', listener: (event: Event,
-                                               portList: SerialPort[],
-                                               webContents: WebContents,
-                                               callback: (portId: string) => void) => void): this;
+      portList: SerialPort[],
+      webContents: WebContents,
+      callback: (portId: string) => void) => void): this;
     addListener(event: 'select-serial-port', listener: (event: Event,
-                                               portList: SerialPort[],
-                                               webContents: WebContents,
-                                               callback: (portId: string) => void) => void): this;
+      portList: SerialPort[],
+      webContents: WebContents,
+      callback: (portId: string) => void) => void): this;
     removeListener(event: 'select-serial-port', listener: (event: Event,
-                                               portList: SerialPort[],
-                                               webContents: WebContents,
-                                               callback: (portId: string) => void) => void): this;
+      portList: SerialPort[],
+      webContents: WebContents,
+      callback: (portId: string) => void) => void): this;
     /**
      * Emitted after `navigator.serial.requestPort` has been called and
      * `select-serial-port` has fired if a new serial port becomes available before the
@@ -7747,17 +7747,17 @@ declare namespace Electron {
      * the newly added port.
      */
     on(event: 'serial-port-added', listener: (event: Event,
-                                              port: SerialPort,
-                                              webContents: WebContents) => void): this;
+      port: SerialPort,
+      webContents: WebContents) => void): this;
     once(event: 'serial-port-added', listener: (event: Event,
-                                              port: SerialPort,
-                                              webContents: WebContents) => void): this;
+      port: SerialPort,
+      webContents: WebContents) => void): this;
     addListener(event: 'serial-port-added', listener: (event: Event,
-                                              port: SerialPort,
-                                              webContents: WebContents) => void): this;
+      port: SerialPort,
+      webContents: WebContents) => void): this;
     removeListener(event: 'serial-port-added', listener: (event: Event,
-                                              port: SerialPort,
-                                              webContents: WebContents) => void): this;
+      port: SerialPort,
+      webContents: WebContents) => void): this;
     /**
      * Emitted after `navigator.serial.requestPort` has been called and
      * `select-serial-port` has fired if a serial port has been removed before the
@@ -7766,124 +7766,124 @@ declare namespace Electron {
      * remove the specified port.
      */
     on(event: 'serial-port-removed', listener: (event: Event,
-                                                port: SerialPort,
-                                                webContents: WebContents) => void): this;
+      port: SerialPort,
+      webContents: WebContents) => void): this;
     once(event: 'serial-port-removed', listener: (event: Event,
-                                                port: SerialPort,
-                                                webContents: WebContents) => void): this;
+      port: SerialPort,
+      webContents: WebContents) => void): this;
     addListener(event: 'serial-port-removed', listener: (event: Event,
-                                                port: SerialPort,
-                                                webContents: WebContents) => void): this;
+      port: SerialPort,
+      webContents: WebContents) => void): this;
     removeListener(event: 'serial-port-removed', listener: (event: Event,
-                                                port: SerialPort,
-                                                webContents: WebContents) => void): this;
+      port: SerialPort,
+      webContents: WebContents) => void): this;
     /**
      * Emitted after `SerialPort.forget()` has been called.  This event can be used to
      * help maintain persistent storage of permissions when
      * `setDevicePermissionHandler` is used.
      */
     on(event: 'serial-port-revoked', listener: (event: Event,
-                                                details: SerialPortRevokedDetails) => void): this;
+      details: SerialPortRevokedDetails) => void): this;
     once(event: 'serial-port-revoked', listener: (event: Event,
-                                                details: SerialPortRevokedDetails) => void): this;
+      details: SerialPortRevokedDetails) => void): this;
     addListener(event: 'serial-port-revoked', listener: (event: Event,
-                                                details: SerialPortRevokedDetails) => void): this;
+      details: SerialPortRevokedDetails) => void): this;
     removeListener(event: 'serial-port-revoked', listener: (event: Event,
-                                                details: SerialPortRevokedDetails) => void): this;
+      details: SerialPortRevokedDetails) => void): this;
     /**
      * Emitted when a hunspell dictionary file starts downloading
      */
     on(event: 'spellcheck-dictionary-download-begin', listener: (event: Event,
-                                                                 /**
-                                                                  * The language code of the dictionary file
-                                                                  */
-                                                                 languageCode: string) => void): this;
+      /**
+       * The language code of the dictionary file
+       */
+      languageCode: string) => void): this;
     once(event: 'spellcheck-dictionary-download-begin', listener: (event: Event,
-                                                                 /**
-                                                                  * The language code of the dictionary file
-                                                                  */
-                                                                 languageCode: string) => void): this;
+      /**
+       * The language code of the dictionary file
+       */
+      languageCode: string) => void): this;
     addListener(event: 'spellcheck-dictionary-download-begin', listener: (event: Event,
-                                                                 /**
-                                                                  * The language code of the dictionary file
-                                                                  */
-                                                                 languageCode: string) => void): this;
+      /**
+       * The language code of the dictionary file
+       */
+      languageCode: string) => void): this;
     removeListener(event: 'spellcheck-dictionary-download-begin', listener: (event: Event,
-                                                                 /**
-                                                                  * The language code of the dictionary file
-                                                                  */
-                                                                 languageCode: string) => void): this;
+      /**
+       * The language code of the dictionary file
+       */
+      languageCode: string) => void): this;
     /**
      * Emitted when a hunspell dictionary file download fails.  For details on the
      * failure you should collect a netlog and inspect the download request.
      */
     on(event: 'spellcheck-dictionary-download-failure', listener: (event: Event,
-                                                                   /**
-                                                                    * The language code of the dictionary file
-                                                                    */
-                                                                   languageCode: string) => void): this;
+      /**
+       * The language code of the dictionary file
+       */
+      languageCode: string) => void): this;
     once(event: 'spellcheck-dictionary-download-failure', listener: (event: Event,
-                                                                   /**
-                                                                    * The language code of the dictionary file
-                                                                    */
-                                                                   languageCode: string) => void): this;
+      /**
+       * The language code of the dictionary file
+       */
+      languageCode: string) => void): this;
     addListener(event: 'spellcheck-dictionary-download-failure', listener: (event: Event,
-                                                                   /**
-                                                                    * The language code of the dictionary file
-                                                                    */
-                                                                   languageCode: string) => void): this;
+      /**
+       * The language code of the dictionary file
+       */
+      languageCode: string) => void): this;
     removeListener(event: 'spellcheck-dictionary-download-failure', listener: (event: Event,
-                                                                   /**
-                                                                    * The language code of the dictionary file
-                                                                    */
-                                                                   languageCode: string) => void): this;
+      /**
+       * The language code of the dictionary file
+       */
+      languageCode: string) => void): this;
     /**
      * Emitted when a hunspell dictionary file has been successfully downloaded
      */
     on(event: 'spellcheck-dictionary-download-success', listener: (event: Event,
-                                                                   /**
-                                                                    * The language code of the dictionary file
-                                                                    */
-                                                                   languageCode: string) => void): this;
+      /**
+       * The language code of the dictionary file
+       */
+      languageCode: string) => void): this;
     once(event: 'spellcheck-dictionary-download-success', listener: (event: Event,
-                                                                   /**
-                                                                    * The language code of the dictionary file
-                                                                    */
-                                                                   languageCode: string) => void): this;
+      /**
+       * The language code of the dictionary file
+       */
+      languageCode: string) => void): this;
     addListener(event: 'spellcheck-dictionary-download-success', listener: (event: Event,
-                                                                   /**
-                                                                    * The language code of the dictionary file
-                                                                    */
-                                                                   languageCode: string) => void): this;
+      /**
+       * The language code of the dictionary file
+       */
+      languageCode: string) => void): this;
     removeListener(event: 'spellcheck-dictionary-download-success', listener: (event: Event,
-                                                                   /**
-                                                                    * The language code of the dictionary file
-                                                                    */
-                                                                   languageCode: string) => void): this;
+      /**
+       * The language code of the dictionary file
+       */
+      languageCode: string) => void): this;
     /**
      * Emitted when a hunspell dictionary file has been successfully initialized. This
      * occurs after the file has been downloaded.
      */
     on(event: 'spellcheck-dictionary-initialized', listener: (event: Event,
-                                                              /**
-                                                               * The language code of the dictionary file
-                                                               */
-                                                              languageCode: string) => void): this;
+      /**
+       * The language code of the dictionary file
+       */
+      languageCode: string) => void): this;
     once(event: 'spellcheck-dictionary-initialized', listener: (event: Event,
-                                                              /**
-                                                               * The language code of the dictionary file
-                                                               */
-                                                              languageCode: string) => void): this;
+      /**
+       * The language code of the dictionary file
+       */
+      languageCode: string) => void): this;
     addListener(event: 'spellcheck-dictionary-initialized', listener: (event: Event,
-                                                              /**
-                                                               * The language code of the dictionary file
-                                                               */
-                                                              languageCode: string) => void): this;
+      /**
+       * The language code of the dictionary file
+       */
+      languageCode: string) => void): this;
     removeListener(event: 'spellcheck-dictionary-initialized', listener: (event: Event,
-                                                              /**
-                                                               * The language code of the dictionary file
-                                                               */
-                                                              languageCode: string) => void): this;
+      /**
+       * The language code of the dictionary file
+       */
+      languageCode: string) => void): this;
     /**
      * Emitted when Electron is about to download `item` in `webContents`.
      *
@@ -7891,17 +7891,17 @@ declare namespace Electron {
      * available from next tick of the process.
      */
     on(event: 'will-download', listener: (event: Event,
-                                          item: DownloadItem,
-                                          webContents: WebContents) => void): this;
+      item: DownloadItem,
+      webContents: WebContents) => void): this;
     once(event: 'will-download', listener: (event: Event,
-                                          item: DownloadItem,
-                                          webContents: WebContents) => void): this;
+      item: DownloadItem,
+      webContents: WebContents) => void): this;
     addListener(event: 'will-download', listener: (event: Event,
-                                          item: DownloadItem,
-                                          webContents: WebContents) => void): this;
+      item: DownloadItem,
+      webContents: WebContents) => void): this;
     removeListener(event: 'will-download', listener: (event: Event,
-                                          item: DownloadItem,
-                                          webContents: WebContents) => void): this;
+      item: DownloadItem,
+      webContents: WebContents) => void): this;
     /**
      * Whether the word was successfully written to the custom dictionary. This API
      * will not work on non-persistent (in-memory) sessions.
@@ -8494,25 +8494,25 @@ declare namespace Electron {
     // Docs: https://electronjs.org/docs/api/system-preferences
 
     on(event: 'accent-color-changed', listener: (event: Event,
-                                                 /**
-                                                  * The new RGBA color the user assigned to be their system accent color.
-                                                  */
-                                                 newColor: string) => void): this;
+      /**
+       * The new RGBA color the user assigned to be their system accent color.
+       */
+      newColor: string) => void): this;
     once(event: 'accent-color-changed', listener: (event: Event,
-                                                 /**
-                                                  * The new RGBA color the user assigned to be their system accent color.
-                                                  */
-                                                 newColor: string) => void): this;
+      /**
+       * The new RGBA color the user assigned to be their system accent color.
+       */
+      newColor: string) => void): this;
     addListener(event: 'accent-color-changed', listener: (event: Event,
-                                                 /**
-                                                  * The new RGBA color the user assigned to be their system accent color.
-                                                  */
-                                                 newColor: string) => void): this;
+      /**
+       * The new RGBA color the user assigned to be their system accent color.
+       */
+      newColor: string) => void): this;
     removeListener(event: 'accent-color-changed', listener: (event: Event,
-                                                 /**
-                                                  * The new RGBA color the user assigned to be their system accent color.
-                                                  */
-                                                 newColor: string) => void): this;
+      /**
+       * The new RGBA color the user assigned to be their system accent color.
+       */
+      newColor: string) => void): this;
     on(event: 'color-changed', listener: (event: Event) => void): this;
     once(event: 'color-changed', listener: (event: Event) => void): this;
     addListener(event: 'color-changed', listener: (event: Event) => void): this;
@@ -8524,25 +8524,25 @@ declare namespace Electron {
      * @platform win32
      */
     on(event: 'high-contrast-color-scheme-changed', listener: (event: Event,
-                                                               /**
-                                                                * `true` if a high contrast theme is being used, `false` otherwise.
-                                                                */
-                                                               highContrastColorScheme: boolean) => void): this;
+      /**
+       * `true` if a high contrast theme is being used, `false` otherwise.
+       */
+      highContrastColorScheme: boolean) => void): this;
     once(event: 'high-contrast-color-scheme-changed', listener: (event: Event,
-                                                               /**
-                                                                * `true` if a high contrast theme is being used, `false` otherwise.
-                                                                */
-                                                               highContrastColorScheme: boolean) => void): this;
+      /**
+       * `true` if a high contrast theme is being used, `false` otherwise.
+       */
+      highContrastColorScheme: boolean) => void): this;
     addListener(event: 'high-contrast-color-scheme-changed', listener: (event: Event,
-                                                               /**
-                                                                * `true` if a high contrast theme is being used, `false` otherwise.
-                                                                */
-                                                               highContrastColorScheme: boolean) => void): this;
+      /**
+       * `true` if a high contrast theme is being used, `false` otherwise.
+       */
+      highContrastColorScheme: boolean) => void): this;
     removeListener(event: 'high-contrast-color-scheme-changed', listener: (event: Event,
-                                                               /**
-                                                                * `true` if a high contrast theme is being used, `false` otherwise.
-                                                                */
-                                                               highContrastColorScheme: boolean) => void): this;
+      /**
+       * `true` if a high contrast theme is being used, `false` otherwise.
+       */
+      highContrastColorScheme: boolean) => void): this;
     /**
      * **Deprecated:** Should use the new `updated` event on the `nativeTheme` module.
      *
@@ -8550,29 +8550,29 @@ declare namespace Electron {
      * @platform win32
      */
     on(event: 'inverted-color-scheme-changed', listener: (event: Event,
-                                                          /**
-                                                           * `true` if an inverted color scheme (a high contrast color scheme with light text
-                                                           * and dark backgrounds) is being used, `false` otherwise.
-                                                           */
-                                                          invertedColorScheme: boolean) => void): this;
+      /**
+       * `true` if an inverted color scheme (a high contrast color scheme with light text
+       * and dark backgrounds) is being used, `false` otherwise.
+       */
+      invertedColorScheme: boolean) => void): this;
     once(event: 'inverted-color-scheme-changed', listener: (event: Event,
-                                                          /**
-                                                           * `true` if an inverted color scheme (a high contrast color scheme with light text
-                                                           * and dark backgrounds) is being used, `false` otherwise.
-                                                           */
-                                                          invertedColorScheme: boolean) => void): this;
+      /**
+       * `true` if an inverted color scheme (a high contrast color scheme with light text
+       * and dark backgrounds) is being used, `false` otherwise.
+       */
+      invertedColorScheme: boolean) => void): this;
     addListener(event: 'inverted-color-scheme-changed', listener: (event: Event,
-                                                          /**
-                                                           * `true` if an inverted color scheme (a high contrast color scheme with light text
-                                                           * and dark backgrounds) is being used, `false` otherwise.
-                                                           */
-                                                          invertedColorScheme: boolean) => void): this;
+      /**
+       * `true` if an inverted color scheme (a high contrast color scheme with light text
+       * and dark backgrounds) is being used, `false` otherwise.
+       */
+      invertedColorScheme: boolean) => void): this;
     removeListener(event: 'inverted-color-scheme-changed', listener: (event: Event,
-                                                          /**
-                                                           * `true` if an inverted color scheme (a high contrast color scheme with light text
-                                                           * and dark backgrounds) is being used, `false` otherwise.
-                                                           */
-                                                          invertedColorScheme: boolean) => void): this;
+      /**
+       * `true` if an inverted color scheme (a high contrast color scheme with light text
+       * and dark backgrounds) is being used, `false` otherwise.
+       */
+      invertedColorScheme: boolean) => void): this;
     /**
      * A promise that resolves with `true` if consent was granted and `false` if it was
      * denied. If an invalid `mediaType` is passed, the promise will be rejected. If an
@@ -9440,66 +9440,66 @@ declare namespace Electron {
      * activation, which might not necessarily be left mouse click.
      */
     on(event: 'click', listener: (event: KeyboardEvent,
-                                  /**
-                                   * The bounds of tray icon.
-                                   */
-                                  bounds: Rectangle,
-                                  /**
-                                   * The position of the event.
-                                   */
-                                  position: Point) => void): this;
+      /**
+       * The bounds of tray icon.
+       */
+      bounds: Rectangle,
+      /**
+       * The position of the event.
+       */
+      position: Point) => void): this;
     once(event: 'click', listener: (event: KeyboardEvent,
-                                  /**
-                                   * The bounds of tray icon.
-                                   */
-                                  bounds: Rectangle,
-                                  /**
-                                   * The position of the event.
-                                   */
-                                  position: Point) => void): this;
+      /**
+       * The bounds of tray icon.
+       */
+      bounds: Rectangle,
+      /**
+       * The position of the event.
+       */
+      position: Point) => void): this;
     addListener(event: 'click', listener: (event: KeyboardEvent,
-                                  /**
-                                   * The bounds of tray icon.
-                                   */
-                                  bounds: Rectangle,
-                                  /**
-                                   * The position of the event.
-                                   */
-                                  position: Point) => void): this;
+      /**
+       * The bounds of tray icon.
+       */
+      bounds: Rectangle,
+      /**
+       * The position of the event.
+       */
+      position: Point) => void): this;
     removeListener(event: 'click', listener: (event: KeyboardEvent,
-                                  /**
-                                   * The bounds of tray icon.
-                                   */
-                                  bounds: Rectangle,
-                                  /**
-                                   * The position of the event.
-                                   */
-                                  position: Point) => void): this;
+      /**
+       * The bounds of tray icon.
+       */
+      bounds: Rectangle,
+      /**
+       * The position of the event.
+       */
+      position: Point) => void): this;
     /**
      * Emitted when the tray icon is double clicked.
      *
      * @platform darwin,win32
      */
     on(event: 'double-click', listener: (event: KeyboardEvent,
-                                         /**
-                                          * The bounds of tray icon.
-                                          */
-                                         bounds: Rectangle) => void): this;
+      /**
+       * The bounds of tray icon.
+       */
+      bounds: Rectangle) => void): this;
     once(event: 'double-click', listener: (event: KeyboardEvent,
-                                         /**
-                                          * The bounds of tray icon.
-                                          */
-                                         bounds: Rectangle) => void): this;
+      /**
+       * The bounds of tray icon.
+       */
+      bounds: Rectangle) => void): this;
     addListener(event: 'double-click', listener: (event: KeyboardEvent,
-                                         /**
-                                          * The bounds of tray icon.
-                                          */
-                                         bounds: Rectangle) => void): this;
+      /**
+       * The bounds of tray icon.
+       */
+      bounds: Rectangle) => void): this;
     removeListener(event: 'double-click', listener: (event: KeyboardEvent,
-                                         /**
-                                          * The bounds of tray icon.
-                                          */
-                                         bounds: Rectangle) => void): this;
+      /**
+       * The bounds of tray icon.
+       */
+      bounds: Rectangle) => void): this;
     /**
      * Emitted when a drag operation ends on the tray or ends at another location.
      *
@@ -9542,150 +9542,150 @@ declare namespace Electron {
      * @platform darwin
      */
     on(event: 'drop-files', listener: (event: Event,
-                                       /**
-                                        * The paths of the dropped files.
-                                        */
-                                       files: string[]) => void): this;
+      /**
+       * The paths of the dropped files.
+       */
+      files: string[]) => void): this;
     once(event: 'drop-files', listener: (event: Event,
-                                       /**
-                                        * The paths of the dropped files.
-                                        */
-                                       files: string[]) => void): this;
+      /**
+       * The paths of the dropped files.
+       */
+      files: string[]) => void): this;
     addListener(event: 'drop-files', listener: (event: Event,
-                                       /**
-                                        * The paths of the dropped files.
-                                        */
-                                       files: string[]) => void): this;
+      /**
+       * The paths of the dropped files.
+       */
+      files: string[]) => void): this;
     removeListener(event: 'drop-files', listener: (event: Event,
-                                       /**
-                                        * The paths of the dropped files.
-                                        */
-                                       files: string[]) => void): this;
+      /**
+       * The paths of the dropped files.
+       */
+      files: string[]) => void): this;
     /**
      * Emitted when dragged text is dropped in the tray icon.
      *
      * @platform darwin
      */
     on(event: 'drop-text', listener: (event: Event,
-                                      /**
-                                       * the dropped text string.
-                                       */
-                                      text: string) => void): this;
+      /**
+       * the dropped text string.
+       */
+      text: string) => void): this;
     once(event: 'drop-text', listener: (event: Event,
-                                      /**
-                                       * the dropped text string.
-                                       */
-                                      text: string) => void): this;
+      /**
+       * the dropped text string.
+       */
+      text: string) => void): this;
     addListener(event: 'drop-text', listener: (event: Event,
-                                      /**
-                                       * the dropped text string.
-                                       */
-                                      text: string) => void): this;
+      /**
+       * the dropped text string.
+       */
+      text: string) => void): this;
     removeListener(event: 'drop-text', listener: (event: Event,
-                                      /**
-                                       * the dropped text string.
-                                       */
-                                      text: string) => void): this;
+      /**
+       * the dropped text string.
+       */
+      text: string) => void): this;
     /**
      * Emitted when the mouse clicks the tray icon.
      *
      * @platform darwin
      */
     on(event: 'mouse-down', listener: (event: KeyboardEvent,
-                                       /**
-                                        * The position of the event.
-                                        */
-                                       position: Point) => void): this;
+      /**
+       * The position of the event.
+       */
+      position: Point) => void): this;
     once(event: 'mouse-down', listener: (event: KeyboardEvent,
-                                       /**
-                                        * The position of the event.
-                                        */
-                                       position: Point) => void): this;
+      /**
+       * The position of the event.
+       */
+      position: Point) => void): this;
     addListener(event: 'mouse-down', listener: (event: KeyboardEvent,
-                                       /**
-                                        * The position of the event.
-                                        */
-                                       position: Point) => void): this;
+      /**
+       * The position of the event.
+       */
+      position: Point) => void): this;
     removeListener(event: 'mouse-down', listener: (event: KeyboardEvent,
-                                       /**
-                                        * The position of the event.
-                                        */
-                                       position: Point) => void): this;
+      /**
+       * The position of the event.
+       */
+      position: Point) => void): this;
     /**
      * Emitted when the mouse enters the tray icon.
      *
      * @platform darwin
      */
     on(event: 'mouse-enter', listener: (event: KeyboardEvent,
-                                        /**
-                                         * The position of the event.
-                                         */
-                                        position: Point) => void): this;
+      /**
+       * The position of the event.
+       */
+      position: Point) => void): this;
     once(event: 'mouse-enter', listener: (event: KeyboardEvent,
-                                        /**
-                                         * The position of the event.
-                                         */
-                                        position: Point) => void): this;
+      /**
+       * The position of the event.
+       */
+      position: Point) => void): this;
     addListener(event: 'mouse-enter', listener: (event: KeyboardEvent,
-                                        /**
-                                         * The position of the event.
-                                         */
-                                        position: Point) => void): this;
+      /**
+       * The position of the event.
+       */
+      position: Point) => void): this;
     removeListener(event: 'mouse-enter', listener: (event: KeyboardEvent,
-                                        /**
-                                         * The position of the event.
-                                         */
-                                        position: Point) => void): this;
+      /**
+       * The position of the event.
+       */
+      position: Point) => void): this;
     /**
      * Emitted when the mouse exits the tray icon.
      *
      * @platform darwin
      */
     on(event: 'mouse-leave', listener: (event: KeyboardEvent,
-                                        /**
-                                         * The position of the event.
-                                         */
-                                        position: Point) => void): this;
+      /**
+       * The position of the event.
+       */
+      position: Point) => void): this;
     once(event: 'mouse-leave', listener: (event: KeyboardEvent,
-                                        /**
-                                         * The position of the event.
-                                         */
-                                        position: Point) => void): this;
+      /**
+       * The position of the event.
+       */
+      position: Point) => void): this;
     addListener(event: 'mouse-leave', listener: (event: KeyboardEvent,
-                                        /**
-                                         * The position of the event.
-                                         */
-                                        position: Point) => void): this;
+      /**
+       * The position of the event.
+       */
+      position: Point) => void): this;
     removeListener(event: 'mouse-leave', listener: (event: KeyboardEvent,
-                                        /**
-                                         * The position of the event.
-                                         */
-                                        position: Point) => void): this;
+      /**
+       * The position of the event.
+       */
+      position: Point) => void): this;
     /**
      * Emitted when the mouse moves in the tray icon.
      *
      * @platform darwin,win32
      */
     on(event: 'mouse-move', listener: (event: KeyboardEvent,
-                                       /**
-                                        * The position of the event.
-                                        */
-                                       position: Point) => void): this;
+      /**
+       * The position of the event.
+       */
+      position: Point) => void): this;
     once(event: 'mouse-move', listener: (event: KeyboardEvent,
-                                       /**
-                                        * The position of the event.
-                                        */
-                                       position: Point) => void): this;
+      /**
+       * The position of the event.
+       */
+      position: Point) => void): this;
     addListener(event: 'mouse-move', listener: (event: KeyboardEvent,
-                                       /**
-                                        * The position of the event.
-                                        */
-                                       position: Point) => void): this;
+      /**
+       * The position of the event.
+       */
+      position: Point) => void): this;
     removeListener(event: 'mouse-move', listener: (event: KeyboardEvent,
-                                       /**
-                                        * The position of the event.
-                                        */
-                                       position: Point) => void): this;
+      /**
+       * The position of the event.
+       */
+      position: Point) => void): this;
     /**
      * Emitted when the mouse is released from clicking the tray icon.
      *
@@ -9695,50 +9695,50 @@ declare namespace Electron {
      * @platform darwin
      */
     on(event: 'mouse-up', listener: (event: KeyboardEvent,
-                                     /**
-                                      * The position of the event.
-                                      */
-                                     position: Point) => void): this;
+      /**
+       * The position of the event.
+       */
+      position: Point) => void): this;
     once(event: 'mouse-up', listener: (event: KeyboardEvent,
-                                     /**
-                                      * The position of the event.
-                                      */
-                                     position: Point) => void): this;
+      /**
+       * The position of the event.
+       */
+      position: Point) => void): this;
     addListener(event: 'mouse-up', listener: (event: KeyboardEvent,
-                                     /**
-                                      * The position of the event.
-                                      */
-                                     position: Point) => void): this;
+      /**
+       * The position of the event.
+       */
+      position: Point) => void): this;
     removeListener(event: 'mouse-up', listener: (event: KeyboardEvent,
-                                     /**
-                                      * The position of the event.
-                                      */
-                                     position: Point) => void): this;
+      /**
+       * The position of the event.
+       */
+      position: Point) => void): this;
     /**
      * Emitted when the tray icon is right clicked.
      *
      * @platform darwin,win32
      */
     on(event: 'right-click', listener: (event: KeyboardEvent,
-                                        /**
-                                         * The bounds of tray icon.
-                                         */
-                                        bounds: Rectangle) => void): this;
+      /**
+       * The bounds of tray icon.
+       */
+      bounds: Rectangle) => void): this;
     once(event: 'right-click', listener: (event: KeyboardEvent,
-                                        /**
-                                         * The bounds of tray icon.
-                                         */
-                                        bounds: Rectangle) => void): this;
+      /**
+       * The bounds of tray icon.
+       */
+      bounds: Rectangle) => void): this;
     addListener(event: 'right-click', listener: (event: KeyboardEvent,
-                                        /**
-                                         * The bounds of tray icon.
-                                         */
-                                        bounds: Rectangle) => void): this;
+      /**
+       * The bounds of tray icon.
+       */
+      bounds: Rectangle) => void): this;
     removeListener(event: 'right-click', listener: (event: KeyboardEvent,
-                                        /**
-                                         * The bounds of tray icon.
-                                         */
-                                        bounds: Rectangle) => void): this;
+      /**
+       * The bounds of tray icon.
+       */
+      bounds: Rectangle) => void): this;
     /**
      * Tray
      */
@@ -9922,29 +9922,29 @@ declare namespace Electron {
      * Emitted after the child process ends.
      */
     on(event: 'exit', listener: (
-                                 /**
-                                  * Contains the exit code for the process obtained from waitpid on posix, or
-                                  * GetExitCodeProcess on windows.
-                                  */
-                                 code: number) => void): this;
+      /**
+       * Contains the exit code for the process obtained from waitpid on posix, or
+       * GetExitCodeProcess on windows.
+       */
+      code: number) => void): this;
     once(event: 'exit', listener: (
-                                 /**
-                                  * Contains the exit code for the process obtained from waitpid on posix, or
-                                  * GetExitCodeProcess on windows.
-                                  */
-                                 code: number) => void): this;
+      /**
+       * Contains the exit code for the process obtained from waitpid on posix, or
+       * GetExitCodeProcess on windows.
+       */
+      code: number) => void): this;
     addListener(event: 'exit', listener: (
-                                 /**
-                                  * Contains the exit code for the process obtained from waitpid on posix, or
-                                  * GetExitCodeProcess on windows.
-                                  */
-                                 code: number) => void): this;
+      /**
+       * Contains the exit code for the process obtained from waitpid on posix, or
+       * GetExitCodeProcess on windows.
+       */
+      code: number) => void): this;
     removeListener(event: 'exit', listener: (
-                                 /**
-                                  * Contains the exit code for the process obtained from waitpid on posix, or
-                                  * GetExitCodeProcess on windows.
-                                  */
-                                 code: number) => void): this;
+      /**
+       * Contains the exit code for the process obtained from waitpid on posix, or
+       * GetExitCodeProcess on windows.
+       */
+      code: number) => void): this;
     /**
      * Emitted when the child process sends a message using
      * `process.parentPort.postMessage()`.
@@ -10036,25 +10036,25 @@ declare namespace Electron {
      * To only prevent the menu shortcuts, use `setIgnoreMenuShortcuts`:
      */
     on(event: 'before-input-event', listener: (event: Event,
-                                               /**
-                                                * Input properties.
-                                                */
-                                               input: Input) => void): this;
+      /**
+       * Input properties.
+       */
+      input: Input) => void): this;
     once(event: 'before-input-event', listener: (event: Event,
-                                               /**
-                                                * Input properties.
-                                                */
-                                               input: Input) => void): this;
+      /**
+       * Input properties.
+       */
+      input: Input) => void): this;
     addListener(event: 'before-input-event', listener: (event: Event,
-                                               /**
-                                                * Input properties.
-                                                */
-                                               input: Input) => void): this;
+      /**
+       * Input properties.
+       */
+      input: Input) => void): this;
     removeListener(event: 'before-input-event', listener: (event: Event,
-                                               /**
-                                                * Input properties.
-                                                */
-                                               input: Input) => void): this;
+      /**
+       * Input properties.
+       */
+      input: Input) => void): this;
     /**
      * Emitted when the `WebContents` loses focus.
      */
@@ -10068,104 +10068,104 @@ declare namespace Electron {
      * The usage is the same with the `certificate-error` event of `app`.
      */
     on(event: 'certificate-error', listener: (event: Event,
-                                              url: string,
-                                              /**
-                                               * The error code.
-                                               */
-                                              error: string,
-                                              certificate: Certificate,
-                                              callback: (isTrusted: boolean) => void,
-                                              isMainFrame: boolean) => void): this;
+      url: string,
+      /**
+       * The error code.
+       */
+      error: string,
+      certificate: Certificate,
+      callback: (isTrusted: boolean) => void,
+      isMainFrame: boolean) => void): this;
     once(event: 'certificate-error', listener: (event: Event,
-                                              url: string,
-                                              /**
-                                               * The error code.
-                                               */
-                                              error: string,
-                                              certificate: Certificate,
-                                              callback: (isTrusted: boolean) => void,
-                                              isMainFrame: boolean) => void): this;
+      url: string,
+      /**
+       * The error code.
+       */
+      error: string,
+      certificate: Certificate,
+      callback: (isTrusted: boolean) => void,
+      isMainFrame: boolean) => void): this;
     addListener(event: 'certificate-error', listener: (event: Event,
-                                              url: string,
-                                              /**
-                                               * The error code.
-                                               */
-                                              error: string,
-                                              certificate: Certificate,
-                                              callback: (isTrusted: boolean) => void,
-                                              isMainFrame: boolean) => void): this;
+      url: string,
+      /**
+       * The error code.
+       */
+      error: string,
+      certificate: Certificate,
+      callback: (isTrusted: boolean) => void,
+      isMainFrame: boolean) => void): this;
     removeListener(event: 'certificate-error', listener: (event: Event,
-                                              url: string,
-                                              /**
-                                               * The error code.
-                                               */
-                                              error: string,
-                                              certificate: Certificate,
-                                              callback: (isTrusted: boolean) => void,
-                                              isMainFrame: boolean) => void): this;
+      url: string,
+      /**
+       * The error code.
+       */
+      error: string,
+      certificate: Certificate,
+      callback: (isTrusted: boolean) => void,
+      isMainFrame: boolean) => void): this;
     /**
      * Emitted when the associated window logs a console message.
      */
     on(event: 'console-message', listener: (event: Event,
-                                            /**
-                                             * The log level, from 0 to 3. In order it matches `verbose`, `info`, `warning` and
-                                             * `error`.
-                                             */
-                                            level: number,
-                                            /**
-                                             * The actual console message
-                                             */
-                                            message: string,
-                                            /**
-                                             * The line number of the source that triggered this console message
-                                             */
-                                            line: number,
-                                            sourceId: string) => void): this;
+      /**
+       * The log level, from 0 to 3. In order it matches `verbose`, `info`, `warning` and
+       * `error`.
+       */
+      level: number,
+      /**
+       * The actual console message
+       */
+      message: string,
+      /**
+       * The line number of the source that triggered this console message
+       */
+      line: number,
+      sourceId: string) => void): this;
     once(event: 'console-message', listener: (event: Event,
-                                            /**
-                                             * The log level, from 0 to 3. In order it matches `verbose`, `info`, `warning` and
-                                             * `error`.
-                                             */
-                                            level: number,
-                                            /**
-                                             * The actual console message
-                                             */
-                                            message: string,
-                                            /**
-                                             * The line number of the source that triggered this console message
-                                             */
-                                            line: number,
-                                            sourceId: string) => void): this;
+      /**
+       * The log level, from 0 to 3. In order it matches `verbose`, `info`, `warning` and
+       * `error`.
+       */
+      level: number,
+      /**
+       * The actual console message
+       */
+      message: string,
+      /**
+       * The line number of the source that triggered this console message
+       */
+      line: number,
+      sourceId: string) => void): this;
     addListener(event: 'console-message', listener: (event: Event,
-                                            /**
-                                             * The log level, from 0 to 3. In order it matches `verbose`, `info`, `warning` and
-                                             * `error`.
-                                             */
-                                            level: number,
-                                            /**
-                                             * The actual console message
-                                             */
-                                            message: string,
-                                            /**
-                                             * The line number of the source that triggered this console message
-                                             */
-                                            line: number,
-                                            sourceId: string) => void): this;
+      /**
+       * The log level, from 0 to 3. In order it matches `verbose`, `info`, `warning` and
+       * `error`.
+       */
+      level: number,
+      /**
+       * The actual console message
+       */
+      message: string,
+      /**
+       * The line number of the source that triggered this console message
+       */
+      line: number,
+      sourceId: string) => void): this;
     removeListener(event: 'console-message', listener: (event: Event,
-                                            /**
-                                             * The log level, from 0 to 3. In order it matches `verbose`, `info`, `warning` and
-                                             * `error`.
-                                             */
-                                            level: number,
-                                            /**
-                                             * The actual console message
-                                             */
-                                            message: string,
-                                            /**
-                                             * The line number of the source that triggered this console message
-                                             */
-                                            line: number,
-                                            sourceId: string) => void): this;
+      /**
+       * The log level, from 0 to 3. In order it matches `verbose`, `info`, `warning` and
+       * `error`.
+       */
+      level: number,
+      /**
+       * The actual console message
+       */
+      message: string,
+      /**
+       * The line number of the source that triggered this console message
+       */
+      line: number,
+      sourceId: string) => void): this;
     /**
      * Emitted when the page calls `window.moveTo`, `window.resizeTo` or related APIs.
      *
@@ -10173,36 +10173,36 @@ declare namespace Electron {
      * `event.preventDefault()`.
      */
     on(event: 'content-bounds-updated', listener: (event: Event,
-                                                   /**
-                                                    * requested new content bounds
-                                                    */
-                                                   bounds: Rectangle) => void): this;
+      /**
+       * requested new content bounds
+       */
+      bounds: Rectangle) => void): this;
     once(event: 'content-bounds-updated', listener: (event: Event,
-                                                   /**
-                                                    * requested new content bounds
-                                                    */
-                                                   bounds: Rectangle) => void): this;
+      /**
+       * requested new content bounds
+       */
+      bounds: Rectangle) => void): this;
     addListener(event: 'content-bounds-updated', listener: (event: Event,
-                                                   /**
-                                                    * requested new content bounds
-                                                    */
-                                                   bounds: Rectangle) => void): this;
+      /**
+       * requested new content bounds
+       */
+      bounds: Rectangle) => void): this;
     removeListener(event: 'content-bounds-updated', listener: (event: Event,
-                                                   /**
-                                                    * requested new content bounds
-                                                    */
-                                                   bounds: Rectangle) => void): this;
+      /**
+       * requested new content bounds
+       */
+      bounds: Rectangle) => void): this;
     /**
      * Emitted when there is a new context menu that needs to be handled.
      */
     on(event: 'context-menu', listener: (event: Event,
-                                         params: ContextMenuParams) => void): this;
+      params: ContextMenuParams) => void): this;
     once(event: 'context-menu', listener: (event: Event,
-                                         params: ContextMenuParams) => void): this;
+      params: ContextMenuParams) => void): this;
     addListener(event: 'context-menu', listener: (event: Event,
-                                         params: ContextMenuParams) => void): this;
+      params: ContextMenuParams) => void): this;
     removeListener(event: 'context-menu', listener: (event: Event,
-                                         params: ContextMenuParams) => void): this;
+      params: ContextMenuParams) => void): this;
     /**
      * Emitted when the renderer process crashes or is killed.
      *
@@ -10214,13 +10214,13 @@ declare namespace Electron {
      * @deprecated
      */
     on(event: 'crashed', listener: (event: Event,
-                                    killed: boolean) => void): this;
+      killed: boolean) => void): this;
     once(event: 'crashed', listener: (event: Event,
-                                    killed: boolean) => void): this;
+      killed: boolean) => void): this;
     addListener(event: 'crashed', listener: (event: Event,
-                                    killed: boolean) => void): this;
+      killed: boolean) => void): this;
     removeListener(event: 'crashed', listener: (event: Event,
-                                    killed: boolean) => void): this;
+      killed: boolean) => void): this;
     /**
      * Emitted when the cursor's type changes. The `type` parameter can be `default`,
      * `crosshair`, `pointer`, `text`, `wait`, `help`, `e-resize`, `n-resize`,
@@ -10236,65 +10236,65 @@ declare namespace Electron {
      * additional information about the custom cursor.
      */
     on(event: 'cursor-changed', listener: (event: Event,
-                                           type: string,
-                                           image: NativeImage,
-                                           /**
-                                            * scaling factor for the custom cursor.
-                                            */
-                                           scale: number,
-                                           /**
-                                            * the size of the `image`.
-                                            */
-                                           size: Size,
-                                           /**
-                                            * coordinates of the custom cursor's hotspot.
-                                            */
-                                           hotspot: Point) => void): this;
+      type: string,
+      image: NativeImage,
+      /**
+       * scaling factor for the custom cursor.
+       */
+      scale: number,
+      /**
+       * the size of the `image`.
+       */
+      size: Size,
+      /**
+       * coordinates of the custom cursor's hotspot.
+       */
+      hotspot: Point) => void): this;
     once(event: 'cursor-changed', listener: (event: Event,
-                                           type: string,
-                                           image: NativeImage,
-                                           /**
-                                            * scaling factor for the custom cursor.
-                                            */
-                                           scale: number,
-                                           /**
-                                            * the size of the `image`.
-                                            */
-                                           size: Size,
-                                           /**
-                                            * coordinates of the custom cursor's hotspot.
-                                            */
-                                           hotspot: Point) => void): this;
+      type: string,
+      image: NativeImage,
+      /**
+       * scaling factor for the custom cursor.
+       */
+      scale: number,
+      /**
+       * the size of the `image`.
+       */
+      size: Size,
+      /**
+       * coordinates of the custom cursor's hotspot.
+       */
+      hotspot: Point) => void): this;
     addListener(event: 'cursor-changed', listener: (event: Event,
-                                           type: string,
-                                           image: NativeImage,
-                                           /**
-                                            * scaling factor for the custom cursor.
-                                            */
-                                           scale: number,
-                                           /**
-                                            * the size of the `image`.
-                                            */
-                                           size: Size,
-                                           /**
-                                            * coordinates of the custom cursor's hotspot.
-                                            */
-                                           hotspot: Point) => void): this;
+      type: string,
+      image: NativeImage,
+      /**
+       * scaling factor for the custom cursor.
+       */
+      scale: number,
+      /**
+       * the size of the `image`.
+       */
+      size: Size,
+      /**
+       * coordinates of the custom cursor's hotspot.
+       */
+      hotspot: Point) => void): this;
     removeListener(event: 'cursor-changed', listener: (event: Event,
-                                           type: string,
-                                           image: NativeImage,
-                                           /**
-                                            * scaling factor for the custom cursor.
-                                            */
-                                           scale: number,
-                                           /**
-                                            * the size of the `image`.
-                                            */
-                                           size: Size,
-                                           /**
-                                            * coordinates of the custom cursor's hotspot.
-                                            */
-                                           hotspot: Point) => void): this;
+      type: string,
+      image: NativeImage,
+      /**
+       * scaling factor for the custom cursor.
+       */
+      scale: number,
+      /**
+       * the size of the `image`.
+       */
+      size: Size,
+      /**
+       * coordinates of the custom cursor's hotspot.
+       */
+      hotspot: Point) => void): this;
     /**
      * Emitted when `webContents` is destroyed.
      */
@@ -10334,49 +10334,49 @@ declare namespace Electron {
      * Emitted when a `<webview>` has been attached to this web contents.
      */
     on(event: 'did-attach-webview', listener: (event: Event,
-                                               /**
-                                                * The guest web contents that is used by the `<webview>`.
-                                                */
-                                               webContents: WebContents) => void): this;
+      /**
+       * The guest web contents that is used by the `<webview>`.
+       */
+      webContents: WebContents) => void): this;
     once(event: 'did-attach-webview', listener: (event: Event,
-                                               /**
-                                                * The guest web contents that is used by the `<webview>`.
-                                                */
-                                               webContents: WebContents) => void): this;
+      /**
+       * The guest web contents that is used by the `<webview>`.
+       */
+      webContents: WebContents) => void): this;
     addListener(event: 'did-attach-webview', listener: (event: Event,
-                                               /**
-                                                * The guest web contents that is used by the `<webview>`.
-                                                */
-                                               webContents: WebContents) => void): this;
+      /**
+       * The guest web contents that is used by the `<webview>`.
+       */
+      webContents: WebContents) => void): this;
     removeListener(event: 'did-attach-webview', listener: (event: Event,
-                                               /**
-                                                * The guest web contents that is used by the `<webview>`.
-                                                */
-                                               webContents: WebContents) => void): this;
+      /**
+       * The guest web contents that is used by the `<webview>`.
+       */
+      webContents: WebContents) => void): this;
     /**
      * Emitted when a page's theme color changes. This is usually due to encountering a
      * meta tag:
      */
     on(event: 'did-change-theme-color', listener: (event: Event,
-                                                   /**
-                                                    * Theme color is in format of '#rrggbb'. It is `null` when no theme color is set.
-                                                    */
-                                                   color: (string) | (null)) => void): this;
+      /**
+       * Theme color is in format of '#rrggbb'. It is `null` when no theme color is set.
+       */
+      color: (string) | (null)) => void): this;
     once(event: 'did-change-theme-color', listener: (event: Event,
-                                                   /**
-                                                    * Theme color is in format of '#rrggbb'. It is `null` when no theme color is set.
-                                                    */
-                                                   color: (string) | (null)) => void): this;
+      /**
+       * Theme color is in format of '#rrggbb'. It is `null` when no theme color is set.
+       */
+      color: (string) | (null)) => void): this;
     addListener(event: 'did-change-theme-color', listener: (event: Event,
-                                                   /**
-                                                    * Theme color is in format of '#rrggbb'. It is `null` when no theme color is set.
-                                                    */
-                                                   color: (string) | (null)) => void): this;
+      /**
+       * Theme color is in format of '#rrggbb'. It is `null` when no theme color is set.
+       */
+      color: (string) | (null)) => void): this;
     removeListener(event: 'did-change-theme-color', listener: (event: Event,
-                                                   /**
-                                                    * Theme color is in format of '#rrggbb'. It is `null` when no theme color is set.
-                                                    */
-                                                   color: (string) | (null)) => void): this;
+      /**
+       * Theme color is in format of '#rrggbb'. It is `null` when no theme color is set.
+       */
+      color: (string) | (null)) => void): this;
     /**
      * Emitted _after_ successful creation of a window via `window.open` in the
      * renderer. Not emitted if the creation of the window is canceled from
@@ -10386,77 +10386,77 @@ declare namespace Electron {
      * `webContents.setWindowOpenHandler`.
      */
     on(event: 'did-create-window', listener: (window: BrowserWindow,
-                                              details: DidCreateWindowDetails) => void): this;
+      details: DidCreateWindowDetails) => void): this;
     once(event: 'did-create-window', listener: (window: BrowserWindow,
-                                              details: DidCreateWindowDetails) => void): this;
+      details: DidCreateWindowDetails) => void): this;
     addListener(event: 'did-create-window', listener: (window: BrowserWindow,
-                                              details: DidCreateWindowDetails) => void): this;
+      details: DidCreateWindowDetails) => void): this;
     removeListener(event: 'did-create-window', listener: (window: BrowserWindow,
-                                              details: DidCreateWindowDetails) => void): this;
+      details: DidCreateWindowDetails) => void): this;
     /**
      * This event is like `did-finish-load` but emitted when the load failed. The full
      * list of error codes and their meaning is available here.
      */
     on(event: 'did-fail-load', listener: (event: Event,
-                                          errorCode: number,
-                                          errorDescription: string,
-                                          validatedURL: string,
-                                          isMainFrame: boolean,
-                                          frameProcessId: number,
-                                          frameRoutingId: number) => void): this;
+      errorCode: number,
+      errorDescription: string,
+      validatedURL: string,
+      isMainFrame: boolean,
+      frameProcessId: number,
+      frameRoutingId: number) => void): this;
     once(event: 'did-fail-load', listener: (event: Event,
-                                          errorCode: number,
-                                          errorDescription: string,
-                                          validatedURL: string,
-                                          isMainFrame: boolean,
-                                          frameProcessId: number,
-                                          frameRoutingId: number) => void): this;
+      errorCode: number,
+      errorDescription: string,
+      validatedURL: string,
+      isMainFrame: boolean,
+      frameProcessId: number,
+      frameRoutingId: number) => void): this;
     addListener(event: 'did-fail-load', listener: (event: Event,
-                                          errorCode: number,
-                                          errorDescription: string,
-                                          validatedURL: string,
-                                          isMainFrame: boolean,
-                                          frameProcessId: number,
-                                          frameRoutingId: number) => void): this;
+      errorCode: number,
+      errorDescription: string,
+      validatedURL: string,
+      isMainFrame: boolean,
+      frameProcessId: number,
+      frameRoutingId: number) => void): this;
     removeListener(event: 'did-fail-load', listener: (event: Event,
-                                          errorCode: number,
-                                          errorDescription: string,
-                                          validatedURL: string,
-                                          isMainFrame: boolean,
-                                          frameProcessId: number,
-                                          frameRoutingId: number) => void): this;
+      errorCode: number,
+      errorDescription: string,
+      validatedURL: string,
+      isMainFrame: boolean,
+      frameProcessId: number,
+      frameRoutingId: number) => void): this;
     /**
      * This event is like `did-fail-load` but emitted when the load was cancelled (e.g.
      * `window.stop()` was invoked).
      */
     on(event: 'did-fail-provisional-load', listener: (event: Event,
-                                                      errorCode: number,
-                                                      errorDescription: string,
-                                                      validatedURL: string,
-                                                      isMainFrame: boolean,
-                                                      frameProcessId: number,
-                                                      frameRoutingId: number) => void): this;
+      errorCode: number,
+      errorDescription: string,
+      validatedURL: string,
+      isMainFrame: boolean,
+      frameProcessId: number,
+      frameRoutingId: number) => void): this;
     once(event: 'did-fail-provisional-load', listener: (event: Event,
-                                                      errorCode: number,
-                                                      errorDescription: string,
-                                                      validatedURL: string,
-                                                      isMainFrame: boolean,
-                                                      frameProcessId: number,
-                                                      frameRoutingId: number) => void): this;
+      errorCode: number,
+      errorDescription: string,
+      validatedURL: string,
+      isMainFrame: boolean,
+      frameProcessId: number,
+      frameRoutingId: number) => void): this;
     addListener(event: 'did-fail-provisional-load', listener: (event: Event,
-                                                      errorCode: number,
-                                                      errorDescription: string,
-                                                      validatedURL: string,
-                                                      isMainFrame: boolean,
-                                                      frameProcessId: number,
-                                                      frameRoutingId: number) => void): this;
+      errorCode: number,
+      errorDescription: string,
+      validatedURL: string,
+      isMainFrame: boolean,
+      frameProcessId: number,
+      frameRoutingId: number) => void): this;
     removeListener(event: 'did-fail-provisional-load', listener: (event: Event,
-                                                      errorCode: number,
-                                                      errorDescription: string,
-                                                      validatedURL: string,
-                                                      isMainFrame: boolean,
-                                                      frameProcessId: number,
-                                                      frameRoutingId: number) => void): this;
+      errorCode: number,
+      errorDescription: string,
+      validatedURL: string,
+      isMainFrame: boolean,
+      frameProcessId: number,
+      frameRoutingId: number) => void): this;
     /**
      * Emitted when the navigation is done, i.e. the spinner of the tab has stopped
      * spinning, and the `onload` event was dispatched.
@@ -10469,21 +10469,21 @@ declare namespace Electron {
      * Emitted when a frame has done navigation.
      */
     on(event: 'did-frame-finish-load', listener: (event: Event,
-                                                  isMainFrame: boolean,
-                                                  frameProcessId: number,
-                                                  frameRoutingId: number) => void): this;
+      isMainFrame: boolean,
+      frameProcessId: number,
+      frameRoutingId: number) => void): this;
     once(event: 'did-frame-finish-load', listener: (event: Event,
-                                                  isMainFrame: boolean,
-                                                  frameProcessId: number,
-                                                  frameRoutingId: number) => void): this;
+      isMainFrame: boolean,
+      frameProcessId: number,
+      frameRoutingId: number) => void): this;
     addListener(event: 'did-frame-finish-load', listener: (event: Event,
-                                                  isMainFrame: boolean,
-                                                  frameProcessId: number,
-                                                  frameRoutingId: number) => void): this;
+      isMainFrame: boolean,
+      frameProcessId: number,
+      frameRoutingId: number) => void): this;
     removeListener(event: 'did-frame-finish-load', listener: (event: Event,
-                                                  isMainFrame: boolean,
-                                                  frameProcessId: number,
-                                                  frameRoutingId: number) => void): this;
+      isMainFrame: boolean,
+      frameProcessId: number,
+      frameRoutingId: number) => void): this;
     /**
      * Emitted when any frame navigation is done.
      *
@@ -10492,57 +10492,57 @@ declare namespace Electron {
      * this purpose.
      */
     on(event: 'did-frame-navigate', listener: (event: Event,
-                                               url: string,
-                                               /**
-                                                * -1 for non HTTP navigations
-                                                */
-                                               httpResponseCode: number,
-                                               /**
-                                                * empty for non HTTP navigations,
-                                                */
-                                               httpStatusText: string,
-                                               isMainFrame: boolean,
-                                               frameProcessId: number,
-                                               frameRoutingId: number) => void): this;
+      url: string,
+      /**
+       * -1 for non HTTP navigations
+       */
+      httpResponseCode: number,
+      /**
+       * empty for non HTTP navigations,
+       */
+      httpStatusText: string,
+      isMainFrame: boolean,
+      frameProcessId: number,
+      frameRoutingId: number) => void): this;
     once(event: 'did-frame-navigate', listener: (event: Event,
-                                               url: string,
-                                               /**
-                                                * -1 for non HTTP navigations
-                                                */
-                                               httpResponseCode: number,
-                                               /**
-                                                * empty for non HTTP navigations,
-                                                */
-                                               httpStatusText: string,
-                                               isMainFrame: boolean,
-                                               frameProcessId: number,
-                                               frameRoutingId: number) => void): this;
+      url: string,
+      /**
+       * -1 for non HTTP navigations
+       */
+      httpResponseCode: number,
+      /**
+       * empty for non HTTP navigations,
+       */
+      httpStatusText: string,
+      isMainFrame: boolean,
+      frameProcessId: number,
+      frameRoutingId: number) => void): this;
     addListener(event: 'did-frame-navigate', listener: (event: Event,
-                                               url: string,
-                                               /**
-                                                * -1 for non HTTP navigations
-                                                */
-                                               httpResponseCode: number,
-                                               /**
-                                                * empty for non HTTP navigations,
-                                                */
-                                               httpStatusText: string,
-                                               isMainFrame: boolean,
-                                               frameProcessId: number,
-                                               frameRoutingId: number) => void): this;
+      url: string,
+      /**
+       * -1 for non HTTP navigations
+       */
+      httpResponseCode: number,
+      /**
+       * empty for non HTTP navigations,
+       */
+      httpStatusText: string,
+      isMainFrame: boolean,
+      frameProcessId: number,
+      frameRoutingId: number) => void): this;
     removeListener(event: 'did-frame-navigate', listener: (event: Event,
-                                               url: string,
-                                               /**
-                                                * -1 for non HTTP navigations
-                                                */
-                                               httpResponseCode: number,
-                                               /**
-                                                * empty for non HTTP navigations,
-                                                */
-                                               httpStatusText: string,
-                                               isMainFrame: boolean,
-                                               frameProcessId: number,
-                                               frameRoutingId: number) => void): this;
+      url: string,
+      /**
+       * -1 for non HTTP navigations
+       */
+      httpResponseCode: number,
+      /**
+       * empty for non HTTP navigations,
+       */
+      httpStatusText: string,
+      isMainFrame: boolean,
+      frameProcessId: number,
+      frameRoutingId: number) => void): this;
     /**
      * Emitted when a main frame navigation is done.
      *
@@ -10551,45 +10551,45 @@ declare namespace Electron {
      * this purpose.
      */
     on(event: 'did-navigate', listener: (event: Event,
-                                         url: string,
-                                         /**
-                                          * -1 for non HTTP navigations
-                                          */
-                                         httpResponseCode: number,
-                                         /**
-                                          * empty for non HTTP navigations
-                                          */
-                                         httpStatusText: string) => void): this;
+      url: string,
+      /**
+       * -1 for non HTTP navigations
+       */
+      httpResponseCode: number,
+      /**
+       * empty for non HTTP navigations
+       */
+      httpStatusText: string) => void): this;
     once(event: 'did-navigate', listener: (event: Event,
-                                         url: string,
-                                         /**
-                                          * -1 for non HTTP navigations
-                                          */
-                                         httpResponseCode: number,
-                                         /**
-                                          * empty for non HTTP navigations
-                                          */
-                                         httpStatusText: string) => void): this;
+      url: string,
+      /**
+       * -1 for non HTTP navigations
+       */
+      httpResponseCode: number,
+      /**
+       * empty for non HTTP navigations
+       */
+      httpStatusText: string) => void): this;
     addListener(event: 'did-navigate', listener: (event: Event,
-                                         url: string,
-                                         /**
-                                          * -1 for non HTTP navigations
-                                          */
-                                         httpResponseCode: number,
-                                         /**
-                                          * empty for non HTTP navigations
-                                          */
-                                         httpStatusText: string) => void): this;
+      url: string,
+      /**
+       * -1 for non HTTP navigations
+       */
+      httpResponseCode: number,
+      /**
+       * empty for non HTTP navigations
+       */
+      httpStatusText: string) => void): this;
     removeListener(event: 'did-navigate', listener: (event: Event,
-                                         url: string,
-                                         /**
-                                          * -1 for non HTTP navigations
-                                          */
-                                         httpResponseCode: number,
-                                         /**
-                                          * empty for non HTTP navigations
-                                          */
-                                         httpStatusText: string) => void): this;
+      url: string,
+      /**
+       * -1 for non HTTP navigations
+       */
+      httpResponseCode: number,
+      /**
+       * empty for non HTTP navigations
+       */
+      httpStatusText: string) => void): this;
     /**
      * Emitted when an in-page navigation happened in any frame.
      *
@@ -10598,25 +10598,25 @@ declare namespace Electron {
      * are clicked or when the DOM `hashchange` event is triggered.
      */
     on(event: 'did-navigate-in-page', listener: (event: Event,
-                                                 url: string,
-                                                 isMainFrame: boolean,
-                                                 frameProcessId: number,
-                                                 frameRoutingId: number) => void): this;
+      url: string,
+      isMainFrame: boolean,
+      frameProcessId: number,
+      frameRoutingId: number) => void): this;
     once(event: 'did-navigate-in-page', listener: (event: Event,
-                                                 url: string,
-                                                 isMainFrame: boolean,
-                                                 frameProcessId: number,
-                                                 frameRoutingId: number) => void): this;
+      url: string,
+      isMainFrame: boolean,
+      frameProcessId: number,
+      frameRoutingId: number) => void): this;
     addListener(event: 'did-navigate-in-page', listener: (event: Event,
-                                                 url: string,
-                                                 isMainFrame: boolean,
-                                                 frameProcessId: number,
-                                                 frameRoutingId: number) => void): this;
+      url: string,
+      isMainFrame: boolean,
+      frameProcessId: number,
+      frameRoutingId: number) => void): this;
     removeListener(event: 'did-navigate-in-page', listener: (event: Event,
-                                                 url: string,
-                                                 isMainFrame: boolean,
-                                                 frameProcessId: number,
-                                                 frameRoutingId: number) => void): this;
+      url: string,
+      isMainFrame: boolean,
+      frameProcessId: number,
+      frameRoutingId: number) => void): this;
     /**
      * Emitted after a server side redirect occurs during navigation.  For example a
      * 302 redirect.
@@ -10625,29 +10625,29 @@ declare namespace Electron {
      * checkout out the `will-redirect` event above.
      */
     on(event: 'did-redirect-navigation', listener: (event: Event,
-                                                    url: string,
-                                                    isInPlace: boolean,
-                                                    isMainFrame: boolean,
-                                                    frameProcessId: number,
-                                                    frameRoutingId: number) => void): this;
+      url: string,
+      isInPlace: boolean,
+      isMainFrame: boolean,
+      frameProcessId: number,
+      frameRoutingId: number) => void): this;
     once(event: 'did-redirect-navigation', listener: (event: Event,
-                                                    url: string,
-                                                    isInPlace: boolean,
-                                                    isMainFrame: boolean,
-                                                    frameProcessId: number,
-                                                    frameRoutingId: number) => void): this;
+      url: string,
+      isInPlace: boolean,
+      isMainFrame: boolean,
+      frameProcessId: number,
+      frameRoutingId: number) => void): this;
     addListener(event: 'did-redirect-navigation', listener: (event: Event,
-                                                    url: string,
-                                                    isInPlace: boolean,
-                                                    isMainFrame: boolean,
-                                                    frameProcessId: number,
-                                                    frameRoutingId: number) => void): this;
+      url: string,
+      isInPlace: boolean,
+      isMainFrame: boolean,
+      frameProcessId: number,
+      frameRoutingId: number) => void): this;
     removeListener(event: 'did-redirect-navigation', listener: (event: Event,
-                                                    url: string,
-                                                    isInPlace: boolean,
-                                                    isMainFrame: boolean,
-                                                    frameProcessId: number,
-                                                    frameRoutingId: number) => void): this;
+      url: string,
+      isInPlace: boolean,
+      isMainFrame: boolean,
+      frameProcessId: number,
+      frameRoutingId: number) => void): this;
     /**
      * Corresponds to the points in time when the spinner of the tab started spinning.
      */
@@ -10660,29 +10660,29 @@ declare namespace Electron {
      * `true` for in-page navigations.
      */
     on(event: 'did-start-navigation', listener: (event: Event,
-                                                 url: string,
-                                                 isInPlace: boolean,
-                                                 isMainFrame: boolean,
-                                                 frameProcessId: number,
-                                                 frameRoutingId: number) => void): this;
+      url: string,
+      isInPlace: boolean,
+      isMainFrame: boolean,
+      frameProcessId: number,
+      frameRoutingId: number) => void): this;
     once(event: 'did-start-navigation', listener: (event: Event,
-                                                 url: string,
-                                                 isInPlace: boolean,
-                                                 isMainFrame: boolean,
-                                                 frameProcessId: number,
-                                                 frameRoutingId: number) => void): this;
+      url: string,
+      isInPlace: boolean,
+      isMainFrame: boolean,
+      frameProcessId: number,
+      frameRoutingId: number) => void): this;
     addListener(event: 'did-start-navigation', listener: (event: Event,
-                                                 url: string,
-                                                 isInPlace: boolean,
-                                                 isMainFrame: boolean,
-                                                 frameProcessId: number,
-                                                 frameRoutingId: number) => void): this;
+      url: string,
+      isInPlace: boolean,
+      isMainFrame: boolean,
+      frameProcessId: number,
+      frameRoutingId: number) => void): this;
     removeListener(event: 'did-start-navigation', listener: (event: Event,
-                                                 url: string,
-                                                 isInPlace: boolean,
-                                                 isMainFrame: boolean,
-                                                 frameProcessId: number,
-                                                 frameRoutingId: number) => void): this;
+      url: string,
+      isInPlace: boolean,
+      isMainFrame: boolean,
+      frameProcessId: number,
+      frameRoutingId: number) => void): this;
     /**
      * Corresponds to the points in time when the spinner of the tab stopped spinning.
      */
@@ -10724,37 +10724,37 @@ declare namespace Electron {
      * Emitted when a result is available for [`webContents.findInPage`] request.
      */
     on(event: 'found-in-page', listener: (event: Event,
-                                          result: Result) => void): this;
+      result: Result) => void): this;
     once(event: 'found-in-page', listener: (event: Event,
-                                          result: Result) => void): this;
+      result: Result) => void): this;
     addListener(event: 'found-in-page', listener: (event: Event,
-                                          result: Result) => void): this;
+      result: Result) => void): this;
     removeListener(event: 'found-in-page', listener: (event: Event,
-                                          result: Result) => void): this;
+      result: Result) => void): this;
     /**
      * Emitted when the mainFrame, an `<iframe>`, or a nested `<iframe>` is loaded
      * within the page.
      */
     on(event: 'frame-created', listener: (event: Event,
-                                          details: FrameCreatedDetails) => void): this;
+      details: FrameCreatedDetails) => void): this;
     once(event: 'frame-created', listener: (event: Event,
-                                          details: FrameCreatedDetails) => void): this;
+      details: FrameCreatedDetails) => void): this;
     addListener(event: 'frame-created', listener: (event: Event,
-                                          details: FrameCreatedDetails) => void): this;
+      details: FrameCreatedDetails) => void): this;
     removeListener(event: 'frame-created', listener: (event: Event,
-                                          details: FrameCreatedDetails) => void): this;
+      details: FrameCreatedDetails) => void): this;
     /**
      * Emitted when an input event is sent to the WebContents. See InputEvent for
      * details.
      */
     on(event: 'input-event', listener: (event: Event,
-                                        inputEvent: InputEvent) => void): this;
+      inputEvent: InputEvent) => void): this;
     once(event: 'input-event', listener: (event: Event,
-                                        inputEvent: InputEvent) => void): this;
+      inputEvent: InputEvent) => void): this;
     addListener(event: 'input-event', listener: (event: Event,
-                                        inputEvent: InputEvent) => void): this;
+      inputEvent: InputEvent) => void): this;
     removeListener(event: 'input-event', listener: (event: Event,
-                                        inputEvent: InputEvent) => void): this;
+      inputEvent: InputEvent) => void): this;
     /**
      * Emitted when the renderer process sends an asynchronous message via
      * `ipcRenderer.send()`.
@@ -10763,17 +10763,17 @@ declare namespace Electron {
      * responding to IPC messages specifically from this WebContents.
      */
     on(event: 'ipc-message', listener: (event: Event,
-                                        channel: string,
-                                        ...args: any[]) => void): this;
+      channel: string,
+      ...args: any[]) => void): this;
     once(event: 'ipc-message', listener: (event: Event,
-                                        channel: string,
-                                        ...args: any[]) => void): this;
+      channel: string,
+      ...args: any[]) => void): this;
     addListener(event: 'ipc-message', listener: (event: Event,
-                                        channel: string,
-                                        ...args: any[]) => void): this;
+      channel: string,
+      ...args: any[]) => void): this;
     removeListener(event: 'ipc-message', listener: (event: Event,
-                                        channel: string,
-                                        ...args: any[]) => void): this;
+      channel: string,
+      ...args: any[]) => void): this;
     /**
      * Emitted when the renderer process sends a synchronous message via
      * `ipcRenderer.sendSync()`.
@@ -10782,17 +10782,17 @@ declare namespace Electron {
      * responding to IPC messages specifically from this WebContents.
      */
     on(event: 'ipc-message-sync', listener: (event: Event,
-                                             channel: string,
-                                             ...args: any[]) => void): this;
+      channel: string,
+      ...args: any[]) => void): this;
     once(event: 'ipc-message-sync', listener: (event: Event,
-                                             channel: string,
-                                             ...args: any[]) => void): this;
+      channel: string,
+      ...args: any[]) => void): this;
     addListener(event: 'ipc-message-sync', listener: (event: Event,
-                                             channel: string,
-                                             ...args: any[]) => void): this;
+      channel: string,
+      ...args: any[]) => void): this;
     removeListener(event: 'ipc-message-sync', listener: (event: Event,
-                                             channel: string,
-                                             ...args: any[]) => void): this;
+      channel: string,
+      ...args: any[]) => void): this;
     /**
      * Emitted when the window leaves a full-screen state triggered by HTML API.
      */
@@ -10806,21 +10806,21 @@ declare namespace Electron {
      * The usage is the same with the `login` event of `app`.
      */
     on(event: 'login', listener: (event: Event,
-                                  authenticationResponseDetails: AuthenticationResponseDetails,
-                                  authInfo: AuthInfo,
-                                  callback: (username?: string, password?: string) => void) => void): this;
+      authenticationResponseDetails: AuthenticationResponseDetails,
+      authInfo: AuthInfo,
+      callback: (username?: string, password?: string) => void) => void): this;
     once(event: 'login', listener: (event: Event,
-                                  authenticationResponseDetails: AuthenticationResponseDetails,
-                                  authInfo: AuthInfo,
-                                  callback: (username?: string, password?: string) => void) => void): this;
+      authenticationResponseDetails: AuthenticationResponseDetails,
+      authInfo: AuthInfo,
+      callback: (username?: string, password?: string) => void) => void): this;
     addListener(event: 'login', listener: (event: Event,
-                                  authenticationResponseDetails: AuthenticationResponseDetails,
-                                  authInfo: AuthInfo,
-                                  callback: (username?: string, password?: string) => void) => void): this;
+      authenticationResponseDetails: AuthenticationResponseDetails,
+      authInfo: AuthInfo,
+      callback: (username?: string, password?: string) => void) => void): this;
     removeListener(event: 'login', listener: (event: Event,
-                                  authenticationResponseDetails: AuthenticationResponseDetails,
-                                  authInfo: AuthInfo,
-                                  callback: (username?: string, password?: string) => void) => void): this;
+      authenticationResponseDetails: AuthenticationResponseDetails,
+      authInfo: AuthInfo,
+      callback: (username?: string, password?: string) => void) => void): this;
     /**
      * Emitted when media is paused or done playing.
      */
@@ -10839,84 +10839,84 @@ declare namespace Electron {
      * Emitted when page receives favicon urls.
      */
     on(event: 'page-favicon-updated', listener: (event: Event,
-                                                 /**
-                                                  * Array of URLs.
-                                                  */
-                                                 favicons: string[]) => void): this;
+      /**
+       * Array of URLs.
+       */
+      favicons: string[]) => void): this;
     once(event: 'page-favicon-updated', listener: (event: Event,
-                                                 /**
-                                                  * Array of URLs.
-                                                  */
-                                                 favicons: string[]) => void): this;
+      /**
+       * Array of URLs.
+       */
+      favicons: string[]) => void): this;
     addListener(event: 'page-favicon-updated', listener: (event: Event,
-                                                 /**
-                                                  * Array of URLs.
-                                                  */
-                                                 favicons: string[]) => void): this;
+      /**
+       * Array of URLs.
+       */
+      favicons: string[]) => void): this;
     removeListener(event: 'page-favicon-updated', listener: (event: Event,
-                                                 /**
-                                                  * Array of URLs.
-                                                  */
-                                                 favicons: string[]) => void): this;
+      /**
+       * Array of URLs.
+       */
+      favicons: string[]) => void): this;
     /**
      * Fired when page title is set during navigation. `explicitSet` is false when
      * title is synthesized from file url.
      */
     on(event: 'page-title-updated', listener: (event: Event,
-                                               title: string,
-                                               explicitSet: boolean) => void): this;
+      title: string,
+      explicitSet: boolean) => void): this;
     once(event: 'page-title-updated', listener: (event: Event,
-                                               title: string,
-                                               explicitSet: boolean) => void): this;
+      title: string,
+      explicitSet: boolean) => void): this;
     addListener(event: 'page-title-updated', listener: (event: Event,
-                                               title: string,
-                                               explicitSet: boolean) => void): this;
+      title: string,
+      explicitSet: boolean) => void): this;
     removeListener(event: 'page-title-updated', listener: (event: Event,
-                                               title: string,
-                                               explicitSet: boolean) => void): this;
+      title: string,
+      explicitSet: boolean) => void): this;
     /**
      * Emitted when a new frame is generated. Only the dirty area is passed in the
      * buffer.
      */
     on(event: 'paint', listener: (event: Event,
-                                  dirtyRect: Rectangle,
-                                  /**
-                                   * The image data of the whole frame.
-                                   */
-                                  image: NativeImage) => void): this;
+      dirtyRect: Rectangle,
+      /**
+       * The image data of the whole frame.
+       */
+      image: NativeImage) => void): this;
     once(event: 'paint', listener: (event: Event,
-                                  dirtyRect: Rectangle,
-                                  /**
-                                   * The image data of the whole frame.
-                                   */
-                                  image: NativeImage) => void): this;
+      dirtyRect: Rectangle,
+      /**
+       * The image data of the whole frame.
+       */
+      image: NativeImage) => void): this;
     addListener(event: 'paint', listener: (event: Event,
-                                  dirtyRect: Rectangle,
-                                  /**
-                                   * The image data of the whole frame.
-                                   */
-                                  image: NativeImage) => void): this;
+      dirtyRect: Rectangle,
+      /**
+       * The image data of the whole frame.
+       */
+      image: NativeImage) => void): this;
     removeListener(event: 'paint', listener: (event: Event,
-                                  dirtyRect: Rectangle,
-                                  /**
-                                   * The image data of the whole frame.
-                                   */
-                                  image: NativeImage) => void): this;
+      dirtyRect: Rectangle,
+      /**
+       * The image data of the whole frame.
+       */
+      image: NativeImage) => void): this;
     /**
      * Emitted when a plugin process has crashed.
      */
     on(event: 'plugin-crashed', listener: (event: Event,
-                                           name: string,
-                                           version: string) => void): this;
+      name: string,
+      version: string) => void): this;
     once(event: 'plugin-crashed', listener: (event: Event,
-                                           name: string,
-                                           version: string) => void): this;
+      name: string,
+      version: string) => void): this;
     addListener(event: 'plugin-crashed', listener: (event: Event,
-                                           name: string,
-                                           version: string) => void): this;
+      name: string,
+      version: string) => void): this;
     removeListener(event: 'plugin-crashed', listener: (event: Event,
-                                           name: string,
-                                           version: string) => void): this;
+      name: string,
+      version: string) => void): this;
     /**
      * Emitted when the `WebContents` preferred size has changed.
      *
@@ -10924,57 +10924,57 @@ declare namespace Electron {
      * in `webPreferences`.
      */
     on(event: 'preferred-size-changed', listener: (event: Event,
-                                                   /**
-                                                    * The minimum size needed to contain the layout of the document—without requiring
-                                                    * scrolling.
-                                                    */
-                                                   preferredSize: Size) => void): this;
+      /**
+       * The minimum size needed to contain the layout of the document—without requiring
+       * scrolling.
+       */
+      preferredSize: Size) => void): this;
     once(event: 'preferred-size-changed', listener: (event: Event,
-                                                   /**
-                                                    * The minimum size needed to contain the layout of the document—without requiring
-                                                    * scrolling.
-                                                    */
-                                                   preferredSize: Size) => void): this;
+      /**
+       * The minimum size needed to contain the layout of the document—without requiring
+       * scrolling.
+       */
+      preferredSize: Size) => void): this;
     addListener(event: 'preferred-size-changed', listener: (event: Event,
-                                                   /**
-                                                    * The minimum size needed to contain the layout of the document—without requiring
-                                                    * scrolling.
-                                                    */
-                                                   preferredSize: Size) => void): this;
+      /**
+       * The minimum size needed to contain the layout of the document—without requiring
+       * scrolling.
+       */
+      preferredSize: Size) => void): this;
     removeListener(event: 'preferred-size-changed', listener: (event: Event,
-                                                   /**
-                                                    * The minimum size needed to contain the layout of the document—without requiring
-                                                    * scrolling.
-                                                    */
-                                                   preferredSize: Size) => void): this;
+      /**
+       * The minimum size needed to contain the layout of the document—without requiring
+       * scrolling.
+       */
+      preferredSize: Size) => void): this;
     /**
      * Emitted when the preload script `preloadPath` throws an unhandled exception
      * `error`.
      */
     on(event: 'preload-error', listener: (event: Event,
-                                          preloadPath: string,
-                                          error: Error) => void): this;
+      preloadPath: string,
+      error: Error) => void): this;
     once(event: 'preload-error', listener: (event: Event,
-                                          preloadPath: string,
-                                          error: Error) => void): this;
+      preloadPath: string,
+      error: Error) => void): this;
     addListener(event: 'preload-error', listener: (event: Event,
-                                          preloadPath: string,
-                                          error: Error) => void): this;
+      preloadPath: string,
+      error: Error) => void): this;
     removeListener(event: 'preload-error', listener: (event: Event,
-                                          preloadPath: string,
-                                          error: Error) => void): this;
+      preloadPath: string,
+      error: Error) => void): this;
     /**
      * Emitted when the renderer process unexpectedly disappears.  This is normally
      * because it was crashed or killed.
      */
     on(event: 'render-process-gone', listener: (event: Event,
-                                                details: RenderProcessGoneDetails) => void): this;
+      details: RenderProcessGoneDetails) => void): this;
     once(event: 'render-process-gone', listener: (event: Event,
-                                                details: RenderProcessGoneDetails) => void): this;
+      details: RenderProcessGoneDetails) => void): this;
     addListener(event: 'render-process-gone', listener: (event: Event,
-                                                details: RenderProcessGoneDetails) => void): this;
+      details: RenderProcessGoneDetails) => void): this;
     removeListener(event: 'render-process-gone', listener: (event: Event,
-                                                details: RenderProcessGoneDetails) => void): this;
+      details: RenderProcessGoneDetails) => void): this;
     /**
      * Emitted when the unresponsive web page becomes responsive again.
      */
@@ -10993,38 +10993,38 @@ declare namespace Electron {
      * cancelled.
      */
     on(event: 'select-bluetooth-device', listener: (event: Event,
-                                                    devices: BluetoothDevice[],
-                                                    callback: (deviceId: string) => void) => void): this;
+      devices: BluetoothDevice[],
+      callback: (deviceId: string) => void) => void): this;
     once(event: 'select-bluetooth-device', listener: (event: Event,
-                                                    devices: BluetoothDevice[],
-                                                    callback: (deviceId: string) => void) => void): this;
+      devices: BluetoothDevice[],
+      callback: (deviceId: string) => void) => void): this;
     addListener(event: 'select-bluetooth-device', listener: (event: Event,
-                                                    devices: BluetoothDevice[],
-                                                    callback: (deviceId: string) => void) => void): this;
+      devices: BluetoothDevice[],
+      callback: (deviceId: string) => void) => void): this;
     removeListener(event: 'select-bluetooth-device', listener: (event: Event,
-                                                    devices: BluetoothDevice[],
-                                                    callback: (deviceId: string) => void) => void): this;
+      devices: BluetoothDevice[],
+      callback: (deviceId: string) => void) => void): this;
     /**
      * Emitted when a client certificate is requested.
      *
      * The usage is the same with the `select-client-certificate` event of `app`.
      */
     on(event: 'select-client-certificate', listener: (event: Event,
-                                                      url: string,
-                                                      certificateList: Certificate[],
-                                                      callback: (certificate: Certificate) => void) => void): this;
+      url: string,
+      certificateList: Certificate[],
+      callback: (certificate: Certificate) => void) => void): this;
     once(event: 'select-client-certificate', listener: (event: Event,
-                                                      url: string,
-                                                      certificateList: Certificate[],
-                                                      callback: (certificate: Certificate) => void) => void): this;
+      url: string,
+      certificateList: Certificate[],
+      callback: (certificate: Certificate) => void) => void): this;
     addListener(event: 'select-client-certificate', listener: (event: Event,
-                                                      url: string,
-                                                      certificateList: Certificate[],
-                                                      callback: (certificate: Certificate) => void) => void): this;
+      url: string,
+      certificateList: Certificate[],
+      callback: (certificate: Certificate) => void) => void): this;
     removeListener(event: 'select-client-certificate', listener: (event: Event,
-                                                      url: string,
-                                                      certificateList: Certificate[],
-                                                      callback: (certificate: Certificate) => void) => void): this;
+      url: string,
+      certificateList: Certificate[],
+      callback: (certificate: Certificate) => void) => void): this;
     /**
      * Emitted when the web page becomes unresponsive.
      */
@@ -11036,13 +11036,13 @@ declare namespace Electron {
      * Emitted when mouse moves over a link or the keyboard moves the focus to a link.
      */
     on(event: 'update-target-url', listener: (event: Event,
-                                              url: string) => void): this;
+      url: string) => void): this;
     once(event: 'update-target-url', listener: (event: Event,
-                                              url: string) => void): this;
+      url: string) => void): this;
     addListener(event: 'update-target-url', listener: (event: Event,
-                                              url: string) => void): this;
+      url: string) => void): this;
     removeListener(event: 'update-target-url', listener: (event: Event,
-                                              url: string) => void): this;
+      url: string) => void): this;
     /**
      * Emitted when a `<webview>`'s web contents is being attached to this web
      * contents. Calling `event.preventDefault()` will destroy the guest page.
@@ -11052,49 +11052,49 @@ declare namespace Electron {
      * can't be set via `<webview>` attributes.
      */
     on(event: 'will-attach-webview', listener: (event: Event,
-                                                /**
-                                                 * The web preferences that will be used by the guest page. This object can be
-                                                 * modified to adjust the preferences for the guest page.
-                                                 */
-                                                webPreferences: WebPreferences,
-                                                /**
-                                                 * The other `<webview>` parameters such as the `src` URL. This object can be
-                                                 * modified to adjust the parameters of the guest page.
-                                                 */
-                                                params: Record<string, string>) => void): this;
+      /**
+       * The web preferences that will be used by the guest page. This object can be
+       * modified to adjust the preferences for the guest page.
+       */
+      webPreferences: WebPreferences,
+      /**
+       * The other `<webview>` parameters such as the `src` URL. This object can be
+       * modified to adjust the parameters of the guest page.
+       */
+      params: Record<string, string>) => void): this;
     once(event: 'will-attach-webview', listener: (event: Event,
-                                                /**
-                                                 * The web preferences that will be used by the guest page. This object can be
-                                                 * modified to adjust the preferences for the guest page.
-                                                 */
-                                                webPreferences: WebPreferences,
-                                                /**
-                                                 * The other `<webview>` parameters such as the `src` URL. This object can be
-                                                 * modified to adjust the parameters of the guest page.
-                                                 */
-                                                params: Record<string, string>) => void): this;
+      /**
+       * The web preferences that will be used by the guest page. This object can be
+       * modified to adjust the preferences for the guest page.
+       */
+      webPreferences: WebPreferences,
+      /**
+       * The other `<webview>` parameters such as the `src` URL. This object can be
+       * modified to adjust the parameters of the guest page.
+       */
+      params: Record<string, string>) => void): this;
     addListener(event: 'will-attach-webview', listener: (event: Event,
-                                                /**
-                                                 * The web preferences that will be used by the guest page. This object can be
-                                                 * modified to adjust the preferences for the guest page.
-                                                 */
-                                                webPreferences: WebPreferences,
-                                                /**
-                                                 * The other `<webview>` parameters such as the `src` URL. This object can be
-                                                 * modified to adjust the parameters of the guest page.
-                                                 */
-                                                params: Record<string, string>) => void): this;
+      /**
+       * The web preferences that will be used by the guest page. This object can be
+       * modified to adjust the preferences for the guest page.
+       */
+      webPreferences: WebPreferences,
+      /**
+       * The other `<webview>` parameters such as the `src` URL. This object can be
+       * modified to adjust the parameters of the guest page.
+       */
+      params: Record<string, string>) => void): this;
     removeListener(event: 'will-attach-webview', listener: (event: Event,
-                                                /**
-                                                 * The web preferences that will be used by the guest page. This object can be
-                                                 * modified to adjust the preferences for the guest page.
-                                                 */
-                                                webPreferences: WebPreferences,
-                                                /**
-                                                 * The other `<webview>` parameters such as the `src` URL. This object can be
-                                                 * modified to adjust the parameters of the guest page.
-                                                 */
-                                                params: Record<string, string>) => void): this;
+      /**
+       * The web preferences that will be used by the guest page. This object can be
+       * modified to adjust the preferences for the guest page.
+       */
+      webPreferences: WebPreferences,
+      /**
+       * The other `<webview>` parameters such as the `src` URL. This object can be
+       * modified to adjust the parameters of the guest page.
+       */
+      params: Record<string, string>) => void): this;
     /**
      * Emitted when a user or the page wants to start navigation. It can happen when
      * the `window.location` object is changed or a user clicks a link in the page.
@@ -11109,13 +11109,13 @@ declare namespace Electron {
      * Calling `event.preventDefault()` will prevent the navigation.
      */
     on(event: 'will-navigate', listener: (event: Event,
-                                          url: string) => void): this;
+      url: string) => void): this;
     once(event: 'will-navigate', listener: (event: Event,
-                                          url: string) => void): this;
+      url: string) => void): this;
     addListener(event: 'will-navigate', listener: (event: Event,
-                                          url: string) => void): this;
+      url: string) => void): this;
     removeListener(event: 'will-navigate', listener: (event: Event,
-                                          url: string) => void): this;
+      url: string) => void): this;
     /**
      * Emitted when a `beforeunload` event handler is attempting to cancel a page
      * unload.
@@ -11142,53 +11142,53 @@ declare namespace Electron {
      * redirect).
      */
     on(event: 'will-redirect', listener: (event: Event,
-                                          url: string,
-                                          isInPlace: boolean,
-                                          isMainFrame: boolean,
-                                          frameProcessId: number,
-                                          frameRoutingId: number) => void): this;
+      url: string,
+      isInPlace: boolean,
+      isMainFrame: boolean,
+      frameProcessId: number,
+      frameRoutingId: number) => void): this;
     once(event: 'will-redirect', listener: (event: Event,
-                                          url: string,
-                                          isInPlace: boolean,
-                                          isMainFrame: boolean,
-                                          frameProcessId: number,
-                                          frameRoutingId: number) => void): this;
+      url: string,
+      isInPlace: boolean,
+      isMainFrame: boolean,
+      frameProcessId: number,
+      frameRoutingId: number) => void): this;
     addListener(event: 'will-redirect', listener: (event: Event,
-                                          url: string,
-                                          isInPlace: boolean,
-                                          isMainFrame: boolean,
-                                          frameProcessId: number,
-                                          frameRoutingId: number) => void): this;
+      url: string,
+      isInPlace: boolean,
+      isMainFrame: boolean,
+      frameProcessId: number,
+      frameRoutingId: number) => void): this;
     removeListener(event: 'will-redirect', listener: (event: Event,
-                                          url: string,
-                                          isInPlace: boolean,
-                                          isMainFrame: boolean,
-                                          frameProcessId: number,
-                                          frameRoutingId: number) => void): this;
+      url: string,
+      isInPlace: boolean,
+      isMainFrame: boolean,
+      frameProcessId: number,
+      frameRoutingId: number) => void): this;
     /**
      * Emitted when the user is requesting to change the zoom level using the mouse
      * wheel.
      */
     on(event: 'zoom-changed', listener: (event: Event,
-                                         /**
-                                          * Can be `in` or `out`.
-                                          */
-                                         zoomDirection: ('in' | 'out')) => void): this;
+      /**
+       * Can be `in` or `out`.
+       */
+      zoomDirection: ('in' | 'out')) => void): this;
     once(event: 'zoom-changed', listener: (event: Event,
-                                         /**
-                                          * Can be `in` or `out`.
-                                          */
-                                         zoomDirection: ('in' | 'out')) => void): this;
+      /**
+       * Can be `in` or `out`.
+       */
+      zoomDirection: ('in' | 'out')) => void): this;
     addListener(event: 'zoom-changed', listener: (event: Event,
-                                         /**
-                                          * Can be `in` or `out`.
-                                          */
-                                         zoomDirection: ('in' | 'out')) => void): this;
+      /**
+       * Can be `in` or `out`.
+       */
+      zoomDirection: ('in' | 'out')) => void): this;
     removeListener(event: 'zoom-changed', listener: (event: Event,
-                                         /**
-                                          * Can be `in` or `out`.
-                                          */
-                                         zoomDirection: ('in' | 'out')) => void): this;
+      /**
+       * Can be `in` or `out`.
+       */
+      zoomDirection: ('in' | 'out')) => void): this;
     /**
      * Adds the specified path to DevTools workspace. Must be used after DevTools
      * creation:
@@ -11750,7 +11750,7 @@ declare namespace Electron {
      * submitting a form with `<form target="_blank">`. See `window.open()` for more
      * details and how to use this in conjunction with `did-create-window`.
      */
-    setWindowOpenHandler(handler: (details: HandlerDetails) => ({action: 'deny'}) | ({action: 'allow', outlivesOpener?: boolean, overrideBrowserWindowOptions?: BrowserWindowConstructorOptions})): void;
+    setWindowOpenHandler(handler: (details: HandlerDetails) => ({ action: 'deny' }) | ({ action: 'allow', outlivesOpener?: boolean, overrideBrowserWindowOptions?: BrowserWindowConstructorOptions })): void;
     /**
      * Changes the zoom factor to the specified factor. Zoom factor is zoom percent
      * divided by 100, so 300% = 3.0.
@@ -17211,8 +17211,8 @@ declare namespace Electron {
     type App = Electron.App;
     const autoUpdater: AutoUpdater;
     type AutoUpdater = Electron.AutoUpdater;
-    class BrowserView extends Electron.BrowserView {}
-    class BrowserWindow extends Electron.BrowserWindow {}
+    class BrowserView extends Electron.BrowserView { }
+    class BrowserWindow extends Electron.BrowserWindow { }
     type ClientRequest = Electron.ClientRequest;
     type CommandLine = Electron.CommandLine;
     const contentTracing: ContentTracing;
@@ -17232,9 +17232,9 @@ declare namespace Electron {
     type IncomingMessage = Electron.IncomingMessage;
     const ipcMain: IpcMain;
     type IpcMain = Electron.IpcMain;
-    class Menu extends Electron.Menu {}
-    class MenuItem extends Electron.MenuItem {}
-    class MessageChannelMain extends Electron.MessageChannelMain {}
+    class Menu extends Electron.Menu { }
+    class MenuItem extends Electron.MenuItem { }
+    class MessageChannelMain extends Electron.MessageChannelMain { }
     type MessagePortMain = Electron.MessagePortMain;
     const nativeTheme: NativeTheme;
     type NativeTheme = Electron.NativeTheme;
@@ -17242,7 +17242,7 @@ declare namespace Electron {
     type Net = Electron.Net;
     const netLog: NetLog;
     type NetLog = Electron.NetLog;
-    class Notification extends Electron.Notification {}
+    class Notification extends Electron.Notification { }
     const powerMonitor: PowerMonitor;
     type PowerMonitor = Electron.PowerMonitor;
     const powerSaveBlocker: PowerSaveBlocker;
@@ -17258,10 +17258,10 @@ declare namespace Electron {
     type ServiceWorkers = Electron.ServiceWorkers;
     const session: typeof Session;
     type Session = Electron.Session;
-    class ShareMenu extends Electron.ShareMenu {}
+    class ShareMenu extends Electron.ShareMenu { }
     const systemPreferences: SystemPreferences;
     type SystemPreferences = Electron.SystemPreferences;
-    class TouchBar extends Electron.TouchBar {}
+    class TouchBar extends Electron.TouchBar { }
     type TouchBarButton = Electron.TouchBarButton;
     type TouchBarColorPicker = Electron.TouchBarColorPicker;
     type TouchBarGroup = Electron.TouchBarGroup;
@@ -17272,7 +17272,7 @@ declare namespace Electron {
     type TouchBarSegmentedControl = Electron.TouchBarSegmentedControl;
     type TouchBarSlider = Electron.TouchBarSlider;
     type TouchBarSpacer = Electron.TouchBarSpacer;
-    class Tray extends Electron.Tray {}
+    class Tray extends Electron.Tray { }
     const utilityProcess: typeof UtilityProcess;
     type UtilityProcess = Electron.UtilityProcess;
     const webContents: typeof WebContents;
@@ -17756,8 +17756,8 @@ declare namespace Electron {
     type App = Electron.App;
     const autoUpdater: AutoUpdater;
     type AutoUpdater = Electron.AutoUpdater;
-    class BrowserView extends Electron.BrowserView {}
-    class BrowserWindow extends Electron.BrowserWindow {}
+    class BrowserView extends Electron.BrowserView { }
+    class BrowserWindow extends Electron.BrowserWindow { }
     type ClientRequest = Electron.ClientRequest;
     const clipboard: Clipboard;
     type Clipboard = Electron.Clipboard;
@@ -17785,9 +17785,9 @@ declare namespace Electron {
     type IpcMain = Electron.IpcMain;
     const ipcRenderer: IpcRenderer;
     type IpcRenderer = Electron.IpcRenderer;
-    class Menu extends Electron.Menu {}
-    class MenuItem extends Electron.MenuItem {}
-    class MessageChannelMain extends Electron.MessageChannelMain {}
+    class Menu extends Electron.Menu { }
+    class MenuItem extends Electron.MenuItem { }
+    class MessageChannelMain extends Electron.MessageChannelMain { }
     type MessagePortMain = Electron.MessagePortMain;
     const nativeImage: typeof NativeImage;
     type NativeImage = Electron.NativeImage;
@@ -17797,7 +17797,7 @@ declare namespace Electron {
     type Net = Electron.Net;
     const netLog: NetLog;
     type NetLog = Electron.NetLog;
-    class Notification extends Electron.Notification {}
+    class Notification extends Electron.Notification { }
     const powerMonitor: PowerMonitor;
     type PowerMonitor = Electron.PowerMonitor;
     const powerSaveBlocker: PowerSaveBlocker;
@@ -17813,12 +17813,12 @@ declare namespace Electron {
     type ServiceWorkers = Electron.ServiceWorkers;
     const session: typeof Session;
     type Session = Electron.Session;
-    class ShareMenu extends Electron.ShareMenu {}
+    class ShareMenu extends Electron.ShareMenu { }
     const shell: Shell;
     type Shell = Electron.Shell;
     const systemPreferences: SystemPreferences;
     type SystemPreferences = Electron.SystemPreferences;
-    class TouchBar extends Electron.TouchBar {}
+    class TouchBar extends Electron.TouchBar { }
     type TouchBarButton = Electron.TouchBarButton;
     type TouchBarColorPicker = Electron.TouchBarColorPicker;
     type TouchBarGroup = Electron.TouchBarGroup;
@@ -17829,7 +17829,7 @@ declare namespace Electron {
     type TouchBarSegmentedControl = Electron.TouchBarSegmentedControl;
     type TouchBarSlider = Electron.TouchBarSlider;
     type TouchBarSpacer = Electron.TouchBarSpacer;
-    class Tray extends Electron.Tray {}
+    class Tray extends Electron.Tray { }
     const utilityProcess: typeof UtilityProcess;
     type UtilityProcess = Electron.UtilityProcess;
     const webContents: typeof WebContents;
@@ -18135,9 +18135,9 @@ interface NodeRequire {
 }
 
 interface File {
- /**
-  * The real path to the file on the users filesystem
-  */
+  /**
+   * The real path to the file on the users filesystem
+   */
   path: string;
 }
 

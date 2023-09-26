@@ -40,7 +40,7 @@ interface CharacterConfigData extends ExCommonConfig {
      * 
      * Player:指技能拥有者；
      */
-    dynamicTranslate?: SMap<OneParmFun<Player,string>>;
+    dynamicTranslate?: SMap<OneParmFun<Player, string>>;
 
     /** 选择时，可进行替换的武将配置【v1.9.106.3】 */
     characterReplace?: SMap<string[]>;
@@ -75,37 +75,36 @@ type HeroGroup = 'wei' | 'shu' | 'wu' | 'qun' | 'jin' | 'shen' | 'key' | 'ye';
  * 【v1.9.108.6~】 character[4]设置国战模式双势力: 格式 “doublegroup:xx:xx”，例如“doublegroup:wei:wu”。但是武将的id前缀必须是"gz_"或者"db_"
  * 
  */
-type HeroData = [HeroSex, HeroGroup | string, HeroHp, string[], string[], ...any[]] |
-				[HeroSex, HeroGroup | string, HeroHp, string[],  ...any[]];
+type HeroData = [HeroSex, HeroGroup | string, HeroHp, string[], string[], ...any[]];
 
 /** 武将信息索引 */
 declare const enum HeroDataFields {
     /** 性别 */
-    sex=0,
+    sex = 0,
     /** 国家势力 */
-    group=1,
+    group = 1,
     /** 血量 */
-    hp=2,
+    hp = 2,
     /** 技能 */
-    skills=3,
+    skills = 3,
     /** 额外携带信息 */
-    exInfo=4
+    exInfo = 4
 }
 
 /** 新增一个game.addCharacter的info类型 */
 interface CharacterConfigInfo {
-	/** 来源扩展 */
-	extension?: string;
-	/** 性别 */
-	sex: HeroSex;
-	/** 国籍 */
-	group: string;
-	/** 体力值 */
-	hp: HeroHp;
-	/** 技能 */
-	skills?: string[];
-	/** 其他标签，添加到character[4]中 */
-	tags?: string[];
-	/** 武将中文名 */
-	translate: string;
+    /** 来源扩展 */
+    extension?: string;
+    /** 性别 */
+    sex: HeroSex;
+    /** 国籍 */
+    group: string;
+    /** 体力值 */
+    hp: HeroHp;
+    /** 技能 */
+    skills?: string[];
+    /** 其他标签，添加到character[4]中 */
+    tags?: string[];
+    /** 武将中文名 */
+    translate: string;
 }

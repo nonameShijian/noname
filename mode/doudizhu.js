@@ -298,7 +298,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				else return player.identity=='fan';
 			},
 			chooseCharacterZhidou:function(){
-				var next=game.createEvent('chooseCharacter',false);
+				var next=game.createEvent('chooseCharacter');
 				next.setContent(function(){
 					"step 0"
 					game.no_continue_game=true;
@@ -405,7 +405,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				});
 			},
 			chooseCharacterBinglin:function(){
-				var next=game.createEvent('chooseCharacter',false);
+				var next=game.createEvent('chooseCharacter');
 				next.setContent(function(){
 					"step 0"
 					game.no_continue_game=true;
@@ -501,7 +501,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				});
 			},
 			chooseCharacterHuanle:function(){
-				var next=game.createEvent('chooseCharacter',false);
+				var next=game.createEvent('chooseCharacter');
 				next.setContent(function(){
 					"step 0"
 					ui.arena.classList.add('choose-character');
@@ -588,7 +588,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			},
 			
 			chooseCharacterKaihei:function(){
-				var next=game.createEvent('chooseCharacter',false);
+				var next=game.createEvent('chooseCharacter');
 				next.setContent(function(){
 					"step 0"
 					ui.arena.classList.add('choose-character');
@@ -681,7 +681,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					game.chooseCharacterBinglin();
 					return;
 				}
-				var next=game.createEvent('chooseCharacter',false);
+				var next=game.createEvent('chooseCharacter');
 				next.showConfig=true;
 				next.addPlayer=function(player){
 					var list=lib.config.mode_config.identity.identity[game.players.length-3].slice(0);
@@ -1096,8 +1096,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					}
 					"step 3"
 					for(var i=0;i<game.players.length;i++){
-						_status.characterlist.remove(get.sourceCharacter(game.players[i].name1));
-						_status.characterlist.remove(get.sourceCharacter(game.players[i].name2));
+						_status.characterlist.remove(game.players[i].name1);
+						_status.characterlist.remove(game.players[i].name2);
 					}
 					setTimeout(function(){
 						ui.arena.classList.remove('choose-character');
@@ -1107,7 +1107,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			},
 			
 			chooseCharacterKaiheiOL:function(){
-				var next=game.createEvent('chooseCharacter',false);
+				var next=game.createEvent('chooseCharacter');
 				next.setContent(function(){
 					"step 0"
 					ui.arena.classList.add('choose-character');
@@ -1224,7 +1224,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				});
 			},
 			chooseCharacterHuanleOL:function(){
-				var next=game.createEvent('chooseCharacter',false);
+				var next=game.createEvent('chooseCharacter');
 				next.setContent(function(){
 					"step 0"
 					ui.arena.classList.add('choose-character');
@@ -1353,7 +1353,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				});
 			},
 			chooseCharacterBinglinOL:function(){
-				var next=game.createEvent('chooseCharacter',false);
+				var next=game.createEvent('chooseCharacter');
 				next.setContent(function(){
 					"step 0"
 					ui.arena.classList.add('choose-character');
@@ -1497,7 +1497,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				});
 			},
 			chooseCharacterZhidouOL:function(){
-				var next=game.createEvent('chooseCharacter',false);
+				var next=game.createEvent('chooseCharacter');
 				next.setContent(function(){
 					"step 0"
 					ui.arena.classList.add('choose-character');
@@ -1652,7 +1652,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					game.chooseCharacterBinglinOL();
 					return;
 				}
-				var next=game.createEvent('chooseCharacter',false);
+				var next=game.createEvent('chooseCharacter');
 				next.setContent(function(){
 					"step 0"
 					ui.arena.classList.add('choose-character');
@@ -1850,7 +1850,6 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					else game.updateRoundNumber();
 					return cards;
 				},
-				hasZhuSkill:function(){return false;},
 				$dieAfter:function(){
 					if(_status.video) return;
 					if(!this.node.dieidentity){
@@ -1891,7 +1890,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					if(_status.mode=='binglin'||_status.mode=='online'||this.identity!='fan') return;
 					var player=this,target=game.findPlayer(function(current){
 						return current!=player&&current.identity=='fan';
-					});
+					},true);
 					if(target){
 						target.showGiveup();
 						target.chooseDrawRecover(2);
@@ -2253,9 +2252,15 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					"step 0"
-					player.chooseToDiscard('h',2,'是否发动【飞扬】，弃置两张手牌并弃置自己判定区的一张牌？').set('logSkill','feiyang').ai=function(card){
-						return 6-get.value(card);
-					};
+					player.chooseToDiscard('h',2,get.prompt('feiyang'),'弃置两张手牌，然后弃置判定区里的一张牌').set('logSkill','feiyang').set('ai',function(card){
+						if(_status.event.goon) return 6-get.value(card);
+						return 0;
+					}).set('goon',player.hasCard(function(card){
+						return get.effect(player,{
+							name:card.viewAs||card.name,
+							cards:[card],
+						},player,player)<0;
+					},'j'));
 					"step 1"
 					if(result.bool){
 						player.discardPlayerCard(player,'j',true);

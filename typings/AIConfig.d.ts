@@ -12,40 +12,40 @@ interface ExAIData {
         若是字符串，则info.ai[tag]==arg；
         非字符串，则，只有true才可以成功（其实按代码，可以判定非0数字）
     */
-    
+
     //无视防具系列：
     /**
      * 无防具（无视防具1）
      * 
      * 在某些防具的filter中有所实现，拥有该技能标签，有些防具的效果不能发动
      */
-    unequip?:boolean;
+    unequip?: boolean;
     /**
      * 无视防具2
      * 
      * 同样也是作为无视防具的效果的标签，
      * 这个更直接，无需任何判定条件，直接无视
      */
-    unequip2?:boolean;
+    unequip2?: boolean;
     /** 无视防具3 */
-    unequip_ai?:boolean;
+    unequip_ai?: boolean;
 
     /**
      * 【响应闪】
      * 作用是告诉AI手里没『闪』也可能出『闪』,防止没『闪』直接掉血;
      * 常用于视为技；
      */
-    respondShan?:boolean;
+    respondShan?: boolean;
     /**
      * 【响应杀】
      * 作用是告诉AI手里没『杀』也可能出『杀』,防止没『杀』直接掉血;
      * 常用于视为技；
      */
-    respondSha?:boolean;
+    respondSha?: boolean;
     /**
      * 在createTrigger中使用，可以指示技能不强制发动，暂无用；
      */
-    nofrequent?:boolean;
+    nofrequent?: boolean;
     /** 
      * 【卖血】
      * 用于其他AI检测是否是卖血流(if(target.hasSkillTag('maixie')))。并非加了这个AI就会卖血。
@@ -55,11 +55,11 @@ interface ExAIData {
      * 【卖血2】
      * 用于chooseDrawRecover 选择抽牌还是回血，即表示该角色血量重要，告诉AI主动优先选择回血。
      */
-    maixie_hp?:boolean;
+    maixie_hp?: boolean;
     /**
      * 【卖血3】
      */
-    maixie_defend?:boolean;
+    maixie_defend?: boolean;
     /**
      * 【无护甲】
      * 视为无护甲，用于damage，作用是告诉AI，即使有护甲，也不不使用护甲抵扣伤害；
@@ -120,48 +120,48 @@ interface ExAIData {
     /** 非身份，国战使用，濒死阶段，有该标记，可以强行进行复活求帮助 */
     revertsave?: boolean;
     /** 改变判定 */
-    rejudge?:boolean;
+    rejudge?: boolean;
 
     //inRange方法相关标记，影响距离计算
     /** 逆时针计算距离 */
-    left_hand?:boolean;
+    left_hand?: boolean;
     /** 顺时针计算距离 */
-    right_hand?:boolean;
+    right_hand?: boolean;
     /** 计算距离时，无视本单位 */
-    undist?:boolean;
+    undist?: boolean;
 
     //其余一些有些少出场的：
     /** 不会受到火焰伤害 */
-    nofire?:boolean;
+    nofire?: boolean;
     /** 不会受到雷电伤害 */
-    nothunder?:boolean;
+    nothunder?: boolean;
     /** 不会受到伤害 */
-    nodamage?:boolean;
+    nodamage?: boolean;
     /** 使用毒会有收益 */
-    usedu?:boolean;
+    usedu?: boolean;
     /** 不受毒影响 */
-    nodu?:boolean;
+    nodu?: boolean;
     notrick?: boolean;
-    notricksource?:boolean;
-    useShan?:boolean;
+    notricksource?: boolean;
+    useShan?: boolean;
     noShan?: boolean;
     nolose?: boolean;
-    nodiscard?:boolean;
+    nodiscard?: boolean;
 
     /** 玩家不响应无懈 */
-    playernowuxie?:boolean;
+    playernowuxie?: boolean;
 
     /** 【响应酒】当你需要使用“酒”时，标记技能可响应 */
-    jiuOther?:boolean;
+    jiuOther?: boolean;
 
     /** 【伤害减免】当你收到伤害时，伤害会减免 */
-    filterDamage?:boolean;
+    filterDamage?: boolean;
 
     //个人额外扩展：
     /** 不能被横置 */
-    noLink?:boolean;
+    noLink?: boolean;
     /** 不能被翻面 */
-    noTurnover?:boolean;
+    noTurnover?: boolean;
 
     //【v1.9.102】
     /**
@@ -170,23 +170,23 @@ interface ExAIData {
      * 令其他角色的手牌对自己可见；
      * 只需令自己拥有viewHandcard的技能标签即可，通过调整skillTagFilter即可实现对特定角色的手牌可见；
      * 例：
-	 * ```jsx
+     * ```jsx
      * ai:{
      *      viewHandcard:true,
      *      skillTagFilter:function(player,tag,arg){ //arg为目标，通过调整skillTagFilter即可实现对特定角色的手牌可见；
      *          if(player==arg) return false;
      *       }, //可看见除自己外所有人的手牌；
      *   }
-	 *```
+     *```
      */
-    viewHandcard?:boolean;
+    viewHandcard?: boolean;
 
     /**
      * 是否忽略技能检测
      * 
      * 用于get.effect，处理target时，检测是否处理target的result；
      */
-    ignoreSkill?:boolean;
+    ignoreSkill?: boolean;
     //********************************技能标签 end********************************** */
 
 
@@ -195,7 +195,7 @@ interface ExAIData {
      * ai发动技能的优先度 【也用于卡牌的优先度】
      * 要具体比什么先发发动，可以使用函数返回结果
      */
-    order?: number | TwoParmFun<SkillOrCard,Player,number>;
+    order?: number | TwoParmFun<SkillOrCard, Player, number>;
     /** 
      * 发动技能是身份暴露度（0到1，相当于概率）
      * 
@@ -249,14 +249,14 @@ interface ExAIData {
         对确定的意向，反应准确的收益
 
         【收益论的检验】示例：
-		```jsx
+        ```jsx
         content:function(){
             game.log(player,'对',target,'的att是',ai.get.attitude(player,target));
             game.log(player,'对',player,'的att是',ai.get.attitude(player,player));
             game.log(player,'对',target,'发动【测试】的eff是',ai.get.effect(target,'测试',player,player));
             game.log(player,'对',target,'使用【杀】的eff是',ai.get.effect(target,{name:'sha'},player,player));
         },
-		```
+        ```
         永远的萌新大佬的示例：
 
         effect的返回值：
@@ -291,14 +291,14 @@ interface ExAIData {
          * 返回结果的字符串："zeroplayer","zerotarget","zeroplayertarget",指定最终结果的:对使用者的收益值,对目标的收益值为0
          * @param result1 即当前ai.result.player的结果
          */
-        player?(card:Card, player:Player, target:Target,result1:number):string | number | number[];
+        player?(card: Card, player: Player, target: Target, result1: number): string | number | number[];
         /** 
          * 一名角色以你为牌的目标时对你的影响（牌/技能对你的影响）
          * 
          * 返回结果的字符串："zeroplayer","zerotarget","zeroplayertarget",指定最终结果的:对使用者的收益值,对目标的收益值为0
          * @param result2 即当前ai.result.target的结果
          */
-        target?(card:Card, player:Player, target:Target, result2:number): string | number | number[];
+        target?(card: Card, player: Player, target: Target, result2: number): string | number | number[];
     };
     /** 
      * 收益：
@@ -316,26 +316,26 @@ interface ExAIData {
          * 没有返回值则不选;
          * 注：写了这个就不用写player:function了，因为player可以在这里进行判断......先继续研究好，再下定论；
          */
-        target?:ThreeParmFun<Player,Target,Card,number>|number;
+        target?: ThreeParmFun<Player, Target, Card, number> | number;
         /**
          * 主要用于get.effect_use中，优先于上面的target；
          */
-        target_use?:ThreeParmFun<Player,Target,Card,number>|number;
+        target_use?: ThreeParmFun<Player, Target, Card, number> | number;
         /**
          * ai是否发动此技能（对玩家（自身）的收益）：
          * 返回正，发动，否则不发动;
          * 注：最终
          */
-        player?:ThreeParmFun<Player,Target,Card,number>|number;
+        player?: ThreeParmFun<Player, Target, Card, number> | number;
         /**
          * 主要用于get.effect_use中，优先于上面的player；
          */
-        player_use?:ThreeParmFun<Player,Target,Card,number>|number;
+        player_use?: ThreeParmFun<Player, Target, Card, number> | number;
 
         /**
          * 取值为true时，不默认为“equip（装备）”卡牌，默认设置“card.ai.result.target”方法
          */
-        keepAI?:boolean,
+        keepAI?: boolean,
     }
     /**
      * 技能标签的生效限制条件
@@ -343,7 +343,7 @@ interface ExAIData {
      * 例：视为技中使用，ai什么时候可以发动视为技（决定某些技能标签的true/false）
      * 在player.hasSkillTag,player.hasGlobalTag中使用
      */
-    skillTagFilter?(player:Player,tag:string,arg:any): boolean;
+    skillTagFilter?(player: Player, tag: string, arg: any): boolean;
 
     //------------------------------主要给卡牌使用的ai配置（也共享上面一些配置）--------------------------------
     //若武将使用以下配置，一般为该武将的“视为技”时使用，其配置对应“视为”的卡牌
@@ -357,7 +357,7 @@ interface ExAIData {
      *      wugu,wanjian,juedou,guohe,jiedao,lebu,huogong,bingliang 1>shandian 0
      * 注：当value的结果为一个数组时，则标识当前card在手牌中位置，根据该牌所处位置，获得对应下标不同的value；
      */
-    useful?:number;
+    useful?: number;
     /** 
      * 牌的使用价值【一般用于卡牌的ai】
      * 
@@ -367,21 +367,21 @@ interface ExAIData {
      *      tiesuo,bingliang 4>huogong [3,1]>jiedao 2>taoyuan,shandian 0
      * 注：当value的结果为一个数组时，则标识当前card在手牌中位置，根据该牌所处位置，获得对应下标不同的value；
      */
-    value?:number|number[]|TwoParmFun<Player,any,number>;
+    value?: number | number[] | TwoParmFun<Player, any, number>;
     /** 该装备的价值 */
-    equipValue?:number|TwoParmFun<Card,Player,number>;
+    equipValue?: number | TwoParmFun<Card, Player, number>;
     /** 主要是使用在card的ai属性，武将技能可以无视 */
     basic?: {
         /** 该装备的价值，同equipValue，优先使用equipValue，没有则ai.basic.equipValue */
-        equipValue?:number|TwoParmFun<Card,Player,number>;
+        equipValue?: number | TwoParmFun<Card, Player, number>;
         /** 优先度 */
-        order?:number|TwoParmFun<Card,Player,number>;
+        order?: number | TwoParmFun<Card, Player, number>;
         /** 回合外留牌的价值(该牌可用价值),number为当前事件玩家的手牌的下标 */
-        useful?:SAAType<number>|TwoParmFun<Card,number,SAAType<number>>;
+        useful?: SAAType<number> | TwoParmFun<Card, number, SAAType<number>>;
         /** 该牌的使用价值 */
-        value?:SAAType<number>|FourParmFun<Card,Player,number,any,SAAType<number>>;
+        value?: SAAType<number> | FourParmFun<Card, Player, number, any, SAAType<number>>;
 
-        [key: string]:SAAType<number>|string|Function;
+        [key: string]: SAAType<number> | string | Function | undefined;
     };
 
     //ai的tag【可用于标记卡牌的属性】
@@ -390,43 +390,43 @@ interface ExAIData {
     tag?: {
         //比较常用：（以下为自己得理解）
         /** 【响应杀】：即手上没有杀时，也有可能响应杀 */
-        respondSha?:CardTagType;
+        respondSha?: CardTagType;
         /** 【响应闪】：即手上没有闪时，也有可能响应闪 */
-        respondShan?:CardTagType;
+        respondShan?: CardTagType;
         /** 【不会受到伤害】 */
-        damage?:CardTagType;
+        damage?: CardTagType;
         /** 【不受元素伤害】 */
-        natureDamage?:CardTagType;
+        natureDamage?: CardTagType;
         /** 【不受雷属性伤害】 */
-        thunderDamage?:CardTagType;
+        thunderDamage?: CardTagType;
         /** 【不受冰属性伤害】【v1.9.107】 */
-        iceDamage?:CardTagType;
+        iceDamage?: CardTagType;
         /** 【不受火属性伤害】 */
-        fireDamage?:CardTagType;
+        fireDamage?: CardTagType;
         /** 【可以指定多个目标】 */
-        multitarget?:CardTagType;
+        multitarget?: CardTagType;
         /** 【回复体力】 */
-        recover?:CardTagType;
+        recover?: CardTagType;
         /** 【失去体力】 */
-        loseHp?:CardTagType;
+        loseHp?: CardTagType;
         /** 【可获得牌】 */
-        gain?:CardTagType;
+        gain?: CardTagType;
         /** 【可自救】 */
-        save?:CardTagType;
+        save?: CardTagType;
         /** 【可弃牌】，即弃牌可以有收益 */
-        discard?:CardTagType;
+        discard?: CardTagType;
         /** 【失去牌】 */
-        loseCard?:CardTagType;
+        loseCard?: CardTagType;
         /** 【多个目标结算时（？存疑）】 */
-        multineg?:CardTagType;
+        multineg?: CardTagType;
         /** 【可多次/再次判定/改变判定】 */
-        rejudge?:CardTagType;
-        draw?:CardTagType;
-        norepeat?:CardTagType;
+        rejudge?: CardTagType;
+        draw?: CardTagType;
+        norepeat?: CardTagType;
         /** 【装备替换价值】 */
-        valueswap?:CardTagType;
+        valueswap?: CardTagType;
 
-        [key: string]: CardTagType;
+        [key: string]: CardTagType | undefined;
     }
 
     /**
@@ -437,11 +437,11 @@ interface ExAIData {
      * @param target 
      * @param card 
      */
-    canLink?(player:Player,target:Target,card:Card):boolean;
+    canLink?(player: Player, target: Target, card: Card): boolean;
 
     //日后还有很多属性要添加的
     [key: string]: any;
 }
 
 /** 卡牌的tag的类型，注：作为方法的第二参数很少用上（一般用于二级类型判断） */
-type CardTagType = number|TwoParmFun<Card,string,boolean|number>|OneParmFun<Card,boolean|number>;
+type CardTagType = number | TwoParmFun<Card, string, boolean | number> | OneParmFun<Card, boolean | number>;

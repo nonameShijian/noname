@@ -8,19 +8,19 @@ interface Lib {
 	 * 武将评级
 	 */
 	rank: {
-		's': string[], 
-		'ap': string[], 
-		'a': string[], 
-		'am': string[], 
-		'bp': string[], 
-		'b': string[], 
-		'bm': string[], 
-		'c': string[], 
-		'd': string[], 
+		's': string[],
+		'ap': string[],
+		'a': string[],
+		'am': string[],
+		'bp': string[],
+		'b': string[],
+		'bm': string[],
+		'c': string[],
+		'd': string[],
 		'rarity': {
-			'legend': string[], 
-			'epic': string[], 
-			'rare': string[], 
+			'legend': string[],
+			'epic': string[],
+			'rare': string[],
 			'junk': string[]
 		}
 	};
@@ -63,7 +63,7 @@ interface Lib {
 	/** 武将标题（用于写称号或注释） */
 	characterTitle: SMap<string>;
 	/** 武将包 */
-	characterPack: SMap<HeroData>;
+	characterPack: SMap<SMap<HeroData>>;
 	/** 武将的过滤方法（参数为一个mode，用于过滤玩法模式） */
 	characterFilter: SMap<OneParmFun<string, boolean>>;
 	/** 用于武将分包，就像是神话再临中的风火林山 */
@@ -90,12 +90,16 @@ interface Lib {
 
 	/** 聊天历史 */
 	chatHistory: [string, string][];
+	onload: NoneParmFum<void>[];
+	onload2: NoneParmFum<void>[];
+	onprepare: NoneParmFum<void>[];
 	/** 主要在lib.init记录场景加载的系列方法，在ui.arena中取出执行 */
 	arenaReady: NoneParmFum<void>[];
 	/** 保存一些UI处理的方法，在合适时机取出来执行 */
-	onfree: Function[];
+	onfree: NoneParmFum<void>[];
 	/** 在牌堆里牌(指不区分数字，花色，伤害属性的牌) */
 	inpile: string[];
+	inpile_nature: string[];
 	/**
 	 * 保存loadExtension中，保存读取到的扩展，在onload的proceed2中读取处理
 	 */
@@ -252,18 +256,12 @@ interface Lib {
 	card: {
 		/** 保存所有的卡牌的基本信息 */
 		list: CardBaseData[];
-		/** 所有卡牌的配置集中在这里 */
-		[key: string]: ExCardData;
-	};
+	} & /** 所有卡牌的配置集中在这里 */ SMap<ExCardData>;
 	/** 游戏内自定义的过滤方法 */
 	filter: Lib.Filter;
 	/** 游戏内自定义的sort排序方法 */
 	sort: Lib.Sort;
-	/**
-	 * 技能数据中心
-	 * （所有扩展的skill都会集中到这里）
-	 */
-	skill: {
+	skill: Lib.Skill & {
 		/** 
 		 * 保存游戏内所有全局技能
 		 * 
@@ -276,134 +274,6 @@ interface Lib {
 		 * 下面那些拥有”_“开头的技能，就是当前游戏中的预定义的全局技能，这些全局技能属于游戏玩法和流程的一部分！
 		 */
 		global: string[];
-		/** 保存的技能信息与玩家之间的关系map,目前在项目内没看出有什么用 */
-		globalmap: SMap<Player[]>;
-		/** 本地缓存  */
-		storage: SMap<any>;
-		/**
-		 * 不计入距离的计算且不能使用牌且不是牌的合法目标
-		 * 
-		 * （目前该标记直接标记到技能的group中，拥有该技能就是被隔离出游戏，目前还没见使用到这成员）
-		 * 
-		 * 目前在项目内没什么用，只有标记到技能的group中使用，用于免除某些阶段结算(只是同名而已，和该属性似乎没有直接关系)
-		 */
-		undist: SMap<any>;
-		//下面4个+上面1个目前似乎都没什么用......
-		others: SMap<any>;
-		zhu: SMap<any>;
-		zhuSkill: SMap<any>;
-		land_used: SMap<any>;
-
-		//以下皆为游戏内预设的全局特殊节能
-		unequip: ExSkillData;
-		subplayer: ExSkillData;
-		autoswap: ExSkillData;
-		/** 与双将相关 */
-		dualside: ExSkillData;
-		/** 废除相关 */
-		_disableJudge: ExSkillData;
-		/** 废除相关 */
-		_disableEquip: ExSkillData;
-		/**
-		 * 特殊技能：封印技能
-		 * 
-		 * 使指定技能“失效”（即玩家失去了某些技能，可在标记上查看）
-		 */
-		fengyin: ExSkillData;
-		/**
-		 * 特殊技能：白板
-		 * 
-		 * 使玩家失去当前自身的所有技能
-		 */
-		baiban: ExSkillData;
-		/**
-		 * 特殊技能：潜行
-		 * 常用于：锁定技，你不能成为其他角色的卡牌的目标
-		 */
-		qianxing: ExSkillData;
-		/**
-		 * 特殊技能：免疫
-		 * 
-		 * 触发阶段：damageBefore（玩家收到伤害时）
-		 * 
-		 * 常用于：锁定技，防止一切伤害
-		 * 
-		 * 其作用是取消”damage“受到伤害事件的触发（故无法防止失去体力之类的伤害）
-		 */
-		mianyi: ExSkillData;
-		/**
-		 * 特殊技能：混乱
-		 * 
-		 * 标记技能
-		 * 
-		 * 进入“混乱”状态的情况下，不能操作（自己的面板），player.isMine的结果也是false（不能确定当前玩家是自己）
-		 */
-		mad: ExSkillData;
-		/** 护甲 */
-		ghujia: ExSkillData;
-		/**
-		 * 特殊技能：计算触发次数
-		 * 
-		 * 触发阶段：phaseAfter（回合结束之后）
-		 * 
-		 * 当技能存在“usable”每回合使用次数时，在创建技能事件时，添加该技能。
-		 * 
-		 * 其作用是，在回合结束时，清除player.storage.counttrigger触发技术。
-		 */
-		counttrigger: ExSkillData;
-		/** 防止体力值回复超过上限 */
-		_recovercheck: ExSkillData;
-		/**
-		 * 全局技能：翻面
-		 * 
-		 * 触发阶段：玩家phaseBefore（玩家回合开始后）
-		 * 
-		 * 当有玩家处于翻面状态时，到其回合开始后触发该技能。
-		 * 
-		 * 其作用是，让其翻面回正面，并且跳过该玩家的当前回合。
-		 * 
-		 * 补充：该全局技能，目前更详细的作用为：
-		 * 
-		 *    1.根据是否翻面，设置player.phaseSkipped；
-		 * 
-		 *    2.设置回合轮数开始计数，触发“roundStart”事件，该事件优先度在回合开始前；
-		 */
-		_turnover: ExSkillData;
-		/**
-		 * 全局技能：卡牌使用后清除场上的ui
-		 * 
-		 * 触发阶段：useCardAfter（全场玩家在卡牌使用之后）
-		 */
-		_usecard: ExSkillData;
-		/** 弃置卡牌后清除场上的ui */
-		_discard: ExSkillData;
-		/**
-		 * 全局技能：濒死阶段循环询问求救
-		 * 
-		 * 触发阶段：濒死阶段触发（玩家频死时，玩家造成其他玩家频死时）
-		 */
-		_save: ExSkillData;
-		_ismin: ExSkillData;
-		/**
-		 * 全局技能：重铸
-		 * 
-		 * 触发阶段：phaseUse（出牌阶段中）
-		 * 
-		 * 可以触发当前自己所拥有的牌是否可以“重铸”
-		 */
-		_chongzhu: ExSkillData;
-		//铁索连环相关
-		_lianhuan: ExSkillData;
-		_lianhuan2: ExSkillData;
-		_lianhuan3: ExSkillData;
-		_lianhuan4: ExSkillData;
-
-		/** 展示隐藏武将【1.9.106.4】 */
-		_showHiddenCharacter: ExSkillData;
-		/** “神”杀 */
-		_kamisha: ExSkillData;
-
-		[key: string]: ExSkillData;
 	};
 
 	/**
@@ -426,6 +296,8 @@ interface Lib {
 
 	/** 花色的常量列表 */
 	suit: string[];
+	suits: string[];
+	color: SMap<string[]>;
 	/** 势力的常量列表 */
 	group: HeroGroup[] | string[];
 	/** 属性伤害的常量列表 */
@@ -482,10 +354,13 @@ interface Lib {
 		//文件操作：
 		//以下对象，大多是nodejs的操作对象
 		/** node fs模块 */
+		/// @ts-ignore
 		fs: typeof import('fs');
 		/** node http模块(调用下载函数的时候可能才会被赋值) */
+		/// @ts-ignore
 		http: typeof import('http');
 		/** node https模块(调用下载函数的时候可能才会被赋值) */
+		/// @ts-ignore
 		https: typeof import('https');
 
 		/** 电脑端开启electron控制台 */
@@ -539,6 +414,8 @@ interface Lib {
 
 	/** 不知道，可能是监听卡牌属性变化的 */
 	cardSelectObserver: any;
+
+	junList?: string[];
 	//[key: string]: any;
 }
 
@@ -554,7 +431,11 @@ interface LibConfigData {
 	extension_sources: SMap<string>;
 	extension_source: string,
 	addedpile: SMap<any[]>,
-	all: SMap<any>,
+	all: {
+		cards: string[];
+		characters: string[];
+		[key: string]: any;
+	},
 	alteredSkills: any[],
 	animation: boolean,
 	appearence: boolean,
@@ -831,78 +712,78 @@ interface LibConfigData {
 
 /** 扩展：界面美化代码重构与事件方法_橙续缘 */
 interface LibApp {
-  /**
-   * 重写方法：
-   * 
-   * 例子：
-   * ```jsx
-   * app.reWriteFunction(lib.element.player, {
-      useCard: [null, function(next) {
-        plugin.playeCardAnimate(this, next.card);
-      }],
-      respond: [null, function(next) {
-        plugin.playeCardAnimate(this, next.card);
-      }],
-      logSkill: [
-        'popup(get.skillTranslation(name,this))',
-        'popup(get.skillTranslation(name,this), "skill")',
-      ],
-      popup: [null, function(res, name, nature) {
-        if (nature === 'skill') {
-          setTimeout(function(player) {
-            player.createSkillAnimate('skill');
-          }, 100, this);
-        }
-      }],
-    });
-	```
-   * 
-   * 
-   * 使用说明：
-   * 
-   * 1.当replace，str都存在时，则replace为将要替代部分，str为替代内容；
-   * 
-   * 2.当replace为function时，前置执行该方法，此时，该方法的参数：(整合成一个数组参数列表args,......当前参数列表)；
-   * 
-   *  若有返回值（非false系），则不执行本身函数，即该replace替换原方法，否则则执行原函数部分；
-   * 
-   *  当str为function时，后置执行该方法，其参数为(原操作方法的返回xxx,......当前参数列表)；
-   *  
-   * 注1：根据观察，需要参数时，大多用于，event事件，创建，操作ui操作（例如：ui.create.xxx）......
-   *      即那些会返回自身操作对象的方法，追加在它们后面操作其返回的操作对象；
-   * 
-   * 注2：上面replace为null，str有值，就表示str为原函数的追加模式；
-   * 
-   * 注3：上面replace有值，str为null，就表示该replace为纯原函数替换模式；
-   *   
-   * @param target 方法所在对象
-   * @param name 通常状态下是target的属性key，简化为一个map结构：key为target的属性，value为[replace,str]参数；
-   * @param replace 看上方，一般指替换部分；
-   * @param str 看上方，一般指替换内容；
-   */
-  reWriteFunction(target: any, name: string | SMap<[ReWriteFunctionParam, ReWriteFunctionParam]>, replace?: ReWriteFunctionParam, str?: ReWriteFunctionParam): Function;
+	/**
+	 * 重写方法：
+	 * 
+	 * 例子：
+	 * ```jsx
+	 * app.reWriteFunction(lib.element.player, {
+		useCard: [null, function(next) {
+		  plugin.playeCardAnimate(this, next.card);
+		}],
+		respond: [null, function(next) {
+		  plugin.playeCardAnimate(this, next.card);
+		}],
+		logSkill: [
+		  'popup(get.skillTranslation(name,this))',
+		  'popup(get.skillTranslation(name,this), "skill")',
+		],
+		popup: [null, function(res, name, nature) {
+		  if (nature === 'skill') {
+			setTimeout(function(player) {
+			  player.createSkillAnimate('skill');
+			}, 100, this);
+		  }
+		}],
+	  });
+	  ```
+	 * 
+	 * 
+	 * 使用说明：
+	 * 
+	 * 1.当replace，str都存在时，则replace为将要替代部分，str为替代内容；
+	 * 
+	 * 2.当replace为function时，前置执行该方法，此时，该方法的参数：(整合成一个数组参数列表args,......当前参数列表)；
+	 * 
+	 *  若有返回值（非false系），则不执行本身函数，即该replace替换原方法，否则则执行原函数部分；
+	 * 
+	 *  当str为function时，后置执行该方法，其参数为(原操作方法的返回xxx,......当前参数列表)；
+	 *  
+	 * 注1：根据观察，需要参数时，大多用于，event事件，创建，操作ui操作（例如：ui.create.xxx）......
+	 *      即那些会返回自身操作对象的方法，追加在它们后面操作其返回的操作对象；
+	 * 
+	 * 注2：上面replace为null，str有值，就表示str为原函数的追加模式；
+	 * 
+	 * 注3：上面replace有值，str为null，就表示该replace为纯原函数替换模式；
+	 *   
+	 * @param target 方法所在对象
+	 * @param name 通常状态下是target的属性key，简化为一个map结构：key为target的属性，value为[replace,str]参数；
+	 * @param replace 看上方，一般指替换部分；
+	 * @param str 看上方，一般指替换内容；
+	 */
+	reWriteFunction(target: any, name: string | SMap<[ReWriteFunctionParam, ReWriteFunctionParam]>, replace?: ReWriteFunctionParam, str?: ReWriteFunctionParam): Function;
 
-  /**
-   * 重写方法2：
-   * 
-   * 在reWriteFunction基础上，增加了个操作类型：append，insert，可追加到替换部分后面，或者插入到前面，不填该类型则完成替换掉替换部分；
-   * 并且统一操作参数的方式为数组类型，即map多操作形式，单属性操作将操作用的参数已数组形式进行；
-   * 
-   * 当replace，str都存在时，
-   * 
-   * 若操作类型为“append”，则str追加到replace后面；
-   * 
-   * 若操作类型为“insert”，则str插入到replace前面；
-   * 
-   * 若为其他，或者没有，则str替换replace部分；
-   * 
-   * 为function时的操作，直接参考上面reWriteFunction即可，是一致的；
-   * 
-   * @param target 方法所在对象
-   * @param name 通常状态下是target的属性key，简化为一个map结构：key为target的属性，value为[replace,str,操作类型]参数；
-   * @param replace 整合被替换，替换，操作类型参数；新增：若是个二维数组，则是同一个方法的多处修改，该方式只针对字符串修改替换；
-   */
-  reWriteFunctionX(target: any, name: string | SMap<SAAType<ReWriteFunctionParam2>>, replace?: SAAType<ReWriteFunctionParam2>): Function;
+	/**
+	 * 重写方法2：
+	 * 
+	 * 在reWriteFunction基础上，增加了个操作类型：append，insert，可追加到替换部分后面，或者插入到前面，不填该类型则完成替换掉替换部分；
+	 * 并且统一操作参数的方式为数组类型，即map多操作形式，单属性操作将操作用的参数已数组形式进行；
+	 * 
+	 * 当replace，str都存在时，
+	 * 
+	 * 若操作类型为“append”，则str追加到replace后面；
+	 * 
+	 * 若操作类型为“insert”，则str插入到replace前面；
+	 * 
+	 * 若为其他，或者没有，则str替换replace部分；
+	 * 
+	 * 为function时的操作，直接参考上面reWriteFunction即可，是一致的；
+	 * 
+	 * @param target 方法所在对象
+	 * @param name 通常状态下是target的属性key，简化为一个map结构：key为target的属性，value为[replace,str,操作类型]参数；
+	 * @param replace 整合被替换，替换，操作类型参数；新增：若是个二维数组，则是同一个方法的多处修改，该方式只针对字符串修改替换；
+	 */
+	reWriteFunctionX(target: any, name: string | SMap<SAAType<ReWriteFunctionParam2>>, replace?: SAAType<ReWriteFunctionParam2>): Function;
 }
 
 /** 重写方法的基本参数 */

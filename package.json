@@ -27,8 +27,19 @@
         "ultron": "1.0.2",
         "ws": "1.0.1"
     },
-    "installerVersion": "1.6",
+    "installerVersion": "1.61",
     "installerUpdateContent": [
+        {
+            "version": "1.61",
+            "updateContent": [
+                "【应用配置】扩展v1.41更新,取消覆盖window.onerror方法以适配下一个游戏版本",
+                "【在线更新】扩展v1.62更新",
+                "【拖拽读取】扩展v2.1更新，解决新版本的game.import改为promise的问题",
+                "注:要把【拖拽读取】扩展放置到其他的电脑版无名杀使用，请在应用根目录的main.js中",
+                "的BrowserWindow构造函数中的webPreferences属性添加: nodeIntegrationInWorker: true",
+                "本版本使用chromium 112版本，将不兼容windows7，8， 8.1操作系统"
+            ]
+        },
         {
             "version": "1.6",
             "updateContent": [

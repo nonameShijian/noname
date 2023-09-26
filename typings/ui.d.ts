@@ -16,9 +16,9 @@ interface UI {
         /** 选中的按钮列表（技能，操作） */
         buttons: any[],
         /** 选中的卡牌列表 */
-        cards: any[],
+        cards: Card[],
         /** 选中的玩家目标列表 */
-        targets: any[]
+        targets: Target[]
     },
     /** 主动清除游戏中“thrown”的节点 */
     clear(): void;
@@ -44,8 +44,8 @@ interface UI {
     /** 更新手牌列表 */
     updatehl(): void;
     //手牌整理相关，目前updateh，updatehx好像没看见怎么使用
-    updateh(compute): void;
-    updatehx(node): void;
+    updateh(compute?: true): void;
+    updatehx(node: Card): void;
     /** 更新game.deviceZoom，缩放比例 */
     updated(): void;
     /** 更新document.body（根据game.documentZoom） */
@@ -56,7 +56,8 @@ interface UI {
      * 2.更新ui.dialog相关；
      */
     update(): void;
-    recycle(node, key): void;
+    recycle(node: Node, key: string): void;
+    recycle(node: string): Node;
 
     //联机的UI：
     /** 创建服务器 */
@@ -78,13 +79,13 @@ interface UI {
 
     //【核心】ui的的区域：
     /** 卡堆区（抽牌区） */
-    cardPile: HTMLDivElement;
+    cardPile: CardPile;
     /** 弃牌区 */
-    discardPile: HTMLDivElement;
+    discardPile: CardPile;
     /** 特殊区（放置与武将牌上，旁区域） */
-    special: HTMLDivElement;
+    special: CardPile;
     /** 处理区 */
-    ordering: HTMLDivElement;
+    ordering: CardPile;
 
     //玩家身上的区域
     /** 装备区 */
@@ -94,47 +95,44 @@ interface UI {
     /** 手牌区 */
     handcards: HTMLDivElement;
 
-	handcards1: HTMLDivElement;
-	handcards2: HTMLDivElement;
-	handcards1Container: HTMLDivElement;
-	handcards2Container: HTMLDivElement;
+    handcards1: HTMLDivElement;
+    handcards2: HTMLDivElement;
+    handcards1Container: HTMLDivElement;
+    handcards2Container: HTMLDivElement;
 
     arena: HTMLDivElement;
     /** 托管按钮 */
     auto: HTMLDivElement;
 
-	/** 占满整个页面的div。它的第一个子元素就是菜单 */
-	menuContainer: HTMLDivElement;
-	
-	window: HTMLDivElement;
-	/** 正在显示的dialog */
-	dialog: HTMLDivElement;
-	/** 正在显示的选项按钮(使用技能等) */
-	control: HTMLDivElement;
-	/** 导入游戏设置的div */
-	import_data_button: HTMLDivElement;
-	/** 背景div */
-	background: HTMLDivElement;
-	
+    /** 占满整个页面的div。它的第一个子元素就是菜单 */
+    menuContainer: HTMLDivElement;
+
+    window: HTMLDivElement;
+    /** 正在显示的dialog */
+    dialog: HTMLDivElement;
+    /** 正在显示的选项按钮(使用技能等) */
+    control: HTMLDivElement;
+    /** 导入游戏设置的div */
+    import_data_button: HTMLDivElement;
+    /** 背景div */
+    background: HTMLDivElement;
+
     system: HTMLDivElement;
-	system1: HTMLDivElement;
-	system2: HTMLDivElement;
+    system1: HTMLDivElement;
+    system2: HTMLDivElement;
 
-	handcards1Container: HTMLDivElement;
-	handcards2Container: HTMLDivElement;
+    /** 托管的div */
+    autonode: HTMLDivElement;
 
-	/** 托管的div */
-	autonode: HTMLDivElement;
-	
-	me: HTMLDivElement;
+    me: HTMLDivElement;
 
     historybar: HTMLDivElement;
     sidebar: HTMLDivElement;
     arenalog: HTMLDivElement;
-	/** 挑战模式下显示的正在操控的角色 */
-	fakeme: HTMLDivElement;
-	confirm: HTMLDivElement;
-	skills: HTMLDivElement;
+    /** 挑战模式下显示的正在操控的角色 */
+    fakeme: HTMLDivElement;
+    confirm: HTMLDivElement;
+    skills: HTMLDivElement;
     /** 显示剩余牌 */
     cardPileNumber: HTMLDivElement;
     coin?: HTMLDivElement;
@@ -157,4 +155,8 @@ interface UI {
 
     /** 整理手牌按钮 */
     sortCard: HTMLDivElement;
+}
+
+interface CardPile extends HTMLDivElement {
+    readonly childNodes: NodeListOf<Card>;
 }

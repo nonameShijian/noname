@@ -45,14 +45,6 @@ interface Window {
     PERSISTENT: number;
 }
 
-/** This interface represents a file system. */
-interface FileSystem {
-    /* The name of the file system, unique across the list of exposed file systems. */
-    name: string;
-    /** The root directory of the file system. */
-    root: DirectoryEntry;
-}
-
 /**
  * An abstract interface representing entries in a file system,
  * each of which may be a File or DirectoryEntry.

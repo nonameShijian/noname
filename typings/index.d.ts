@@ -43,6 +43,7 @@
 /// <reference path="./message.d.ts" />
 /// <reference path="./nodews.d.ts" />
 /// <reference path="./player.d.ts" />
+/// <reference path="./skill.d.ts" />
 /// <reference path="./sort.d.ts" />
 /// <reference path="./ws.d.ts" />
 

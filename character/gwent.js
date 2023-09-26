@@ -484,12 +484,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					'step 0'
-					var hs=player.getCards('h');
-					event.num=hs.length;
-					player.lose(hs,ui.discardPile);
+					player.recast(player.getCards('h',lib.filter.cardRecastable));
 					'step 1'
-					player.draw(event.num,'nodelay');
-					'step 2'
 					var targets=player.getEnemies();
 					if(targets.length){
 						player.useCard({name:'sha'},targets.randomGet(),false);
@@ -1376,29 +1372,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			yangfan:{
 				trigger:{player:'useCard'},
 				forced:true,
-				filter:function(event,player){
-					return get.type(event.card)!='equip'&&player.countCards('h',{color:get.color(event.card)})>0;
-				},
+				filter:(event,player)=>get.type(event.card)!='equip'&&player.hasCard(card=>get.color(card)==get.color(trigger.card)&&player.canRecast(card),'h'),
 				content:function(){
 					'step 0'
-					var cards=player.getCards('h',{suit:get.suit(trigger.card)});
-					if(!cards.length){
-						cards=player.getCards('h',{color:get.color(trigger.card)});
-					}
+					var cards=player.getCards('h',card=>get.suit(card)==get.suit(trigger.card)&&player.canRecast(card));
+					if(!cards.length) cards=player.getCards('h',card=>get.color(card)==get.color(trigger.card)&&player.canRecast(card));
 					if(!cards.length){
 						event.finish();
 						return;
 					}
-					event.chosen=cards.randomGet();
-					game.delay(0.5)
-					'step 1'
-					var card=event.chosen;
-					player.lose(card,ui.discardPile);
-					player.$throw(card,1000);
-					game.delay(0.5);
-					game.log(player,'重铸了',card);
-					'step 2'
-					player.draw().log=false;
+					player.recast(cards.randomGet());
 				},
 				ai:{
 					pretao:true
@@ -4707,7 +4690,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			fayin:'法印',
 			fayin_info:'每当你使用一张杀，你可以弃置一张牌并获得一个随机法印效果：1. 目标随机弃置两张牌；2. 目标进入混乱状态直到下一回合开始；3. 对目标造成一点火属性伤害；4. 获得一点护甲；5. 令目标翻面并摸一张牌',
 			gwbaquan:'霸权',
-			gwbaquan_info:'出牌阶段限一次，你可以获得一名其他角色的所有牌，然后还给其等量的牌，若你归还的牌均为你获得的牌且该角色体力值不小于你，你对其造成一点伤害',
+			gwbaquan_info:'出牌阶段限一次，你可以获得一名其他角色的所有牌，然后还给其等量的牌，若你归还的牌均为你得到的牌且该角色体力值不小于你，你对其造成一点伤害',
 			hunmo:'魂墨',
 			hunmo_info:'出牌阶段，若你手牌数少于2，你可以选择一名手牌数小于2的其他角色，观看牌堆顶的两张牌，你获得一张并交给其另一张；若你手牌数不少2，你可以选择一名手牌数不少于2的其他角色，你弃置一张手牌，然后观看并弃置其一张手牌。每回合对同一名角色最多发动一次',
 			huihun:'回魂',

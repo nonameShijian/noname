@@ -328,6 +328,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 			function checkUpdate() {
 				game.shijianGetUpdateFiles().then(({ update }) => {
 					console.log('获取到更新', update);
+					if (!lib.version) lib.version = "1.9";
 					if (update.version == lib.version) {
 						return;
 					} else {
@@ -647,6 +648,18 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 								console.log(`更新源中不存在${path}/${name}`);
 								success(undefined, true);
 								break;
+							case 402:
+								// git镜像中这个资源无法下载，那就跳过
+								if (lib.updateURL === lib.updateURLS.fastgit) {
+									if (!sessionStorage.getItem('在线更新_fastgit_402')) {
+										alert('这个资源在git镜像更新源内无法下载，请在下载操作全部完成后切换更新源下载！');
+										sessionStorage.setItem('在线更新_fastgit_402', 'true');
+									}
+									success(undefined, true);
+								} else if (typeof onerror == 'function') {
+									onerror(e, e.body);
+								}
+								break;
 							default:
 								if (typeof onerror == 'function') {
 									onerror(e, e.body);
@@ -660,7 +673,17 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 							game.print(`更新源中不存在${path}/${name}`);
 							console.log(`更新源中不存在${path}/${name}`);
 							success(undefined, true);
-						} else if (typeof onerror == 'function') {
+						}
+						// git镜像中这个资源无法下载，那就跳过
+						// @ts-ignore
+						else if (e.message == '402' && lib.updateURL === lib.updateURLS.fastgit) {
+							if (!sessionStorage.getItem('在线更新_fastgit_402')) {
+								alert('这个资源在git镜像更新源内无法下载，请在下载操作全部完成后切换更新源下载！');
+								sessionStorage.setItem('在线更新_fastgit_402', 'true');
+							}
+							success(undefined, true);
+						}
+						else if (typeof onerror == 'function') {
 							onerror(e, message);
 						}
 					}
@@ -1246,7 +1269,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 			show_version: {
 				clear: true,
 				nopointer: true,
-				name: '扩展版本： v1.6',
+				name: '扩展版本： v1.61',
 			},
 			update_link_explain: {
 				clear: true,
@@ -1474,6 +1497,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 
 						game.shijianGetUpdateFiles().then(({ update, source_list: updates }) => {
 							game.saveConfig('check_version', update.version);
+							if (!lib.version) lib.version = "1.9";
 							//要更新的版本和现有的版本一致
 							if (update.version == lib.version) {
 								if (!confirm('当前版本已经是最新，是否覆盖更新？')) {
@@ -1636,7 +1660,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 												parentNode.insertBefore(button2, parentNode.firstElementChild);
 											}, 750);
 										}, 250);
-									}, (current, loaded, total) => {
+									},
+									(current, loaded, total) => {
 										if (total != 0) {
 											progress.setFileName(`${current}(已完成${Math.round((loaded / total) * 100)}%)`);
 										} else {
@@ -2078,7 +2103,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 			author: "诗笺",
 			diskURL: "",
 			forumURL: "",
-			version: "1.6",
+			version: "1.61",
 		},
 		files: { "character": [], "card": [], "skill": [] }
 	}

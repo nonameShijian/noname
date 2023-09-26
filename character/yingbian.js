@@ -11,7 +11,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			yangzhi:['female','jin',3,['xinwanyi','maihuo']],
 			yangyan:['female','jin',3,['xinxuanbei','xianwan']],
 			ol_huaxin:['male','wei',3,['caozhao','olxibing']],
-			zhongyan:['female','jin',3,['bolan','yifa']],
+			zhongyan:['female','jin',3,['bolan','yifa'],['clan:颍川钟氏']],
 			weiguan:['male','jin',3,['zhongyun','shenpin']],
 			cheliji:['male','qun',4,['chexuan','qiangshou']],
 			simazhou:['male','jin',4,['recaiwang','naxiang']],
@@ -237,6 +237,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				filter:function(event,player){
 					return player!=event.target&&event.targets.length==1&&(event.card.name=='sha'||get.type(event.card,false)=='trick')&&event.target.countCards('he')>0;
 				},
+				locked:false,
 				logTarget:'target',
 				check:function(event,player){
 					return get.effect(event.target,{name:'guohe_copy2'},player,player)>0;
@@ -523,6 +524,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					});
 				},
 				forced:true,
+				locked:false,
 				content:function(){
 					'step 0'
 					var num=0;
@@ -578,6 +580,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				group:['huaiyuan_init','huaiyuan_die'],
 				subSkill:{
 					init:{
+						audio:'huaiyuan',
 						trigger:{
 							global:'phaseBefore',
 							player:'enterGame',
@@ -679,17 +682,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				position:'he',
 				content:function(){
 					'step 0'
-					player.loseToDiscardpile(cards);
-					player.draw();
+					player.recast(cards);
 					'step 1'
 					if(target.countCards('he')>0){
-						target.chooseCard('he',true,'请重铸一张牌');
+						target.chooseCard('he',true,'请重铸一张牌',lib.filter.cardRecastable);
 					}
 					else event.finish();
 					'step 2'
 					if(result.bool){
-						target.loseToDiscardpile(result.cards);
-						target.draw();
+						target.recast(result.cards);
 					}
 				},
 				ai:{
@@ -1182,7 +1183,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				filterCard:()=>false,
 				selectCard:-1,
-				prompt:'将武将牌横置并视为使用【杀】',
+				prompt:'将武将牌重置并视为使用【杀】',
 				log:false,
 				check:()=>1,
 				precontent:function(){
@@ -1612,9 +1613,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					var target=trigger.player;
-					target.addTempSkill('yifa2');
+					target.addTempSkill('yifa2',{player:'phaseEnd'});
 					target.addMark('yifa2',1,false);
 				},
+				ai:{threaten:0.8},
 			},
 			yifa2:{
 				charlotte:true,
@@ -1942,7 +1944,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				enable:'phaseUse',
 				derivation:['cheliji_sichengliangyu','cheliji_tiejixuanyu','cheliji_feilunzhanyu'],
 				filter:function(event,player){
-					return !player.getEquip(5)&&player.countCards('he',{color:'black'})>0;
+					return !player.getEquips(5).length&&player.countCards('he',{color:'black'})>0;
 				},
 				filterCard:{color:'black'},
 				position:'he',
@@ -2008,7 +2010,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			qiangshou:{
 				mod:{
 					globalFrom:function(player,target,distance){
-						if(player.getEquip(5)) return distance-1;
+						if(player.getEquips(5).length) return distance-1;
 					}
 				},
 			},
@@ -2569,6 +2571,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			taoyin:{
 				audio:2,
 				trigger:{player:'showCharacterAfter'},
+				hiddenSkill:true,
 				logTarget:function(){
 					return _status.currentPhase;
 				},
@@ -2734,6 +2737,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				audio:2,
 				trigger:{player:'showCharacterAfter'},
 				forced:true,
+				hiddenSkill:true,
 				filter:function(event,player){
 					return event.toShow&&event.toShow.contains('jin_xiahouhui');
 				},
@@ -2762,7 +2766,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				preHidden:true,
 				filter:function(event,player){
 					var target=_status.currentPhase;
-					if(!target||!target.isIn()||event.type!='discard'||event.getlx===false||!target.isPhaseUsing()) return false;
+					if(!target||!target.isIn()||event.type!='discard'||!target.isPhaseUsing()) return false;
+					if(target==player) return false;
 					var evt=event.getl(target);
 					for(var i of evt.hs){
 						if(get.position(i,true)=='d') return true;
@@ -2843,6 +2848,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				audio:2,
 				trigger:{player:'showCharacterAfter'},
 				forced:true,
+				locked:false,
+				hiddenSkill:true,
 				filter:function(event,player){
 					var target=_status.currentPhase;
 					return player!=target&&target&&target.isAlive()&&event.toShow&&event.toShow.contains('jin_simazhao');
@@ -2854,6 +2861,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			tuishi2:{
 				trigger:{global:'phaseEnd'},
 				direct:true,
+				charlotte:true,
 				filter:function(event,player){
 					var target=_status.currentPhase;
 					return target!=player&&target&&target.isAlive()&&game.hasPlayer(function(current){
@@ -2976,23 +2984,27 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger:{player:'phaseUseBegin'},
 				preHidden:true,
 				content:function(){
-					player.addTempSkill('zhaoran2','phaseUseEnd');
+					player.addTempSkill('zhaoran2','phaseUseAfter');
+					var cards=player.getCards('h');
+					if(cards.length>0) player.addShownCards(cards,'visible_zhaoran');
 				},
 			},
 			zhaoran2:{
 				audio:'zhaoran',
-				global:'zhaoran3',
+				group:'zhaoran3',
+				init:(player,skill)=>{
+					if(!player.storage[skill]) player.storage[skill]=[];
+				},
+				onremove:true,
 				trigger:{
 					player:'loseAfter',
 					global:['equipAfter','addJudgeAfter','gainAfter','loseAsyncAfter','addToExpansionAfter'],
 				},
 				forced:true,
 				charlotte:true,
-				init:function(player,skill){
-					if(!player.storage[skill]) player.storage[skill]=[];
-				},
-				onremove:true,
-				filter:function(event,player){
+				popup:false,
+				filter:function(event,player,name){
+					if(name=='gainBegin') return true;
 					var evt=event.getl(player);
 					if(!evt||!evt.hs||!evt.hs.length) return false;
 					var list=player.getStorage('zhaoran2');
@@ -3005,6 +3017,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					'step 0'
 					if(trigger.delay===false) game.delayx();
+					'step 1'
 					var list=[];
 					var suits=get.copy(player.storage.zhaoran2);
 					suits.addArray(player.getCards('h').map(function(card){
@@ -3034,10 +3047,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						return 0;
 					});
 					'step 2'
-					if(!result.bool) player.draw();
+					if(!result.bool){
+						player.logSkill('zhaoran2');
+						player.draw();
+					}
 					else{
 						var target=result.targets[0];
-						player.line(target,'green');
+						player.logSkill('zhaoran2',target);
 						player.discardPlayerCard(target,true,'he');
 					}
 					if(event.count>0) event.goto(1);
@@ -3047,10 +3063,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			zhaoran3:{
-				ai:{
-					viewHandcard:true,
-					skillTagFilter:function(player,arg,target){
-						return target!=player&&target.hasSkill('zhaoran2');
+				trigger:{player:['phaseUseEnd','gainBegin']},
+				forced:true,
+				charlotte:true,
+				firstDo:true,
+				silent:true,
+				content:function(){
+					if(event.triggername=='gainBegin'){
+						trigger.gaintag.add('visible_zhaoran');
+					}
+					else{
+						player.hideShownCards(player.getCards('h'),'visible_zhaoran');
 					}
 				},
 			},
@@ -3556,7 +3579,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			duyu:'杜预（222年－285年），字元凯，京兆郡杜陵县（今陕西西安）人，中国魏晋时期军事家、经学家、律学家，曹魏散骑常侍杜恕之子。杜预初仕曹魏，任尚书郎，后成为权臣司马昭的幕僚，封丰乐亭侯。西晋建立后，历任河南尹、安西军司、秦州刺史、度支尚书等职。咸宁四年（278年）接替羊祜出任镇南大将军，镇守荆州。他积极备战，支持晋武帝司马炎对孙吴作战，并在咸宁五年（279年）成为晋灭吴之战的统帅之一。战后因功进封当阳县侯，仍镇荆州。太康五年（285年），杜预被征入朝，拜司隶校尉，途中于邓县逝世，终年六十三岁。获赠征南大将军、开府仪同三司，谥号为成。杜预耽思经籍，博学多通，多有建树，时誉为“杜武库”。著有《春秋左氏传集解》及《春秋释例》等。为明朝之前唯一一个同时进入文庙和武庙之人。',
 			xiahouhui:'夏侯徽（211年－234年），字媛容，沛国谯县（今安徽亳州）人，司马师第一任妻子。征南大将军夏侯尚之女，母德阳乡主为大司马曹真之妹。夏侯徽与司马师之间，生有五个女儿。夏侯徽很有见识器度，每当司马师有什么想法时，都由她从旁策划协助。当时司马师之父司马懿位居上将重位，而他的儿子们都有雄才大略。夏侯徽深知司马师绝非曹魏忠臣，而司马师对出身曹魏家族的夏侯徽也非常顾忌。青龙二年（234年），正逢“大疫”、“大病”之年，夏侯徽被司马师毒杀，时年二十四岁，死后葬于峻平陵。西晋建国后，追谥夏侯徽为景怀皇后。',
 			shibao:'石苞（？～273年），字仲容，渤海南皮（今河北省南皮县）人。三国时曹魏至西晋重要将领，西晋开国功臣。西晋建立后，历任大司马、侍中、司徒等职，封乐陵郡公，卒后谥号为“武”。',
-			simazhou:'司马伷（zhòu）（227年～283年6月12日），字子将，河内郡温县（今河南省温县）人。西晋宗室、将领，晋宣帝司马懿第三子，伏太妃所生。晋景帝司马师、文帝司马昭的同父异母弟，晋武帝司马炎的叔父。司马伷少有才气，在曹魏历任宁朔将军、散骑常侍、征虏将军等职，先后受封南安亭侯、东武乡侯，五等爵制建立后，改封南皮伯。西晋建立后，获封东莞郡王，入朝任尚书右仆射、抚军将军，出外拜镇东大将军。后改封琅邪王，加开府仪同三司。西晋伐吴时，率军出涂中，孙皓向他投降并奉上玉玺。战后因功拜大将军，增邑三千户。太康四年（283年），司马伷去世，享年五十七岁。谥号为武，世称“琅邪武王”。著有《周官宁朔新书》八卷，今已亡佚。',
+			simazhou:'司马伷（227年～283年6月12日），字子将，河内郡温县（今河南省温县）人。西晋宗室、将领，晋宣帝司马懿第三子，伏太妃所生。晋景帝司马师、文帝司马昭的同父异母弟，晋武帝司马炎的叔父。司马伷少有才气，在曹魏历任宁朔将军、散骑常侍、征虏将军等职，先后受封南安亭侯、东武乡侯，五等爵制建立后，改封南皮伯。西晋建立后，获封东莞郡王，入朝任尚书右仆射、抚军将军，出外拜镇东大将军。后改封琅邪王，加开府仪同三司。西晋伐吴时，率军出涂中，孙皓向他投降并奉上玉玺。战后因功拜大将军，增邑三千户。太康四年（283年），司马伷去世，享年五十七岁。谥号为武，世称“琅邪武王”。著有《周官宁朔新书》八卷，今已亡佚。',
 			huangzu:'黄祖（？－208年），东汉末年将领。刘表任荆州牧时，黄祖出任江夏太守。初平二年（191年），黄祖在与长沙太守孙坚交战时，其部下将孙坚射死，因此与孙家结下仇怨。之后，黄祖多次率部与东吴军队交战，射杀凌操、徐琨等人。建安十三年（208年），在与孙权的交战中，兵败被杀。',
 			cheliji:'彻里吉是历史小说《三国演义》中的虚构人物，西羌国王。蜀相诸葛亮伐魏，魏都督曹真驰书赴羌，国王彻里吉即命雅丹丞相与越吉元帅起羌兵一十五万、并战车直扣西平关。后军大败，越吉亡，雅丹被俘，亮将所获羌兵及车马器械，尽给还雅丹，俱放回国。彻里吉感蜀恩义，与之结盟。正史中没有关于彻里吉的记载。',
 			weiguan:'卫瓘（220年－291年），字伯玉。河东郡安邑县（今山西省夏县）人。三国曹魏后期至西晋初年重臣、书法家，曹魏尚书卫觊之子。卫瓘出身官宦世家，年轻时仕官于曹魏，历任尚书郎、散骑常侍、侍中、廷尉等职。后以镇西军司、监军身份参与伐蜀战争。蜀汉亡后，与钟会一道逮捕邓艾；钟会谋反时，又成功平息叛乱，命田续杀邓艾父子。回师后转任督徐州诸军事、镇东将军，封菑阳侯。西晋建立后，历任青州、幽州刺史、征东大将军等职，成功化解北方边境威胁，因功进爵菑阳公。后入朝为尚书令、侍中，又升任司空，领太子少傅。后逊位，拜太保。晋惠帝即位后，与贾皇后对立，终在政变中满门遇害，享年七十二岁。卫瓘善隶书及章草。不仅兼工各体，还能学古人之长，是颇有创意的书法家。唐朝张怀瓘《书断》中评其章草为“神品”。',
@@ -3607,7 +3630,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			xijue_xiaoguo:'骁果',
 			xijue_xiaoguo_info:'其他角色的结束阶段开始时，你可以弃置一张基本牌，令该角色选择一项：1.弃置一张装备牌，然后你摸一张牌；2.受到你对其造成的1点伤害。',
 			xijue_xiaoguo_info_guozhan:'其他角色的结束阶段开始时，你可以弃置一张基本牌，令该角色选择一项：1.弃置一张装备牌；2.受到你对其造成的1点伤害。',
-			duyu:'杜预',
+			duyu:'OL杜预',
 			sanchen:'三陈',
 			sanchen_info:'出牌阶段限一次。你可选择一名本回合内未选择过的角色。其摸三张牌，然后弃置三张牌。若其未以此法弃置牌或以此法弃置的牌的类别均不相同，则其摸一张牌且〖三陈〗于此阶段内使用次数上限+1。',
 			sanchen_info_guozhan:'出牌阶段，你可选择一名本回合内未选择过的角色。其摸三张牌，然后弃置三张牌。若其未以此法弃置牌或以此法弃置的牌的类别均不相同，则其摸一张牌且你获得技能〖破竹〗直到回合结束。否则你本阶段内不能再发动〖三陈〗。',
@@ -3622,8 +3645,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			shiren_info:'隐匿技。你于其他角色的回合内登场时，若其有手牌，则你可对其发动〖宴戏〗。',
 			yanxi:'宴戏',
 			yanxi2:'宴戏',
-			yanxi_info:'出牌阶段，你可选择一名有手牌的角色。你将该角色的一张随机手牌与牌堆顶的两张牌混合后展示，并选择其中一张。若你以此法选择的是该角色的手牌，则你获得这三张牌。否则你获得选择的牌。你通过〖宴戏〗获得的牌，不计入当前回合的手牌上限。',
-			yanxi_info_guozhan:'出牌阶段，你可选择一名有手牌的角色。你将该角色的一张随机手牌与牌堆中的两张随机牌混合后展示，并选择其中一张。若你以此法选择的是该角色的手牌，则你获得这三张牌。否则你获得选择的牌。你通过〖宴戏〗获得的牌，不计入当前回合的手牌上限。',
+			yanxi_info:'出牌阶段，你可选择一名有手牌的角色。你将该角色的一张随机手牌与牌堆顶的两张牌混合后展示，并选择其中一张。若你以此法选择的是该角色的手牌，则你获得这三张牌。否则你获得选择的牌。你通过〖宴戏〗得到的牌，不计入当前回合的手牌上限。',
+			yanxi_info_guozhan:'出牌阶段，你可选择一名有手牌的角色。你将该角色的一张随机手牌与牌堆中的两张随机牌混合后展示，并选择其中一张。若你以此法选择的是该角色的手牌，则你获得这三张牌。否则你获得选择的牌。你通过〖宴戏〗得到的牌，不计入当前回合的手牌上限。',
 			jin_simazhao:'晋司马昭',
 			jin_simazhao_ab:'司马昭',
 			tuishi:'推弑',
@@ -3636,6 +3659,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			zhaoran:'昭然',
 			zhaoran2:'昭然',
 			zhaoran_info:'出牌阶段开始时，你可令你的手牌对其他角色可见直到出牌阶段结束。若如此做，当你于此阶段内失去一张手牌后，若你的手牌里没有与此牌花色相同的牌且你本回合内未因该花色的牌触发过此效果，则你选择一项：①摸一张牌。②弃置一名其他角色的一张牌。',
+			visible_zhaoran:'invisible',
 			chengwu:'成务',
 			chengwu_info:'主公技，锁定技，其他晋势力角色攻击范围内的角色视为在你的攻击范围内。',
 			jin_xiahouhui:'晋夏侯徽',
@@ -3670,8 +3694,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			xinquanbian_info:'出牌阶段，每当你首次使用/打出一种花色的手牌时，你可以从牌堆顶的X张牌中获得一张与此牌花色不同的牌，并将其余牌以任意顺序置于牌堆顶。出牌阶段，你至多可使用X张非装备手牌。（X为你的体力上限）',
 			shibao:'石苞',
 			zhuosheng:'擢升',
-			zhuosheng_info:'出牌阶段，①你使用本轮内获得的基本牌时无次数和距离限制。②你使用本轮内获得的普通锦囊牌选择目标后，可令此牌的目标数+1或-1。③你使用本轮内获得的装备牌时可以摸一张牌（以此法获得的牌不能触发〖擢升〗）。',
-			zhuosheng_info_guozhan:'出牌阶段，①你使用本轮内获得的基本牌时无距离限制。②你使用本轮内获得的普通锦囊牌选择目标后，可令此牌的目标数+1或-1。③你使用本轮内获得的装备牌时可以摸一张牌（以此法获得的牌不能触发〖擢升〗）。',
+			zhuosheng_info:'出牌阶段，①你使用本轮内得到的基本牌时无次数和距离限制。②你使用本轮内获得的普通锦囊牌选择目标后，可令此牌的目标数+1或-1。③你使用本轮内得到的装备牌时可以摸一张牌（以此法得到的牌不能触发〖擢升〗）。',
+			zhuosheng_info_guozhan:'出牌阶段，①你使用本轮内得到的基本牌时无距离限制。②你使用本轮内获得的普通锦囊牌选择目标后，可令此牌的目标数+1或-1。③你使用本轮内得到的装备牌时可以摸一张牌（以此法得到的牌不能触发〖擢升〗）。',
 			jin_yanghuiyu:'晋羊徽瑜',
 			jin_yanghuiyu_ab:'羊徽瑜',
 			gz_jin_yanghuiyu:'羊徽瑜',
@@ -3712,7 +3736,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			bolan_info:'①出牌阶段开始时，你可从三个描述中带有“出牌阶段限一次”的技能中选择一个，令当前回合角色获得直至此阶段结束。②其他角色出牌阶段限一次，其可以失去1点体力，令你发动一次〖博览①〗。',
 			yifa:'仪法',
 			yifa2:'仪法',
-			yifa_info:'锁定技，其他角色使用【杀】或黑色普通锦囊牌指定你为目标后，其手牌上限-1直到回合结束。',
+			yifa_info:'锁定技，其他角色使用【杀】或黑色普通锦囊牌指定你为目标后，其手牌上限-1直到其回合结束。',
 			ol_huaxin:'OL华歆',
 			caozhao:'草诏',
 			caozhao_backup:'草诏',
@@ -3728,7 +3752,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			xuanbei:'选备',
 			xuanbei_info:'①游戏开始时，你从牌堆中获得两张具有应变标签的牌。②每回合限一次。当你使用的具有应变标签的牌结算结束后，你可将此牌对应的所有实体牌交给一名其他角色。',
 			xianwan:'娴婉',
-			xianwan_info:'①当你需要使用【闪】时，若你的武将牌未横置，则你可以横置武将牌并视为使用【闪】。②当你需要使用【杀】时，若你的武将牌横置，则你可以横置武将牌并视为使用【杀】。',
+			xianwan_info:'①当你需要使用【闪】时，若你的武将牌未横置，则你可以横置武将牌并视为使用【闪】。②当你需要使用【杀】时，若你的武将牌横置，则你可以重置武将牌并视为使用【杀】。',
 			yangzhi:'杨芷',
 			wanyi:'婉嫕',
 			wanyi_info:'每回合每项限一次。出牌阶段，你可以将一张具有应变效果的牌当做【逐近弃远】/【出其不意】/【水淹七军】/【洞烛先机】使用。',
@@ -3746,7 +3770,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			qimei_info:'准备阶段，你可以选择一名其他角色。你获得如下效果直到下回合开始：①每回合限一次，当你或其获得牌/失去手牌后，若你与其手牌数相等，则另一名角色摸一张牌。②每回合限一次，当你或其的体力值变化后，若你与其体力值相等，则另一名角色摸一张牌。',
 			ybzhuiji:'追姬',
 			ybzhuiji_info:'出牌阶段开始时，你可选择一项：①摸两张牌，并于出牌阶段结束时失去1点体力；②回复1点体力，并于出牌阶段结束时弃置两张牌。',
-			jin_yanghu:'羊祜',
+			jin_yanghu:'OL羊祜',
 			huaiyuan:'怀远',
 			huaiyuanx:'绥',
 			huaiyuan_info:'①游戏开始时，你将你的手牌标记为“绥”。②当你失去一张“绥”后，你令一名角色执行一项：⒈其的手牌上限+1。⒉其的攻击范围+1。⒊其摸一张牌。③当你死亡时，你可令一名其他角色的手牌上限+X，且攻击范围+Y（X和Y为你自己被执行过〖怀远②〗的选项一和选项二的次数）。',

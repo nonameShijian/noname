@@ -14,7 +14,7 @@ interface CheckEventData {
      * 用于参数时，某些特殊choose类方法，可以根据你传入得object，采用get.filter生成过滤方法；
      * 既通过get.filter处理成事件的filterCard的方法；
      */
-    filterCard?: boolean | CardBaseUIData | TwoParmFun<Card,Player, boolean>;
+    filterCard?: boolean | CardBaseUIData | TwoParmFun<Card, Player, boolean>;
     /**
      * 选择的目标需要满足的条件
      */
@@ -63,9 +63,9 @@ interface CheckEventData {
     /** 显示的提示文本2(下面一行的文本) */
     prompt2?: string;
 
-    complexSelect?:boolean;
-    complexCard?:boolean;
-    complexTarget?:boolean;
+    complexSelect?: boolean;
+    complexCard?: boolean;
+    complexTarget?: boolean;
 }
 
 /** game.check中event使用到的属性
@@ -84,7 +84,7 @@ interface CheckEventResultData {
      * 注1：该event参数，目前只有在过滤技能时，是viewAs视为技的情况下，才投入该过滤与参数
      * 注2：这种的方法，player指代的是当前执行事件中的玩家，card是当前指定区域处理中的card
      */
-    filterCard?(card: Card|CardBaseUIData, player: Player ,event?:Trigger):boolean;
+    filterCard?(card: Card | CardBaseUIData, player: Player, event?: Trigger): boolean;
     /**
      * 需要选择多少张牌才能发动
      * 选择的牌数
@@ -92,19 +92,19 @@ interface CheckEventResultData {
      * 数组时，这个数组就是选择牌数的区间,其中任意（至少一张）：[1,Infinity]
      * 为变量时（具体情况具体分析），例：()=>number
      */
-    selectCard?:OneParmFun<Card, number>;
+    selectCard?: OneParmFun<Card, number>;
 
     /**
      * 选择的目标需要满足的条件
      */
-    filterTarget?(card: Card|CardBaseUIData, player: Player, target: Target): boolean;
+    filterTarget?(card: Card | CardBaseUIData, player: Player, target: Target): boolean;
     /**
      * 需要选择多少个目标才能发动
      * 选择的目标数：
      * 为-1时，选择全部人
      * 为数组时，这个数组就是选择目标数的区间
      */
-    selectTarget?:Select;
+    selectTarget?: Select;
 
     /** 
      * 过滤不可选择按钮
@@ -113,7 +113,7 @@ interface CheckEventResultData {
      */
     filterButton?(button: Button, player?: Player): boolean;
     /** 按钮的可选数量，大多数情况下，默认1 */
-    selectButton?:Select;
+    selectButton?: Select;
 
     /** 
      * 指定获取卡牌的位置：
@@ -140,9 +140,9 @@ interface CheckEventResultData {
     /** 显示的提示文本2(下面一行的文本) */
     prompt2?: string;
 
-    complexSelect?:boolean;
-    complexCard?:boolean;
-    complexTarget?:boolean;
+    complexSelect?: boolean;
+    complexCard?: boolean;
+    complexTarget?: boolean;
 }
 
 //为了方便使用，可能需要给结果也搞个类型
@@ -162,7 +162,7 @@ interface AreanStateInfo {
 
 /** 录像数据 */
 interface VideoData {
-	/** 事件类型 */
+    /** 事件类型 */
     type: string;
     /** 坐位号 */
     player: string;
@@ -202,8 +202,8 @@ interface BaseResultData {
      * 其实主要是ok方法会有直接的bool，主要涉及game.check;
      */
     bool: boolean;
-    
-    [key:string]:any;
+
+    [key: string]: any;
 }
 
 /**
@@ -224,36 +224,36 @@ interface BaseCommonResultData extends BaseResultData {
     /** 记录返回当前事件操作过程中的按钮 */
     buttons: Button[];
     /** 记录buttons内所有button.link(即该按钮的类型，link的类型很多，参考按钮的item) */
-    links: any[];
+    links: Links;
 
     //control系(直接control系列没有result.bool)
     /** control操作面板的选中结果，即该按钮的link，即名字 */
-    control :string;
+    control: string;
     /** 即control的下标 */
-    index :number;
+    index: number;
 
     //ok系
     /** 记录返回当前事件操作过程中，面板按钮的确定ok取消cancel */
     confirm: string;
     /** 一般为触发的“视为”技能 */
-	skill: string;
+    skill: string;
     /**
      * 当前事件操作的“视为”牌，
-	 * 
+     * 
      * 当前有“视为”操作，该card参数特供给视为牌，不需要cards[0]获取视为牌 ；
-	 * 
+     * 
      * 判断是否为视为牌：card.isCard，false为视为牌
      */
-	card: Card;
+    card: Card;
 
-	[key: string]: any;
+    [key: string]: any;
 }
 
 
 /** 判断阶段的事件reslut */
 interface JudgeResultData extends BaseResultData {
     /** 成功为true,失败为false */
-    bool:boolean;
+    bool: boolean;
     /**
      * 用于该次判定结果的牌
      */
@@ -262,7 +262,7 @@ interface JudgeResultData extends BaseResultData {
      * 判定结果牌的名字
      * （有该属性，可以视为card,直接使用get.卡牌相关方法） 
      */
-    name:string;
+    name: string;
     /** 判定的卡牌点数 */
     number: number;
     /** 4中基本花色：♠，♥，♣，♦ */
@@ -300,20 +300,20 @@ interface JudgeResultData extends BaseResultData {
  */
 interface PingDianResultData extends BaseResultData {
     /** 赢为true,平手/输为false */
-    bool:boolean;
+    bool: boolean;
     /** 是否平局 */
-    tie:boolean;
+    tie: boolean;
     /** 你的拼点牌 */
-    player:Card;
+    player: Card;
     /** 目标的拼点牌 */
-    target:Card;
+    target: Card;
     /** 你的点数 */
-    num1:number;
+    num1: number;
     /** 目标的点数 */
-    num2:number;
+    num2: number;
 
     /** 当前拼点的胜利者，赢了是player,输了是target,平则没有 */
-    winner:Player
+    winner: Player
 
 }
 
@@ -325,12 +325,12 @@ interface PingDianResultData extends BaseResultData {
 interface PingDianMultipleResultData extends BaseResultData {
     //这个可能没有bool，有点迷
     /** 你的拼点牌 */
-    player:Card;
+    player: Card;
     /** 目标的拼点牌 */
-    targets:Card[];
+    targets: Card[];
     /** 你的点数 */
-    num1:number[];
+    num1: number[];
     /** 目标的点数 */
-    num2:number[];
+    num2: number[];
 
 }

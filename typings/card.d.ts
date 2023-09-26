@@ -14,15 +14,15 @@ declare namespace Lib.element {
          * 将当前card，添加到排除列表event._aiexclude中
          */
         aiexclude(): void;
-        
+
         //暂时没用上，暂不知其具体是什么功能
         getSource(name: string): boolean;
-        
+
         //card的UI，动画操作
         updateTransform(bool: boolean, delay?: number): void;
         moveDelete(player: Player): void;
         moveTo(player: Player): Card;
-        
+
         /** 
          * 复制一个当前卡牌节点（即复制当前卡牌的副本） 
          * 
@@ -33,8 +33,8 @@ declare namespace Lib.element {
          * 
          * 注：该复制卡牌节点基础属性：[name,suit,number,node,moveTo(),moveDelete()];
          */
-        copy(...args): Card;
-        copy(isClone?:boolean):Card;
+        copy(...args: any[]): Card;
+        copy(isClone?: boolean): Card;
 
         /**
          * 设置当前card为“uncheck”（不可检测的时机）
@@ -67,43 +67,43 @@ declare namespace Lib.element {
         isInPile(): boolean;
 
         //卡牌标记cardtag（与模式——应变模式相关）【v1.9.107】
-        hasTag(tag:string):boolean;
+        hasTag(tag: string): boolean;
 
         //添加手牌标记（gaintag）机制，用于对玩家的特定手牌进行标记 【v1.9.108.3】
         /**
          * 添加手牌标记
          * @param gaintag 
          */
-        addGaintag(gaintag:string):void;
+        addGaintag(gaintag: string): void;
         /**
          * 删除手牌标记(单独当前卡牌移除)
          * @param gaintag 若取值为true，则移除当前card所有gaintag；若存在该gaintag,则移除；
          */
-        removeGaintag(tag:string):void;
-        removeGaintag(tag:boolean):void;
+        removeGaintag(tag: string): void;
+        removeGaintag(tag: boolean): void;
         /**
          * 检测card上是否有指定手牌标记
          * @param tag 
          */
-        hasGaintag(tag: string):boolean;
+        hasGaintag(tag: string): boolean;
     }
 
-    export interface Card extends HTMLDivElement,IButtonLink,CardBaseUIData {
+    export interface Card extends HTMLDivElement, IButtonLink, CardBaseUIData {
         /** 卡牌id */
-        cardid:string;
+        cardid: string;
         /** 卡牌名 */
-        name:string;
+        name: string;
         /** 卡牌花色 */
-        suit:string;
+        suit: string;
         /** 卡牌数值 */
-        number:number;
+        number: CardBaseNumber;
         /** 伤害属性 */
-        nature:string;
+        nature: string;
 
         //【1.9.98】
         /** 失去的卡牌来源,e装备,j判定,h手牌，非以上3个区域，则为null（只在lose事件链中存在） */
-        original:string;
-        
+        original: string;
+
         //【1.9.98.2】新增方法 by2020-3-5
         /**
          *  这张牌是否为【转化】的卡牌(视为牌)
@@ -125,13 +125,13 @@ declare namespace Lib.element {
          * 
          * 上面说法错了，应该是，虚拟牌可以设置不是转化，使用了isCard为true，即不是转化牌，即{name:'xxx',isCard:true};【具体操作在useCard中】
          */
-        isCard:boolean;
+        isCard: boolean;
 
         /** 
          * card的dataset:储存数据
          * 其实质是html节点自带DOMStringMap，用于存储携带数据信息
          */
-        dataset:{
+        dataset: {
             /**
              * 是否可对多个目标使用
              * 其值：“1”，“0”
@@ -146,49 +146,48 @@ declare namespace Lib.element {
 
             [name: string]: string | undefined;
         };
-        
+
         /** 当前card上主要挂载的UI节点（node主要是作为保存引用的map） */
-        node:{
+        node: {
             /** 名字（左上角） */
-            name:HTMLDivElement;
+            name: HTMLDivElement;
             /** 不显示，记录卡牌的信息文本（例如：花色，数字，进攻，防御距离......） */
-            name2:HTMLDivElement;
+            name2: HTMLDivElement;
             /** 右上角信息（默认花色 数字） */
-            info:HTMLDivElement;
+            info: HTMLDivElement;
             /** 卡面 */
-            image:HTMLDivElement;
+            image: HTMLDivElement;
             /** 背景 */
-            background:HTMLDivElement;
+            background: HTMLDivElement;
             /** 化身 */
-            avatar?:HTMLDivElement;
+            avatar?: HTMLDivElement;
             /** 边框背景（边框） */
-            framebg?:HTMLDivElement;
+            framebg?: HTMLDivElement;
             /** 额外添加信息（右下角） */
-            addinfo?:HTMLDivElement;
+            addinfo?: HTMLDivElement;
             /** 不明 */
-            intro:HTMLDivElement;
+            intro: HTMLDivElement;
             /** 范围，卡牌是装备类型时，右下角显示距离（正常情况下和addinfo冲突） */
-            range:HTMLDivElement;
+            range: HTMLDivElement;
             /** 手牌标记【v1.9.108.3】 */
-            gaintag:HTMLDivElement;
-			
-			[key: string]: HTMLDivElement;
+            gaintag: HTMLDivElement;
+
+            [key: string]: HTMLDivElement | undefined;
         };
-        
-        link:Card;
+
+        link: Card;
 
         /** 缓存的当前卡牌的复制卡牌 */
-        clone:Card;
+        clone: Card;
 
         //添加手牌标记（gaintag）机制，用于对玩家的特定手牌进行标记 【v1.9.108.3】
         /** 手牌标记 */
-        gaintag:string[];
+        gaintag: string[];
 
-		storage: SMap<any>;
-		vanishtag: any[];
-		gaintag: any[];
-		_uncheck: any[];
+        storage: SMap<any>;
+        vanishtag: any[];
+        _uncheck: any[];
 
-        [key:string]:any;
+        [key: string]: any;
     }
 }

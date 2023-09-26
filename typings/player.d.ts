@@ -8,6 +8,11 @@ declare namespace Lib.element {
      * 来源：lib.element.player
      */
     interface Player {
+        canIgnoreHandcard(card: Card): boolean;
+        gift(cards: Card | Card[], taregt: Target): Event;
+        canGift(card: Card, target: Target, strict?: true): boolean;
+        getGiftAIResultTarget(card: Card, target: Target): number;
+        getGiftEffect(card: Card, target: Target): number;
         /**
          * 选择对策（进攻/防御）
          * 
@@ -296,7 +301,7 @@ declare namespace Lib.element {
          * @param arg1 获取玩家身上牌的类型：h手牌，e装备牌，j判定牌，s木牛流马上盖的牌，x武将牌上的牌。可以多个拼接。
          * @param arg2 获取牌的详细过滤条件（若是字符串则是卡牌名，若是对象是个cardSimpInfo结构）。
          */
-        getCards(arg1?: string = 'h', arg2?: string | CardBaseUIData | OneParmFun<Card, boolean>): Card[];
+        getCards(arg1?: string, arg2?: string | CardBaseUIData | OneParmFun<Card, boolean>): Card[];
         /**
          * 获取指定玩家可以弃置的当前玩家的牌
          * 
@@ -711,7 +716,7 @@ declare namespace Lib.element {
          * 
          *  itemtype为"dialog"类型：对应next.dialog,且next.prompt=false,使用当前已有的会话面板；
          */
-        chooseTarget(...args: any[]): Event;
+        chooseTarget(...args: ((target: Target) => number | ((card: undefined, player: Player, target: Target) => boolean) | any)[]): Event;
         /**
          * 选择卡牌与目标
          * 
@@ -774,7 +779,7 @@ declare namespace Lib.element {
          *  itemtype类型为"dialog"：设置next.dialog；
          * @param args 
          */
-        chooseControl(...args: any[]): Event;
+        chooseControl(...args: ((event: Event, player: Player) => (string | number) | any)[]): Event;
         /**
          * 拥有“确认”，“取消”的选择面板
          * 
@@ -1327,7 +1332,7 @@ declare namespace Lib.element {
          * @param num 改变的护甲数，默认为1
          * @param type 护甲类型（暂时来看不参与逻辑）
          */
-        changeHujia(num?: number, type?: any): Event;
+        changeHujia(num?: number, type?: any, limit?: true | number): Event;
         /**
          * 濒死阶段
          * @param reason 造成死亡的事件,字符串“nosource”，标明无来源，不设置next.sorce
@@ -2134,6 +2139,7 @@ declare namespace Lib.element {
          */
         getHistory(): ActionHistoryData;
         getHistory(key: keyof ActionHistoryData, filter?: OneParmFun<GameEvent, boolean>): GameEvent[];
+        getHistory(key: 'useSkill', filter?: OneParmFun<HistoryUseSkillData, boolean>): HistoryUseSkillData[];
 
         /**
          * 玩家是否有符合某些条件的记录
@@ -2142,7 +2148,8 @@ declare namespace Lib.element {
          * @param filter 同getHistory的filter参数
          * @param last 取last个记录之前的事件
          */
-        hasHistory(key: keyof ActionHistoryData, filter: OneParmFun<GameEvent, boolean>, last: number): void;
+        hasHistory(key: keyof ActionHistoryData, filter: OneParmFun<GameEvent, boolean>, last?: number): boolean;
+        hasHistory(key: 'useSkill', filter: OneParmFun<HistoryUseSkillData, boolean>, last?: number): boolean;
 
         //【v1.9.98.6.1】
         /**
@@ -2154,6 +2161,7 @@ declare namespace Lib.element {
          */
         getAllHistory(): ActionHistoryData;
         getAllHistory(key: keyof ActionHistoryData, filter?: OneParmFun<GameEvent, boolean>): GameEvent[];
+        getAllHistory(key: 'useSkill', filter?: OneParmFun<HistoryUseSkillData, boolean>): HistoryUseSkillData[];
 
         //【v1.9.102】
         /**
@@ -2161,6 +2169,7 @@ declare namespace Lib.element {
          */
         getLastHistory(): ActionHistoryData;
         getLastHistory(key: keyof ActionHistoryData, filter?: OneParmFun<GameEvent, boolean>): GameEvent[];
+        getLastHistory(key: 'useSkill', filter?: OneParmFun<HistoryUseSkillData, boolean>): HistoryUseSkillData[];
 
         /**
          * 获取玩家本回合内使用倒数第X+1张牌的事件 
@@ -2482,6 +2491,9 @@ declare namespace Lib.element {
          * @param force 技能为fixed:true标签时，需要设置为true来移除
          */
         removeInvisibleSkill(skill: string | string[], force?: boolean): void | string;
+
+        /** 发送表情 */
+        emotion(pack: string, id: string): void;
     }
 
     // 核心成员属性（暂时先一部分比较核心常用的）
@@ -2507,7 +2519,6 @@ declare namespace Lib.element {
         singleHp: boolean;
 
         avatar: string;
-        version: string;
 
         /** 扩展名，不知时哪里赋值的，在addCharacter中使用，默认_status.extension */
         extension: string;
@@ -2654,7 +2665,7 @@ declare namespace Lib.element {
          * 
          * 主要功能：用于标记技能，缓存一些技能的信息在玩家缓存信息里，方便整场游戏的调用
          */
-        storage: SMap<any>;
+        storage: PlayerStorage;
         /**
          * 玩家的标记
          * 
@@ -2786,6 +2797,15 @@ declare namespace Lib.element {
 
         /** 【国战】是否首次亮将 */
         _mingzhied: boolean;
+
+        /** 为true时不能悬浮/右键来提示信息 */
+        _nointro?: boolean;
+
+        /** 悬浮/右键时替换提示信息 */
+        _customintro?: (dialog: Dialog, event: PointerEvent) => any | [Function | Node, Function | Node];
+
+        previousSeat: Player;
+        nextSeat: Player;
     }
 
     //由玩法模式自己扩展实现的方法接口：
@@ -2822,6 +2842,9 @@ declare namespace Lib.element {
     }
 }
 
+interface PlayerStorage {
+    [key: string]: any;
+}
 
 /**
  * 玩家的统计数据结构
@@ -2862,8 +2885,7 @@ type PlayerStateInfo = {
     specials: Card[];
     expansions: Card[];
     expansion_gaintag: any[],
-    disableJudge: Card[];
-    disableEquip: Card[];
+    disableJudge: boolean;
     views: string[],
     position: number;
     hujia: number;
@@ -2875,8 +2897,6 @@ type PlayerStateInfo = {
     linked: boolean;
     turnedover: boolean;
     gaintag: string[];
-    disableJudge: boolean;
-    disableEquip: boolean;
     phaseNumber: number;
     unseen: boolean;
     unseen2: boolean;
@@ -2929,23 +2949,23 @@ type PlayerAIInfo = {
  */
 type ActionHistoryData = {
     /** 使用卡牌 */
-    useCard: GameEvent[],
+    useCard: GameEvent[];
     /** 响应 */
-    respond: GameEvent[],
+    respond: GameEvent[];
     /** 跳过 */
-    skipped: GameEvent[],
+    skipped: GameEvent[];
     /** 失去卡牌 */
-    lose: GameEvent[],
+    lose: GameEvent[];
     /** 获得卡牌 */
-    gain: GameEvent[],
+    gain: GameEvent[];
     /** 伤害来源 */
-    sourceDamage: GameEvent[],
+    sourceDamage: GameEvent[];
     /** 造成伤害 */
-    damage: GameEvent[],
+    damage: GameEvent[];
     /** 扩展自定义操作 */
-    custom: any[],
+    custom: any[];
     /** 【v1.9.115】添加 使用技能事件记录 */
-    useSkill: HistoryUseSkillData[]
+    useSkill: HistoryUseSkillData[];
 }
 
 /** 【v1.9.115】添加 ActionHistoryData中useSkill的类型 */

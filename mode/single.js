@@ -322,7 +322,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				return player.isAlive();
 			},
 			chooseCharacterDianjiang:function(){
-				var next=game.createEvent('chooseCharacter',false);
+				var next=game.createEvent('chooseCharacter');
 				next.showConfig=true;
 				next.setContent(function(){
 					"step 0"
@@ -362,6 +362,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						return Math.random();
 					}).set('dialog',event.videoId);
 					"step 5"
+					game.broadcastAll('closeDialog',event.videoId);
 					game.me.next.init(result.links[0]);
 					_status.characterlist.remove(result.links[0]);
 					game.addRecentCharacter(result.links[0]);
@@ -375,7 +376,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					game.chooseCharacterDianjiang();
 					return;
 				}
-				var next=game.createEvent('chooseCharacter',false);
+				var next=game.createEvent('chooseCharacter');
 				next.showConfig=true;
 				next.setContent(function(){
 					"step 0"
@@ -546,7 +547,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				});
 			},
 			chooseCharacterDianjiangOL:function(){
-				var next=game.createEvent('chooseCharacter',false);
+				var next=game.createEvent('chooseCharacter');
 				next.showConfig=true;
 				next.setContent(function(){
 					"step 0"
@@ -612,7 +613,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					game.chooseCharacterDianjiangOL();
 					return;
 				}
-				var next=game.createEvent('chooseCharacter',false);
+				var next=game.createEvent('chooseCharacter');
 				next.setContent(function(){
 					"step 0"
 					ui.arena.classList.add('choose-character');
@@ -808,7 +809,6 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 		},
 		element:{
 			player:{
-				hasZhuSkill:function(){return false;},
 				dieAfter:function(){
 					if(_status.mode!='normal'||_status.characterChoice[this.identity].length<=3) game.checkResult();
 				},
