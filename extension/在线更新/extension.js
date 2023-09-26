@@ -332,19 +332,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 					if (update.version == lib.version) {
 						return;
 					} else {
-						/** 现有版本 */
-						let v1 = lib.version.split('.').map(item => Number(item) || 0);
-						/** 服务器版本 */
-						let v2 = update.version.split('.').map(item => Number(item) || 0);
-						for (let i = 0; i < v1.length && i < v2.length; i++) {
-							v1[i] = v1[i] || 0;
-							v2[i] = v2[i] || 0;
-							if (v2[i] > v1[i]) break;
-							// 游戏版本比服务器提供的版本还要高
-							if (v1[i] > v2[i]) {
-								return;
-							}
-						}
+						const result = game.shijianCheckVersion(lib.version, update.version);
+						// 游戏版本比服务器提供的版本还要高
+						if (result == 1) return;
 					}
 
 					function goupdate() {
@@ -1140,13 +1130,71 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 
 			game.updateErrors = 0;
 
+			game.shijianCheckVersion = (ver1, ver2) => {
+				if (typeof ver1 != 'string') ver1 = '';
+				if (typeof ver2 != 'string') ver2 = '';
+				/**
+				 * @param {string} str
+				 */
+				function* walk(str) {
+					let part = '';
+					let terminals = ['.', '-'];
+					for (let i = 0; i < str.length; i++) {
+						if (terminals.includes(str[i])) {
+							yield Number(part);
+							part = '';
+						} else {
+							part += str[i];
+						}
+					}
+					if (part) yield Number(part);
+				}
+
+				const iterator1 = walk(ver1), iterator2 = walk(ver2);
+				let item1 = iterator1.next(), item2 = iterator2.next();
+
+				function iterNext() {
+					item1 = iterator1.next();
+					item2 = iterator2.next();
+				}
+
+				function iterReturn() {
+					iterator1.return();
+					iterator2.return();
+				}
+
+				while (!item1.done && !item2.done) {
+					if (item1.value === item2.value || isNaN(item1.value) || isNaN(item2.value)) {
+						iterNext();
+					} else if (item1.value > item2.value) {
+						iterReturn();
+						return 1;
+					} else if (item1.value < item2.value) {
+						iterReturn();
+						return -1;
+					}
+				}
+
+				if (item1.done && !item2.done) {
+					iterReturn();
+					return -1;
+				} else if (!item1.done && item2.done) {
+					iterReturn();
+					return 1;
+				}
+				/* else if (item1.done && item2.done) {
+					return 0;
+				}*/
+				else return 0;
+			};
+
 			// 禁用自动检查更新
 			(window.Reflect || Object).defineProperty(game, 'checkForUpdate', {
 				enumerable: true,
 				get() {
 					return function () {
 						if (!sessionStorage.getItem('在线更新_checkForUpdate')) {
-							alert('无名杀自带的自动检查更新已禁用，请使用在线更新扩展内的自动检查更新功能');
+							alert('无名杀自带的自动检查更新已被在线更新扩展禁用，请使用在线更新扩展内的自动检查更新功能');
 							sessionStorage.setItem('在线更新_checkForUpdate', '1');
 						}
 						game.saveConfig('auto_check_update', false);
@@ -1269,7 +1317,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 			show_version: {
 				clear: true,
 				nopointer: true,
-				name: '扩展版本： v1.61',
+				name: '扩展版本： v1.62',
 			},
 			update_link_explain: {
 				clear: true,
@@ -1507,20 +1555,13 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 									return;
 								}
 							} else {
-								let v1 = lib.version.split('.').map(item => Number(item) || 0);
-								let v2 = update.version.split('.').map(item => Number(item) || 0);
-								for (let i = 0; i < v1.length && i < v2.length; i++) {
-									v1[i] = v1[i] || 0;
-									v2[i] = v2[i] || 0;
-									if (v2[i] > v1[i]) break;
-									if (v1[i] > v2[i]) {
-										if (!confirm('游戏版本比服务器提供的版本还要高，是否覆盖更新？')) {
-											game.Updating = false;
-											button.innerHTML = '检查游戏更新';
-											button.disabled = false;
-											return;
-										}
-										break;
+								const result = game.shijianCheckVersion(lib.version, update.version);
+								if (result == 1) {
+									if (!confirm('游戏版本比服务器提供的版本还要高，是否覆盖更新？')) {
+										game.Updating = false;
+										button.innerHTML = '检查游戏更新';
+										button.disabled = false;
+										return;
 									}
 								}
 							}
@@ -2103,7 +2144,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 			author: "诗笺",
 			diskURL: "",
 			forumURL: "",
-			version: "1.61",
+			version: "1.62",
 		},
 		files: { "character": [], "card": [], "skill": [] }
 	}

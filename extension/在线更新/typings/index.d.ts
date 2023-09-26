@@ -232,4 +232,20 @@ declare interface Game {
 	 * 在线更新扩展安装后，禁用此函数，使此函数无效果
 	 */
 	checkForUpdate: VoidFunction;
+
+	/**
+	 * (于v1.62添加) 判断版本号2相对于版本号1的情况。
+	 * 
+	 * 灵感来源于b站渡一教育的相关视频
+	 * 
+	 * @param ver1 版本号1
+	 * @param ver2 版本号2
+	 * @example
+	 * ```
+	 * game.shijianCheckVersion('1.61', '1.62'); // -1
+	 * game.shijianCheckVersion('1.61.1', '1.61'); // 1
+	 * game.shijianCheckVersion('1.61', '1.61'); // 0
+	 * ```
+	 */
+	shijianCheckVersion: (ver1: string, ver2: string) => -1 | 0 | 1;
 }
