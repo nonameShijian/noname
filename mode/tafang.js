@@ -12,9 +12,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			"step 1"
 			if(get.is.phoneLayout()&&lib.config.touchscreen&&
 				!lib.config.show_round_menu&&
-				!['system','menu'].contains(lib.config.swipe_left)&&
-				!['system','menu'].contains(lib.config.swipe_right)&&
-				!['system','menu'].contains(lib.config.swipe_up)){
+				!['system','menu'].includes(lib.config.swipe_left)&&
+				!['system','menu'].includes(lib.config.swipe_right)&&
+				!['system','menu'].includes(lib.config.swipe_up)){
 				ui.roundmenu.style.display='';
 			}
 			if(lib.config.player_border=='normal'&&(lib.config.layout=='long'||lib.config.layout=='long2')){
@@ -139,7 +139,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				for(var i=0;i<ui.chessheight-1;i++){
 					for(var j=0;j<ui.chesswidth;j++){
 						if(i>=8&&j!=0&&j!=ui.chesswidth-1) continue;
-						if(tafanglist.contains(j)){
+						if(tafanglist.includes(j)){
 							var cg=i*ui.chesswidth+j;
 							grids.remove(cg);
 							game.addObstacle(cg.toString(),false);
@@ -222,9 +222,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			for(i in lib.character){
 				if(i.indexOf('treasure_')==0) continue;
 				if(i.indexOf('tafang_mech_')==0) continue;
-				if(lib.character[i][4].contains('minskin')) continue;
-				if(lib.config.forbidchess.contains(i)) continue;
-				if(lib.character[i][4].contains('boss')) continue;
+				if(lib.character[i][4].includes('minskin')) continue;
+				if(lib.config.forbidchess.includes(i)) continue;
+				if(lib.character[i][4].includes('boss')) continue;
 				if(lib.filter.characterDisabled(i)) continue;
 				list.push(i);
 			}
@@ -616,8 +616,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 								ui.me.querySelector('.fakeme.avatar').show();
 								ui.me.querySelector('.fakeme.player').show();
 								ui.create.fakeme();
-								ui.handcards1=player.node.handcards1.animate('start').fix();
-								ui.handcards2=player.node.handcards2.animate('start').fix();
+								ui.handcards1=player.node.handcards1.addTempClass('start').fix();
+								ui.handcards2=player.node.handcards2.addTempClass('start').fix();
 								ui.handcards1Container.appendChild(ui.handcards1);
 								ui.handcards2Container.appendChild(ui.handcards2);
 								ui.updatehl();
@@ -633,7 +633,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							for(var i=ui.chesswidth;i<size;i++){
 								if(!lib.posmap[i.toString()]){
 									var grid=ui.create.div('.player.minskin.playerblank.glow',clickGrid,ui.chess);
-									grid.animate('start');
+									grid.addTempClass('start');
 									ui.placeChess(grid,i);
 									event.playergrids.push(grid);
 								}
@@ -667,7 +667,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					'step 6'
 					var shalldelay=false;
 					for(var i=0;i<ui.chesswidth;i++){
-						if(lib.posmap[i]&&game.players.contains(lib.posmap[i])){
+						if(lib.posmap[i]&&game.players.includes(lib.posmap[i])){
 							for(var j=0;j<ui.chessheight;j++){
 								var pos=i+j*ui.chesswidth;
 								if(lib.posmap[pos]&&lib.posmap[pos].movable(0,1)){
@@ -730,7 +730,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					'step 8'
 					if(event.xingdong.length){
 						var toact=event.xingdong.shift();
-						if(game.players.contains(toact)){
+						if(game.players.includes(toact)){
 							toact.phase();
 						}
 						event.redo();
@@ -741,7 +741,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					'step 9'
 					if(event.xingdong.length){
 						var enemy=event.xingdong.shift();
-						if(!event.justadded.contains(enemy.name)&&game.players.contains(enemy)){
+						if(!event.justadded.includes(enemy.name)&&game.players.includes(enemy)){
 							enemy.phase();
 						}
 						event.redo();
@@ -900,8 +900,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						node.info=scene;
 						ui.create.div('.avatar.menu',node.bgnode);
 						node.namenode=ui.create.div('.name',node,(scene.name));
-						if(lib.storage.map.contains(name)){
-							if(lib.storage.newmap.contains(name)){
+						if(lib.storage.map.includes(name)){
+							if(lib.storage.newmap.includes(name)){
 								node.classList.add('glow3');
 							}
 							node.namenode.dataset.nature='soilm';
@@ -925,7 +925,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					for(var i in lib.tafang.map){
 						createScene(i);
 					}
-					ui.window.appendChild(sceneview.animate('start'));
+					ui.window.appendChild(sceneview.addTempClass('start'));
 					game.pause();
 				});
 			},
@@ -1129,26 +1129,26 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 
 			tafang_mech_weixingxianjing:'小型陷阱',
 			tafang_mech_weixingxianjing_skill:'捕猎',
-			tafang_mech_weixingxianjing_skill_info:'每一轮令距离你2格以内的一名随机敌人翻面',
+			tafang_mech_weixingxianjing_skill_info:'每一轮令距离你2格以内的一名随机敌人翻面。',
 			tafang_mech_mutong:'木桶',
 			tafang_mech_mutong_skill:'飞滚',
-			tafang_mech_mutong_skill_info:'每一轮对距离3格以内的一名随机敌人造成一点伤害',
+			tafang_mech_mutong_skill_info:'每一轮对距离3格以内的一名随机敌人造成1点伤害。',
 			tafang_mech_nengliangqiu:'能量球',
 			tafang_mech_nengliangqiu_skill:'充能',
-			tafang_mech_nengliangqiu_skill_info:'每一轮令距离3格以内的所有友方角色摸1张牌，距离1以内改为摸2张',
+			tafang_mech_nengliangqiu_skill_info:'每一轮令距离3格以内的所有友方角色摸1张牌，距离1以内改为摸2张。',
 			tafang_mech_jiguanren:'机关人',
 			tafang_mech_jiguanren_skill:'掠夺',
-			tafang_mech_jiguanren_skill_info:'每一轮弃置3格以内的所有敌方角色各1~2张牌',
+			tafang_mech_jiguanren_skill_info:'每一轮弃置3格以内的所有敌方角色各1~2张牌。',
 			tafang_mech_gongchengche:'攻城车',
 			tafang_mech_gongchengche_skill:'攻坚',
-			tafang_mech_gongchengche_skill_info:'每一轮对距离2格以内的一名随机敌方角色造成1点火焰伤害，并随机弃置其一张牌',
+			tafang_mech_gongchengche_skill_info:'每一轮对距离2格以内的一名随机敌方角色造成1点火焰伤害，并随机弃置其一张牌。',
 			tafang_mech_guangmingquan:'光明泉',
 			tafang_mech_guangmingquan_skill:'圣疗',
-			tafang_mech_guangmingquan_skill_info:'每一轮令距离2格以内的所有友方角色各回复一点体力',
+			tafang_mech_guangmingquan_skill_info:'每一轮令距离2格以内的所有友方角色各回复1点体力。',
 
 			tafang_mech_dubiaoxianjing:'毒镖陷阱',
 			tafang_mech_dubiaoxianjing_skill:'毒镖',
-			tafang_mech_dubiaoxianjing_skill_info:'每当距离2格以内的一名敌方角色',
+			tafang_mech_dubiaoxianjing_skill_info:'每当距离2格以内的一名敌方角色。',
 			tafang_mech_jiqishi:'集合石',
 			tafang_mech_shenmidiaoxiang:'神秘雕像',
 			tafang_mech_shenpanxianjing:'审判之刃',

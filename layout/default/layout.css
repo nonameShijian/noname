@@ -423,6 +423,29 @@ table {
 	border-radius: 12px;
 }
 
+/* 启动页style2 */
+#splash[data-splash_style='style2']>div {
+	width: 250px;
+	height: 350px;
+	top: calc(50% - 175px);
+}
+#splash[data-splash_style='style2']>div:first-child {
+	margin-left: 15px;
+}
+#splash[data-splash_style='style2']>div:last-child {
+	margin-right: 15px;
+}
+#splash[data-splash_style='style2']>div>.splashtext {
+	font-family: 'shousha';
+	font-size: 65px;
+}
+#splash[data-splash_style='style2'].slim>div>.splashtext {
+	right: 10px;
+	bottom: 5px;
+}
+#splash[data-splash_style='style2'].slim>div>.avatar {
+	width: 240px;
+}
 
 #arena.playerhidden>.player,
 #arena.playerhidden>#mebg,
@@ -1155,8 +1178,9 @@ body>.background.upper {
 	z-index: -4
 }
 body>.background.land {
+	background-position: center;
+	background-size: cover;
 	transition: all 2s;
-	background-size:cover;
 }
 
 .popup:not(.guanxing) {
@@ -1593,12 +1617,12 @@ div:not(.handcards)>.card>.info>span,
 }
 .mark-container.marks>div>.markcount.menubutton {
 	font-size: 12px;
-    width: 16px;
-    height: 16px;
-    line-height: 18px;
-    position: absolute;
-    left: 36px;
-    top: 34px;
+	width: 16px;
+	height: 16px;
+	line-height: 18px;
+	position: absolute;
+	left: 36px;
+	top: 34px;
 	border-radius: 100%;
 }
 .mark-container.marks>.card.fullskin>.image{
@@ -1607,11 +1631,11 @@ div:not(.handcards)>.card>.info>span,
 }
 .mark-container.marks>.card.fullskin>.info{
 	transform: scale(0.6) !important;
-    transform-origin: top right;
-    left: auto !important;
-    right: 3px !important;
-    display: block;
-    top: 2px;
+	transform-origin: top right;
+	left: auto !important;
+	right: 3px !important;
+	display: block;
+	top: 2px;
 }
 .mark-container.marks>.card.fullskin>.name{
 	transform: scale(0.5) !important;
@@ -1622,7 +1646,7 @@ div:not(.handcards)>.card>.info>span,
 }
 .mark-container.marks>.card.fullskin>.name.long{
 	transform: scale(0.48) !important;
-    top: 1px !important;
+	top: 1px !important;
 }
 
 .button.card>.background {
@@ -1743,7 +1767,9 @@ div:not(.handcards)>.card>.info>span,
 	margin-left: 4px;
 	margin-right: 4px;
 	position: relative;
-	/* width: calc(100% - 8px); */
+}
+.content>div:not(.pointerdiv) {
+	width: calc(100% - 8px);
 }
 .content>.caption + .buttons:not(*:last-child){
 	margin-top: 0;
@@ -1994,7 +2020,7 @@ div:not(.handcards)>.card>.info>span,
 .button.newstyle>.name.long{
 	top: 6px;
 	transform: scale(0.93);
-    transform-origin: top left;
+	transform-origin: top left;
 }
 .button.newstyle>.hp,
 .button.newstyle>.hp.text{
@@ -2023,7 +2049,7 @@ div:not(.handcards)>.card>.info>span,
 	text-align: right;
 	width: auto;
 	height: auto;
-    transform: none !important;
+	transform: none !important;
 	text-shadow: black 0 0 2px, black 0 0 3px;
 }
 
@@ -2245,7 +2271,7 @@ div:not(.handcards)>.card>.info>span,
 }
 .player>.turned>div{
 	top: calc(50% - 50px);
-    left: calc(50% - 25px);
+	left: calc(50% - 25px);
 	white-space: nowrap;
 	writing-mode: vertical-rl;
 	-webkit-writing-mode: vertical-rl;
@@ -2480,9 +2506,9 @@ div:not(.handcards)>.card>.info>span,
 }
 #arena.oldlayout .player>.framebg{
 	transform: rotate(90deg) translateY(-240px);
-    width: 120px;
-    height: 240px;
-    transform-origin: top left;
+	width: 120px;
+	height: 240px;
+	transform-origin: top left;
 }
 #window #arena.mobile:not(.chess) .player[data-position='0']>.framebg{
 	/*display: none;*/
@@ -2582,12 +2608,12 @@ div:not(.handcards)>.card>.info>span,
 	left: -20%;
 	top: -20%;*/
 	background-size: 120%;
-    background-position: -4px -4px;
-    background-repeat: no-repeat;
+	background-position: -4px -4px;
+	background-repeat: no-repeat;
 }
 
 #arena:not(.chess) .player[data-position='0']>.equips>div>.image{
-    background-size: 115%;
+	background-size: 115%;
 }
 /*.equips>div:hover>.info{display: inline-block;
 	animation:equip_hover 1s;
@@ -3230,38 +3256,6 @@ div:not(.handcards)>.card>.info>span,
 	left: calc(50% - 106px);
 }
 
-#window>.player.connect[data-position='0'] {
-	left: calc(25% - 120px);
-	top: calc(300% / 7 - 155px);
-}
-#window>.player.connect[data-position='1'] {
-	left: calc(50% - 60px);
-	top: calc(300% / 7 - 155px);
-}
-#window>.player.connect[data-position='2'] {
-	left: calc(75% - 0px);
-	top: calc(300% / 7 - 155px);
-}
-#window>.player.connect[data-position='3'] {
-	left: calc(25% - 120px);
-	top: calc(400% / 7 - 75px);
-}
-#window>.player.connect[data-position='4'] {
-	left: calc(75% - 0px);
-	top: calc(400% / 7 - 75px);
-}
-#window>.player.connect[data-position='5'] {
-	left: calc(25% - 120px);
-	top: calc(500% / 7 + 5px);
-}
-#window>.player.connect[data-position='6'] {
-	left: calc(50% - 60px);
-	top: calc(500% / 7 + 5px);
-}
-#window>.player.connect[data-position='7'] {
-	left: calc(75% - 0px);
-	top: calc(500% / 7 + 5px);
-}
 #window>.player.connect[data-position='c0'] {
 	left: calc(50% - 120px);
 	top: calc(50% - 200px)
@@ -3348,7 +3342,12 @@ div:not(.handcards)>.card>.info>span,
 .connectbutton {
 	top: calc(400% / 7 - 35px);
 	width: 130px;
-	left: calc(50% - 70px);
+}
+.connectbutton1 {
+	left: calc(50% - 200px);
+}
+.connectbutton2 {
+	left: calc(50% + 60px);
 }
 .connectevents {
 	left: auto;
@@ -3475,9 +3474,13 @@ div:not(.handcards)>.card>.info>span,
 	animation: config 0.5s;
 	-webkit-animation: config 0.5s;
 }
-.flash {
-	animation: flash 1s;
-	-webkit-animation: flash 1s;
+.flash,
+.flash-animation-iteration-count-infinite {
+	animation-name: flash;
+	animation-duration: 1s;
+}
+.flash-animation-iteration-count-infinite {
+	animation-iteration-count: infinite;
 }
 .flip {
 	animation: flip 1s;
@@ -3859,6 +3862,10 @@ div:hover>.intro {
 .player .identity[data-color="zhu"],
 .player .identity[data-color="truezhu"],
 .player .identity[data-color="enemy"],
+div[data-nature='zhu'],
+span[data-nature='zhu'],
+div[data-nature='enemy'],
+span[data-nature='enemy'],
 div[data-nature='fire'],
 span[data-nature='fire'] {
 	text-shadow: black 0 0 1px,rgba(232, 53, 53,1) 0 0 2px,rgba(232, 53, 53,1) 0 0 5px,rgba(232, 53, 53,1) 0 0 10px,
@@ -3911,6 +3918,8 @@ span[data-nature='firemx'] {
 .player .identity[data-color="qun"],
 .player .identity[data-color="neutral"],
 .player .identity[data-color="friend2"],
+div[data-nature='zhong'],
+span[data-nature='zhong'],
 div[data-nature='metal'],
 span[data-nature='metal'] {
 	text-shadow: black 0 0 1px,rgba(255, 203, 0,1) 0 0 2px,rgba(255, 203, 0,1) 0 0 5px,rgba(255, 203, 0,1) 0 0 10px,
@@ -3944,11 +3953,45 @@ span[data-nature='keymm'] {
 		rgba(203, 177, 255,1) 0 0 2px,black 0 0 1px;
 }
 
+
+div[data-nature='shen'],
+span[data-nature='shen'] {
+	text-shadow: rgba(243, 171, 27, 1) 0 0 2px,rgba(243, 171, 27, 1) 0 0 5px,rgba(243, 171, 27, 1) 0 0 10px,
+		rgba(243, 171, 27, 1) 0 0 10px,rgba(243, 171, 27, 1) 0 0 20px,rgba(243, 171, 27, 1) 0 0 20px,black 0 0 1px;
+}
+div[data-nature='shenm'],
+span[data-nature='shenm'] {
+	text-shadow: rgba(243, 171, 27, 1) 0 0 2px,rgba(243, 171, 27, 1) 0 0 5px,rgba(243, 171, 27, 1) 0 0 5px,
+		rgba(243, 171, 27, 1) 0 0 5px,black 0 0 1px;
+}
+div[data-nature='shenmm'],
+span[data-nature='shenmm'] {
+	text-shadow: rgba(243, 171, 27, 1) 0 0 2px,rgba(243, 171, 27, 1) 0 0 2px,rgba(243, 171, 27, 1) 0 0 2px,
+		rgba(243, 171, 27, 1) 0 0 2px,black 0 0 1px;
+}
+div[data-nature='qun'],
+span[data-nature='qun'] {
+	text-shadow: rgba(164, 164, 164, 1) 0 0 2px,rgba(164, 164, 164, 1) 0 0 5px,rgba(164, 164, 164, 1) 0 0 10px,
+		rgba(164, 164, 164, 1) 0 0 10px,rgba(164, 164, 164, 1) 0 0 20px,rgba(164, 164, 164, 1) 0 0 20px,black 0 0 1px;
+}
+div[data-nature='qunm'],
+span[data-nature='qunm'] {
+	text-shadow: rgba(164, 164, 164, 1) 0 0 2px,rgba(164, 164, 164, 1) 0 0 5px,rgba(164, 164, 164, 1) 0 0 5px,
+		rgba(164, 164, 164, 1) 0 0 5px,black 0 0 1px;
+}
+div[data-nature='qunmm'],
+span[data-nature='qunmm'] {
+	text-shadow: rgba(164, 164, 164, 1) 0 0 2px,rgba(164, 164, 164, 1) 0 0 2px,rgba(164, 164, 164, 1) 0 0 2px,
+		rgba(164, 164, 164, 1) 0 0 2px,black 0 0 1px;
+}
+
 .player .identity[data-color="nei"],
 .player .identity[data-color="ye"],
 .player .identity[data-color="rYe"],
 .player .identity[data-color="bYe"],
 .player .identity[data-color="jin"],
+div[data-nature='nei'],
+span[data-nature='nei'],
 div[data-nature='thunder'],
 span[data-nature='thunder'] {
 	text-shadow: rgba(100, 74, 139,1) 0 0 2px,rgba(100, 74, 139,1) 0 0 5px,rgba(100, 74, 139,1) 0 0 10px,
@@ -3984,6 +4027,8 @@ span[data-nature='kamimm'] {
 
 .player .identity[data-color="fan"],
 .player .identity[data-color="wu"],
+div[data-nature='fan'],
+span[data-nature='fan'],
 div[data-nature='wood'],
 span[data-nature='wood'] {
 	text-shadow: rgba(57, 123, 4,1) 0 0 2px,rgba(57, 123, 4,1) 0 0 5px,rgba(57, 123, 4,1) 0 0 10px,
@@ -3999,6 +4044,12 @@ span[data-nature='woodmm'] {
 	text-shadow: rgba(57, 123, 4,1) 0 0 2px,rgba(57, 123, 4,1) 0 0 2px,rgba(57, 123, 4,1) 0 0 2px,
 		rgba(57, 123, 4,1) 0 0 2px,black 0 0 1px;
 }
+.player .identity[data-color="commoner"],
+div[data-nature='commoner'],
+span[data-nature='commoner'] {
+	text-shadow: rgb(135, 135, 135, 1) 0 0 2px,rgba(135, 135, 135, 1) 0 0 5px,rgba(135, 135, 135, 1) 0 0 10px,
+		rgba(135, 135, 135, 1) 0 0 10px,rgba(135, 135, 135, 1) 0 0 20px,rgba(135, 135, 135, 1) 0 0 20px,black 0 0 1px;
+}
 
 .player .identity[data-color="cai"],
 .player .identity[data-color="bZhu"],
@@ -4008,6 +4059,8 @@ span[data-nature='woodmm'] {
 .player .identity[data-color="falsezhu"],
 .player .identity[data-color="friend"],
 .water,
+div[data-nature='friend'],
+span[data-nature='friend'],
 div[data-nature='water'],
 span[data-nature='water'] {
 	text-shadow: rgba(78, 117, 140,1) 0 0 2px,rgba(78, 117, 140,1) 0 0 5px,rgba(78, 117, 140,1) 0 0 10px,
@@ -4293,9 +4346,9 @@ div[data-decoration="bronze"]::after{
 }
 .card.fullskin.gold>.name {
 	color: white;
-    text-shadow: black 0 0 1px, rgba(0,0,0,0.5) 0 0 1px;
+	text-shadow: black 0 0 1px, rgba(0,0,0,0.5) 0 0 1px;
 	background: rgba(234, 158, 0, 0.6);
-    border: 1px solid rgb(134, 87, 1);
+	border: 1px solid rgb(134, 87, 1);
 	box-shadow: rgba(255, 149, 0, 0.4) 0 0 10px inset;
 }
 .card.fullskin.gold>.name2 {
@@ -4405,9 +4458,9 @@ div[data-decoration="bronze"]::after{
 	background-color: red;
 }
 /* #arena>.skillbar.full { */
-    /*transform: scale(1.1);*/
-    /*box-shadow: rgba(0, 0, 0, 0.1) 0 0 0 1px, rgba(0, 0, 0, 0.45) 0 3px 10px;
-    -webkit-animation:skillbarglow 3s infinite;*/
+	/*transform: scale(1.1);*/
+	/*box-shadow: rgba(0, 0, 0, 0.1) 0 0 0 1px, rgba(0, 0, 0, 0.45) 0 3px 10px;
+	-webkit-animation:skillbarglow 3s infinite;*/
 /* } */
 #arena>.skillbar>.skillbartext {
 	font-family: 'xinwei';
@@ -4588,6 +4641,21 @@ div[data-decoration="bronze"]::after{
 	left: 3px;
 	top: 6px;
 }
+.tempname.kami:not([data-nature])>span {
+	color: #1F3C38;
+}
+.tempname.ice:not([data-nature])>span {
+	color: #3B6273;
+}
+.tempname.fire:not([data-nature])>span {
+	color: #631515;
+}
+.tempname.thunder:not([data-nature])>span {
+	color: #152E63;
+}
+.tempname.poison:not([data-nature])>span {
+	color: #00312d;
+}
 /*.card.equip1 .wunature,
 .card.equip3 .wunature,
 .card.equip4 .wunature{
@@ -4732,9 +4800,9 @@ div[data-decoration="bronze"]::after{
 }
 .dice{
 	position: absolute;
-    width: 200px;
-    height: 200px;
-    transform-style: preserve-3d;
+	width: 200px;
+	height: 200px;
+	transform-style: preserve-3d;
 	left: calc(50% - 100px);
 	top: calc(50% - 100px);
 	transition: transform 2s ease;
@@ -4777,92 +4845,92 @@ div[data-decoration="bronze"]::after{
 }
 .dice>div{
 	position: absolute;
-    width: 200px;
-    height: 200px;
-    background: #fff;
-    box-shadow:inset 0 0 40px #ccc;
-    border-radius: 40px;
+	width: 200px;
+	height: 200px;
+	background: #fff;
+	box-shadow:inset 0 0 40px #ccc;
+	border-radius: 40px;
 }
 .dice .cover, .dice .inner {
-    background: #e0e0e0;
-    box-shadow: none;
+	background: #e0e0e0;
+	box-shadow: none;
 }
 .dice .cover {
-    border-radius: 0;
-    transform: translateZ(0px);
+	border-radius: 0;
+	transform: translateZ(0px);
 }
 .dice .cover.x {
-    transform: rotateY(90deg);
+	transform: rotateY(90deg);
 }
 .dice .cover.z {
-    transform: rotateX(90deg);
+	transform: rotateX(90deg);
 }
 
 .dice .front  {
-    transform: translateZ(100px);
+	transform: translateZ(100px);
 }
 .dice .front.inner  {
-    transform: translateZ(98px);
+	transform: translateZ(98px);
 }
 .dice .back {
-    transform: rotateX(-180deg) translateZ(100px);
+	transform: rotateX(-180deg) translateZ(100px);
 }
 .dice .back.inner {
-    transform: rotateX(-180deg) translateZ(98px);
+	transform: rotateX(-180deg) translateZ(98px);
 }
 .dice .right {
-    transform: rotateY(90deg) translateZ(100px);
+	transform: rotateY(90deg) translateZ(100px);
 }
 .dice .right.inner {
-    transform: rotateY(90deg) translateZ(98px);
+	transform: rotateY(90deg) translateZ(98px);
 }
 .dice .left {
-    transform: rotateY(-90deg) translateZ(100px);
+	transform: rotateY(-90deg) translateZ(100px);
 }
 .dice .left.inner {
-    transform: rotateY(-90deg) translateZ(98px);
+	transform: rotateY(-90deg) translateZ(98px);
 }
 .dice .top {
-    transform: rotateX(90deg) translateZ(100px);
+	transform: rotateX(90deg) translateZ(100px);
 }
 .dice .top.inner {
-    transform: rotateX(90deg) translateZ(98px);
+	transform: rotateX(90deg) translateZ(98px);
 }
 .dice .bottom {
-    transform: rotateX(-90deg) translateZ(100px);
+	transform: rotateX(-90deg) translateZ(100px);
 }
 .dice .bottom.inner {
-    transform: rotateX(-90deg) translateZ(98px);
+	transform: rotateX(-90deg) translateZ(98px);
 }
 
 .dice .dot {
-    position:absolute;
-    width:46px;
-    height:46px;
-    border-radius:23px;
-    background:#444;
-    box-shadow:inset 5px 0 10px #000;
+	position:absolute;
+	width:46px;
+	height:46px;
+	border-radius:23px;
+	background:#444;
+	box-shadow:inset 5px 0 10px #000;
 }
 .dice .dot.center {
-    margin:77px 0 0 77px;
+	margin:77px 0 0 77px;
 }
 .dice .dot.dtop {
-    margin-top:20px;
+	margin-top:20px;
 }
 .dice .dot.dleft {
-    margin-left:134px;
+	margin-left:134px;
 }
 .dice .dot.dright {
-    margin-left:20px;
+	margin-left:20px;
 }
 .dice .dot.dbottom {
-    margin-top:134px;
+	margin-top:134px;
 }
 .dice .dot.center.dleft {
-    margin:77px 0 0 20px;
+	margin:77px 0 0 20px;
 }
 .dice .dot.center.dright {
-    margin:77px 0 0 134px;
+	margin:77px 0 0 134px;
 }
 
 #window.dicepaused>#arena,
@@ -4950,6 +5018,13 @@ div[data-decoration="bronze"]::after{
 #window[data-radius_size='increase'] #splash>div,
 #window[data-radius_size='increase'].mobile:not(.chess) .player[data-position='0'] .equips {
 	border-radius: 16px;
+}
+
+.loading-screen {
+	background-color: black;
+	height: 100%;
+	width: 100%;
+	z-index: 31415926;
 }
 
 /*--------动画--------*/
@@ -5440,7 +5515,42 @@ div[data-decoration="bronze"]::after{
 		transform: perspective(1000px) rotateY(360deg);
 	}
 }
+@keyframes background-position-left-center-right-center-left-center {
+	0% {
+		background-position: left center;
+	}
+
+	50% {
+		background-position: right center;
+	}
+
+	100% {
+		background-position: left center;
+	}
+}
+@keyframes opacity-0-1 {
+	from {
+		opacity: 0;
+	}
+
+	to {
+		opacity: 1;
+	}
+}
+@keyframes opacity-1-0 {
+	from {
+		opacity: 1;
+	}
+
+	to {
+		opacity: 0;
+	}
+}
 /*--------其它--------*/
 ::-webkit-scrollbar {
 	display: none;
+}
+/* 火狐隐藏滚动条 */
+* {
+	scrollbar-width: none;
 }

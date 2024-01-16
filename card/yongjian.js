@@ -30,7 +30,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					'step 0'
-					target.recover(event.baseDamage||1);
+					target.recover();
 					'step 1'
 					if(target.hasCard(function(card){
 						return _status.connectMode||get.name(card,target)=='du';
@@ -56,6 +56,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					'step 0'
 					if(typeof event.baseDamage!='number') event.baseDamage=1;
+					if(typeof event.extraDamage!='number') event.extraDamage=0;
 					if(!target.countCards('h')||!player.isIn()) event.finish();
 					else player.choosePlayerCard(target,'h',true);
 					'step 1'
@@ -64,8 +65,8 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 						var str=get.translation(player);
 						player.showCards(event.show_card);
 						target.chooseControl().set('choiceList',[
-							'令'+str+'获得'+get.translation(event.show_card),
-							'受到'+str+'造成的'+event.baseDamage+'点伤害',
+							`令${str}获得${get.translation(event.show_card)}`,
+							`受到${str}造成的${event.baseDamage+event.extraDamage}点伤害`,
 						]).set('ai',function(){
 							var evt=_status.event.getParent(),player=evt.target,source=evt.player,card=evt.show_card;
 							if(get.damageEffect(player,source,player)>0) return 1;
@@ -161,11 +162,11 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				ai:{
 					order:9,
 					value:function(card,player){
-						if(player.getEquips(1).contains(card)) return 0;
+						if(player.getEquips(1).includes(card)) return 0.4;
 						return 4;
 					},
 					equipValue:function(card,player){
-						if(player.getCards('e').contains(card)) return 0;
+						if(player.getCards('e').includes(card)) return 0.4;
 						return -get.value(player.getCards('e'));
 					},
 					basic:{
@@ -195,7 +196,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 						return 2;
 					},
 					value:function(card,player){
-						if(player.getEquips(1).contains(card)) return -3;
+						if(player.getEquips(1).includes(card)) return -3;
 						return 3;
 					},
 					basic:{
@@ -225,11 +226,17 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				ai:{
 					order:9,
 					equipValue:function(card,player){
-						if(get.position(card)=='e') return -2;
+						if(get.position(card)=='e'){
+							if(player.hasSex('male')) return -7;
+							return 0;
+						}
 						return 2;
 					},
 					value:function(card,player){
-						if(player.getEquips(2).contains(card)) return -3;
+						if(player.getEquips(2).includes(card)){
+							if(player.hasSex('male')) return -8;
+							return 0;
+						}
 						return 3;
 					},
 					basic:{
@@ -259,11 +266,11 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				ai:{
 					order:9,
 					equipValue:function(card,player){
-						if(get.position(card)=='e') return -1;
+						if(get.position(card)=='e') return -8;
 						return 1;
 					},
 					value:function(card,player){
-						if(player.getEquips(2).contains(card)) return -2.5;
+						if(player.getEquips(2).includes(card)) return -10;
 						return 2.5;
 					},
 					basic:{
@@ -297,7 +304,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					order:9,
 					equipValue:0,
 					value:function(card,player){
-						if(player.getEquips(2).contains(card)) return 0;
+						if(player.getEquips(2).includes(card)) return 0;
 						return 0.5;
 					},
 					basic:{
@@ -522,14 +529,14 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 						if(!player._start_cards) return false;
 						var hs=player.getCards('h');
 						for(var card of player._start_cards){
-							if(get.name(card,player)=='du'&&hs.contains(card)) return true;
+							if(get.name(card,player)=='du'&&hs.includes(card)) return true;
 						}
 					}
 					else{
 						if(event.getParent().name!='draw') return false;
 						var hs=player.getCards('h');
 						for(var card of event.cards){
-							if(get.name(card,player)=='du'&&hs.contains(card)) return true;
+							if(get.name(card,player)=='du'&&hs.includes(card)) return true;
 						}
 					}
 					return false;
@@ -539,12 +546,12 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					var hs=player.getCards('h');
 					if(trigger.name=='phase'){
 						event.cards=player._start_cards.filter(function(card){
-							return (get.name(card,player)=='du'&&hs.contains(card));
+							return (get.name(card,player)=='du'&&hs.includes(card));
 						});
 					}
 					else{
 						event.cards=trigger.cards.filter(function(card){
-							return (get.name(card,player)=='du'&&hs.contains(card));
+							return (get.name(card,player)=='du'&&hs.includes(card));
 						});
 					}
 					if(_status.connectMode) game.broadcastAll(function(){_status.noclearcountdown=true});
@@ -552,7 +559,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					'step 1'
 					player.chooseCardTarget({
 						filterCard:function(card){
-							return _status.event.cards.contains(card);
+							return _status.event.cards.includes(card);
 						},
 						filterTarget:lib.filter.notMe,
 						selectCard:[1,cards.length],
@@ -560,10 +567,13 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 						prompt:'是否发动【赠毒】？',
 						prompt2:'将本次获得的【毒】交给其他角色',
 						ai1:function(card){
+							var player=get.player();
+							if(['usedu','keepdu'].some(tag=>player.hasSkillTag(tag))||get.effect(player,{name:"losehp"},player,player)>0) return 0;
 							if(!ui.selected.cards.length) return 1;
 							return 0;
 						},
 						ai2:function(target){
+							if(['usedu','keepdu'].some(tag=>target.hasSkillTag(tag))) return get.attitude(_status.event.player,target)-0.01;
 							return -get.attitude(_status.event.player,target)+0.01;
 						},
 					});
@@ -723,7 +733,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			xinge:'信鸽',
 			xinge_info:'出牌阶段限一次。你可以将一张手牌交给一名其他角色。',
 			xinge_append:'<span class="text" style="font-family: yuanli">咕咕咕。</span>',
-			
+
 			_gifting:'赠予',
 			_gifting_info:'出牌阶段，你可将一张拥有“赠”标签的手牌区装备牌置于一名其他角色的装备区内，或将一张拥有“赠”标签的手牌区非装备牌正面朝上交给一名其他角色。',
 		},
@@ -741,7 +751,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			['spade',11,'wuxie'],
 			['spade',12,'chenghuodajie'],
 			['spade',13,'chenghuodajie'],
-			
+
 			['heart',1,'guaguliaodu'],
 			['heart',2,'shan',null,['gifts']],
 			['heart',3,'wugu',null,['gifts']],
@@ -755,7 +765,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			['heart',11,'sha',null,['gifts']],
 			['heart',12,'sha',null,['gifts']],
 			['heart',13,'zhanxiang',null,['gifts']],
-			
+
 			['club',1,'duanjian',null,['gifts']],
 			['club',2,'sha','stab'],
 			['club',3,'yinfengyi',null,['gifts']],
@@ -769,7 +779,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			['club',11,'wuxie'],
 			['club',12,'wuxie'],
 			['club',13,'yonglv',null,['gifts']],
-			
+
 			['diamond',1,'juedou',null,['gifts']],
 			['diamond',2,'shan'],
 			['diamond',3,'kaihua',null,['gifts']],

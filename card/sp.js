@@ -197,6 +197,11 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 							return lib.card.shandian.ai.result.target(player,target);
 						}
 					},
+					tag:{
+						damage:0.25,
+						natureDamage:0.25,
+						thunderDamage:0.25,
+					}
 				}
 			},
 			qibaodao:{
@@ -268,10 +273,10 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				multitarget:true,
 				targetprompt:['给一张牌','得两张牌'],
 				filterTarget:function(card,player,target){
-					return target!=player;
+					return target!==player;
 				},
-				filterAddedTarget:function(card,player,target){
-					return target!=player;
+				filterAddedTarget:function(card,player,target,preTarget){
+					return target!==preTarget&&target!==player;
 				},
 				content:function(){
 					'step 0'
@@ -313,21 +318,17 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					},
 					result:{
 						target:function(player,target){
-							var ok=false;
-							var hs=player.getCards('h');
-							if(hs.length<=1) return 0;
-							for(var i=0;i<hs.length;i++){
-								if(get.value(hs[i])<=5){
-									ok=true;
-									break;
-								}
-							}
-							if(!ok) return 0;
-							if(ui.selected.targets.length==1){
-								if(target.hasSkillTag('nogain')) return 0;
+							let hs=player.getCards('h');
+							if(hs.length<=1||!hs.some(i=>{
+								return get.value(i)<5.5;
+							})) return 0;
+							let targets=get.copy(ui.selected.targets);
+							if(_status.event.preTarget) targets.add(_status.event.preTarget);
+							if(targets.length){
+								if(target.hasSkillTag('nogain')) return 0.01;
 								return 2;
 							}
-							if(target.countCards('he')==0) return 0;
+							if(!target.countCards('he')) return 0;
 							if(player.hasFriend()) return -1;
 							return 0;
 						}
@@ -534,7 +535,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				popup:false,
 				filter:function(event,player){
 					if(event.player==player) return false;
-					if(event.getParent().directHit.contains(player)) return false;
+					if(event.getParent().directHit.includes(player)) return false;
 					var num=player.countCards('h','jinchan');
 					return num&&num==player.countCards('h');
 				},
@@ -632,25 +633,25 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			qijia_info:'出牌阶段，对一名装备区里有牌的其他角色使用。该角色选择一项：1.弃置手牌区和装备区里所有的武器和-1坐骑；2.弃置手牌区和装备区里所有的防具和+1坐骑。',
 			jinchan:'金蝉脱壳',
 			g_jinchan2:'金蝉脱壳',
-			g_jinchan2_info:'当你因弃置而失去【金蝉脱壳】时，你摸一张牌',
+			g_jinchan2_info:'当你因弃置而失去【金蝉脱壳】时，你摸一张牌。',
 			jinchan_info:'其他角色使用的基本牌或普通牌对你生效时，若你的所有手牌均为【金蝉脱壳】，则你可以使用此牌。你令此牌对你无效并摸两张牌。当你因弃置而失去【金蝉脱壳】时，你摸一张牌。',
 			fulei:'浮雷',
 			fulei_info:'出牌阶段，对你使用。你将【浮雷】置入判定区。若判定结果为♠，则目标角色受到X点雷电伤害（X为此牌判定结果为♠的次数）。判定完成后，将此牌移动到下家的判定区里。',
 			qibaodao:'七宝刀',
-			qibaodao_info:'攻击范围2；锁定技，你使用【杀】无视目标防具，若目标角色未损失体力值，此【杀】伤害+1',
+			qibaodao_info:'攻击范围2；锁定技，你使用【杀】无视目标防具，若目标角色未损失体力值，此【杀】伤害+1。',
 			qibaodao2:'七宝刀',
 			zhungangshuo:'衠钢槊',
-			zhungangshuo_info:'当你使用【杀】指定一名角色为目标后，你可令该角色弃置你的一张手牌，然后你弃置其一张手牌',
+			zhungangshuo_info:'当你使用【杀】指定一名角色为目标后，你可令该角色弃置你的一张手牌，然后你弃置其一张手牌。',
 			lanyinjia:'烂银甲',
 			lanyinjia_info:'你可以将一张手牌当做【闪】使用或打出。锁定技，【烂银甲】不会无效化；当你受到【杀】造成的伤害时，弃置【烂银甲】。',
 			yinyueqiang:'银月枪',
-			yinyueqiang_info:'你的回合外，每当你使用或打出了一张黑色手牌（若为使用则在它结算之前），你可以立即对你攻击范围内的任意一名角色使用一张【杀】',
+			yinyueqiang_info:'你的回合外，每当你使用或打出了一张黑色手牌（若为使用则在它结算之前），你可以立即对你攻击范围内的任意一名角色使用一张【杀】。',
 			shengdong:'声东击西',
-			shengdong_info:'出牌阶段，对一名其他角色使用。你交给目标角色一张手牌，若如此做，其将两张牌交给另一名由你选择的其他角色（不足则全给，存活角色不超过2时可重铸）',
+			shengdong_info:'出牌阶段，对一名其他角色使用。你交给目标角色一张手牌，若如此做，其将两张牌交给另一名由你选择的其他角色（不足则全给，存活角色不超过2时可重铸）。',
 			zengbin:'增兵减灶',
-			zengbin_info:'出牌阶段，对一名角色使用。目标角色摸三张牌，然后选择一项：1.弃置一张非基本牌；2.弃置两张牌',
+			zengbin_info:'出牌阶段，对一名角色使用。目标角色摸三张牌，然后选择一项：1.弃置一张非基本牌；2.弃置两张牌。',
 			caomu:'草木皆兵',
-			caomu_info:'出牌阶段，对一名其他角色使用。将【草木皆兵】放置于该角色的判定区里，若判定结果不为梅花：摸牌阶段，目标角色少摸一张牌；摸牌阶段结束时，与其距离为1的角色各摸一张牌',
+			caomu_info:'出牌阶段，对一名其他角色使用。将【草木皆兵】放置于该角色的判定区里，若判定结果不为梅花：摸牌阶段，目标角色少摸一张牌；摸牌阶段结束时，与其距离为1的角色各摸一张牌。',
 		},
 		list:[
 			['spade',1,'caomu'],

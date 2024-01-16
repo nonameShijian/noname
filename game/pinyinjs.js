@@ -7,7 +7,6 @@ var pinyin_dict_polyphone = {
 	// noname's pinyin
 	// START
 	// 武将名
-	"乐蔡琰": "yuè  ",
 	"用间": " jiàn",
 	
 	"乐进": "yuè ",
@@ -37,18 +36,35 @@ var pinyin_dict_polyphone = {
 	"赵累": " lèi",
 	"夏侯令女": " hóu lìng nǚ",
 	"马日磾": " mì dī",
+	
 	"凯撒": " sà",
 	
 	"乐无异": "yuè ",
 	"端蒙": " méng",
 	"妹喜": "mò ",
-	"露娜": "lù ",
 	"洛欧塞布": "  sài ",
 	"塞纳留斯": "sài   ",
 	"半藏": " zàng",
+	"地藏王": "dì zàng wáng",
 	"查莉娅": "zhā  ",
 	"单小小": "shàn  ",
+	"少微": "shào ",
+	"少昊": "shào ",
+	"欧阳少恭": "  shào ",
+	"卡尔维特": "kǎ   ",
+	"卡西尔": "kǎ  ",
+	"卡扎库斯": "kǎ   ",
+	"卡德加": "kǎ  ",
+	"法兰茜斯卡": "    kǎ",
+	"卡利莫斯": "kǎ   ",
+	"安卡": " kǎ",
+	"卡玛": "kǎ ",
+	"梼杌": "táo ",
+	
+	"库特莉亚芙卡": "     kǎ",
+	"露娜": "lù ",
 	// 技能名
+	"畜鸣": "chù ",
 	"聆乐": " yuè",
 	"没矢": "mò ",
 	"没欲": "mò ",
@@ -111,6 +127,7 @@ var pinyin_dict_polyphone = {
 	"度势": "duó ",
 	"诛綝": " chēn",
 	"大喝": "dà hè",
+	"暴喝": "bào hè",
 	"曲误": "qǔ ",
 	"媛丽": "yuán lì",
 	"调归": "diào ",
@@ -125,6 +142,10 @@ var pinyin_dict_polyphone = {
 	"冠绝": "guàn ",
 	"先著": " zhuó",
 	"量反": "liàng ",
+	"复难": " nàn",
+	"膴仕": "wǔ ",
+	
+	"蒙斥": "méng ",
 	
 	"乐动": "yuè ",
 	"血凰": "xuè ",
@@ -134,6 +155,7 @@ var pinyin_dict_polyphone = {
 	"血逐": "xuè ",
 	"血咒": "xuè ",
 	"血殇": "xuè ",
+	"血池": "xuè ",
 	"越行": " xíng",
 	"劫行": " xíng",
 	"割发": " fà",
@@ -141,6 +163,7 @@ var pinyin_dict_polyphone = {
 	"落石": "luò ",
 	"落刀": "luò ",
 	"星落": " luò",
+	"奈落": " luò",
 	"舍身": "shě ",
 	"舍愿": "shě ",
 	"月露": " lù",
@@ -149,6 +172,7 @@ var pinyin_dict_polyphone = {
 	"挟令": "xié lìng",
 	// END
 	"撒贝宁": "sà  ",
+	"卡比": "kǎ ",
 	
 	"阿Ｑ": "ā ",
 	"阿爸": "ā ",
@@ -41564,17 +41588,21 @@ var pinyin_dict_withtone = "yī,dīng zhēng,kǎo qiǎo yú,qī,shàng,xià,hǎn
 			}
 			return result;
 		}
-		for (var i = 0; i < chinese.length; i++) {
+		var m=0;
+		for (var i = 0; i < chinese.length;(i++,m++)) {
 			temp = '';
 			for (var j = 0; j < max && (i + j) < chinese.length; j++) {
-				if (!/^[\u2E80-\u9FFF]+$/.test(chinese[i + j])) break; // 如果碰到非汉字直接停止本次查找
+				if (!dict.withtone[chinese[i]]) {
+					i+=(result[m].length-1);
+					break;
+				} // 如果碰到非汉字直接停止本次查找
 				temp += chinese[i + j];
 				var res = poly[temp];
 				if (res) // 如果找到了多音字词语
 				{
 					res = res.split(' ');
 					for (var k = 0; k <= j; k++) {
-						if (res[k]) result[i + k] = withtone ? res[k] : pinyinUtilx.removeTone(res[k]);
+						if (res[k]) result[m + k] = withtone ? res[k] : pinyinUtilx.removeTone(res[k]);
 					}
 					break;
 				}

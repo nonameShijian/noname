@@ -82,7 +82,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			var list=[];
 			for(var i in lib.character){
 				var info=lib.character[i];
-				if(info[4].contains('boss')){
+				if(info[4].includes('boss')){
 					// var cfg=i+'_bossconfig';
 					// if(get.config(cfg)==undefined){
 					//		game.saveConfig(cfg,true,true);
@@ -226,14 +226,14 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			boss.side=true;
 			if(!event.noslide){
 				var rect=event.current.getBoundingClientRect();
-				boss.animate('bossing');
-				boss.node.hp.animate('start');
+				boss.addTempClass('bossing');
+				boss.node.hp.addTempClass('start');
 				boss.bossinginfo=[rect.left+rect.width/2,rect.top+rect.height/2];
 				boss.style.transition='all 0s';
 				boss.node.equips.style.opacity='0';
 			}
 			else{
-				boss.animate('start');
+				boss.addTempClass('start');
 			}
 			boss.setIdentity('zhu');
 			boss.identity='zhu';
@@ -244,7 +244,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			for(var i=0;i<result.links.length;i++){
 				var player=ui.create.player();
 				player.getId();
-				player.init(result.links[i]).animate('start');
+				player.init(result.links[i]).addTempClass('start');
 				player.setIdentity('cai');
 				player.identity='cai';
 				player.side=false;
@@ -279,12 +279,12 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					player.getId();
 					player.init(game.bossinfo.minion[i]);
 					if(boss.bossinginfo){
-						player.animate('bossing');
-						player.node.hp.animate('start');
+						player.addTempClass('bossing');
+						player.node.hp.addTempClass('start');
 						player.style.transition='all 0s';
 					}
 					else{
-						player.animate('start');
+						player.addTempClass('start');
 					}
 					player.setIdentity('zhong');
 					player.identity='zhong';
@@ -323,7 +323,6 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				if(lib.config.show_handcardbutton){
 					lib.setPopped(ui.create.system('手牌',null,true),function(){
 						var uiintro=ui.create.dialog('hidden');
-
 						var players=game.players.concat(game.dead);
 						for(var i=0;i<players.length;i++){
 							if(players[i].side==game.me.side&&players[i]!=game.me){
@@ -337,7 +336,6 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 								}
 							}
 						}
-
 						return uiintro;
 					},220);
 				}
@@ -367,7 +365,6 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							td.innerHTML='无法重整'
 						}
 					}
-
 					if(!added){
 						uiintro.add('<div class="text center">（无重整角色）</div>');
 						uiintro.add(ui.create.div('.placeholder.slim'))
@@ -375,7 +372,6 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					else{
 						uiintro.add(table);
 					}
-
 					return uiintro;
 				},180);
 			}
@@ -833,7 +829,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				boss_taotie:['male','qun',20,['boss_xiongshou','boss_tanyu','boss_cangmu','boss_jicai','boss_jicai_switch'],['qun','boss','bossallowed'],'qun'],
 				boss_taowu:['male','qun',25,['boss_xiongshou','boss_minwan','boss_nitai','boss_luanchang','boss_luanchang_switch'],['qun','boss','bossallowed'],'qun'],
 				boss_zhuyin:['male','qun',4,['boss_xiongshou'],['qun','hiddenboss','bossallowed'],'qun'],
-				
+
 				boss_xiangliu:['male','qun',25,['boss_yaoshou','boss_duqu','boss_jiushou','boss_echou','boss_echou_switch'],['qun','boss','bossallowed'],'qun'],
 				boss_zhuyan:['male','qun','25/30',['boss_yaoshou','boss_bingxian','boss_juyuan','boss_xushi','boss_xushi_switch'],['qun','boss','bossallowed'],'qun'],
 				boss_bifang:['male','qun',25,['boss_yaoshou','boss_zhaohuo','boss_honglianx','boss_yanyu','boss_yanyu_switch'],['qun','boss','bossallowed'],'qun'],
@@ -872,7 +868,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 
 				boss_baiwuchang:['male','shen',9,['boss_baolian','boss_qiangzheng','boss_zuijiu','juece','boss_bianshen4'],['shu','hiddenboss','bossallowed']],
 				boss_heiwuchang:['male','shen',9,['boss_guiji','boss_taiping','boss_suoming','boss_xixing','boss_bianshen4'],['shu','hiddenboss','bossallowed']],
-				boss_luocha:['male','shen',12,['boss_modao','boss_yushou','yizhong','boss_moyany'],['shu','hiddenboss','bossallowed']],
+				boss_luocha:['female','shen',12,['boss_modao','boss_yushou','yizhong','boss_moyany'],['shu','hiddenboss','bossallowed']],
 				boss_yecha:['male','shen',11,['boss_modao','boss_mojian','bazhen','boss_danshu'],['shu','hiddenboss','bossallowed']],
 				boss_niutou:['male','shen',7,['boss_baolian','niepan','boss_manjia','boss_xiaoshou','boss_bianshen3'],['shu','hiddenboss','bossallowed']],
 				boss_mamian:['male','shen',6,['boss_guiji','fankui','boss_lianyu','juece','boss_bianshen3'],['shu','hiddenboss','bossallowed']],
@@ -880,7 +876,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				boss_mo:['female','shen',5,['boss_guimei','enyuan','boss_beiming','boss_bianshen2'],['shu','hiddenboss','bossallowed']],
 				boss_wang:['male','shen',5,['boss_guimei','boss_luolei','huilei','boss_bianshen2'],['shu','hiddenboss','bossallowed']],
 				boss_liang:['female','shen',5,['boss_guimei','boss_guihuo','boss_minbao','boss_bianshen2'],['shu','hiddenboss','bossallowed']],
-				
+
 				boss_qinguangwang:['male','qun',3,['boss_panguan','boss_juhun','boss_wangxiang','boss_newhuanren'],['shu','boss','bossallowed'],'shu'],
 				boss_chujiangwang:['male','qun',4,['weimu','refankui','boss_bingfeng'],['shu','hiddenboss','bossallowed']],
 				boss_songdiwang:['male','qun',4,['boss_heisheng','boss_shengfu','enyuan'],['shu','hiddenboss','bossallowed']],
@@ -895,7 +891,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				boss_dizangwang:['male','qun',8,['boss_bufo','boss_wuliang','boss_dayuan','boss_diting'],['shu','hiddenboss','bossallowed']],
 				//boss_shikieiki:['female','qun',8,['boss_yingzhong'],['qun','hiddenboss','bossallowed']],
 
-				boss_lvbu1:['male','shen',8,['mashu','wushuang','boss_baonu','boss_jingjia','boss_aozhan'],['qun','boss','bossallowed'],'wei'],
+				boss_lvbu1:['male','shen',8,['mashu','wushuang','boss_baonu','boss_jingjia','boss_aozhan'],['qun','boss','bossallowed'],'qun'],
 				boss_lvbu2:['male','shen',6,['mashu','wushuang','xiuluo','shenwei','shenji'],['qun','hiddenboss','bossallowed'],'qun'],
 				boss_lvbu3:['male','shen',6,['wushuang','shenqu','jiwu'],['qun','hiddenboss','bossallowed'],'qun'],
 
@@ -918,7 +914,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				boss_diaochan:['female','shen',4,['fengwu','yunshen','lianji','boss_wange','yuehun'],['qun','boss','bossallowed'],'qun'],
 				boss_huatuo:['male','shen',6,['chulao','mazui','boss_shengshou','guizhen','wuqin'],['qun','boss','bossallowed'],'wu'],
 				boss_dongzhuo:['male','shen',20,['jiuchi','boss_qiangzheng','boss_baolin'],['qun','boss','bossallowed'],'shu'],
-				
+
 				"boss_sunce":["male","shen","1/8",["boss_jiang","boss_hunzi","boss_hunyou","boss_taoni"],['qun','boss','bossallowed'],'wu'],
 
 				// boss_nianshou:['male','shen',Infinity,['boss_nianrui','boss_qixiang','boss_damagecount'],['boss'],'shu'],
@@ -932,7 +928,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 		},
 		init:function(){
 			for(var i in lib.characterPack.mode_boss){
-				if(lib.characterPack.mode_boss[i][4].contains('hiddenboss')) continue;
+				if(lib.characterPack.mode_boss[i][4].includes('hiddenboss')) continue;
 				lib.mode.boss.config[i+'_boss_config']={
 					name:get.translation(i),
 					init:true,
@@ -974,7 +970,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				if(game.me==player){
 					game.swapControl(boss);
 				}
-				game.players.push(boss.animate('zoominanim'));
+				game.players.push(boss.addTempClass('zoominanim'));
 				game.arrangePlayers();
 				if(!game.boss){
 					game.boss=boss;
@@ -1034,7 +1030,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 								var sort=lib.config.sort_card(card);
 								var position=sort>0?player.node.handcards1:player.node.handcards2;
 								card.fix();
-								card.animate('start');
+								card.addTempClass('start');
 								position.insertBefore(card,position.firstChild);
 							}
 							player.update();
@@ -1144,11 +1140,11 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					var list=[];
 					event.list=list;
 					for(i in lib.character){
-						if(lib.character[i][4].contains('minskin')) continue;
-						if(lib.character[i][4].contains('boss')) continue;
-						if(lib.character[i][4].contains('hiddenboss')) continue;
-						if(lib.character[i][4]&&lib.character[i][4].contains('forbidai')) continue;
-						if(lib.config.forbidboss.contains(i)) continue;
+						if(lib.character[i][4].includes('minskin')) continue;
+						if(lib.character[i][4].includes('boss')) continue;
+						if(lib.character[i][4].includes('hiddenboss')) continue;
+						if(lib.character[i][4]&&lib.character[i][4].includes('forbidai')) continue;
+						if(lib.config.forbidboss.includes(i)) continue;
 						if(lib.filter.characterDisabled(i)) continue;
 						list.push(i);
 					}
@@ -1184,7 +1180,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						var node=_status.event.dialog.buttons[0].parentNode;
 						_status.event.dialog.buttons=ui.create.buttons(list.slice(0,20),'character',buttons);
 						_status.event.dialog.content.insertBefore(buttons,node);
-						buttons.animate('start');
+						buttons.addTempClass('start');
 						node.remove();
 
 						game.uncheck();
@@ -1201,7 +1197,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						event.dialogxx.classList.add('withbg');
 						event.dialogxx.classList.add('fixed');
 						if(ui.cheat2){
-							ui.cheat2.animate('controlpressdownx',500);
+							ui.cheat2.addTempClass('controlpressdownx',500);
 							ui.cheat2.classList.remove('disabled');
 						}
 					};
@@ -1225,11 +1221,11 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 								game.uncheck();
 								game.check();
 								if(ui.cheat){
-									ui.cheat.animate('controlpressdownx',500);
+									ui.cheat.addTempClass('controlpressdownx',500);
 									ui.cheat.classList.remove('disabled');
 								}
 								if(_status.bosschoice){
-									_status.bosschoice.animate('controlpressdownx',500);
+									_status.bosschoice.addTempClass('controlpressdownx',500);
 									_status.bosschoice.classList.remove('disabled');
 								}
 							}
@@ -1525,7 +1521,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 									links.push(dialog.buttons[i].link);
 								}
 								for(var i=0;i<this.backup2.length;i++){
-									if(links.contains(this.backup2[i].link)){
+									if(links.includes(this.backup2[i].link)){
 										this.backup2[i].style.display='none';
 									}
 									else{
@@ -1661,7 +1657,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						else if(node.name=='jiedao'){
 							node.init([node.suit,node.number,'yihuajiemu']);
 						}
-						else if(list.contains(node.name)){
+						else if(list.includes(node.name)){
 							lib.inpile.remove(node.name);
 							node.remove();
 						}
@@ -1701,7 +1697,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							node.classList.remove('thunder');
 							node.init([node.suit,node.number,'honghuangzhili']);
 						}
-						else if(['huoshan','hongshui','fulei'].contains(node.name)){
+						else if(['huoshan','hongshui','fulei'].includes(node.name)){
 							node.remove();
 						}
 					}
@@ -1764,7 +1760,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					}
 				},
 				init:function(){
-					_status.shidianyanluo_level=0;				
+					_status.shidianyanluo_level=0;
 					lib.inpile.remove('muniu');
 					for(var i=0;i<ui.cardPile.childElementCount;i++){
 						if(ui.cardPile.childNodes[i].name=='muniu'){
@@ -1970,7 +1966,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					content:function(storage,player,skill){
 						var list=[];
 						for(var i in player.disabledSkills){
-							if(player.disabledSkills[i].contains(skill)){
+							if(player.disabledSkills[i].includes(skill)){
 								list.push(i)
 							}
 						}
@@ -2030,7 +2026,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					game.log(trigger.card,'被改为神属性');
-					trigger.card.nature='kami';
+					game.setNature(trigger.card,'kami');
 				}
 			},
 			shanrangzhaoshu:{
@@ -2099,8 +2095,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						player.chooseCard('he',true,`交给${get.translation(target)}一张牌`).set('filterCard',function(card,player){
 							if(_status.event.ignoreCard) return true;
 							var cards=player.getEquips('shanrangzhaoshu');
-							if(!cards.contains(card)) return true;
-							return cards.some(cardx=>(cardx!=card&&!ui.selected.cards.contains(cardx)));
+							if(!cards.includes(card)) return true;
+							return cards.some(cardx=>(cardx!=card&&!ui.selected.cards.includes(cardx)));
 						}).set('ignoreCard',player.hasSkill('shanrangzhaoshu',null,false));
 					}
 					'step 3'
@@ -2172,21 +2168,21 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					player.chooseToDiscard('he',get.prompt('noda_axe',trigger.target),2,'弃置两张牌，令'+get.translation(trigger.target)+'本回合内不能使用或打出牌且防具技能无效。',function(card,player){
 						return card!=player.getEquip(1);
 					}).set('logSkill',['noda_axe',trigger.target]).set('goon',function(event,player){
- 					if(player.hasSkill('noda_axe2')) return false;
- 					if(event.getParent().excluded.contains(player)) return false;
- 					if(get.attitude(event.player,player)>0){
- 						return false;
- 					}
- 					if(get.type(event.card)=='trick'&&event.player.hasWuxie()) return true;
- 					if(get.tag(event.card,'respondSha')){
- 						if(!player.hasSha()) return false;
- 						return true;
- 					}
- 					else if(get.tag(event.card,'respondShan')){
- 						if(!player.hasShan()) return false;
- 						return true;
- 					}
- 					return false;
+						if(player.hasSkill('noda_axe2')) return false;
+						if(event.getParent().excluded.includes(player)) return false;
+						if(get.attitude(event.player,player)>0){
+							return false;
+						}
+						if(get.type(event.card)=='trick'&&event.player.hasWuxie()) return true;
+						if(get.tag(event.card,'respondSha')){
+							if(!player.hasSha()) return false;
+							return true;
+						}
+						else if(get.tag(event.card,'respondShan')){
+							if(!player.hasShan()) return false;
+							return true;
+						}
+						return false;
 					}(trigger,trigger.target)).set('ai',function(card){
 						if(_status.event.goon) return 7.5-get.value(card);
 						return 0;
@@ -2268,7 +2264,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						if(current!=player&&current.countCards('e')){
 							player.line(current);
 							current.discard(current.getCards('e'));
-						};
+						}
 					});
 				},
 			},
@@ -2342,7 +2338,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						fellow.side=true;
 						fellow.identity='zhong';
 						fellow.setIdentity('zhong');
-						game.addVideo('setIdentity',fellow,'zhong');			
+						game.addVideo('setIdentity',fellow,'zhong');
 						_status.shidianyanluo_mengpo=true;
 					}
 					var list=['luxun','re_luxun','zhangchunhua','zuoci','re_zuoci','re_yuji','xin_yuji','jiangfei','kongrong'];//禁将
@@ -2355,7 +2351,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					});
 				},
 			},
-			boss_newhuanren2:{			
+			boss_newhuanren2:{
 				trigger:{global:['die']},
 				forced:true,
 				priority:-10,
@@ -2398,7 +2394,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					if(game.phaseNumber<=50&&_status.shidianyanluo_level==2&&_status.shidianyanluo_mengpodie==true){
 						list=['boss_dizangwang'];
 					}
-					if(list.length==1) event._result={control:list[0]};					
+					if(list.length==1) event._result={control:list[0]};
 					else{
 						player.chooseControl(list).set('forceDie',true).set('choice',list.randomGet()).set('ai',function(){return _status.event.choice}).prompt='选择下一个登场的武将';
 					}
@@ -2427,14 +2423,14 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							fellow.side=true;
 							fellow.identity='zhong';
 							fellow.setIdentity('zhong');
-							game.addVideo('setIdentity',fellow,'zhong');			
+							game.addVideo('setIdentity',fellow,'zhong');
 							_status.shidianyanluo_mengpo=true;
 						}
 					}
 					else{
 						//移除孟婆
 						game.countPlayer2(function(current){
-							if(current.name=='boss_mengpo'){			
+							if(current.name=='boss_mengpo'){
 								current.removed=true;
 								current.classList.add('dead');
 								current.remove();
@@ -2659,7 +2655,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					if(!player.hasEmptySlot('equip2')) return false;
 					if(event.card.name=='nanman') return true;
 					if(event.card.name=='wanjian') return true;
-					return event.card.name=='sha'&&!get.nature(event.card);
+					return event.card.name=='sha'&&!game.hasNature(event.card);
 				},
 				content:function(){
 					trigger.cancel();
@@ -2672,7 +2668,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							if(card.name=='sha'){
 								var equip1=player.getEquip(1);
 								if(equip1&&equip1.name=='zhuque') return 1.9;
-								if(!card.nature) return 'zerotarget';
+								if(!game.hasNature(card)) return 'zerotarget';
 							}
 						}
 					}
@@ -2696,7 +2692,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					target.damage('fire');
 				}
 			},
-			
+
 			boss_huoxing:{
 				trigger:{player:'die'},
 				forceDie:true,
@@ -2852,7 +2848,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				forced:true,
 				audio:true,
 				filter:function(event,player){
-					if(player.getEnemies().contains(event.player)){return true;}
+					if(player.getEnemies().includes(event.player)){return true;}
 					return false;
 				},
 				logTarget:'player',
@@ -2879,7 +2875,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				onremove:true,
 				mod:{
 					cardEnabled2:function(card,player){
-						if(player.storage.boss_wangshi2.contains(get.type(card,'trick'))) return false;
+						if(player.storage.boss_wangshi2.includes(get.type(card,'trick'))) return false;
 					},
 				},
 			},
@@ -2935,7 +2931,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 								}
 							}
 							if(skills1.length>0){
-								skills1=skills1.randomGet();			
+								skills1=skills1.randomGet();
 								ran1.disableSkill('boss_wanghun',skills1);
 								game.log(ran1,'失去了',skills1);
 							}
@@ -2954,7 +2950,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 									}
 								}
 								if(skills2.length>0){
-									skills2=skills2.randomGet();			
+									skills2=skills2.randomGet();
 									ran2.disableSkill('boss_wanghun',skills2);
 									game.log(ran2,'失去了',skills2);
 								}
@@ -2963,7 +2959,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 								}
 							}
 						}
-						//添加两张回魂			
+						//添加两张回魂
 						if(get.mode()=='boss'){
 							var card1=game.createCard('boss_mengpohuihun','heart',3,null);
 							var card2=game.createCard('boss_mengpohuihun','club',4,null);
@@ -3074,7 +3070,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				player.chooseControl(list).set('ai',function(){
 					return _status.event.choice;
 				}).set('choice',choice).prompt=get.prompt2(event.name);
-				'step 1'		
+				'step 1'
 				if(result.control!='cancel2'){
 					if(!event.logged){
 						event.logged=true;
@@ -3084,7 +3080,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					player.popup(result.control,'fire');
 					if(!trigger.fixedResult) trigger.fixedResult={};
 					trigger.fixedResult.number=result.control;
-				}		
+				}
 				player.chooseControl(event.suitx).set('ai',function(){
 					return _status.event.choice;
 				}).set('choice',event.suitchoice).prompt=get.prompt2(event.name);
@@ -3110,8 +3106,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			"boss_diting":{
 				audio:true,
 				mod:{
-					globalFrom:function (from,to,distance){		
-						return distance-1;		
+					globalFrom:function (from,to,distance){
+						return distance-1;
 					},
 					globalTo:function (from,to,distance){
 						return distance+1;
@@ -3178,7 +3174,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				charlotte:true,
 				fixed:true,
 				content:function(){},
-				contentplayer:function(player){			
+				contentplayer:function(player){
 					var list=[1,2,3,4,5];
 					var list2=["boss_sdyl_playerlevel1","boss_sdyl_playerlevel2","boss_sdyl_playerlevel3","boss_sdyl_playerlevel4","boss_sdyl_playerlevel5"];
 					player.removeAdditionalSkill('boss_sdyl_level');
@@ -3203,7 +3199,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						}
 					}
 				},
-				contentboss:function(boss){			
+				contentboss:function(boss){
 					var list=[1,2,3,4,5];
 					var list2=["boss_sdyl_bosslevel1","boss_sdyl_bosslevel2","boss_sdyl_bosslevel3","boss_sdyl_bosslevel4","boss_sdyl_bosslevel5"];
 					boss.removeAdditionalSkill('boss_sdyl_level');
@@ -3244,7 +3240,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				silent:true,
 				popup:false,
 				forced:true,
-				init:function(player){					
+				init:function(player){
 					player.maxHp++;
 					player.hp++;
 					player.update();
@@ -3281,7 +3277,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			},
 			"boss_sdyl_playerlevel5":{
 				init:function(player){
-					player.storage.boss_sdyl_playerlevel5=false;	
+					player.storage.boss_sdyl_playerlevel5=false;
 					player.maxHp++;
 					player.hp++;
 					player.update();
@@ -3314,7 +3310,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					'step 3'
 					player.drawTo(Math.min(5,player.maxHp));
 					'step 4'
-					player.recover(player.maxHp-player.hp);					
+					player.recover(player.maxHp-player.hp);
 				},
 				ai:{
 					order:1,
@@ -3336,7 +3332,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				},
 				intro:{
 					content:'limited'
-				}		
+				}
 			},
 			"boss_sdyl_bosslevel1":{
 				fixed:true,
@@ -3438,7 +3434,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						if(!event.card||event.card.name!='nanman') return false;
 						player.storage.boss_sdyl_bosslevel5=true;
 						return false;
-					}				
+					}
 				},
 				content:function (){
 					trigger.num++;
@@ -3466,10 +3462,10 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						},
 						forced:true,
 						filter:function (event,player){
-							return player.getEquip(2)&&event.num>1; 
+							return player.getEquip(2)&&event.num>1;
 						},
 						content:function (){
-							trigger.num=1; 
+							trigger.num=1;
 						},
 						sub:true,
 					},
@@ -3479,7 +3475,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						},
 						forced:true,
 						filter:function (event,player){
-							return (player.getEquip(3)||player.getEquip(4)); 
+							return (player.getEquip(3)||player.getEquip(4));
 						},
 						content:function(){
 							trigger.num++;
@@ -3502,7 +3498,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					},
 				},
 			},
-			
+
 			boss_yaoshou:{
 				mod:{
 					globalFrom:function(from,to,distance){
@@ -3598,7 +3594,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			boss_echou:{
 				trigger:{global:'useCard'},
 				filter:function(event,player){
-					return !event.player.hasSkill('boss_duqu')&&['tao','jiu'].contains(event.card.name);
+					return !event.player.hasSkill('boss_duqu')&&['tao','jiu'].includes(event.card.name);
 				},
 				content:function(){
 					var target=trigger.player;
@@ -3697,12 +3693,12 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				},
 				forced:true,
 				filter:function(event,player){
-					if(player==event.player) return event.nature=='fire'||player==event.source;
+					if(player==event.player) return event.hasNature('fire')||player==event.source;
 					return true;
 				},
 				content:function(){
 					if(player==trigger.player) trigger.cancel();
-					else trigger.nature='fire';
+					else game.setNature(trigger,'fire');
 				},
 				ai:{
 					unequip:true,
@@ -3731,7 +3727,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					event.togain=[];
 					while(event.togain.length<event.num2){
 						var card=get.cardPile(function(card){
-							return !event.togain.contains(card)&&get.color(card)=='red';
+							return !event.togain.includes(card)&&get.color(card)=='red';
 						});
 						if(card) event.togain.push(card);
 						else break;
@@ -3831,7 +3827,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					}
 					else event.finish();
 					'step 1'
-					if(player.getCards('h').contains(card)&&get.type(card)=='equip') player.chooseUseTarget(card,true,'nopopup','noanimate');
+					if(player.getCards('h').includes(card)&&get.type(card)=='equip') player.chooseUseTarget(card,true,'nopopup','noanimate');
 				},
 			},
 			boss_sipu_switch:{
@@ -3938,9 +3934,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				filter:function(event,player){
 					if(lib.config.mode!='boss') return false;
 					var list=['boss_shuishenxuanming','boss_shuishengonggong'];
-					if(list.contains(event.player.name)){
+					if(list.includes(event.player.name)){
 						return !game.hasPlayer(function(current){
-							return list.contains(current.name);
+							return list.includes(current.name);
 						});
 					}
 					return false;
@@ -4069,7 +4065,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					thunder:{
 						trigger:{player:'damageBegin4'},
 						filter:function(event){
-							return event.nature=='thunder'&&game.roundNumber<7;
+							return event.hasNature('thunder')&&game.roundNumber<7;
 						},
 						forced:true,
 						content:function(){
@@ -4113,7 +4109,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					targets.add(player.getPrevious());
 					var enemies=player.getEnemies();
 					for(var i=0;i<targets.length;i++){
-						if(!enemies.contains(targets[i])||
+						if(!enemies.includes(targets[i])||
 							(!targets[i].getEquip(3)&&!targets[i].getEquip(4))){
 							targets.splice(i--,1);
 						}
@@ -4499,7 +4495,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						trigger:{player:'damageBegin1'},
 						forced:true,
 						filter:function(event,player){
-							return _status.currentPhase!=player&&event.nature=='fire';
+							return _status.currentPhase!=player&&event.hasNature('fire');
 						},
 						content:function(){
 							trigger.num++;
@@ -4543,7 +4539,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				},
 				mod:{
 					playerEnabled:function(card,player,target){
-						if(_status.currentPhase==player&&Array.isArray(player.storage.boss_minwan)&&!player.storage.boss_minwan.contains(target)){
+						if(_status.currentPhase==player&&Array.isArray(player.storage.boss_minwan)&&!player.storage.boss_minwan.includes(target)){
 							return false;
 						}
 					}
@@ -4676,21 +4672,21 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				trigger:{source:'damageBegin1'},
 				forced:true,
 				content:function(){
-					trigger.nature='fire';
+					game.setNature(trigger,'fire');
 				}
 			},
 			longfenghemingjian:{
 				equipSkill:true,
 				inherit:'cixiong_skill',
 				filter:function(event,player){
-					return lib.linked.contains(event.card.nature);
+					return game.hasNature(event.card,'linked');
 				},
 			},
 			qicaishenlu:{
 				trigger:{source:'damageBegin1'},
 				forced:true,
 				filter:function(event,player){
-					return lib.linked.contains(event.nature);
+					return game.hasNature(event.card,'linked');
 				},
 				content:function(){
 					trigger.num++;
@@ -5489,10 +5485,10 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				trigger:{source:'damageBegin1'},
 				forced:true,
 				filter:function(event){
-					return event.nature!='fire';
+					return !event.hasNature('fire');
 				},
 				content:function(){
-					trigger.nature='fire';
+					trigger.hasNature('fire');
 				},
 				mod:{
 					cardUsable:function(card){
@@ -5550,7 +5546,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					if(result.bool){
 						event.target=result.targets[0];
 						player.line(event.target,'fire');
-						event.target.chooseToDiscard('he',{color:'red'},'弃置一张红色牌或受到一点火焰伤害').ai=function(card){
+						event.target.chooseToDiscard('he',{color:'red'},'弃置一张红色牌或受到1点火焰伤害').ai=function(card){
 							var player=_status.event.player;
 							var source=_status.event.parent.player;
 							if(get.damageEffect(player,source,player,'fire')>=0) return 0;
@@ -5670,7 +5666,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				forced:true,
 				unique:true,
 				filter:function(event,player){
-					return [3,5,7].contains(game.roundNumber);
+					return [3,5,7].includes(game.roundNumber);
 				},
 				content:function(){
 					'step 0'
@@ -5825,7 +5821,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				forced:true,
 				unique:true,
 				filter:function(event,player){
-					if(event._notrigger.contains(event.player)) return false;
+					if(event._notrigger.includes(event.player)) return false;
 					return event.player.isIn()&&event.player.isEnemyOf(player)&&!event.player.hasSkill('boss_zhongdu');
 				},
 				logTarget:'player',
@@ -5870,7 +5866,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				forced:true,
 				unique:true,
 				filter:function(event,player){
-					return [3,5,7].contains(game.roundNumber);
+					return [3,5,7].includes(game.roundNumber);
 				},
 				content:function(){
 					'step 0'
@@ -6036,8 +6032,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							return rand;
 						}
 					}).set('prompt',get.prompt('boss_yuance')).set('choiceList',[
-						'若判定结果为黑色，'+playername+'失去一点体力，否则'+sourcename+'失去一点体力',
-						'若判定结果为红色，'+playername+'回复一点体力，否则'+sourcename+'回复一点体力'
+						'若判定结果为黑色，'+playername+'失去1点体力，否则'+sourcename+'失去1点体力',
+						'若判定结果为红色，'+playername+'回复1点体力，否则'+sourcename+'回复1点体力'
 					]);
 					'step 1'
 					var att1=get.attitude(player,trigger.player);
@@ -6106,7 +6102,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					'step 0'
 					trigger.player.chooseCard(function(card){
-						return trigger.result.contains(card);
+						return trigger.result.includes(card);
 					},'归心：交给'+get.translation(player)+'一张牌',true);
 					'step 1'
 					if(result.bool){
@@ -6147,10 +6143,10 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					}
 					for(var i in lib.character){
 						if(lib.character[i][1]!='wei') continue;
-						if(lib.character[i][4].contains('boss')) continue;
-						if(lib.character[i][4].contains('minskin')) continue;
-						if(player.storage.xiongcai.contains(i)) continue;
-						if(list2.contains(i)) continue;
+						if(lib.character[i][4].includes('boss')) continue;
+						if(lib.character[i][4].includes('minskin')) continue;
+						if(player.storage.xiongcai.includes(i)) continue;
+						if(list2.includes(i)) continue;
 						list.push(i);
 					}
 					var name=list.randomGet();
@@ -6273,10 +6269,10 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						return player.countCards('h')==0;
 					},
 					x6:function(player,event){
-						return event.nature=='fire';
+						return event.hasNature('fire');
 					},
 					x5:function(player,event){
-						return event.nature=='thunder';
+						return event.hasNature('thunder');
 					},
 					x4:function(player,event){
 						return event.name=='loseHp';
@@ -6462,10 +6458,10 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 
 					game.addVideo('judge1',player,[get.cardInfo(card),judgestr,event.videoId]);
 					for(var i=0;i<event.cards.length;i++) event.cards[i].discard();
-					// var node=card.copy('thrown','center',ui.arena).animate('start');
+					// var node=card.copy('thrown','center',ui.arena).addTempClass('start');
 					var node;
 					if(game.chess){
-						node=card.copy('thrown','center',ui.arena).animate('start');
+						node=card.copy('thrown','center',ui.arena).addTempClass('start');
 					}
 					else{
 						node=player.$throwordered(card.copy(),true);
@@ -7316,12 +7312,12 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					player.chooseTarget(get.prompt('boss_xiaoshou'),function(card,player,target){
 						return player!=target&&target.hp>=player.hp;
 					}).ai=function(target){
-						return get.damageEffect(target,player,player,'fire');
+						return get.damageEffect(target,player,player);
 					}
 					"step 1"
 					if(result.bool){
 						player.logSkill('boss_xiaoshou',result.targets);
-						result.targets[0].damage('fire',3);
+						result.targets[0].damage(3);
 					}
 				},
 			},
@@ -7353,7 +7349,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				trigger:{player:'damageBegin3'},
 				filter:function(event,player){
 					if(player.getEquip(2)) return false;
-					if(event.nature=='fire') return true;
+					if(event.hasNature('fire')) return true;
 				},
 				forced:true,
 				check:function(){
@@ -8007,7 +8003,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				forced:true,
 				unique:true,
 				filter:function(event){
-					return event.nature=='fire';
+					return event.hasNature('fire');
 				},
 				content:function(){
 					trigger.cancel();
@@ -8037,7 +8033,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					});
 					"step 1"
 					if(result.bool){
-						player.chooseTarget(true,'选择一个目标令其失去一点体力',function(card,player,target){
+						player.chooseTarget(true,'选择一个目标令其失去1点体力',function(card,player,target){
 							return player!=target;
 						}).ai=function(target){
 							return Math.max(1,9-target.hp);
@@ -8266,7 +8262,6 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							if(target.classList.contains('turnedover')) return -1;
 							return 5-target.getDamagedHp();
 						}
-						return 1;
 					}
 					"step 1"
 					if(result.bool){
@@ -8367,6 +8362,12 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				}
 			},
 			boss_wuxin:{
+				audio:2,
+				mod:{
+					targetEnabled:function(card,player,target){
+						if(get.type(card)=='delay'&&player!=target) return false;
+					}
+				},
 				trigger:{player:'damageBefore'},
 				forced:true,
 				priority:10,
@@ -8374,7 +8375,6 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					trigger.cancel();
 					player.loseHp();
 				},
-				audio:2,
 			},
 			shenwei:{
 				audio:2,
@@ -8552,20 +8552,21 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				}
 			},
 			jiwu:{
+				derivation:['qiangxix','retieji','olxuanfeng','rewansha'],
 				audio:2,
 				enable:'phaseUse',
 				filter:function(event,player){
-					if(player.countCards('h')==0) return false;
+					if(player.countCards('he')==0) return false;
 					if(!player.hasSkill('qiangxix')) return true;
 					if(!player.hasSkill('retieji')) return true;
-					if(!player.hasSkill('rexuanfeng')) return true;
-					if(!player.hasSkill('wansha')) return true;
+					if(!player.hasSkill('olxuanfeng')) return true;
+					if(!player.hasSkill('rewansha')) return true;
 					return false;
 				},
 				filterCard:true,
 				position:'he',
 				check:function(card){
-					if(get.position(card)=='e'&&_status.event.player.hasSkill('rexuanfeng')) return 16-get.value(card);
+					if(get.position(card)=='e'&&_status.event.player.hasSkill('olxuanfeng')) return 16-get.value(card);
 					return 7-get.value(card);
 				},
 				content:function(){
@@ -8573,30 +8574,30 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					var list=[];
 					if(!player.hasSkill('qiangxix')) list.push('qiangxix');
 					if(!player.hasSkill('retieji')) list.push('retieji');
-					if(!player.hasSkill('rexuanfeng')) list.push('rexuanfeng');
-					if(!player.hasSkill('wansha')) list.push('wansha');
+					if(!player.hasSkill('olxuanfeng')) list.push('olxuanfeng');
+					if(!player.hasSkill('rewansha')) list.push('rewansha');
 					if(list.length==1){
 						player.addTempSkill(list[0]);
 						event.finish();
 					}
 					else{
 						player.chooseControl(list,function(){
-							if(list.contains('rexuanfeng')&&player.countCards('he',{type:'equip'})) return 'rexuanfeng';
+							if(list.includes('olxuanfeng')&&player.countCards('he',{type:'equip'})) return 'olxuanfeng';
 							if(!player.getStat().skill.qiangxix){
-								if(player.hasSkill('qiangxix')&&player.getEquip(1)&&list.contains('rexuanfeng')) return 'rexuanfeng';
-								if(list.contains('wansha')||list.contains('qiangxix')){
+								if(player.hasSkill('qiangxix')&&player.getEquip(1)&&list.includes('olxuanfeng')) return 'olxuanfeng';
+								if(list.includes('rewansha')||list.includes('qiangxix')){
 									var players=game.filterPlayer();
 									for(var i=0;i<players.length;i++){
 										if(players[i].hp==1&&get.attitude(player,players[i])<0){
-											if(list.contains('wansha')) return 'wansha';
-											if(list.contains('qiangxix')) return 'qiangxix';
+											if(list.includes('rewansha')) return 'rewansha';
+											if(list.includes('qiangxix')) return 'qiangxix';
 										}
 									}
 								}
 							}
-							if(list.contains('qiangxix')) return 'qiangxix';
-							if(list.contains('wansha')) return 'wansha';
-							if(list.contains('rexuanfeng')) return 'rexuanfeng';
+							if(list.includes('qiangxix')) return 'qiangxix';
+							if(list.includes('rewansha')) return 'rewansha';
+							if(list.includes('olxuanfeng')) return 'olxuanfeng';
 							return 'retieji';
 						}).set('prompt','选择获得一项技能直到回合结束');
 					}
@@ -8609,8 +8610,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						var player=_status.event.player;
 						if(player.countCards('e',{type:'equip'})) return 10;
 						if(!player.getStat().skill.qiangxix){
-							if(player.hasSkill('qiangxix')&&player.getEquip(1)&&!player.hasSkill('rexuanfeng')) return 10;
-							if(player.hasSkill('wansha')) return 1;
+							if(player.hasSkill('qiangxix')&&player.getEquip(1)&&!player.hasSkill('olxuanfeng')) return 10;
+							if(player.hasSkill('rewansha')) return 1;
 							var players=game.filterPlayer();
 							for(var i=0;i<players.length;i++){
 								if(players[i].hp==1&&get.attitude(player,players[i])<0) return 10;
@@ -8622,8 +8623,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						player:function(player){
 							if(player.countCards('e',{type:'equip'})) return 1;
 							if(!player.getStat().skill.qiangxix){
-								if(player.hasSkill('qiangxix')&&player.getEquip(1)&&!player.hasSkill('rexuanfeng')) return 1;
-								if(!player.hasSkill('wansha')||!player.hasSkill('qiangxix')){
+								if(player.hasSkill('qiangxix')&&player.getEquip(1)&&!player.hasSkill('olxuanfeng')) return 1;
+								if(!player.hasSkill('rewansha')||!player.hasSkill('qiangxix')){
 									var players=game.filterPlayer();
 									for(var i=0;i<players.length;i++){
 										if(players[i].hp==1&&get.attitude(player,players[i])<0) return 1;
@@ -8656,7 +8657,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					player.loseMaxHp();
 					player.addSkill('reyingzi');
 					player.addSkill('yinghun');
-					game.log(player,'获得了技能','#g【英姿】和【英魂】');		
+					game.log(player,'获得了技能','#g【英姿】和【英魂】');
 					game.log(player,'','#y【魂佑】')
 					player.awakenSkill('boss_hunzi');
 					player.storage.boss_hunzi=true;
@@ -8687,8 +8688,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					var a=window.setInterval(function(){
 						if(player.hasSkill('boss_jiang')){
 							player.storage.boss_jiang=true;
-						}					
-						else{ 
+						}
+						else{
 							game.addGlobalSkill('boss_jiang');
 							game.addGlobalSkill('boss_jiang_use');
 							window.clearInterval(a);
@@ -8698,9 +8699,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				filter2:function(event,player){
 					if(!event.respondTo[1]) return false;
 					if(get.itemtype(event.cards)!='cards') return false;
-					if(['h','e','j'].contains(get.position(event.cards[0]))) return false;
+					if(['h','e','j'].includes(get.position(event.cards[0]))) return false;
 					if(event.respondTo[1]&&get.itemtype(event.respondTo[1])!='card') return false;
-					if(event.respondTo[1]&&['h','e','j'].contains(get.position(event.respondTo[1]))) return false;
+					if(event.respondTo[1]&&['h','e','j'].includes(get.position(event.respondTo[1]))) return false;
 				},
 				filter:function(event,player){
 					if(!player.storage.boss_jiang) return false;
@@ -8717,7 +8718,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				content:function (){
 					player.draw();
 					if(!lib.skill.boss_jiang.filter2(trigger,player)) return;
-					if(trigger.respondTo[0]!=player){ 
+					if(trigger.respondTo[0]!=player){
 						if(trigger.respondTo[1]&&get.position(trigger.respondTo[1])=='d') player.gain(trigger.respondTo[1],'gain2');
 						}
 						else{
@@ -8733,7 +8734,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						filter:function (event,player){
 							if(!player.storage.boss_jiang) return false;
 							if(get.color(event.card)!='red') return false;
-							return player==event.player||event.targets.contains(player);
+							return player==event.player||event.targets.includes(player);
 						},
 						frequent:true,
 						content:function (){
@@ -8773,7 +8774,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							trigger.cancel();
 							player.maxHp=player.storage.maxHp;
 							player.hp=player.storage.hp;
-							player.update();						
+							player.update();
 						},
 						sub:true,
 						forced:true,
@@ -8823,14 +8824,14 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							}
 							return false;
 						}
-						var keysArray=["length","players","player","element"];
+						var keysArray=["length","players","Player","element"];
 						for(var i=0;i<game[keysArray[1]][keysArray[0]];i++){
 							var node=game[keysArray[1]][i];
-							for(var a in lib[keysArray[3]][keysArray[2]]){
+							for(var a in Object.keys(lib[keysArray[3]][keysArray[2]].prototype)){
 								var opd=Object.getOwnPropertyDescriptor(node,a);
 								if (isDefined(opd)) _status.taoni_over(lib.translate[node.name] + '触发了〖讨逆〗，游戏已被终止。');
-								//还原函数	
-								node[a]=lib[keysArray[3]][keysArray[2]][a];	
+								//还原函数
+								node[a]=lib[keysArray[3]][keysArray[2]].prototype[a];
 								var playerKeysArray=['classList','hp','maxHp','skills'];
 								for(var b=0;b<playerKeysArray.length;b++){
 									var opd2=Object.getOwnPropertyDescriptor(node,playerKeysArray[b]);
@@ -8944,56 +8945,56 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			boss_sipu:'司圃',
 			boss_sipu_switch:'司圃',
 			boss_sipu_info:'体力值首次减少至一半或更少时激活此技能。锁定技，你的出牌阶段内，若你使用的牌数小于等于2张，其他角色无法使用或打出牌。',
-			
+
 			boss_wuzang:'无脏',
-			boss_wuzang_info:'锁定技，摸牌阶段，你的摸牌基数改为X（X为你的体力值一半且至少为5）；你的手牌上限基数为0',
+			boss_wuzang_info:'锁定技，摸牌阶段，你的摸牌基数改为X（X为你的体力值一半且至少为5）；你的手牌上限基数为0。',
 			boss_xiangde:'相德',
-			boss_xiangde_info:'锁定技，其他角色对你造成伤害时，若其装备区内有武器牌，此伤害+1',
+			boss_xiangde_info:'锁定技，其他角色对你造成伤害时，若其装备区内有武器牌，此伤害+1。',
 			boss_yinzei:'隐贼',
 			boss_yinzei_switch:'隐贼',
-			boss_yinzei_info:'体力值首次减少至一半或更少时激活此技能。锁定技，若你没有手牌，其他角色对你造成伤害后，随机弃置一张牌',
+			boss_yinzei_info:'体力值首次减少至一半或更少时激活此技能。锁定技，若你没有手牌，其他角色对你造成伤害后，随机弃置一张牌。',
 			boss_zhue:'助恶',
-			boss_zhue_info:'锁定技，每当一名其他角色造成伤害后，你与伤害来源各摸一张牌',
+			boss_zhue_info:'锁定技，每当一名其他角色造成伤害后，你与伤害来源各摸一张牌。',
 			boss_futai:'复态',
-			boss_futai_info:'锁定技，你的回合外，其他角色不能使用【桃】；你的回合开始时，你令所有角色回复1点体力',
+			boss_futai_info:'锁定技，你的回合外，其他角色不能使用【桃】；你的回合开始时，你令所有角色回复1点体力。',
 			boss_yandu:'厌笃',
 			boss_yandu_switch:'厌笃',
-			boss_yandu_info:'体力值首次减少至一半或更少时激活此技能。锁定技，其他角色回合结束后，若其未造成过伤害，你获得其一张牌',
+			boss_yandu_info:'体力值首次减少至一半或更少时激活此技能。锁定技，其他角色回合结束后，若其未造成过伤害，你获得其一张牌。',
 			boss_minwan:'冥顽',
-			boss_minwan_info:'锁定技，当你于回合内使用牌对其他角色造成伤害后，你于此回合内使用牌只能指定你与这些角色为目标，且你每使用一张牌，摸一张牌',
+			boss_minwan_info:'锁定技，当你于回合内使用牌对其他角色造成伤害后，你于此回合内使用牌只能指定你与这些角色为目标，且你每使用一张牌，摸一张牌。',
 			boss_nitai:'拟态',
-			boss_nitai_info:'锁定技，防止你于回合内受到的伤害；你于回合外受到火属性伤害+1',
+			boss_nitai_info:'锁定技，防止你于回合内受到的伤害；你于回合外受到火属性伤害+1。',
 			boss_luanchang:'乱常',
 			boss_luanchang_switch:'乱常',
-			boss_luanchang_info:'体力值首次减少至一半或更少时激活此技能。锁定技，回合开始时，你视为使用【南蛮入侵】；回合结束时，你视为使用【万箭齐发】',
+			boss_luanchang_info:'体力值首次减少至一半或更少时激活此技能。锁定技，回合开始时，你视为使用【南蛮入侵】；回合结束时，你视为使用【万箭齐发】。',
 			boss_tanyu:'贪欲',
-			boss_tanyu_info:'锁定技，跳过你的弃牌阶段；结束阶段，若你的手牌数为全场最多，失去1点体力',
+			boss_tanyu_info:'锁定技，跳过你的弃牌阶段；结束阶段，若你的手牌数为全场最多，失去1点体力。',
 			boss_cangmu:'藏目',
-			boss_cangmu_info:'锁定技，你令摸牌阶段摸牌基数改为X（X为存活角色数）',
+			boss_cangmu_info:'锁定技，你令摸牌阶段摸牌基数改为X（X为存活角色数）。',
 			boss_jicai:'积财',
 			boss_jicai_switch:'积财',
-			boss_jicai_info:'体力值首次减少至一半或更少时激活此技能。锁定技，一名角色回复体力后，你与其各摸一张牌',
+			boss_jicai_info:'体力值首次减少至一半或更少时激活此技能。锁定技，一名角色回复体力后，你与其各摸一张牌。',
 			boss_xiongshou:'凶兽',
-			boss_xiongshou_info:'锁定技，你使用【杀】对体力值小于你的角色造成的伤害+1；你与其他角色距离-1；你不能被翻面',
+			boss_xiongshou_info:'锁定技，你使用【杀】对体力值小于你的角色造成的伤害+1；你与其他角色距离-1；你不能被翻面。',
 			sadouchengbing:'撒豆成兵',
-			sadouchengbing_info:'出牌阶段对自己使用，若你的势力为“神”，摸X张牌；否则将你手牌补至X；（X为你的体力上限且至多为5）',
+			sadouchengbing_info:'出牌阶段对自己使用，若你的势力为“神”，摸X张牌；否则将你手牌补至X；（X为你的体力上限且至多为5）。',
 			yihuajiemu:'移花接木',
-			yihuajiemu_info:'出牌阶段对一名有牌的其他角色使用，令其使用一张【杀】，或交给你两张牌',
+			yihuajiemu_info:'出牌阶段对一名有牌的其他角色使用，令其使用一张【杀】，或交给你两张牌。',
 			chiyanzhenhunqin:'赤焰镇魂琴',
-			chiyanzhenhunqin_info:'锁定技，你造成的伤害均视为具有火属性',
+			chiyanzhenhunqin_info:'锁定技，你造成的伤害均视为具有火属性。',
 			juechenjinge:'绝尘金戈',
-			juechenjinge_info:'锁定技，敌方角色计算与己方其他角色距离+1',
+			juechenjinge_info:'锁定技，敌方角色计算与己方其他角色距离+1。',
 			xiuluolianyuji:'修罗炼狱戟',
-			xiuluolianyuji_info:'你使用【杀】可以额外指定任意名攻击范围内的其他角色为目标；锁定技，你使用【杀】造成的伤害+1，然后令受到伤害的角色回复1点体力',
+			xiuluolianyuji_info:'你使用【杀】可以额外指定任意名攻击范围内的其他角色为目标；锁定技，你使用【杀】造成的伤害+1，然后令受到伤害的角色回复1点体力。',
 			longfenghemingjian:'鸾凤和鸣剑',
-			longfenghemingjian_info:'你使用的【雷杀】或【火杀】指定目标后，可令对方选择弃置一张牌或令你摸一张牌',
+			longfenghemingjian_info:'你使用的雷【杀】或火【杀】指定目标后，可令对方选择弃置一张牌或令你摸一张牌。',
 			qicaishenlu:'七彩神鹿',
 			qicaishenlu_info:'锁定技，你计算与其他角色的距离时-1，当你造成属性伤害时，你令此伤害+1。',
 			boss_mengpohuihun:'回魂',
-			boss_mengpohuihun_info:'若场上有角色在本局游戏中因孟婆的【忘魂】失去过技能，则令其恢复该技能；此牌进入弃牌堆后，会被销毁。',
+			boss_mengpohuihun_info:'若场上有角色在本局游戏中因孟婆的〖忘魂〗失去过技能，则令其恢复该技能；此牌进入弃牌堆后，会被销毁。',
 			honghuangzhili:'洪荒之力',
 			honghuangzhili_cbg:'洪',
-			honghuangzhili_info:'若该角色的势力是神，你获得其一张牌，其【神裔】无效直到其下家的回合（这个下家是动态变化的，会随着一个人的死或者复活而变化）开始；若该角色的势力不是神，其翻面。',
+			honghuangzhili_info:'若该角色的势力是神，你获得其一张牌，其〖神裔〗无效直到其下家的回合（这个下家是动态变化的，会随着一个人的死或者复活而变化）开始；若该角色的势力不是神，其翻面。',
 
 			boss_qingmushilian:'春之试炼',
 			boss_qinglong:'青龙',
@@ -9014,170 +9015,170 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			boss_zhuanxu:'颛顼',
 
 			boss_lingqu:'灵躯',
-			boss_lingqu_info:'锁定技，当你受到伤害后，你摸一张牌，然后手牌上限+1；防止你受到的大于1点的伤害',
+			boss_lingqu_info:'锁定技，当你受到伤害后，你摸一张牌，然后手牌上限+1；防止你受到的大于1点的伤害。',
 			boss_zirun:'滋润',
-			boss_zirun_info:'锁定技，准备阶段开始时，你令所有角色摸一张牌，若其装备区内有牌，则其额外摸一张牌',
+			boss_zirun_info:'锁定技，准备阶段开始时，你令所有角色摸一张牌，若其装备区内有牌，则其额外摸一张牌。',
 			boss_juehong:'决洪',
-			boss_juehong_info:'锁定技，准备阶段开始时，你令所有敌方角色自己弃置自己的装备区内的所有牌，若其装备区内没有牌，则改为你弃置其一张手牌',
+			boss_juehong_info:'锁定技，准备阶段开始时，你令所有敌方角色自己弃置自己的装备区内的所有牌，若其装备区内没有牌，则改为你弃置其一张手牌。',
 			boss_zaoyi:'皂仪',
-			boss_zaoyi_info:'锁定技，只要水神玄冥存活，你不会成为敌方角色使用锦囊牌的目标，只要水神共工存活，你不会成为敌方角色使用基本牌的目标。水神玄冥和水神共工均死亡后，你摸四张牌，然后从下回合开始，每个回合开始时使体力值最少的敌方角色失去所有体力',
+			boss_zaoyi_info:'锁定技，只要水神玄冥存活，你不会成为敌方角色使用锦囊牌的目标，只要水神共工存活，你不会成为敌方角色使用基本牌的目标。水神玄冥和水神共工均死亡后，你摸四张牌，然后从下回合开始，每个回合开始时使体力值最少的敌方角色失去所有体力。',
 			boss_baiyi:'白仪',
-			boss_baiyi_info:'锁定技，每名敌方角色的摸牌阶段，若当前轮数小于3，其少摸一张牌；第五轮开始时，每名敌方角色弃置两张牌；当己方角色受到的雷电伤害时，若当前轮数小于7，其防止此伤害',
+			boss_baiyi_info:'锁定技，每名敌方角色的摸牌阶段，若当前轮数小于3，其少摸一张牌；第五轮开始时，每名敌方角色弃置两张牌；当己方角色受到的雷电伤害时，若当前轮数小于7，其防止此伤害。',
 			boss_qingzhu:'擎柱',
-			boss_qingzhu_info:'锁定技，你跳过弃牌阶段，若你没有“殛顶”，你于出牌阶段不能使用【杀】',
+			boss_qingzhu_info:'锁定技，你跳过弃牌阶段，若你没有“殛顶”，你于出牌阶段不能使用【杀】。',
 			boss_jiazu:'枷足',
-			boss_jiazu_info:'锁定技，回合开始时，弃置你上家和下家的敌方角色的装备区内的坐骑牌',
+			boss_jiazu_info:'锁定技，回合开始时，弃置你上家和下家的敌方角色的装备区内的坐骑牌。',
 			boss_jiding:'殛顶',
-			boss_jiding_info:'锁定技，其他己方角色受到伤害后，若伤害来源为敌方角色，则你视为对伤害来源使用雷【杀】，若此【杀】造成伤害，蓐收回复1点体力。然后你失去此技能（只有发动了才会失去，没发动不会失去）',
+			boss_jiding_info:'锁定技，其他己方角色受到伤害后，若伤害来源为敌方角色，则你视为对伤害来源使用雷【杀】，若此【杀】造成伤害，蓐收回复1点体力。然后你失去此技能（只有发动了才会失去，没发动不会失去）。',
 			boss_xingqiu:'刑秋',
-			boss_xingqiu_info:'锁定技，每两轮的出牌阶段开始时，你横置所有敌方角色，然后使明刑柱获得【殛顶】',
+			boss_xingqiu_info:'锁定技，每两轮的出牌阶段开始时，你横置所有敌方角色，然后使明刑柱获得〖殛顶〗。',
 			boss_kuangxiao:'狂啸',
-			boss_kuangxiao_info:'锁定技，你的回合内，你使用【杀】没有距离限制，且指定所有敌方角色为目标',
+			boss_kuangxiao_info:'锁定技，你的回合内，你使用【杀】没有距离限制，且指定所有敌方角色为目标。',
 			boss_shenyi:'神裔',
-			boss_shenyi_info:'锁定技，你的武将牌始终正面向上，你的判定区内的牌效果反转',
+			boss_shenyi_info:'锁定技，你的武将牌始终正面向上，你的判定区内的牌效果反转。',
 			boss_shenen:'神恩',
-			boss_shenen_info:'锁定技，所有己方角色使用牌无距离限制；所有敌方角色摸牌阶段多摸一张牌且手牌上限+1',
+			boss_shenen_info:'锁定技，所有己方角色使用牌无距离限制；所有敌方角色摸牌阶段多摸一张牌且手牌上限+1。',
 			boss_fentian:'焚天',
-			boss_fentian_info:'锁定技，你造成的伤害视为火焰伤害；你使用红色牌无距离和次数限制，且不可被其他角色使用【闪】或【无懈可击】响应',
+			boss_fentian_info:'锁定技，你造成的伤害视为火焰伤害；你使用红色牌无距离和次数限制，且不可被其他角色使用【闪】或【无懈可击】响应。',
 			boss_fentian2:'焚天',
 			boss_xingxia:'行夏',
-			boss_xingxia_info:'每两轮限一次，出牌阶段，你可以对焰灵造成2点火焰伤害，然后令每名敌方角色选择一项：1.弃置一张红色牌；2.你对其造成1点火焰伤害',
+			boss_xingxia_info:'每两轮限一次，出牌阶段，你可以对焰灵造成2点火焰伤害，然后令每名敌方角色选择一项：1.弃置一张红色牌；2.你对其造成1点火焰伤害。',
 			boss_huihuo:'回火',
-			boss_huihuo_info:'锁定技，当你死亡时，你对所有敌方角色各造成3点火焰伤害；出牌阶段，你可以多使用一张【杀】',
+			boss_huihuo_info:'锁定技，当你死亡时，你对所有敌方角色各造成3点火焰伤害；出牌阶段，你可以多使用一张【杀】。',
 			boss_furan:'复燃',
 			boss_furan2:'复燃',
-			boss_furan_info:'当你濒死时，所有敌方角色视为可以将红色牌当【桃】对你使用',
+			boss_furan_info:'当你濒死时，所有敌方角色视为可以将红色牌当【桃】对你使用。',
 			boss_chiyi:'赤仪',
 			boss_chiyi2:'赤仪',
-			boss_chiyi_info:'锁定技，从第三轮开始，敌方角色受到的伤害+1；第五轮开始时，你对所有角色各造成1点火焰伤害；第七轮开始时，你对焰灵造成5点火焰伤害',
+			boss_chiyi_info:'锁定技，从第三轮开始，敌方角色受到的伤害+1；第五轮开始时，你对所有角色各造成1点火焰伤害；第七轮开始时，你对焰灵造成5点火焰伤害。',
 			boss_buchun:'布春',
-			boss_buchun_info:'每两轮限一次，出牌阶段，若场上有死亡的树精，你可以失去1点体力，复活所有树精，使其回复体力至1点，补充手牌至两张；若场上没有死亡的树精，你可以为一名己方角色回复2点体力',
+			boss_buchun_info:'每两轮限一次，出牌阶段，若场上有死亡的树精，你可以失去1点体力，复活所有树精，使其回复体力至1点，补充手牌至两张；若场上没有死亡的树精，你可以为一名己方角色回复2点体力。',
 			boss_cuidu:'淬毒',
-			boss_cuidu_info:'锁定技，你对敌方角色造成伤害后，若其没有“中毒”，你令其获得“中毒”，然后令木神勾芒摸一张牌',
+			boss_cuidu_info:'锁定技，你对敌方角色造成伤害后，若其没有“中毒”，你令其获得“中毒”，然后令木神勾芒摸一张牌。',
 			boss_zhongdu:'中毒',
 			boss_zhongdu_bg:'毒',
-			boss_zhongdu_info:'锁定技，回合开始时，你进行判定，若结果不为红桃，你受到1点无来源的伤害，若结果不为黑桃，你失去此技能',
+			boss_zhongdu_info:'锁定技，回合开始时，你进行判定，若结果不为红桃，你受到1点无来源的伤害，若结果不为黑桃，你失去此技能。',
 			boss_qingyi:'青仪',
-			boss_qingyi_info:'锁定技，第三轮开始时，己方角色各回复1点体力；第五轮开始时，敌方角色各失去1点体力；第七轮开始时，复活木神勾芒和树精，使其各摸三张牌，各+1体力上限，然后各回复3点体力',
+			boss_qingyi_info:'锁定技，第三轮开始时，己方角色各回复1点体力；第五轮开始时，敌方角色各失去1点体力；第七轮开始时，复活木神勾芒和树精，使其各摸三张牌，各+1体力上限，然后各回复3点体力。',
 
 			boss_guimou:'鬼谋',
-			boss_guimou_info:'结束阶段，你可以令一名随机的其他角色进入混乱状态直到其下一回合结束',
+			boss_guimou_info:'结束阶段，你可以令一名随机的其他角色进入混乱状态直到其下一回合结束。',
 			boss_yuance:'远策',
-			boss_yuance_info:'每当一名角色受到其他角色的伤害，你可以选择一项并进行一次判定：1. 若结果为黑色，受伤害角色失去一点体力，否则伤害来源失去一点体力；2. 若结果为红色，受伤害角色回复一点体力，否则伤害来源回复一点体力',
+			boss_yuance_info:'每当一名角色受到其他角色的伤害，你可以选择一项并进行一次判定：1. 若结果为黑色，受伤害角色失去1点体力，否则伤害来源失去1点体力；2. 若结果为红色，受伤害角色回复1点体力，否则伤害来源回复1点体力。',
 			boss_qizuo:'奇佐',
-			boss_qizuo_info:'你可以令你的普通锦囊牌额外结算一次',
+			boss_qizuo_info:'你可以令你的普通锦囊牌额外结算一次。',
 			boss_guixin:'归心',
-			boss_guixin_info:'锁定技，其他角色摸牌时，若摸牌数不少于2，须将摸到的牌中的一张交给你',
+			boss_guixin_info:'锁定技，其他角色摸牌时，若摸牌数不少于2，须将摸到的牌中的一张交给你。',
 			xiongcai:'雄才',
-			xiongcai_info:'锁定技，你在回合结束后随机获得一个魏势力角色的所有技能',
+			xiongcai_info:'锁定技，你在回合结束后随机获得一个魏势力角色的所有技能。',
 			xiaoxiong:'枭雄',
-			xiaoxiong_info:'锁定技，每当一名其他角色使用一张基本牌或锦囊牌，你获得一张与之同名的牌；在一名其他角色的结束阶段，若其本回合没有使用牌，你对其造成一点伤害',
+			xiaoxiong_info:'锁定技，每当一名其他角色使用一张基本牌或锦囊牌，你获得一张与之同名的牌；在一名其他角色的结束阶段，若其本回合没有使用牌，你对其造成1点伤害。',
 			boss_zhangwu:'章武',
-			boss_zhangwu_info:'每当你受到一次伤害，你可以弃置任意张牌并令伤害来源选择一项：弃置等量的牌，或受到等量的伤害',
+			boss_zhangwu_info:'每当你受到一次伤害，你可以弃置任意张牌并令伤害来源选择一项：弃置等量的牌，或受到等量的伤害。',
 			xiangxing:'禳星',
-			xiangxing_info:'锁定技，游戏开始时，你获得7枚星；每当你累计扣减7点体力，你失去一枚星，并造成7点雷属性伤害，随机分配给其他角色；当你失去全部星后，你的体力上限变为3',
+			xiangxing_info:'锁定技，游戏开始时，你获得7枚星；每当你累计扣减7点体力，你失去一枚星，并造成7点雷属性伤害，随机分配给其他角色；当你失去全部星后，你的体力上限变为3。',
 			yueyin:'月隐',
-			yueyin_info:'锁定技，你的每一枚星对应的一个特定条件，当你失去星时，若满足此条件，则不造成伤害',
+			yueyin_info:'锁定技，你的每一枚星对应的一个特定条件，当你失去星时，若满足此条件，则不造成伤害。',
 			xiangxing7_info:'你没有手牌',
 			xiangxing6_info:'此次受到的是火属性伤害',
 			xiangxing5_info:'此次受到的是雷属性伤害',
 			xiangxing4_info:'此次为失去体力',
 			xiangxing3_info:'一名其他角色有至少4件装备',
-			xiangxing2_info:'你的判定区内至少有2张牌',
+			xiangxing2_info:'你的判定区内至少有两张牌',
 			xiangxing1_info:'场上只有2名存活角色',
 			gaiming:'改命',
-			gaiming_info:'锁定技，在你的判定牌生效前，你观看牌堆顶的7张牌并选择一张作为判定结果，此结果不可更改',
+			gaiming_info:'锁定技，在你的判定牌生效前，你观看牌堆顶的七张牌并选择一张作为判定结果，此结果不可更改。',
 			fengqi:'风起',
-			fengqi_info:'准备阶段和结束阶段，你可以视为使用任意一张普通锦囊牌',
+			fengqi_info:'准备阶段和结束阶段，你可以视为使用任意一张普通锦囊牌。',
 
 			jiaoxia:'皎霞',
-			jiaoxia_info:'每当你成为红色牌的目标，你可以摸一张牌',
+			jiaoxia_info:'每当你成为红色牌的目标，你可以摸一张牌。',
 			lingbo:'凌波',
-			lingbo_info:'每当你使用或打出一张闪，你可以摸两张牌',
+			lingbo_info:'每当你使用或打出一张闪，你可以摸两张牌。',
 			tiandao:'天道',
-			tiandao_info:'任意一名角色的判定生效前，你可以打出一张牌替换之',
+			tiandao_info:'任意一名角色的判定生效前，你可以打出一张牌替换之。',
 			yunshen:'云身',
 			yunshen2:'云身',
-			yunshen_info:'每当你使用或打出一张闪时，你可以令你的防御距离+1；准备阶段，你将累计的防御距离清零，然后摸等量的牌',
+			yunshen_info:'每当你使用或打出一张闪时，你可以令你的防御距离+1；准备阶段，你将累计的防御距离清零，然后摸等量的牌。',
 			lianji:'连计',
-			lianji_info:'出牌阶段限一次，你可以选择一张手牌并指定两名角色进行拼点，拼点赢的角色获得此牌，并对没赢的角色造成一点伤害',
+			lianji_info:'出牌阶段限一次，你可以选择一张手牌并指定两名角色进行拼点，拼点赢的角色获得此牌，并对没赢的角色造成1点伤害。',
 			mazui:'麻醉',
 			mazui2:'麻醉',
-			mazui_info:'出牌阶段限一次，你可以将一张黑色手牌置于一名角色的武将牌上，该角色造成的下一次伤害-1，然后获得此牌',
+			mazui_info:'出牌阶段限一次，你可以将一张黑色手牌置于一名角色的武将牌上，该角色造成的下一次伤害-1，然后获得此牌。',
 
 			boss_nbianshen:'变形',
 			boss_nbianshenx:'变形',
-			boss_nbianshenx_info:'你从第二轮开始，每一轮幻化为警觉、任性、睿智、暴怒四种随机状态中的一种',
+			boss_nbianshenx_info:'你从第二轮开始，每一轮幻化为警觉、任性、睿智、暴怒四种随机状态中的一种。',
 			boss_mengtai:'萌态',
-			boss_mengtai_info:'锁定技，若你的出牌阶段被跳过，你跳过本回合的弃牌阶段；若你的摸牌阶段被跳过，结束阶段开始时，你摸三张牌',
+			boss_mengtai_info:'锁定技，若你的出牌阶段被跳过，你跳过本回合的弃牌阶段；若你的摸牌阶段被跳过，结束阶段开始时，你摸三张牌。',
 			boss_ruizhi:'睿智',
 			boss_ruizhi_info:'锁定技，其他角色的准备阶段开始时，其选择一张手牌和一张装备区里的牌，然后弃置其余的牌。',
 			boss_jingjue:'警觉',
-			boss_jingjue_info:'每当你于回合外失去牌时，你可以进行一次判定，若结果为红色，你回复1点体力',
+			boss_jingjue_info:'每当你于回合外失去牌时，你可以进行一次判定，若结果为红色，你回复1点体力。',
 			boss_renxing:'任性',
-			boss_renxing_info:'锁定技，你的回合外，一名角色受到1点伤害后或回复1点体力时，你摸一张牌',
+			boss_renxing_info:'锁定技，你的回合外，一名角色受到1点伤害后或回复1点体力时，你摸一张牌。',
 			boss_nbaonu:'暴怒',
-			boss_nbaonu_info:'锁定技，摸牌阶段，你改为摸X张牌（X为4到你体力值间的随机数）；若你的体力值小于5，则你使用【杀】造成的伤害+1且无次数限制',
+			boss_nbaonu_info:'锁定技，摸牌阶段，你改为摸X张牌（X为4到你体力值间的随机数）；若你的体力值小于5，则你使用【杀】造成的伤害+1且无次数限制。',
 			boss_shouyi:'兽裔',
-			boss_shouyi_info:'锁定技，你使用牌无距离限制',
+			boss_shouyi_info:'锁定技，你使用牌无距离限制。',
 
 			boss_nianrui:'年瑞',
-			boss_nianrui_info:'锁定技，摸牌阶段，你额外摸两张牌',
+			boss_nianrui_info:'锁定技，摸牌阶段，你额外摸两张牌。',
 			boss_qixiang:'祺祥',
 			boss_qixiang1:'祺祥',
 			boss_qixiang2:'祺祥',
-			boss_qixiang_info:'乐不思蜀判定时，你的方块判定牌视为红桃；兵粮寸断判定时，你的黑桃判定牌视为草花',
+			boss_qixiang_info:'乐不思蜀判定时，你的方块判定牌视为红桃；兵粮寸断判定时，你的黑桃判定牌视为草花。',
 
 			qiwu:'栖梧',
-			qiwu_info:'锁定技。每当你使用一张梅花牌，你回复一点体力',
+			qiwu_info:'锁定技。每当你使用一张梅花牌，你回复1点体力。',
 			jizhen:'激阵',
-			jizhen_info:'结束阶段，你可以令所至多两名已受伤角色摸一张牌',
+			jizhen_info:'结束阶段，你可以令所至多两名已受伤角色摸一张牌。',
 
 			boss_yushou:'驭兽',
-			boss_yushou_info:'出牌阶段开始时，你可以对所有敌方角色使用一张南蛮入侵',
+			boss_yushou_info:'出牌阶段开始时，你可以对所有敌方角色使用一张【南蛮入侵】。',
 			boss_moyany:'魔炎',
-			boss_moyany_info:'每当你于回合外失去牌时，你可以进行一次判定，若结果为红色，你对一名其他角色造成2点火焰伤害',
+			boss_moyany_info:'每当你于回合外失去牌时，你可以进行一次判定，若结果为红色，你对一名其他角色造成2点火焰伤害。',
 			boss_modao:'魔道',
-			boss_modao_info:'锁定技，准备阶段，你摸两张牌',
+			boss_modao_info:'锁定技，准备阶段，你摸两张牌。',
 			boss_mojian:'魔箭',
-			boss_mojian_info:'出牌阶段开始时，你可以对所有敌方角色使用一张万箭齐发',
+			boss_mojian_info:'出牌阶段开始时，你可以对所有敌方角色使用一张【万箭齐发】。',
 			boss_danshu:'丹术',
-			boss_danshu_info:'每当你于回合外失去牌时，你可以进行一次判定，若结果为红色，你回复1点体力',
+			boss_danshu_info:'每当你于回合外失去牌时，你可以进行一次判定，若结果为红色，你回复1点体力。',
 
 			boss_zuijiu:'醉酒',
 			boss_zuijiu_info:'锁定技，你因【杀】造成伤害时，此伤害+1。',
 			boss_taiping:'太平',
-			boss_taiping_info:'锁定技，摸牌阶段摸牌时，你的摸牌数量+2',
+			boss_taiping_info:'锁定技，摸牌阶段摸牌时，你的摸牌数量+2。',
 			boss_suoming:'索命',
-			boss_suoming_info:'结束阶段，将任意名未被横置的其他角色的武将牌横置',
+			boss_suoming_info:'结束阶段，将任意名未被横置的其他角色的武将牌横置。',
 			boss_xixing:'吸星',
-			boss_xixing_info:'准备阶段，对任意一名横置的其他角色造成1点雷电伤害，然后回复1点体力',
+			boss_xixing_info:'准备阶段，对任意一名横置的其他角色造成1点雷电伤害，然后回复1点体力。',
 
 			boss_baolian:'暴敛',
-			boss_baolian_info:'锁定技，结束阶段，你摸两张牌',
+			boss_baolian_info:'锁定技，结束阶段，你摸两张牌。',
 			boss_manjia:'蛮甲',
-			boss_manjia_info:'锁定技，若你的装备区内没有防具牌，则你视为装备了[藤甲]',
+			boss_manjia_info:'锁定技，若你的装备区内没有防具牌，则你视为装备了【藤甲】。',
 			boss_xiaoshou:'枭首',
-			boss_xiaoshou_info:'结束阶段，对体力不小于你的一名其他角色造成3点伤害',
+			boss_xiaoshou_info:'结束阶段，对体力不小于你的一名其他角色造成3点伤害。',
 			boss_guiji:'诡计',
-			boss_guiji_info:'锁定技，准备阶段结束时，若你的判定区内有牌，你随机弃置其中一张牌',
+			boss_guiji_info:'锁定技，准备阶段结束时，若你的判定区内有牌，你随机弃置其中一张牌。',
 			boss_lianyu:'炼狱',
-			boss_lianyu_info:'结束阶段，你可以对所有敌方角色造成1点火焰伤害',
+			boss_lianyu_info:'结束阶段，你可以对所有敌方角色造成1点火焰伤害。',
 
 			boss_guihuo:'鬼火',
-			boss_guihuo_info:'结束阶段，你可以对一名其他角色造成1点火焰伤害',
+			boss_guihuo_info:'结束阶段，你可以对一名其他角色造成1点火焰伤害。',
 			boss_minbao:'冥爆',
-			boss_minbao_info:'锁定技，当你死亡时，对场上所有其他角色造成1点火焰伤害',
+			boss_minbao_info:'锁定技，当你死亡时，对场上所有其他角色造成1点火焰伤害。',
 			boss_luolei:'落雷',
-			boss_luolei_info:'准备阶段，你可以对一名其他角色造成1点雷电伤害',
+			boss_luolei_info:'准备阶段，你可以对一名其他角色造成1点雷电伤害。',
 			boss_beiming:'悲鸣',
-			boss_beiming_info:'锁定技，当你死亡时，你令杀死你的角色弃置所有手牌',
+			boss_beiming_info:'锁定技，当你死亡时，你令杀死你的角色弃置所有手牌。',
 			boss_guimei:'鬼魅',
-			boss_guimei_info:'锁定技，你不能成为延时类锦囊的目标',
+			boss_guimei_info:'锁定技，你不能成为延时类锦囊的目标。',
 			boss_didong:'地动',
-			boss_didong_info:'结束阶段，你可以选择一名敌方角色将其武将牌翻面',
+			boss_didong_info:'结束阶段，你可以选择一名敌方角色将其武将牌翻面。',
 			boss_shanbeng:'山崩',
-			boss_shanbeng_info:'锁定技，当你死亡时，你令所有其他角色弃置其装备区内的所有牌',
+			boss_shanbeng_info:'锁定技，当你死亡时，你令所有其他角色弃置其装备区内的所有牌。',
 
 			boss_chiyan_intro1:'&nbsp;第一关',
 			boss_chiyan_intro1_info:'挑战朱雀',
@@ -9185,7 +9186,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			boss_chiyan_intro2_info:'挑战火神祝融、焰灵',
 			boss_chiyan_intro3:'&nbsp;第三关',
 			boss_chiyan_intro3_info:'挑战炎帝、火神祝融、焰灵',
-			boss_chiyan_intro3_append:'每通过一关，游戏轮数清零，阵亡角色复活，所有角色重置武将和区域内的牌，并获得4-X张起始手牌，X为阵亡角色数',
+			boss_chiyan_intro3_append:'每通过一关，游戏轮数清零，阵亡角色复活，所有角色重置武将和区域内的牌，并获得4-X张起始手牌，X为阵亡角色数。',
 
 			boss_qingmu_intro1:'&nbsp;第一关',
 			boss_qingmu_intro1_info:'挑战青龙',
@@ -9193,7 +9194,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			boss_qingmu_intro2_info:'挑战木神勾芒、树精',
 			boss_qingmu_intro3:'&nbsp;第三关',
 			boss_qingmu_intro3_info:'挑战太昊、木神勾芒、树精',
-			boss_qingmu_intro3_append:'每通过一关，游戏轮数清零，阵亡角色复活，所有角色重置武将和区域内的牌，并获得4-X张起始手牌，X为阵亡角色数',
+			boss_qingmu_intro3_append:'每通过一关，游戏轮数清零，阵亡角色复活，所有角色重置武将和区域内的牌，并获得4-X张起始手牌，X为阵亡角色数。',
 
 			boss_xuanlin_intro1:'&nbsp;第一关',
 			boss_xuanlin_intro1_info:'挑战玄武',
@@ -9201,7 +9202,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			boss_xuanlin_intro2_info:'挑战水神玄冥、水神共工',
 			boss_xuanlin_intro3:'&nbsp;第三关',
 			boss_xuanlin_intro3_info:'挑战颛顼、水神玄冥、水神共工',
-			boss_xuanlin_intro3_append:'每通过一关，游戏轮数清零，阵亡角色复活，所有角色重置武将和区域内的牌，并获得4-X张起始手牌，X为阵亡角色数',
+			boss_xuanlin_intro3_append:'每通过一关，游戏轮数清零，阵亡角色复活，所有角色重置武将和区域内的牌，并获得4-X张起始手牌，X为阵亡角色数。',
 
 			boss_baimang_intro1:'&nbsp;第一关',
 			boss_baimang_intro1_info:'挑战白虎',
@@ -9209,7 +9210,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			boss_baimang_intro2_info:'挑战金神蓐收、明刑柱',
 			boss_baimang_intro3:'&nbsp;第三关',
 			boss_baimang_intro3_info:'挑战少昊、金神蓐收、明刑柱',
-			boss_baimang_intro3_append:'每通过一关，游戏轮数清零，阵亡角色复活，所有角色重置武将和区域内的牌，并获得4-X张起始手牌，X为阵亡角色数',
+			boss_baimang_intro3_append:'每通过一关，游戏轮数清零，阵亡角色复活，所有角色重置武将和区域内的牌，并获得4-X张起始手牌，X为阵亡角色数。',
 
 			boss_bianshen_intro1:'&nbsp;第一关',
 			boss_bianshen_intro1_info:'挑战魑、魅、魍、魉中的随机一个',
@@ -9220,91 +9221,91 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			boss_bianshen_intro4:'&nbsp;第四关',
 			boss_bianshen_intro4_info:'挑战罗刹、夜叉中的随机一个',
 			// boss_bianshen2:'后援',
-			// boss_bianshen2_info:'你死亡后，随机召唤牛头、马面中的一个',
+			// boss_bianshen2_info:'你死亡后，随机召唤牛头、马面中的一个。',
 			// boss_bianshen3:'后援',
-			// boss_bianshen3_info:'你死亡后，随机召唤白无常、黑无常中的一个',
+			// boss_bianshen3_info:'你死亡后，随机召唤白无常、黑无常中的一个。',
 			// boss_bianshen4:'后援',
-			// boss_bianshen4_info:'你死亡后，随机召唤罗刹、夜叉中的一个',
+			// boss_bianshen4_info:'你死亡后，随机召唤罗刹、夜叉中的一个。',
 
 			boss_qiangzheng:'强征',
-			boss_qiangzheng_info:'锁定技，结束阶段，你获得每个敌方角色的一张手牌',
+			boss_qiangzheng_info:'锁定技，结束阶段，你获得每个敌方角色的一张手牌。',
 			boss_baolin:'暴凌',
 			guizhen:'归真',
-			guizhen_info:'每当你失去最后一张手牌，你可以所有敌人失去全部手牌，没有手牌的角色失去一点体力（不触发技能）',
+			guizhen_info:'每当你失去最后一张手牌，你可以所有敌人失去全部手牌，没有手牌的角色失去1点体力（不触发技能）。',
 			boss_shengshou:'圣手',
-			boss_shengshou_info:'每当你使用一张牌，你可以进行一次判定，若为红色，你回复一点体力',
+			boss_shengshou_info:'每当你使用一张牌，你可以进行一次判定，若为红色，你回复1点体力。',
 			wuqin:'五禽戏',
-			wuqin_info:'结束阶段，若你没有手牌，可以摸三张牌',
+			wuqin_info:'结束阶段，若你没有手牌，可以摸三张牌。',
 
 			boss_konghun:'控心',
-			boss_konghun_info:'结束阶段，你可以指定一名敌人令其进入混乱状态（不受对方控制，并将队友视为敌人）直到下一回合开始',
+			boss_konghun_info:'结束阶段，你可以指定一名敌人令其进入混乱状态（不受对方控制，并将队友视为敌人）直到下一回合开始。',
 			yuehun:'月魂',
-			yuehun_info:'结束阶段，你可以回复一点体力并摸两张牌',
+			yuehun_info:'结束阶段，你可以回复1点体力并摸两张牌。',
 			fengwu:'风舞',
 			fengwu_info:'出牌阶段限一次，可令除你外的所有角色依次对与其距离最近的另一名角色使用一张【杀】，无法如此做者失去1点体力。',
 			boss_wange:'笙歌',
 
 			huanhua:'幻化',
-			huanhua_info:'锁定技，游戏开始时，你获得其他角色的所有技能，体力上限变为其他角色之和；其他角色于摸牌阶段摸牌时，你摸等量的牌；其他角色于弃牌阶段弃牌时，你弃置等量的手牌',
+			huanhua_info:'锁定技，游戏开始时，你获得其他角色的所有技能，体力上限变为其他角色之和；其他角色于摸牌阶段摸牌时，你摸等量的牌；其他角色于弃牌阶段弃牌时，你弃置等量的手牌。',
 
 			boss_leiji:'雷击',
-			boss_leiji_info:'每当你使用或打出一张【闪】，可令任意一名角色进行一次判定，若结果为黑色，其受到一点雷电伤害，然后你摸一张牌',
+			boss_leiji_info:'每当你使用或打出一张【闪】，可令任意一名角色进行一次判定，若结果为黑色，其受到1点雷电伤害，然后你摸一张牌。',
 			jidian:'亟电',
-			jidian_info:'每当你造成一次伤害，可以指定距离受伤害角色1以内的一名其他角色进行判定，若结果为黑色，该角色受到一点雷电伤害',
+			jidian_info:'每当你造成一次伤害，可以指定距离受伤害角色1以内的一名其他角色进行判定，若结果为黑色，该角色受到1点雷电伤害。',
 
 			tinqin:'听琴',
 			boss_guihan:'归汉',
-			boss_guihan_info:'限定技，濒死阶段，你可以将体力回复至体力上限，摸4张牌，令所有敌人的技能恢复，失去技能【悲歌】和【胡笳】，并获得技能【听琴】、【蕙质】',
+			boss_guihan_info:'限定技，濒死阶段，你可以将体力回复至体力上限，摸四张牌，令所有敌人的技能恢复，失去技能〖悲歌〗和〖胡笳〗，并获得技能〖听琴〗、〖蕙质〗。',
 			boss_huixin:'蕙质',
-			boss_huixin_info:'每当你于回合外失去牌，可以进行一次判定，若为黑色，当前回合角色失去一点体力，否则你回复一点体力并摸一张牌',
+			boss_huixin_info:'每当你于回合外失去牌，可以进行一次判定，若为黑色，当前回合角色失去1点体力，否则你回复1点体力并摸一张牌。',
 			boss_hujia:'胡笳',
-			boss_hujia_info:'结束阶段，若你已受伤，可以弃置一张牌令一名其他角色的所有技能失效，若其所有技能已失效，改为令其失去一点体力上限',
+			boss_hujia_info:'结束阶段，若你已受伤，可以弃置一张牌令一名其他角色的所有技能失效，若其所有技能已失效，改为令其失去1点体力上限。',
 			boss_honglian:'红莲',
-			boss_honglian_info:'锁定技，结束阶段，你摸两张牌，并对所有敌人造成一点火焰伤害',
+			boss_honglian_info:'锁定技，结束阶段，你摸两张牌，并对所有敌人造成1点火焰伤害。',
 			huoshen:'火神',
-			huoshen_info:'锁定技，你防止即将受到的火焰伤害，改为回复1点体力',
+			huoshen_info:'锁定技，你防止即将受到的火焰伤害，改为回复1点体力。',
 			boss_xianyin:'仙音',
-			boss_xianyin_info:'每当你于回合外失去牌，你可以进行一次判定，若为红色，你令一名敌人失去一点体力',
+			boss_xianyin_info:'每当你于回合外失去牌，你可以进行一次判定，若为红色，你令一名敌人失去1点体力。',
 
 			boss_yuhuo:'浴火',
-			boss_yuhuo_info:'觉醒技，在你涅槃后，你获得技能【神威】、【朱羽】',
+			boss_yuhuo_info:'觉醒技，在你涅槃后，你获得技能〖神威〗、〖朱羽〗。',
 			boss_tianyu:'天狱',
-			boss_tianyu_info:'锁定技，结束阶段，你解除横置状态，除你之外的所有角色进入横置状态',
+			boss_tianyu_info:'锁定技，结束阶段，你解除横置状态，除你之外的所有角色进入横置状态。',
 
 			boss_jizhi:'集智',
-			boss_jizhi_info:'每当你使用一张非转化的非基本牌，你可以摸一张牌并展示之',
+			boss_jizhi_info:'每当你使用一张非转化的非基本牌，你可以摸一张牌并展示之。',
 			boss_guiyin:'归隐',
-			boss_guiyin_info:'锁定技，体力值比你多的角色无法在回合内对你使用卡牌',
+			boss_guiyin_info:'锁定技，体力值比你多的角色无法在回合内对你使用卡牌。',
 			boss_gongshen:'工神',
-			boss_gongshen_info:'锁定技，除你之外的角色没有装备区；你不能成为其他角色的延时锦囊牌的目标',
+			boss_gongshen_info:'锁定技，除你之外的角色没有装备区；你不能成为其他角色的延时锦囊牌的目标。',
 
 			fanghua:'芳华',
-			fanghua_info:'结束阶段，你可以令所有已翻面角色流失一点体力',
+			fanghua_info:'结束阶段，你可以令所有已翻面角色失去1点体力。',
 			tashui:'踏水',
-			tashui_info:'每当你使用或打出一张黑色牌，你可以令一名其他角色翻面',
+			tashui_info:'每当你使用或打出一张黑色牌，你可以令一名其他角色翻面。',
 
 			boss_wuxin:'无心',
-			boss_wuxin_info:'锁定技，你防止即将受到的伤害，改为流失一点体力；你不能成为其他角色的延时锦囊的目标',
+			boss_wuxin_info:'锁定技，你防止即将受到的伤害，改为失去1点体力；你不能成为其他角色的延时锦囊的目标。',
 			shangshix:'伤逝',
 			shangshix2:'伤逝',
-			shangshix_info:'锁定技，你的手牌数至少为4，结束阶段，若你的体力值大于1，你令场上所有角色流失一点体力',
+			shangshix_info:'锁定技，你的手牌数至少为4，结束阶段，若你的体力值大于1，你令场上所有角色失去1点体力。',
 
 			boss_baonu:'暴怒',
-			boss_baonu_info:'锁定技，当你的体力值降至4或更低时，你变身为暴怒战神或神鬼无前，并立即开始你的回合',
+			boss_baonu_info:'锁定技，当你的体力值降至4或更低时，你变身为暴怒战神或神鬼无前，并立即开始你的回合。',
 			shenwei:'神威',
-			shenwei_info:'锁定技，摸牌阶段，你额外摸X张牌，你的手牌上限+X（X为场上其他角色的数目且至多为3）',
+			shenwei_info:'锁定技，摸牌阶段，你额外摸X张牌，你的手牌上限+X（X为场上其他角色的数目且至多为3）。',
 			xiuluo:'修罗',
-			xiuluo_info:'准备阶段，你可以弃置一张牌，然后弃置你判定区内一张同花色的牌。你可以重复此流程。',
+			xiuluo_info:'准备阶段，你可以弃置一张牌，然后弃置你判定区内一张同花色的牌，然后你可以重复此流程。',
 			shenqu:'神躯',
-			shenqu_info:'每名角色的准备阶段，若你的手牌数少于或等于你的体力上限数，你可以摸两张牌；当你受到伤害后，你可以使用一张【桃】',
+			shenqu_info:'每名角色的准备阶段，若你的手牌数少于或等于你的体力上限数，你可以摸两张牌；当你受到伤害后，你可以使用一张【桃】。',
 			jiwu:'极武',
-			jiwu_info:'出牌阶段，你可以弃置一张牌，然后获得一项：“强袭”、“铁骑”(界)、“旋风”、“完杀”，直到回合结束',
-			
+			jiwu_info:'出牌阶段，你可以弃置一张牌，然后获得获得以下一项技能直到回合结束：〖强袭〗、〖铁骑〗、〖旋风〗、〖完杀〗。',
+
 			"boss_jingjia":"精甲",
 			"boss_jingjia_info":"锁定技，游戏开始时，将本局游戏中加入的装备随机置入你的装备区。",
 			"boss_aozhan":"鏖战",
 			"boss_aozhan_info":"锁定技，若你装备区内有：武器牌，你可以多使用一张【杀】；防具牌，防止你受到的超过1点的伤害；坐骑牌，摸牌阶段多摸一张牌；宝物牌，跳过你的判定阶段。",
-			
+
 			boss_qinguangwang_ab:'秦广王',
 			boss_qinguangwang:'秦广王·蒋子文',
 			boss_panguan:'判官',
@@ -9327,7 +9328,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			boss_zhiwang:'治妄',
 			boss_zhiwang_info:'锁定技，当其他角色于摸牌阶段外得到牌时，你随机弃置其一张手牌。',
 			boss_zhiwang_planetarian:'注意事项',
-			boss_zhiwang_planetarian_info:'若触发【治妄】的角色因【治妄】触发的其他的技能（如【伤逝】【连营】等）继续得到了牌，则该角色将其武将牌变更为孙策。',
+			boss_zhiwang_planetarian_info:'若触发〖治妄〗的角色因〖治妄〗触发的其他的技能（如〖伤逝〗〖连营〗等）继续得到了牌，则该角色将其武将牌变更为孙策。',
 			boss_gongzheng:'公正',
 			boss_gongzheng_info:'锁定技，准备阶段，若你判定区有牌，你随机弃置一张你判定区的牌。',
 			boss_xuechi:'血池',
@@ -9343,7 +9344,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			boss_bianchengwang_ab:'卞城王',
 			boss_bianchengwang:'卞城王·毕元宾',
 			boss_leizhou:'雷咒',
-			boss_leizhou_info:'锁定技，准备阶段，你对随机一名其他角色造成1点雷属性伤害',
+			boss_leizhou_info:'锁定技，准备阶段，你对随机一名其他角色造成1点雷属性伤害。',
 			boss_leifu:'雷缚',
 			boss_leifu_info:'锁定技，你的回合结束时，随机横置一名其他角色。',
 			boss_leizhu:'雷诛',
@@ -9385,7 +9386,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			boss_yingzhong:'映冢',
 			boss_yingzhong_info:'锁定技。你登场后的第一个回合开始时，你随机获得两个“阴间武将”的全部技能。',
 			boss_yingzhong_append:'<span style="font-family:yuanli">四季映姬到阴曹地府<br>——阴(映)到家了！</span>',
-					//孟婆:
+			//孟婆:
 			"boss_mengpo":"孟婆",
 			"boss_shiyou":"拾忧",
 			"boss_shiyou_info":"其他角色于弃牌阶段弃置的牌进入弃牌堆前，你可以选择其中任意张花色各不相同的牌获得之。",
@@ -9400,52 +9401,52 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			"boss_bufo":"不佛",
 			"boss_bufo_info":"锁定技，你的回合开始时，你对所有距离为1的其他角色造成1点火焰伤害；你受到大于等于2的伤害时，令此伤害-1。",
 			"boss_wuliang":"无量",
-			"boss_wuliang_info":"锁定技，你登场时额外摸3张牌；结束阶段开始时，你摸两张牌；你的回合开始时，若你当前体力小于3，则回复至3。",
+			"boss_wuliang_info":"锁定技，你登场时额外摸三张牌；结束阶段开始时，你摸两张牌；你的回合开始时，若你当前体力小于3，则回复至3。",
 			"boss_dayuan":"大愿",
-			"boss_dayuan_info":" 当一名角色判定牌最终生效前，你可以指定该判定牌的点数和花色",
+			"boss_dayuan_info":" 当一名角色判定牌最终生效前，你可以指定该判定牌的点数和花色。",
 			"boss_diting":"谛听",
 			"boss_diting_info":"锁定技，你的坐骑区被废除，你与别人计算距离时-1，别人与你计算距离时+1；你的坐骑牌均用于重铸。",
-			/*			
+			/*
 			//等阶
 			"boss_sdyl_playerlevel1":"一阶",
 			"boss_sdyl_playerlevel1_info":"",
 			"boss_sdyl_playerlevel2":"二阶",
-			"boss_sdyl_playerlevel2_info":"开局随机使用一张装备牌，起始手牌+1",
+			"boss_sdyl_playerlevel2_info":"开局随机使用一张装备牌，起始手牌+1。",
 			"boss_sdyl_playerlevel3":"三阶",
-			"boss_sdyl_playerlevel3_info":"出杀次数+1，体力上限+1",
+			"boss_sdyl_playerlevel3_info":"出杀次数+1，体力上限+1。",
 			"boss_sdyl_playerlevel4":"四阶",
-			"boss_sdyl_playerlevel4_info":"摸牌阶段多摸一张牌，起始手牌+1",
+			"boss_sdyl_playerlevel4_info":"摸牌阶段多摸一张牌，起始手牌+1。",
 			"boss_sdyl_playerlevel5":"重生",
 			"boss_sdyl_playerlevel5_info":"限定技，当你处于濒死状态时，你可以弃置所有判定区牌，然后复原你的武将牌，将手牌补充至手牌体力上限（至多为5），将体力回复至体力上限。",
-			
+
 			"boss_sdyl_bosslevel1":"一阶",
 			"boss_sdyl_bosslevel1_info":"",
 			"boss_sdyl_bosslevel2":"二阶",
-			"boss_sdyl_bosslevel2_info":"登场时随机使用一张装备牌",
+			"boss_sdyl_bosslevel2_info":"登场时随机使用一张装备牌。",
 			"boss_sdyl_bosslevel3":"三阶",
-			"boss_sdyl_bosslevel3_info":"出杀次数+1，回合开始获得一张【杀】，体力上限+1，起始手牌+1",
+			"boss_sdyl_bosslevel3_info":"出杀次数+1，回合开始获得一张【杀】，体力上限+1，起始手牌+1。",
 			"boss_sdyl_bosslevel4":"四阶",
-			"boss_sdyl_bosslevel4_info":"摸牌阶段多摸一张牌，手牌上限+1",
+			"boss_sdyl_bosslevel4_info":"摸牌阶段多摸一张牌，手牌上限+1。",
 			"boss_sdyl_bosslevel5":"五阶",
-			"boss_sdyl_bosslevel5_info":"登场时视为使用一张【南蛮入侵】且此【南蛮入侵】伤害+1。体力上限+1，起始手牌+1",
+			"boss_sdyl_bosslevel5_info":"登场时视为使用一张【南蛮入侵】且此【南蛮入侵】伤害+1。体力上限+1，起始手牌+1。",
 			*/
 			"boss_sunce":"那个男人",
 			"boss_hunzi":"魂姿",
-			"boss_hunzi_info":"觉醒技，准备阶段，若你的体力值为1，你减1点体力上限，失去技能【魂佑】并获得技能【英姿】和【英魂】。",
+			"boss_hunzi_info":"觉醒技，准备阶段，若你的体力值为1，你减1点体力上限，失去技能〖魂佑〗并获得技能〖英姿〗和〖英魂〗。",
 			"boss_jiang":"激昂",
-			"boss_jiang_info":"①锁定技，【激昂】不会无效<br>②每当你使用或打出红色牌时，你可以摸一张牌。若你是因响应其他角色使用或打出的牌，则你获得对方使用或打出的牌<br>③当有其他角色使用或打出红色牌指定你为目标或响应你后，你可以摸一张牌并获得这些牌",
+			"boss_jiang_info":"①锁定技，〖激昂〗不会无效。<br>②每当你使用或打出红色牌时，你可以摸一张牌。若你是因响应其他角色使用或打出的牌，则你获得对方使用或打出的牌。<br>③当有其他角色使用或打出红色牌指定你为目标或响应你后，你可以摸一张牌并获得这些牌。",
 			"boss_hunyou":"魂佑",
 			"boss_hunyou_info":"锁定技，你的体力值变化和体力上限变化无效。",
 			"boss_taoni":"讨逆",
 			"boss_taoni_info":"锁定技，游戏开始时，每名角色回合开始时或你死亡时，你检查存活角色的合法性。若有角色存在非法行为，则你终止本局游戏。",
-			
+
 			boss_xhuanren:'关卡说明',
 			boss_xhuanren_info:'',
-			boss_xhuanren_info_boss:'第一关：挑战秦广王。<br>第二关：挑战楚江王，宋帝王，五官王，阎罗王中的一个。<br>第三关：挑战卞城王，泰山王，都市王，平等王中的一个。<br>第四关：挑战转轮王。',
+			boss_xhuanren_info_boss:'第一关：挑战秦广王<br>第二关：挑战楚江王，宋帝王，五官王，阎罗王中的一个<br>第三关：挑战卞城王，泰山王，都市王，平等王中的一个<br>第四关：挑战转轮王',
 
 			boss_newhuanren:'关卡说明',
 			boss_newhuanren_info:'',
-			boss_newhuanren_info_boss:'第一关：挑战秦广王。<br>第二关：挑战楚江王，宋帝王，五官王，阎罗王中的一个。<br>第三关：挑战卞城王，泰山王，都市王，平等王中的一个。<br>第四关：挑战转轮王。<br>注：孟婆将在每局前三个阶段随机一个阶段登场<br>地藏王登场规则为，50回合内通过第三关，并且在前三关中成功击杀孟婆。<li>选陆逊左慈张春华于吉蒋费孔融自动变孙笨',
+			boss_newhuanren_info_boss:'第一关：挑战秦广王<br>第二关：挑战楚江王，宋帝王，五官王，阎罗王中的一个<br>第三关：挑战卞城王，泰山王，都市王，平等王中的一个<br>第四关：挑战转轮王<br>注：孟婆将在每局前三个阶段随机一个阶段登场<br>地藏王登场规则为，50回合内通过第三关，并且在前三关中成功击杀孟婆。<li>选陆逊左慈张春华于吉蒋费孔融自动变孙笨',
 			lingsheji:'灵蛇髻',
 			lingsheji2:'灵蛇髻',
 			shanrangzhaoshu:'禅让诏书',
@@ -9460,12 +9461,12 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			jinwuluorigong_info:'当你于出牌阶段内一次性失去了两张以上的手牌后，你可以弃置一名其他角色等量的牌。',
 			TheDayIBecomeAGod:'神杀',
 			thedayibecomeagod:'传承',
-			thedayibecomeagod_info:'选择一名其他己方角色。若其势力非神，则改为神势力；若其势力为神，则将武将牌翻至正面，回复体力至体力上限，并将手牌摸至5 ',
+			thedayibecomeagod_info:'选择一名其他己方角色。若其势力非神，则改为神势力；若其势力为神，则将武将牌翻至正面，回复体力至体力上限，并将手牌摸至5。',
 			gubuzifeng:'故步自封',
 			gubuzifeng_disable:'故步自封',
 			gubuzifeng_info:'出牌阶段，对一名其他角色使用。其的一个随机技能失效直到其下个回合结束。',
 			goujiangdesidai:'篝酱的丝带',
-			goujiangdesidai_info:'锁定技，若你未拥有技能【纵丝】，则你视为拥有技能【纵丝】；若你拥有技能【纵丝】，则你将此技能改为「出牌阶段限两次」',
+			goujiangdesidai_info:'锁定技，若你未拥有技能〖纵丝〗，则你视为拥有技能〖纵丝〗；若你拥有技能〖纵丝〗，则你将此技能改为「出牌阶段限两次」。',
 			goujiangdesidai_skill:'纵丝',
 			niaobaidaowenha:'鸟白岛文蛤',
 			niaobaidaowenha_skill:'鸟白岛文蛤',

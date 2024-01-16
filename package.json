@@ -23,6 +23,7 @@
     "dependencies": {
         "@electron/remote": "^2.0.1",
         "@types/node": "^18.13.0",
+        "noname-typings": "^2023.12.31",
         "options": "0.0.6",
         "ultron": "1.0.2",
         "ws": "1.0.1"

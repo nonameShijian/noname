@@ -228,7 +228,7 @@ if (window.indexedDB) {
         configprefix += '_';
     }
 
-    const request = window.indexedDB.open(configprefix + 'data', 4);
+    const request = window.indexedDB.open(configprefix + 'data');
     request.onerror = function (e) { console.error(e); };
 	request.onupgradeneeded = function (e) {
 		const db = /*e.target.result;*/ this.result;
@@ -259,8 +259,8 @@ if (window.indexedDB) {
             if (!Array.isArray(extensions) || extensions.length == 0) {
                 config.put(['应用配置', '拖拽读取', '在线更新'], 'extensions');
             }
-        };
-    };
+		};
+	};
 }
 
 var Menus = [{
