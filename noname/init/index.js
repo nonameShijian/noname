@@ -6,13 +6,85 @@ import { Game as game } from '../game/index.js';
 import { status as _status } from '../status/index.js';
 import { UI as ui } from '../ui/index.js';
 
-import { userAgent } from '../util/index.js';
+import { userAgent, nonameInitialized } from '../util/index.js';
 import * as config from '../util/config.js';
 import { promiseErrorHandlerMap } from '../util/browser.js';
 import { gnc } from '../gnc/index.js';
 
 import { importCardPack, importCharacterPack, importExtension, importMode } from './import.js';
 import { onload } from './onload.js';
+
+// 判断是否从file协议切换到http/s协议
+export function canUseHttpProtocol() {
+	// 如果是http了就不用
+	if (location.protocol.startsWith('http')) return false;
+	if (typeof nonameInitialized == 'string') {
+		// 手机端
+		if (window.cordova) {
+			// 直接确定包名
+			if (nonameInitialized.includes('com.noname.shijian')) {
+				// 每个app自定义能升级的渠道，比如判断版本
+				// @ts-ignore
+				window.noname_shijianInterfaces.getApkVersion() >= 16000;
+			}
+		}
+		// 电脑端
+		else if (typeof window.require == 'function' && typeof window.process == 'object') {
+			// 从json判断版本号
+			const fs = require('fs');
+			const path = require('path');
+			if (fs.existsSync(path.join(__dirname, 'package.json'))) {
+				// @ts-ignore
+				const json = require('./package.json');
+				// 诗笺电脑版的判断
+				return json && Number(json.installerVersion) >= 1.7;
+			}
+		}
+		// 浏览器端
+		else {
+			return location.protocol.startsWith('http');
+		}
+	}
+	return false;
+}
+
+/**
+ * 传递升级完成的信息
+ * @returns { string | void } 返回一个网址
+ */
+export function sendUpdate() {
+	// 手机端
+	if (window.cordova) {
+		// 直接确定包名
+		if (nonameInitialized && nonameInitialized.includes('com.noname.shijian')) {
+			// 给诗笺版apk的java层传递升级完成的信息
+			// @ts-ignore
+			return window.noname_shijianInterfaces.xxx() + '?sendUpdate=true';
+		}
+	}
+	// 电脑端
+	else if (typeof window.require == 'function' && typeof window.process == 'object') {
+		// 从json判断版本号
+		const fs = require('fs');
+		const path = require('path');
+		if (fs.existsSync(path.join(__dirname, 'package.json'))) {
+			// @ts-ignore
+			const json = require('./package.json');
+			// 诗笺电脑版的判断
+			if (json && Number(json.installerVersion) >= 1.7) {
+				fs.writeFileSync(path.join(__dirname, 'Home', 'saveProtocol.txt'), '');
+				// 启动http
+				const cp = require('child_process');
+				cp.exec(`start /min ${__dirname}\\noname-server.exe -platform=electron`, (err, stdout, stderr) => { });
+				return `http://localhost:8089/app.html?sendUpdate=true`;
+			}
+		}
+	}
+	// 浏览器端
+	else {
+		return location.href;
+	}
+}
 
 // 无名杀，启动！
 export async function boot() {
@@ -58,7 +130,7 @@ export async function boot() {
 	_status.event = lib.element.GameEvent.initialGameEvent();
 
 	setWindowListener();
-	await setOnError();
+	const promiseErrorHandler = await setOnError();
 
 	// 无名杀更新日志
 	if (window.noname_update) {
@@ -106,7 +178,7 @@ export async function boot() {
 	else if (!Reflect.has(lib, 'device')) {
 		Reflect.set(lib, 'path', (await import('../library/path.js')).default);
 		//为其他自定义平台提供文件读写函数赋值的一种方式。
-		//但这种方式只能修改game的文件读写函数。
+		//但这种方式只允许修改game的文件读写函数。
 		if (typeof window.initReadWriteFunction == 'function') {
 			const g = {};
 			const ReadWriteFunctionName = ['download', 'readFile', 'readFileAsText', 'writeFile', 'removeFile', 'getFileList', 'ensureDirectory', 'createDir'];
@@ -123,7 +195,9 @@ export async function boot() {
 				});
 			});
 			// @ts-ignore
-			window.initReadWriteFunction(g);
+			await window.initReadWriteFunction(g).catch(e => {
+				console.error('文件读写函数初始化失败:', e);
+			});
 		}
 		window.onbeforeunload = function () {
 			if (config.get('confirm_exit') && !_status.reloading) {
@@ -468,6 +542,7 @@ export async function boot() {
 
 	if (extensionlist.length && (config.get('mode') != 'connect' || show_splash)) {
 		_status.extensionLoading = [];
+		_status.extensionLoaded = [];
 
 		const bannedExtensions = Reflect.get(window, 'bannedExtensions');
 
@@ -477,9 +552,26 @@ export async function boot() {
 			extensionsLoading.push(importExtension(name));
 		}
 
-		await Promise.allSettled(extensionsLoading);
-		await Promise.allSettled(_status.extensionLoading);
-		_status.extensionLoaded.filter(Boolean).forEach((name) => {
+		const extErrorList = [];
+		for (const promise of extensionsLoading) {
+			await promise.catch(async (error) => {
+				extErrorList.add(error);
+				if (!promiseErrorHandler || !promiseErrorHandler.onHandle) return;
+				// @ts-ignore
+				await promiseErrorHandler.onHandle({ promise });
+			});
+		}
+		for (const promise of _status.extensionLoading) {
+			await promise.catch(async (error) => {
+				if (extErrorList.includes(error)) return;
+				if (!promiseErrorHandler || !promiseErrorHandler.onHandle) return;
+				// @ts-ignore
+				await promiseErrorHandler.onHandle({ promise });
+			});
+		}
+		// await Promise.allSettled(_status.extensionLoading);
+
+		_status.extensionLoaded.filter(name => game.hasExtension(name)).forEach((name) => {
 			lib.announce.publish("Noname.Init.Extension.onLoad", name);
 			lib.announce.publish(`Noname.Init.Extension.${name}.onLoad`, void 0);
 		});
@@ -843,7 +935,14 @@ async function setOnError() {
 				}
 			}
 			//解析parsex里的content fun内容(通常是技能content) 
-			else if (err && err.stack && err.stack.split('\n')[1].trim().startsWith('at Object.eval [as content]')) {
+			// @ts-ignore
+			else if (err && err.stack && ['at Object.eval [as content]', 'at Proxy.content'].some(str => {
+				let stackSplit1 = err.stack.split('\n')[1];
+				if (stackSplit1) {
+					return stackSplit1.trim().startsWith(str);
+				}
+				return false;
+			})) {
 				const codes = _status.event.content;
 				if (typeof codes == 'function') {
 					const lines = codes.toString().split("\n");
@@ -867,6 +966,8 @@ async function setOnError() {
 			game.loop();
 		}
 	};
+
+	return promiseErrorHandler;
 }
 
 function setWindowListener() {

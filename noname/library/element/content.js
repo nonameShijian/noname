@@ -17,7 +17,7 @@ export const Content = {
 		event.gaintag.forEach(tag => player.addGaintag(showingCards, tag));
 		if (!(event.cards = showingCards.filter(showingCard => !shown.includes(showingCard))).length) return;
 		game.log(player, '明置了', event.cards);
-		if (event.animate != false) player.$give(event.cards, player, false);
+		//if (event.animate != false) player.$give(event.cards, player, false);
 		event.trigger('addShownCardsAfter');
 	},
 	//隐藏明置手牌
@@ -39,7 +39,7 @@ export const Content = {
 		hidingCards.removeArray(player.getShownCards());
 		if (!hidingCards.length) return;
 		game.log(player, '取消明置了', event.cards = hidingCards);
-		if (event.animate != false) player.$give(hidingCards, player, false);
+		//if (event.animate != false) player.$give(hidingCards, player, false);
 		event.trigger('hideShownCardsAfter');
 	},
 	//Execute the delay card effect
@@ -393,6 +393,14 @@ export const Content = {
 			event.swapped = true;
 		}
 		"step 5";
+		if (get.itemtype(result) == 'cards') {
+			for (let card of result){
+				if (card.willBeDestroyed('discardPile', player, event)) {
+					card.selfDestroy(event);
+				}
+			}
+		}
+		"step 6";
 		//if(player.isMin() || player.countCards('e',{subtype:get.subtype(card)})){
 		if (player.isMin() || !player.canEquip(card)) {
 			event.finish();
@@ -411,7 +419,7 @@ export const Content = {
 		game.addVideo('equip', player, get.cardInfo(card));
 		if (event.log != false) game.log(player, '装备了', card);
 		if (event.updatePile) game.updateRoundNumber();
-		"step 6";
+		"step 7";
 		var info = get.info(card, false);
 		if (info.onEquip && (!info.filterEquip || info.filterEquip(card, player))) {
 			if (Array.isArray(info.onEquip)) {
@@ -476,6 +484,9 @@ export const Content = {
 			else black.push([target, card]);
 		}
 		event.red = red; event.black = black;
+		event.trigger('debateShowOpinion');
+		'step 2'
+		var red = event.red, black = event.black;
 		if (red.length) {
 			game.log(red.map(function (i) {
 				return i[0];
@@ -528,7 +539,7 @@ export const Content = {
 			dialog.open();
 		}, get.translation(player), event.videoId, red, black);
 		game.delay(4);
-		'step 2';
+		'step 3';
 		game.broadcastAll('closeDialog', event.videoId);
 		var opinion = null;
 		if (event.red.length > event.black.length) opinion = 'red';
@@ -542,7 +553,7 @@ export const Content = {
 			black: event.black,
 			targets: event.targets
 		};
-		'step 3';
+		'step 4';
 		if (event.callback) {
 			var next = game.createEvent('debateCallback', false);
 			next.player = player;
@@ -671,7 +682,7 @@ export const Content = {
 					game.resume();
 					_status.imchoosing = false;
 					if (roundmenu) ui.roundmenu.style.display = '';
-					if (ui.backgroundMusic) ui.backgroundMusic.play();
+					if (ui.backgroundMusic && !isNaN(ui.backgroundMusic.duration)) ui.backgroundMusic.play();
 					hitsound_audio.remove();
 				}, 1000);
 			};
@@ -859,7 +870,7 @@ export const Content = {
 			if (dialog) {
 				dialog.close();
 			}
-			if (ui.backgroundMusic) ui.backgroundMusic.play();
+			if (ui.backgroundMusic && !isNaN(ui.backgroundMusic.duration)) ui.backgroundMusic.play();
 		}, event.videoId, event.time);
 		var result = event.result || result;
 		event.result = result;
@@ -1361,7 +1372,9 @@ export const Content = {
 		if (!evt.orderingCards) evt.orderingCards = [];
 		if (!evt.noOrdering && !evt.cardsOrdered) {
 			evt.cardsOrdered = true;
-			var next = game.createEvent('orderingDiscard', false, evt.getParent());
+			var next = game.createEvent('orderingDiscard', false);
+			event.next.remove(next);
+			evt.after.push(next);
 			next.relatedEvent = evt;
 			next.setContent('orderingDiscard');
 		}
@@ -1999,47 +2012,56 @@ export const Content = {
 			event.callback();
 		}
 	},
-	arrangeTrigger: function () {
-		'step 0';
-		event.doing = event.doingList[0];
-		if (event.doing && event.doing.todoList.length) return;
-		if (event.doingList.length) {
-			event.doingList.shift();
-			return event.redo();
-		}
-		event.finish();
-		'step 1';
-		if (trigger.filterStop && trigger.filterStop()) return event.finish();
-		event.current = event.doing.todoList.find(info => lib.filter.filterTrigger(trigger, info.player, event.triggername, info.skill));
-		if (!event.current) {
-			event.doing.todoList = [];
-			return event.goto(0);
-		}
-		event.doing.todoList = event.doing.todoList.filter(i => i.priority <= event.current.priority);
+	arrangeTrigger: async function (event,trigger,player) {
+		const doingList = event.doingList.slice(0);
 
-		const directUse = info => lib.skill[info.skill].silent || !lib.translate[info.skill];//是否不触发同顺序选择
-		if (directUse(event.current)) return event.goto(4);
-		event.choice = event.doing.todoList.filter(info => {
-			if (!lib.filter.filterTrigger(trigger, info.player, event.triggername, info.skill)) return false;
-			if (directUse(info)) return false;
-			if (event.current.player !== info.player) return false;
-			return lib.skill.global.includes(info.skill) || event.current.player.hasSkill(info.skill, true);
-		});
-		if (event.choice.length < 2) return event.goto(4);
-		'step 2';
-		const next = event.choice[0].player.chooseControl(event.choice.map(i => i.skill));
-		next.set('prompt', '选择下一个触发的技能');
-		next.set('forceDie', true);
-		next.set('arrangeSkill', true);
-		next.set('includeOut', true);
-		'step 3';
-		if (result.control) event.current = event.doing.todoList.find(info => info.skill == result.control && info.player == event.choice[0].player);
-		'step 4';
-		if (!event.current || !event.doing.todoList.includes(event.current)) return;
-		event.doing.doneList.push(event.current);
-		event.doing.todoList.remove(event.current);
-		game.createTrigger(event.triggername, event.current.skill, event.current.player, trigger);
-		event.goto(0);
+		while(doingList.length>0){
+			event.doing = doingList.shift();
+			while(true){
+				if (trigger.filterStop && trigger.filterStop()) return;
+				const usableSkills = event.doing.todoList.filter(info => lib.filter.filterTrigger(trigger, info.player, event.triggername, info.skill));
+				if (usableSkills.length == 0){
+					break;
+				}
+				else {
+					event.doing.todoList = event.doing.todoList.filter(i => i.priority <= usableSkills[0].priority);
+					//firstDo时机和lastDo时机不进行技能优先级选择
+					if (get.itemtype(event.doing.player) !== 'player'){
+						event.current = usableSkills[0];
+					}
+					else {
+						event.choice = usableSkills.filter(n => n.priority == usableSkills[0].priority);
+						//现在只要找到一个同优先度技能为silent，或没有技能描述的技能 便优先执行该技能
+						const silentSkill = event.choice.find(item => {
+							const skillInfo = lib.skill[item.skill];
+							return (skillInfo && (skillInfo.silent || !lib.translate[item.skill]));
+						})
+						if (silentSkill){
+							event.current = silentSkill;
+						}
+						else {
+							const currentChoice = event.choice[0];
+							if (event.choice.length == 1) {
+								event.current = currentChoice;
+							}
+							else{
+								const currentPlayer = currentChoice.player , skillsToChoose = event.choice.map(i => i.skill);
+								const next = currentPlayer.chooseControl(skillsToChoose);
+								next.set('prompt', '选择下一个触发的技能');
+								next.set('forceDie', true);
+								next.set('arrangeSkill', true);
+								next.set('includeOut', true);
+								const {result} = await next;
+								event.current = event.doing.todoList.find(info => info.skill == result.control);
+							}
+						}
+					}
+					event.doing.doneList.push(event.current);
+					event.doing.todoList.remove(event.current);
+					await game.createTrigger(event.triggername, event.current.skill, event.current.player, trigger);
+				}
+			}
+		}
 	},
 	createTrigger: function () {
 		"step 0";
@@ -2142,12 +2164,12 @@ export const Content = {
 		next.player = player;
 		next._trigger = trigger;
 		next.triggername = event.triggername;
-		
-		if ("contents" in info && Array.isArray(info.contents)) {
-			next.setContents(info.contents);
-		} else {
+
+		// if ("contents" in info && Array.isArray(info.contents)) {
+		// 	next.setContents(info.contents);
+		// } else {
 			next.setContent(info.content);
-		}
+		// }
 
 		next.skillHidden = event.skillHidden;
 		if (info.forceDie) next.forceDie = true;
@@ -2754,6 +2776,23 @@ export const Content = {
 		if (!event.logged) {
 			game.log(player, '进入了出牌阶段');
 			event.logged = true;
+			const stat = player.getStat();
+			for (let i in stat.skill) {
+				let bool = false;
+				const info = lib.skill[i];
+				if (!info) continue;
+				if (info.enable != undefined) {
+					if (typeof info.enable == 'string' && info.enable == 'phaseUse') bool = true;
+					else if (typeof info.enable == 'object' && info.enable.includes('phaseUse')) bool = true;
+				}
+				if (bool) stat.skill[i] = 0;
+			}
+			for (let i in stat.card) {
+				let bool = false;
+				const info = lib.card[i];
+				if (!info) continue;
+				if (info.updateUsable == 'phaseUse') stat.card[i] = 0;
+			}
 		}
 		var next = player.chooseToUse();
 		if (!lib.config.show_phaseuse_prompt) {
@@ -2770,24 +2809,6 @@ export const Content = {
 				delete ui.tempnowuxie;
 			}
 		});
-		"step 2";
-		var stat = player.getStat();
-		for (var i in stat.skill) {
-			var bool = false;
-			var info = lib.skill[i];
-			if (!info) continue;
-			if (info.enable != undefined) {
-				if (typeof info.enable == 'string' && info.enable == 'phaseUse') bool = true;
-				else if (typeof info.enable == 'object' && info.enable.includes('phaseUse')) bool = true;
-			}
-			if (bool) stat.skill[i] = 0;
-		}
-		for (var i in stat.card) {
-			var bool = false;
-			var info = lib.card[i];
-			if (!info) continue;
-			if (info.updateUsable == 'phaseUse') stat.card[i] = 0;
-		}
 	},
 	phaseDiscard: function () {
 		"step 0";
@@ -7492,7 +7513,9 @@ export const Content = {
 			if (!evt.orderingCards) evt.orderingCards = [];
 			if (!evt.noOrdering && !evt.cardsOrdered) {
 				evt.cardsOrdered = true;
-				var next = game.createEvent('orderingDiscard', false, evt.getParent());
+				var next = game.createEvent('orderingDiscard', false);
+				event.next.remove(next);
+				evt.after.push(next);
 				next.relatedEvent = evt;
 				next.setContent('orderingDiscard');
 			}
@@ -8163,7 +8186,12 @@ export const Content = {
 					cards[0].classList.add('fakejudge');
 					cards[0].node.background.innerHTML = lib.translate[cards[0].viewAs + '_bg'] || get.translation(cards[0].viewAs)[0];
 				}
-				game.log(player, '被贴上了<span class="yellowtext">' + get.translation(cards[0].viewAs) + '</span>（', cards, '）');
+				if(lib.card[viewAs].blankCard){
+					game.log(player, '被扣置了<span class="yellowtext">' + get.translation(cards[0].viewAs) + '</span>');
+				}
+				else {
+					game.log(player, '被贴上了<span class="yellowtext">' + get.translation(cards[0].viewAs) + '</span>（', cards, '）');
+				}
 			}
 			else {
 				cards[0].classList.remove('fakejudge');

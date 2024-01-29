@@ -13,11 +13,6 @@ export class VCard {
 	 * @param { string } [nature]
 	 */
 	constructor(suitOrCard, numberOrCards, name, nature) {
-		if (suitOrCard instanceof VCard) {
-			const other = suitOrCard;
-			[suitOrCard, numberOrCards, name, nature] = other._args;
-		}
-
 		if (Array.isArray(suitOrCard)) {
 			/**
 			 * @type {string}
@@ -96,8 +91,6 @@ export class VCard {
 		if (typeof nature == 'string') this.nature = nature;
 		if (!this.storage) this.storage = {};
 		if (!this.cards) this.cards = [];
-
-		this._args = [suitOrCard, numberOrCards, name, nature];
 	}
 	sameSuitAs(card) {
 		return get.suit(this) == get.suit(card);
@@ -125,6 +118,9 @@ export class VCard {
 		if (!nature) return natures.length > 0;
 		if (nature == 'linked') return natures.some(n => lib.linked.includes(n));
 		return get.is.sameNature(natures, nature);
+	}
+	getCacheKey(){
+		return `[vc:${this.name}+${this.suit?this.suit:'none'}+${this.number===undefined?'none':this.number}${this.nature?'+':''}${this.nature?this.nature:''}]`;
 	}
 	hasGaintag(tag) {
 		return this.gaintag && this.gaintag.includes(tag);

@@ -1,4 +1,4 @@
-'use strict';
+import { game } from '../noname.js';
 game.import('character',function(lib,game,ui,get,ai,_status){
 	return {
 		name:'refresh',
@@ -4434,9 +4434,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					effect:{
 						target:(card,player,target)=>{
 							if(!get.tag(card,'damage')) return;
-							if(target.hp+target.hujia<2||player.hasSkillTag('jueqing',false,target)) return -2;
+							if(target.hp+target.hujia<2||player.hasSkillTag('jueqing',false,target)) return 2;
 							if(target.countMark('redanxin')>1) return [1,1];
-							return [1,Math.min(2,0.8*target.hp-0.7)];
+							return [1,0.8*target.hp-0.4];
 						}
 					}
 				}
@@ -6656,7 +6656,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				ai:{
 					order:function(item,player){
-						var num=player.getStorage('gzquanji').length;
+						var num=player.getExpansions('gzquanji').length;
 						if(num==1) return 8;
 						return 1;
 					},
@@ -11141,7 +11141,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								}
 								if(!target.isHealthy()) club+=2;
 								if(!club&&!spade) return 1;
-								if(!target.mayHaveShan(player)) return 1-0.1*Math.min(5,target.countCards('hs'));
+								if(name==='sha'){
+									if(!target.mayHaveShan(player,'use',target.getCards(i=>{
+										return i.hasGaintag('sha_notshan');
+									}))) return;
+								}
+								else if(!target.mayHaveShan(player)) return 1-0.1*Math.min(5,target.countCards('hs'));
 								if(!target.hasSkillTag('rejudge')) return [1,(club+spade)/4];
 								let pos=(player==target||player.hasSkillTag('viewHandcard',null,target,true))?'hes':'e',better=club>spade?'club':'spade',max=0;
 								target.hasCard(function(cardx){
@@ -11735,6 +11740,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					for(var i in event.given_map){
 						var source=(_status.connectMode?lib.playerOL:game.playerMap)[i];
 						player.line(source,'green');
+						if(player!==source&&(get.mode()!=='identity'||player.identity!=='nei')) player.addExpose(0.18);
 						map.push([source,event.given_map[i]]);
 						cards.addArray(event.given_map[i]);
 					}
@@ -14332,8 +14338,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					effect:{
 						target:function(card,player,target){
 							if(!target.hasFriend()) return;
-							if(get.tag(card,'damage')==1&&target.hp==3&&!target.isTurnedOver()&&
+							if(target.hp===3&&get.tag(card,'damage')==1&&!target.isTurnedOver()&&
 							_status.currentPhase!=target&&get.distance(_status.currentPhase,target,'absolute')<=3) return [0.5,1];
+							if(target.hp===1&&get.tag(card,'recover')&&!target.isTurnedOver()&&
+							_status.currentPhase!==target&&get.distance(_status.currentPhase,target,'absolute')<=3) return [1,-3];
 						}
 					}
 				}

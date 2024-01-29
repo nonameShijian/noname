@@ -151,13 +151,21 @@ function createMainWindow() {
 			experimentalFeatures: true, //启用Chromium的实验功能
 		}
 	});
-	win.loadURL(`file://${__dirname}/app.html`);
+	if (fs.existsSync(path.join(__dirname, 'Home', 'saveProtocol.txt'))) {
+		// 启动http
+		const cp = require('child_process');
+		cp.exec(`start /min ${__dirname}\\noname-server.exe -platform=electron`, (err, stdout, stderr) => { });
+		setTimeout(() => {
+			win.loadURL(`http://localhost:8089/app.html`);
+			win.webContents.openDevTools();
+		}, 100);
+	} else {
+		win.loadURL(`file://${__dirname}/app.html`);
+		win.webContents.openDevTools();
+	}
 	if (electronVersion >= 14) {
 		remote.enable(win.webContents);
 	}
-    /*win.on('closed', () => {
-        BrowserWindow.getAllWindows().forEach(item => item.destroy());
-    });*/
 	return win;
 }
 
@@ -206,74 +214,6 @@ function createUpdateWindow() {
 	}
 	return win;
 }
-
-/* global.createEditorWindow = createEditorWindow;
-global.editorWindow = null;
-global.debugWindow = null;
-
-function createEditorWindow() {
-	let win = new BrowserWindow({
-		width: 800,
-		height: 600,
-		title: '无名杀-代码编辑器',
-		icon: path.join(__dirname, 'noname.ico'),
-		autoHideMenuBar: true,
-		webPreferences: {
-			preload: path.join(__dirname, 'editor', 'preload.js'),
-			nodeIntegration: false,
-			contextIsolation: true,
-			enableRemoteModule: true,
-		},
-	});
-	win.loadURL(`file://${__dirname}/editor/index.html`);
-	win.webContents.openDevTools();
-	win.on('closed', () => {
-		win = null;
-        global.editorWindow = null;
-        if (global.debugWindow != null) {
-            global.debugWindow.destroy();
-            global.debugWindow = null;
-        }
-	});
-	if (electronVersion >= 14) {
-		require('@electron/remote/main').enable(win.webContents);
-	}
-    global.editorWindow = win;
-
-    function createDebugWindow() {
-        let debugWindow = new BrowserWindow({
-            width: 800,
-            height: 600,
-            title: '无名杀-代码调试',
-            icon: path.join(__dirname, 'noname.ico'),
-            show: false,
-            webPreferences: {
-                preload: path.join(__dirname, 'editor', 'js', 'debug-preload.js'),
-                nodeIntegration: true,
-                contextIsolation: false,
-                enableRemoteModule: true,
-            }
-        });
-        debugWindow.loadURL(`file://${__dirname}/app.html`);
-        debugWindow.webContents.openDevTools();
-        debugWindow.on('closed', () => {
-            debugWindow = null;
-            global.debugWindow = null;
-            if (global.editorWindow != null) {
-                createDebugWindow();
-            }
-        });
-        if (electronVersion >= 14) {
-            require('@electron/remote/main').enable(debugWindow.webContents);
-        }
-        global.debugWindow = debugWindow;
-    }
-
-    createDebugWindow();
-    
-	return win;
-}
-*/
 
 app.whenReady().then(() => {
 	
