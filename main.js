@@ -158,7 +158,7 @@ function createMainWindow() {
 		setTimeout(() => {
 			win.loadURL(`http://localhost:8089/app.html`);
 			win.webContents.openDevTools();
-		}, 100);
+		}, 500);
 	} else {
 		win.loadURL(`file://${__dirname}/app.html`);
 		win.webContents.openDevTools();
