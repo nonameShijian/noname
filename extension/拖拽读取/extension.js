@@ -1,4 +1,4 @@
-/// <reference path="../../typings/index.d.ts" />
+import { game } from '../../noname.js';
 game.import("extension", function (lib, game, ui, get, ai, _status) {
 	/** 解压文件方法 */
 	const fs = require("fs");
@@ -130,76 +130,81 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 			if (e.data == null) {
 				return dialog.showErrorBox("导入失败", "没有extension.js，无法导入");
 			} else {
-				// e.data为扩展js字符串
+				// e.data为[扩展js字符串, info.json字符串]
 				/** 扩展名 */
 				let extname;
 				/** 是否是模块扩展 */
 				let isModuleExtension = false;
 				_status.importingExtension = true;
 				const tmp = path.join(__dirname, 'extension/拖拽读取/tmp.js');
-				const str = e.data;
-				try {
+				const str = e.data[0], infoStr = e.data[1];
+				if (typeof infoStr == 'string') {
 					try {
-						// 解决新版本的game.import改为promise的问题
-						await eval(str);
-					} catch (error) {
-						if (
-							!lib.config.extension_应用配置_newExtApi ||
-							(
-								error.message != 'Cannot use import statement outside a module' &&
-								error.message != 'await is only valid in async functions and the top level bodies of modules'
-							)
-						) throw error;
-
-						// 开启了【应用配置】扩展的模块扩展的选项
-						isModuleExtension = true;
-						// 创建临时文件
-						fs.writeFileSync(tmp, str);
-						// 判断文件是否出错, 并赋值给game.importedPack
-						game.importedPack = (await import(tmp)).default;
-						// 删除文件
-						fs.unlinkSync(tmp);
+						const { name } = JSON.parse(infoStr);
+						extname = name;
+					} catch {
+						console.log('info.json中未解析出扩展名称');
 					}
-				} catch (e) {
-					div.remove();
-					dialog.showErrorBox("扩展代码有错误！", `${e}`);
-					delete game.importedPack;
-					return false;
-				} finally {
-					_status.importingExtension = false;
+				} else {
+					try {
+						try {
+							await eval(str);
+						} catch (error) {
+							console.log(error);
+							if (
+								// 本体已经支持了模块扩展
+								// !lib.config.extension_应用配置_newExtApi ||
+								(
+									error.message != 'Cannot use import statement outside a module' &&
+									error.message != 'await is only valid in async functions and the top level bodies of modules'
+								)
+							) throw error;
+
+							// 模块扩展
+							isModuleExtension = true;
+							// 创建临时文件
+							fs.writeFileSync(tmp, str);
+							// 判断文件是否出错, 并赋值给game.importedPack
+							game.importedPack = (await import(tmp)).default;
+							// 删除文件
+							fs.unlinkSync(tmp);
+						}
+					} catch (e) {
+						div.remove();
+						dialog.showErrorBox("扩展代码有错误！", `${e}`);
+						delete game.importedPack;
+						return false;
+					} finally {
+						_status.importingExtension = false;
+					}
 				}
 
-				if (!game.importedPack) {
+				if (!game.importedPack && !extname) {
 					div.remove();
 					dialog.showErrorBox("导入失败", "此压缩包不是一个扩展！");
 					delete game.importedPack;
 					return false;
 				}
 
-				extname = game.importedPack.name;
+				if (!extname) extname = game.importedPack.name;
 
-				if (lib.config.all.plays.contains(extname)) {
+				if (lib.config.all.plays.includes(extname)) {
 					div.remove();
 					dialog.showErrorBox("导入失败", "禁止安装游戏原生扩展");
 					delete game.importedPack;
 					return false;
 				}
 
-				if (!isModuleExtension && lib.config.extensions.contains(extname)) {
-					//卸载之前的扩展（保留文件）
+				if (!isModuleExtension && lib.config.extensions.includes(extname)) {
+					// 卸载之前的扩展（保留文件）
 					// @ts-ignore
 					game.removeExtension(extname, true);
 				}
 
 				extract(zipFilePath, __dirname + '/extension/' + extname, password, span, div, () => {
 					//导入后执行的代码
-					if (!isModuleExtension) {
-						lib.config.extensions.add(extname);
-						game.saveConfig('extensions', lib.config.extensions);
-					} else {
-						lib.config.moduleExtensions.add(extname);
-						game.saveConfigValue('moduleExtensions');
-					}
+					lib.config.extensions.add(extname);
+					game.saveConfig('extensions', lib.config.extensions);
 					game.saveConfig('extension_' + extname + '_enable', true);
 					if (game.importedPack) {
 						for (let i in game.importedPack.config) {
@@ -418,7 +423,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 						lib.init.css(lib.assetURL + "extension/拖拽读取", "extension");
 						loadCSS = true;
 					}
-					fetch(__dirname + '/extension/拖拽读取/updateContent.md')
+					fetch(__dirname + '/extension/拖拽读取/README.md')
 						.then(response => response.text()).then(txt => {
 							let layer = ui.create.div(ui.window, '.updateContent');
 							let close = ui.create.div(layer, '.updateContentClose', () => {
@@ -589,7 +594,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 			author: "诗笺",
 			diskURL: "",
 			forumURL: "",
-			version: "2.1",
+			version: "3.0",
 		},
 	};
 });

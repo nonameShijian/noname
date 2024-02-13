@@ -318,31 +318,73 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 					createHighlightDom(showCode);
 				}
 			};
-			
-			
-            if (lib.config.extension_应用配置_newExtApi) {
-                //导入api.js
-                Object.defineProperty(window, 'newExtensionApi', {
-                    enumerable: false,
-                    configurable: false,
-                    get() {
-                        return {
-                            lib, game, ui, get, ai, _status
-                        }
-                    }
-                });
 
-                // 设置全局路径
-                Object.defineProperty(window, 'newExtApiUrl', {
-                    enumerable: false,
-                    configurable: false,
-                    get() {
-                        return path.join(__dirname, 'extension/应用配置/export.js');
-                    }
-                });
-
-			    lib.init.js('extension/应用配置', 'api');
-            }
+            // 修改window.onerror
+            if(false) window.onerror = function (msg, src, line, column, err) {
+				let str = `错误文件: ${decodeURI(src) || 'undefined'}\n错误信息: ${msg}`;
+				str += '\n' + `行号: ${line}`;
+				str += '\n' + `列号: ${column}`;
+				const version = lib.version || '';
+				const reg = /[^\d\.]/;
+				const match = version.match(reg) != null;
+				str += '\n' + `${match ? '游戏' : '无名杀'}版本: ${version || '未知版本'}`;
+				if (match) str += '\n您使用的游戏代码不是源于libccy/noname无名杀官方仓库，请自行寻找您所使用的游戏版本开发者反馈！';
+				if (_status && _status.event) {
+					let evt = _status.event;
+					str += `\nevent.name: ${evt.name}\nevent.step: ${evt.step}`;
+					if (evt.parent) str += `\nevent.parent.name: ${evt.parent.name}\nevent.parent.step: ${evt.parent.step}`;
+					if (evt.parent && evt.parent.parent) str += `\nevent.parent.parent.name: ${evt.parent.parent.name}\nevent.parent.parent.step: ${evt.parent.parent.step}`;
+					if (evt.player || evt.target || evt.source || evt.skill || evt.card) {
+						str += '\n-------------'
+					}
+					if (evt.player) {
+						if (lib.translate[evt.player.name]) str += `\nplayer: ${lib.translate[evt.player.name]}[${evt.player.name}]`;
+						else str += '\nplayer: ' + evt.player.name;
+						// @ts-ignore
+						let distance = get.distance(_status.roundStart, evt.player, 'absolute');
+						if (distance != Infinity) {
+							str += `\n座位号: ${distance + 1}`;
+						}
+					}
+					if (evt.target) {
+						if (lib.translate[evt.target.name]) str += `\ntarget: ${lib.translate[evt.target.name]}[${evt.target.name}]`;
+						else str += '\ntarget: ' + evt.target.name;
+					}
+					if (evt.source) {
+						if (lib.translate[evt.source.name]) str += `\nsource: ${lib.translate[evt.source.name]}[${evt.source.name}]`;
+						else str += '\nsource: ' + evt.source.name;
+					}
+					if (evt.skill) {
+						if (lib.translate[evt.skill]) str += `\nskill: ${lib.translate[evt.skill]}[${evt.skill}]`;
+						else str += '\nskill: ' + evt.skill;
+					}
+					if (evt.card) {
+						if (lib.translate[evt.card.name]) str += `\ncard: ${lib.translate[evt.card.name]}[${evt.card.name}]`;
+						else str += '\ncard: ' + evt.card.name;
+					}
+				}
+                if (err && err.stack) str += '\n' + decodeURI(err.stack);
+                alert(str);
+                window.ea = Array.from(arguments);
+                window.em = msg;
+                window.el = line;
+                window.ec = column;
+                window.eo = err;
+                game.print(msg);
+                game.print(line);
+                game.print(column);
+				// @ts-ignore
+                game.print(decodeURI(err?.stack));
+				if (game.getExtensionConfig('应用配置', 'showErrorCode')) {
+					// @ts-ignore
+					findErrorFileCode(src || undefined, line, column, err);
+				} else {
+					if (!lib.config.errstop) {
+						_status.withError = true;
+						game.loop();
+					}
+				}
+            };
 			
             if (lib.config.extension_应用配置_watchExt) {
                 const fs = require('fs');
@@ -441,21 +483,21 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 					game.saveExtensionConfig('应用配置', 'replaceAppHeight', height);
 				},
 			},
-			showErrorCode: {
-				init: false,
-				name: '报错时显示错误代码',
-				intro: '开启此选项后，显示错误代码会阻塞无名杀代码执行',
-				onclick: (result) => {
-					// @ts-ignore
-					if (!window.hljs && !(lib.config.extensions.includes('全能搜索') && game.getExtensionConfig('全能搜索', 'enable'))) {
-						alert('此功能需要引入highlightjs才能使用(或者安装扩展"全能搜索"并开启)');
-						game.saveExtensionConfig('应用配置', 'showErrorCode', false);
-						return false;
-					}
-					alert('选项修改已生效');
-					game.saveExtensionConfig('应用配置', 'showErrorCode', result);
-				}
-			},
+			// showErrorCode: {
+			// 	init: false,
+			// 	name: '报错时显示错误代码',
+			// 	intro: '开启此选项后，显示错误代码会阻塞无名杀代码执行',
+			// 	onclick: (result) => {
+			// 		// @ts-ignore
+			// 		if (!window.hljs && !(lib.config.extensions.includes('全能搜索') && game.getExtensionConfig('全能搜索', 'enable'))) {
+			// 			alert('此功能需要引入highlightjs才能使用(或者安装扩展"全能搜索"并开启)');
+			// 			game.saveExtensionConfig('应用配置', 'showErrorCode', false);
+			// 			return false;
+			// 		}
+			// 		alert('选项修改已生效');
+			// 		game.saveExtensionConfig('应用配置', 'showErrorCode', result);
+			// 	}
+			// },
 			//修改原生alert弹窗
 			replaceAlert: {
 				init: true,
@@ -475,14 +517,14 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 				}
 			},
             //新的扩展导入方式，用模块的方式写扩展
-            newExtApi: {
-                init: false,
-                name: '新的扩展写法',
-                onclick: (result) => {
-                    alert('修改选项后重启生效');
-                    game.saveExtensionConfig('应用配置', 'newExtApi', result);
-                }
-            },
+            // newExtApi: {
+            //     init: false,
+            //     name: '新的扩展写法',
+            //     onclick: (result) => {
+            //         alert('修改选项后重启生效');
+            //         game.saveExtensionConfig('应用配置', 'newExtApi', result);
+            //     }
+            // },
             //监听扩展文件，改变后重启游戏
             watchExt: {
                 init: false,
@@ -511,7 +553,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 			author: "诗笺",
 			diskURL: "",
 			forumURL: "",
-			version: "1.4",
+			version: "1.5",
 		}
 	}
 });
