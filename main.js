@@ -157,11 +157,11 @@ function createMainWindow() {
 		cp.exec(`start /min ${__dirname}\\noname-server.exe -platform=electron`, (err, stdout, stderr) => { });
 		setTimeout(() => {
 			win.loadURL(`http://localhost:8089/app.html`);
-			win.webContents.openDevTools();
+			// win.webContents.openDevTools();
 		}, 500);
 	} else {
 		win.loadURL(`file://${__dirname}/app.html`);
-		win.webContents.openDevTools();
+		// win.webContents.openDevTools();
 	}
 	if (electronVersion >= 14) {
 		remote.enable(win.webContents);
