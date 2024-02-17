@@ -246,7 +246,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						if(get.type(name)==='delay') return false;
 						const card=new lib.element.VCard({name:name});
 						return get.tag(card,'damage')&&!player.getStorage('dcdehua').includes(name);
-					})) player.removeSkillLog('dcdehua');
+					})) player.removeSkills('dcdehua');
 				},
 				mod:{
 					maxHandcard(player,num){
@@ -527,12 +527,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					var num=Math.min(cards.length,4-player.countMark('dcmanwang'));
-					if(num>=1) player.addSkill('dcpanqin');
+					if(num>=1) player.addSkills('dcpanqin');
 					if(num>=2) player.draw();
 					if(num>=3) player.recover();
 					if(num>=4){
 						player.draw(2);
-						player.removeSkill('dcpanqin');
+						player.removeSkills('dcpanqin');
 					}
 				},
 				ai:{
@@ -578,7 +578,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							switch(player.countMark('dcmanwang')){
 								case 1:
 									player.draw(2);
-									player.removeSkill('dcpanqin');
+									player.removeSkills('dcpanqin');
 									break;
 								case 2:
 									player.recover();
@@ -587,7 +587,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 									player.draw();
 									break;
 								case 4:
-									player.addSkill('dcpanqin');
+									player.addSkills('dcpanqin');
 									break;
 							}
 							'step 1'
@@ -3337,11 +3337,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					'step 0'
 					player.awakenSkill('dcchongxu');
+					player.removeSkills('dchuiling');
 					player.gainMaxHp(Math.min(game.countPlayer(),player.countMark('dchuiling')));
-					player.removeSkill('dchuiling');
 					'step 1'
-					player.addSkillLog('dctaji');
-					player.addSkillLog('dcqinghuang');
+					player.addSkills(['dctaji','dcqinghuang']);
 				},
 				ai:{
 					order:function(itemp,player){
@@ -6440,7 +6439,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 									var pos=lib.skill.midu_backup.equip;
 									if(pos<=0) player.enableJudge();
 									else player.enableEquip(pos);
-									player.addTempSkill('rehuomo',{player:'phaseBegin'});
+									player.addTempSkills('rehuomo',{player:'phaseBegin'});
 								},
 							}
 						}
@@ -7152,7 +7151,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						var info=get.info(i);
 						return info&&!get.is.locked(i)&&!info.limited&&!info.juexingji&&!info.zhuSkill&&!info.charlotte;
 					});
-					target.addAdditionalSkill('dcjiezhen_blocker','bazhen');
+					target.addAdditionalSkills('dcjiezhen_blocker','bazhen');
 					target.addSkill('dcjiezhen_blocker');
 					target.markAuto('dcjiezhen_blocker',skills);
 					player.addSkill('dcjiezhen_clear');
@@ -7298,7 +7297,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						player.awakenSkill('dczecai');
 						var target=result.targets[0];
 						player.logSkill('dczecai',target);
-						target.addAdditionalSkill('dczecai_effect','rejizhi');
+						target.addAdditionalSkills('dczecai_effect','rejizhi');
 						target.addTempSkill('dczecai_effect','roundStart');
 						if(target==event.target){
 							var evt=trigger._trigger;
@@ -7643,7 +7642,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							else event.goto(3);
 							'step 2'
 							game.broadcastAll('closeDialog',event.videoId);
-							target.addSkillLog(result.control);
+							target.addSkills(result.control);
 							'step 3'
 							var storage=player.storage.dunshi;
 							if(event.links.includes(1)){
@@ -10030,8 +10029,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(player.maxHp>player.hp) player.recover(player.maxHp-player.hp);
 					'step 2'
 					player.drawTo(Math.min(5,player.maxHp));
-					player.addSkillLog('llqshenwei');
-					player.addSkillLog('wushuang');
+					player.addSkills(['llqshenwei','wushuang']);
 				},
 			},
 			llqshenwei:{
@@ -11618,7 +11616,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			gaoxiang:['gaoxiang','jsrg_gaoxiang'],
 			lingcao:['lingcao','dc_lingcao'],
 			sp_menghuo:['sp_menghuo','dc_sp_menghuo'],
-			sunchen:['dc_sunchen','ps_sunchen'],
+			sunchen:['dc_sunchen','pe_sunchen'],
 		},
 		translate:{
 			re_panfeng:'潘凤',
