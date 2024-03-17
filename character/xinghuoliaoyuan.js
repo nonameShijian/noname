@@ -17,6 +17,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			liuyao:["male","qun",4,["xinfu_kannan",'twniju'],['zhu']],
 			liuyan:["male","qun",3,["xinfu_tushe","xinfu_limu"]],
 		},
+		characterSort:{
+			xinghuoliaoyuan:{
+				// xinghuoliaoyuan_tianfu:[],
+				xinghuoliaoyuan_tianliang:['duji','liuyan','yanjun'],
+				xinghuoliaoyuan_tianji:['panjun','wangcan'],
+				xinghuoliaoyuan_tiantong:['re_jsp_pangtong','sp_taishici'],
+				xinghuoliaoyuan_tianxiang:['lvdai','zhoufang','liuyao'],
+				xinghuoliaoyuan_qisha:['lvqian','re_zhangliang'],
+			},
+		},
 		characterIntro:{
 			wangcan:"王粲（177年－217年2月17日），字仲宣。山阳郡高平县（今山东微山两城镇）人。东汉末年文学家，“建安七子”之一，太尉王龚曾孙、司空王畅之孙。",
 			re_jsp_pangtong:"庞统，字士元，襄阳（治今湖北襄阳）人。三国时刘备帐下谋士，官拜军师中郎将。才智与诸葛亮齐名，人称“凤雏”。在进围雒县时，统率众攻城，不幸被流矢击中去世，时年三十六岁。追赐统为关内侯，谥曰靖侯。庞统死后，葬于落凤庞统墓坡。",
@@ -1490,9 +1500,46 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			"xinfu_tushe":{
 				audio:2,
+				mod: {
+					aiOrder(player, card, num) {
+						if (get.tag(card, 'multitarget')) {
+							if (player.countCards('h', { type: 'basic' })) return num / 10;
+							return num * 10;
+						}
+						if (get.type(card) === 'basic') return num + 10;
+					},
+					aiValue(player, card, num) {
+						if (card.name === 'zhangba') {
+							let fact = (n) => {
+								if (n > 1) return n * fact(n - 1);
+								return 1;
+							}, basic = 0;
+							return fact(Math.min(player.countCards('hs', i => {
+								if (get.tag(i, 'multitarget')) return 2;
+								if (!['shan', 'tao', 'jiu'].includes(card.name)) return 1;
+								basic++;
+							}) / (1 + basic), player.getCardUsable('sha')));
+						}
+						if (['shan', 'tao', 'jiu'].includes(card.name)) {
+							if (player.getEquip('zhangba') && player.countCards('hs') > 1) return 0.01;
+							return num / 2;
+						}
+						if (get.tag(card, 'multitarget')) return num + game.players.length;
+					},
+					aiUseful(player, card, num) {
+						if (get.name(card, player) === 'shan') {
+							if (player.countCards('hs', i => {
+								if (card === i || card.cards && card.cards.includes(i)) return false;
+								return get.name(i, player) === 'shan';
+							})) return -1;
+							return num / Math.pow(Math.max(1, player.hp), 2);
+						}
+					}
+				},
 				trigger:{
 					player:"useCardToPlayered",
 				},
+				locked: false,
 				frequent:true,
 				filter:function (event,player){
 					if(get.type(event.card)=='equip') return false;
@@ -1506,7 +1553,22 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					presha:true,
 					pretao:true,
 					threaten:1.8,
-				},
+					effect: {
+						player(card, player, target) {
+							if (typeof card === 'object' && card.name !== 'shan' && get.type(card) !== 'equip' && !player.countCards('h', i => {
+								if (card === i || card.cards && card.cards.includes(i)) return false;
+								return get.type(i) === 'basic';
+							})) {
+								let targets = [], evt = _status.event.getParent('useCard');
+								targets.addArray(ui.selected.targets);
+								if (evt && evt.card == card) targets.addArray(evt.targets);
+								if (targets.length) return [1, targets.length];
+								if (get.tag(card, 'multitarget')) return [1, game.players.length - 1];
+								return [1, 1];
+							}
+						}
+					}
+				}
 			},
 			"xinfu_limu":{
 				mod:{
@@ -1518,11 +1580,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					cardUsableTarget:function(card,player,target){
 						if(player.countCards('j')&&player.inRange(target)) return true;
 					},
-					aiValue:function(player,card,num){
-						if(card.name=='zhangba') return 15;
-						if(player.getEquip('zhangba')&&player.countCards('hs')>1&&['shan','tao'].includes(card.name)) return 0;
-						if(card.name=='shan'||card.name=='tao') return num/2;
-					},
+					aiOrder(player, card, num) {
+						if (get.type(card, 'delay') && player.canUse(card, player) && player.canAddJudge(card)) return 15;
+					}
 				},
 				locked:false,
 				audio:2,
@@ -1542,21 +1602,22 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				filterTarget:function (card,player,target){
 					return player==target;
 				},
-				check:function(card){
-					var player=_status.event.player;
-					if(!player.getEquip('zhangba')&&player.countCards('hs','sha')<2){
-						if(player.countCards('h',function(cardx){
-							return cardx!=card&&cardx.name=='shan';
-						})>0) return 0;
-						var damaged=player.maxHp-player.hp-1;
-						var ts=player.countCards('h',function(cardx){
-							return cardx!=card&&cardx.name=='tao';
-						});
-						if(ts>0&&ts>damaged) return 0;
+				check(card) {
+					var player = _status.event.player;
+					if (!player.getEquip('zhangba')) {
+						let damaged = player.maxHp - player.hp - 1;
+						if (player.countCards('h', function (cardx) {
+							if (cardx == card) return false;
+							if (cardx.name == 'tao') {
+								if (damaged < 1) return true;
+								damaged--;
+							}
+							return ['shan', 'jiu'].includes(cardx.name);
+						}) > 0) return 0;
 					}
-					if(card.name=='shan') return 15;
-					if(card.name=='tao') return 10;
-					return 9-get.value(card);
+					if (card.name == 'shan') return 15;
+					if (card.name == 'tao' || card.name == 'jiu') return 10;
+					return 9 - get.value(card);
 				},
 				onuse:function (links,player){
 					var next=game.createEvent('limu_recover',false,_status.event.getParent());
@@ -1564,10 +1625,29 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					next.setContent(function(){player.recover()});
 				},
 				ai:{
-					result:{
-						target:1,
+					result: {
+						target(player, target) {
+							let res = lib.card.lebu.ai.result.target(player, target);
+							if (target.isDamaged()) return res + 2 * Math.abs(get.recoverEffect(target, player, target));
+							return res;
+						},
+						ignoreStatus: true
 					},
-					order:12,
+					order(item, player) {
+						if (player.hp > 1 && player.countCards('j')) return 0;
+						return 12;
+					},
+					effect: {
+						target(card, player, target) {
+							if (target.isPhaseUsing() && typeof card === 'object' && get.type(card, target) === 'delay' && !target.countCards('j')) {
+								let shas = target.getCards('hs', i => {
+									if (card === i || card.cards && card.cards.includes(i)) return false;
+									return get.name(i, target) === 'sha' && target.getUseValue(i) > 0;
+								}) - target.getCardUsable('sha');
+								if (shas > 0) return [1, 1.5 * shas];
+							}
+						}
+					}
 				},
 			},
 		},
@@ -1660,6 +1740,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			"xinfu_limu_info":"出牌阶段，你可以将一张♦牌当做【乐不思蜀】对自己使用，然后回复1点体力。只要你的判定区内有牌，你对攻击范围内的其他角色使用牌便没有次数和距离限制。",
 			xinyingshi:'应势',
 			xinyingshi_info:'出牌阶段开始时，若场上所有角色的武将牌上均没有“酬”，则你可以将任意张牌置于一名角色的武将牌上，称为“酬”。若如此做：当有角色使用牌对有“酬”的角色造成伤害后，其可以获得一张“酬”，并获得牌堆中所有与“酬”花色点数均相同的牌；有“酬”的角色死亡时，你获得其所有“酬”。',
+			
+			xinghuoliaoyuan_tianfu:'天府',
+			xinghuoliaoyuan_tianliang:'天梁',
+			xinghuoliaoyuan_tianji:'天机',
+			xinghuoliaoyuan_tiantong:'天同',
+			xinghuoliaoyuan_tianxiang:'天相',
+			xinghuoliaoyuan_qisha:'七杀',
 		},
 	};
 });

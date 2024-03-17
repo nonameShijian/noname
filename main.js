@@ -140,6 +140,7 @@ function createMainWindow() {
 		title: '无名杀',
 		icon: path.join(__dirname, 'noname.ico'),
 		webPreferences: {
+			webSecurity: false,
 			preload: path.join(__dirname, 'app', 'menu.js'), //页面运行其他脚本之前预先加载指定的脚本
 			nodeIntegration: true, //主页面用node
 			nodeIntegrationInSubFrames: true, //子页面用node
@@ -158,7 +159,7 @@ function createMainWindow() {
 		setTimeout(() => {
 			win.loadURL(`http://localhost:8089/app.html`);
 			// win.webContents.openDevTools();
-		}, 500);
+		}, 1000);
 	} else {
 		win.loadURL(`file://${__dirname}/app.html`);
 		// win.webContents.openDevTools();

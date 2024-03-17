@@ -131,8 +131,8 @@ export class Is extends Uninstantable {
 	 * @param { Card | VCard } card
 	 */
 	// @ts-ignore
-	static vituralCard(card) {
-		return card.isCard || (!("cards" in card) || !Array.isArray(card.cards) || card.cards.length == 0);
+	static virtualCard(card) {
+		return (!("cards" in card) || !Array.isArray(card.cards) || card.cards.length === 0);
 	}
 	/**
 	 * 是否是转化牌
@@ -147,7 +147,9 @@ export class Is extends Uninstantable {
 	 * @param { Card | VCard } card
 	 */
 	// @ts-ignore
-	static ordinaryCard(card) { return card.isCard && ("cards" in card) && Array.isArray(card.cards) && card.cards.length == 1 }
+	static ordinaryCard(card) {
+		return card.isCard && ("cards" in card) && Array.isArray(card.cards) && card.cards.length === 1
+	}
 	/**
 	 * 押韵判断
 	 * @param { string } str1
@@ -440,5 +442,19 @@ export class Is extends Uninstantable {
 		if (info.mod) return true;
 		if (info.locked) return true;
 		return false;
+	}
+	/**
+	 * @param { string } skill
+	 * @param { Player } player
+	 * @returns
+	 */
+	static zhuanhuanji(skill, player) {
+		const info = lib.skill[skill], { zhuanhuanji } = info;
+		if ('zhuanhuanji2' in info) {
+			const { zhuanhuanji2 } = info;
+			if (typeof zhuanhuanji2 === 'function') return Boolean(zhuanhuanji2(skill, player));
+			return Boolean(zhuanhuanji2);
+		}
+		return Boolean(zhuanhuanji);
 	}
 }

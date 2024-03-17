@@ -1,6 +1,23 @@
 importScripts('./minizip-asm.min.js');
 
-const iconv = require('./node_modules/iconv-lite');
+if (globalThis.__dirname.includes('electron.asar')) {
+    const path = require('path');
+    globalThis.__dirname = path.join(path.resolve(), 'resources/app/extension/拖拽读取');
+    const oldData = Object.entries(globalThis.require);
+    // @ts-ignore
+    globalThis.require = function (moduleId) {
+        try {
+            return module.require(moduleId);
+        } catch {
+            return module.require(path.join(globalThis.__dirname, moduleId));
+        }
+    };
+    oldData.forEach(([key, value]) => {
+        globalThis.require[key] = value;
+    });
+}
+
+const iconv = require(__dirname + '/node_modules/iconv-lite');
 
 onmessage = function (e) {
     const [buffer, password, getExtName] = e.data;
@@ -19,7 +36,7 @@ onmessage = function (e) {
             let filepath = iconv.decode(extJs.filepath, 'GBK');
             qtpath = filepath.replace('extension.js', '');
         }
-        console.log({ qtpath });
+        // console.log({ qtpath });
         for (let i = 0; i < fileList.length; i++) {
             const file = fileList[i];
             try {

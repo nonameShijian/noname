@@ -16,6 +16,20 @@
 
 ※若不看上面的提示，询问的内容将不予解答
 
+# v1.71更新提示：
+1.本版本支持以http协议启动游戏
+
+2.【在线更新】扩展更新，增加info.json
+
+3.【拖拽读取】扩展v3.1更新，修复bug
+
+4.延时启动从500ms修改为1000ms
+
+5.本版本使用`chromium 120`版本，将不兼容windows7，8， 8.1操作系统
+
+6.注:要把【拖拽读取】扩展放置到其他的电脑版无名杀使用，请在应用根目录的main.js中
+的BrowserWindow构造函数中的webPreferences属性添加: nodeIntegrationInWorker: true
+
 # v1.7更新提示：
 1.本版本开始，支持以http协议启动游戏
 

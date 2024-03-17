@@ -224,7 +224,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(event.responded) return false;
 					if(player.storage.hujiaing) return false;
 					if(!player.hasZhuSkill('hujia')) return false;
-					if(!event.filterCard({name:'shan'},player,event)) return false;
+					if(!event.filterCard({name:'shan',isCard:true},player,event)) return false;
 					return game.hasPlayer(current=>current!=player&&current.group=='wei');
 				},
 				check(event,player){
@@ -435,7 +435,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					judgeEvent.judge2=result=>result.bool;
 					const {result:{judge}}=await judgeEvent;
 					if(judge<2) return;
-					const {result:{bool:chooseToDiscardResultBool}}=await player.chooseToDiscard(2).set('ai',card=>{
+					const {result:{bool:chooseToDiscardResultBool}}=await event.target.chooseToDiscard(2).set('ai',card=>{
 						if(card.name=='tao') return -10;
 						if(card.name=='jiu'&&_status.event.player.hp==1) return -10;
 						return get.unuseful(card)+2.5*(5-get.owner(card).hp);
@@ -2337,9 +2337,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			xuzhu:['xuzhu','re_xuzhu'],
 			zhangliao:['zhangliao','re_zhangliao'],
 			sp_zhangliao:['sp_zhangliao','yj_zhangliao','jsrg_zhangliao'],
-			xiahoudun:['xiahoudun','re_xiahoudun','xin_xiahoudun'],
+			xiahoudun:['xiahoudun','re_xiahoudun','xin_xiahoudun','sb_xiahoudun'],
 			liubei:['liubei','re_liubei','sb_liubei','dc_liubei','junk_liubei'],
-			guanyu:['guanyu','re_guanyu','ol_sb_guanyu','sb_guanyu','ps_guanyu','old_guanyu'],
+			guanyu:['guanyu','re_guanyu','ol_sb_guanyu','sb_guanyu','ps_guanyu','old_guanyu','junk_guanyu'],
 			zhangfei:['zhangfei','re_zhangfei','old_zhangfei','xin_zhangfei','sb_zhangfei','tw_zhangfei','jsrg_zhangfei','yj_zhangfei'],
 			zhaoyun:['zhaoyun','re_zhaoyun','old_zhaoyun','sb_zhaoyun','jsrg_zhaoyun','ps2063_zhaoyun','ps2067_zhaoyun'],
 			sp_zhaoyun:['sp_zhaoyun','jsp_zhaoyun'],
@@ -2360,7 +2360,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			diaochan:['diaochan','re_diaochan','sb_diaochan'],
 			huatuo:['huatuo','re_huatuo','old_huatuo'],
 			huaxiong:['huaxiong','re_huaxiong','old_huaxiong','sb_huaxiong','ol_huaxiong'],
-			yuanshu:['yuanshu','re_yuanshu','yl_yuanshu','old_yuanshu','ol_yuanshu'],
+			yuanshu:['yuanshu','re_yuanshu','yl_yuanshu','old_yuanshu','ol_yuanshu','star_yuanshu'],
 			gongsunzan:['gongsunzan','re_gongsunzan','dc_gongsunzan','xin_gongsunzan'],
 			re_lidian:['re_lidian','old_re_lidian','junk_lidian'],
 		},

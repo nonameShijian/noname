@@ -150,7 +150,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				enable:'chooseToUse',
 				filter:function(event,player){
 					if(!player.hasCard(card=>get.suit(card)=='club','sh')) return false;
-					return (event.type=='phase'||event.filterCard({name:'tiesuo'},player,event));
+					return (event.type=='phase'||event.filterCard(get.autoViewAs({name:'tiesuo'},'unsure'),player,event));
 				},
 				position:'hs',
 				filterCard:function(card,player,event){
@@ -162,7 +162,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					else{
 						if(game.checkMod(card,player,'unchanged','cardEnabled2',player)===false) return false;
 						const cardx=get.autoViewAs({name:'tiesuo'},[card]);
-						return event._backup.filterCard(cardx,player,target);
+						return event._backup.filterCard(cardx,player,event);
 					}
 				},
 				filterTarget:function(fuck,player,target){
@@ -816,24 +816,20 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				audio:2,
 				enable:'phaseUse',
 				filter:function(event,player){
-					return player.storage.drlt_zhenrong&&player.storage.drlt_zhenrong.length>0;
+					return player.getExpansions('drlt_zhenrong').length>0;
 				},
 				filterTarget:function(card,player,target){
 					return target.countDiscardableCards(player,'ej')>0;
 				},
 				content:function(){
 					'step 0'
-					player.chooseCardButton(player.storage.drlt_zhenrong,1,'请选择需要弃置的“荣”',true).ai=function(button){
+					player.chooseCardButton(player.getExpansions('drlt_zhenrong'),1,'请选择需要弃置的“荣”',true).ai=function(button){
 						return 6-get.value(button.link);
 					};
 					'step 1'
 					if(result.bool){
 						var cards=result.links;
-						for(var i=0;i<cards.length;i++){
-							player.storage.drlt_zhenrong.remove(cards[i]);
-						}
-						player.syncStorage('drlt_zhenrong');
-						player.$throw(cards);
+						player.loseToDiscardpile(cards);
 						player.discardPlayerCard(target,'ej',1,true);
 					}
 				},
@@ -1393,7 +1389,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					order:13,
 					result:{
 						target:(player,target)=>{
-							if(target.getEquip('bagua')||target.getEquip('rewrite_bagua')) return 0;
 							let hs=player.countCards('h',card=>{
 								if(!get.tag(card,'damage')||get.effect(target,card,player,player)<=0) return 0;
 								if(get.name(card,player)==='sha'){
@@ -2259,16 +2254,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			"nzry_chenglve1":{
 				mod:{
 					cardUsable:function(card,player){
-						var cards=player.storage.nzry_chenglve1;
-						for(var i=0;i<cards.length;i++){
-							if(cards[i]==get.suit(card)) return Infinity;
-						}
+						const suit = get.suit(card);
+						if (suit == 'unsure' || player.getStorage('nzry_chenglve1').includes(suit)) return Infinity;
 					},
 					targetInRange:function(card,player){
-						var cards=player.storage.nzry_chenglve1;
-						for(var i=0;i<cards.length;i++){
-							if(cards[i]==get.suit(card)) return true;
-						}
+						const suit = get.suit(card);
+						if (suit == 'unsure' || player.getStorage('nzry_chenglve1').includes(suit)) return true;
 					}
 				},
 				onremove:true,
@@ -2762,7 +2753,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.discardPlayerCard(trigger.target,get.prompt('jianchu',trigger.target),true).set('ai',function(button){
 						if(!_status.event.att) return 0;
 						if(get.position(button.link)=='e'){
-							if(get.subtype(button.link)=='equip2')	return 2*get.value(button.link);
+							if(get.subtype(button.link)=='equip2') return 2*get.value(button.link);
 							return get.value(button.link);
 						}
 						return 1;
@@ -5443,6 +5434,18 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				ai:{
 					respondShan:true,
+					freeShan:true,
+					skillTagFilter(player,tag,arg){
+						if(tag!=='respondShan'&&tag!=='freeShan') return;
+						if(!player.hasEmptySlot(2)||player.hasSkillTag('unequip2')) return false;
+						if(!arg||!arg.player) return true;
+						if(arg.player.hasSkillTag('unequip',false,{
+							target:player
+						})||arg.player.hasSkillTag('unequip_ai',false,{
+							target:player
+						})) return false;
+						return true;
+					},
 					effect:{
 						target:function(card,player,target){
 							if(player==target&&get.subtype(card)=='equip2'){
@@ -7293,6 +7296,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
+			// 蛊惑（guhuo）技能错误，请勿引用
+			/*
 			guhuo:{
 				enable:'phaseUse',
 				usable:1,
@@ -7361,6 +7366,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					threaten:1.6,
 				}
 			},
+			*/
 			huangtian:{
 				unique:true,
 				audio:'huangtian2',
@@ -7429,10 +7435,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(!player.countCards('hs')) return false;
 					for(var i of lib.inpile){
 						var type=get.type(i);
-						if((type=='basic'||type=='trick')&&event.filterCard({name:i},player,event)) return true;
+						if((type=='basic'||type=='trick')&&event.filterCard(get.autoViewAs({name:i},'unsure'),player,event)) return true;
 						if(i=='sha'){
 							for(var j of lib.inpile_nature){
-								if(event.filterCard({name:i,nature:j},player,event)) return true;
+								if(event.filterCard(get.autoViewAs({name:i,nature:j},'unsure'),player,event)) return true;
 							}
 						}
 					}
@@ -7442,11 +7448,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					dialog:function(event,player){
 						var list=[];
 						for(var i of lib.inpile){
-							if(event.type!='phase') if(!event.filterCard({name:i},player,event)) continue;
+							if(event.type!='phase') if(!event.filterCard(get.autoViewAs({name:i},'unsure'),player,event)) continue;
 							var type=get.type(i);
 							if(type=='basic'||type=='trick') list.push([type,'',i]);
 							if(i=='sha'){
-								if(event.type!='phase') if(!event.filterCard({name:i,nature:j},player,event)) continue;
+								if(event.type!='phase') if(!event.filterCard(get.autoViewAs({name:i,nature:j},'unsure'),player,event)) continue;
 								for(var j of lib.inpile_nature) list.push(['基本','','sha',j]);
 							}
 						}
@@ -7644,7 +7650,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 3'
 					game.delayx();
 					game.broadcastAll(function(onEnd){
-                        _status.event.onEnd01=onEnd;
+						_status.event.onEnd01=onEnd;
 						if(_status.guhuoNode) _status.guhuoNode.listenTransition(onEnd,300);
 					},event.onEnd01);
 					'step 4'
@@ -7721,7 +7727,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 		},
 		characterReplace:{
-			caoren:['caoren','old_caoren','sb_caoren','new_caoren'],
+			caoren:['caoren','old_caoren','sb_caoren','new_caoren','star_caoren'],
 			sp_caoren:['sp_caoren','jsp_caoren'],
 			xiahouyuan:['re_xiahouyuan','ol_xiahouyuan','xiahouyuan'],
 			huangzhong:['re_huangzhong','ol_huangzhong','sb_huangzhong','huangzhong','jsrg_huangzhong'],
@@ -7736,7 +7742,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			pangtong:['pangtong','ol_pangtong','re_pangtong','sb_pangtong'],
 			re_jsp_pangtong:['re_jsp_pangtong','jsrg_pangtong','sp_pangtong'],
 			taishici:['taishici','re_taishici','ol_sb_taishici'],
-			re_yuanshao:['re_yuanshao','ol_yuanshao','xin_yuanshao','sb_yuanshao'],
+			re_yuanshao:['re_yuanshao','ol_yuanshao','xin_yuanshao','ol_sb_yuanshao','star_yuanshao','sb_yuanshao'],
 			pangde:['re_pangde','ol_pangde','pangde'],
 			yanwen:['yanwen','ol_yanwen','re_yanwen'],
 			caopi:['caopi','re_caopi','ps_caopi','sb_caopi'],
@@ -7745,7 +7751,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			zhurong:['zhurong','ol_zhurong','re_zhurong','sb_zhurong'],
 			sunjian:['sunjian','ol_sunjian','re_sunjian','tw_ol_sunjian'],
 			jiaxu:['jiaxu','re_jiaxu','ns_jiaxu','ps_jiaxu'],
-			dongzhuo:['dongzhuo','ol_dongzhuo','re_dongzhuo','sp_dongzhuo','yj_dongzhuo'],
+			dongzhuo:['dongzhuo','ol_dongzhuo','re_dongzhuo','star_dongzhuo','sp_dongzhuo','yj_dongzhuo'],
 			dengai:['dengai','ol_dengai','re_dengai'],
 			sp_ol_zhanghe:['sp_ol_zhanghe','yj_zhanghe','sp_zhanghe','jsrg_zhanghe'],
 			jiangwei:['jiangwei','ol_jiangwei','re_jiangwei','ol_sb_jiangwei','sb_jiangwei','jsrg_jiangwei'],

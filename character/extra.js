@@ -1875,7 +1875,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			twgongxin2:{
 				mod:{
 					cardEnabled2(card,player){
-						if(player.getStorage('twgongxin2').includes(get.color(card))) return false;
+						const color = get.color(card);
+						if(color!='unsure' && player.getStorage('twgongxin2').includes(color)) return false;
 					},
 				},
 				charlotte:true,
@@ -2266,10 +2267,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						if(lib.skill.xunshi.isXunshi(card)) return 'none';
 					},
 					targetInRange(card){
-						if(get.color(card)=='none') return true;
+						const suit = get.color(card);
+						if (suit=='none' || suit=='unsure') return true;
 					},
 					cardUsable(card){
-						if(get.color(card)=='none') return Infinity;
+						const suit = get.color(card);
+						if (suit=='none' || suit=='unsure') return Infinity;
 					},
 				},
 				isXunshi(card){
@@ -2343,10 +2346,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						if(get.suit(card)=='heart') return false;
 					},
 					targetInRange(card){
-						if(get.suit(card)=='heart') return true;
+						if(card.name === 'sha'){
+							const suit = get.suit(card);
+							if (suit === 'heart' || suit === 'unsure') return true;
+						}
 					},
 					cardUsable(card){
-						if(card.name=='sha'&&get.suit(card)=='heart') return Infinity;
+						if(card.name === 'sha'){
+							const suit = get.suit(card);
+							if (suit === 'heart' || suit === 'unsure') return Infinity;
+						}
 					}
 				},
 				audio:'wushen',
@@ -2511,16 +2520,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(event.responded||event.shouli||event.type=='wuxie') return false;
 					if(game.hasPlayer(function(current){
 						return current.getCards('e',card=>get.is.attackingMount(card)).length>0;
-					})&&event.filterCard({
+					})&&event.filterCard(get.autoViewAs({
 						name:'sha',
 						storage:{shouli:true},
-					},player,event)) return true;
+					},'unsure'),player,event)) return true;
 					if(game.hasPlayer(function(current){
 						return current.getCards('e',card=>get.is.defendingMount(card)).length>0;
-					})&&event.filterCard({
+					})&&event.filterCard(get.autoViewAs({
 						name:'shan',
 						storage:{shouli:true},
-					},player,event)) return true;
+					},'unsure'),player,event)) return true;
 					return false;
 				},
 				delay:false,
@@ -5548,7 +5557,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.removeMark('baonu',2);
 					player.addTempSkills('wushuang');
 					player.popup('无双');
-					game.log(player,'获得了技能','#g【无双】');
+					// game.log(player,'获得了技能','#g【无双】');
 					target.addTempSkill('ol_wuqian_targeted');
 				},
 				ai:{
@@ -6164,10 +6173,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						if(get.suit(card)=='heart') return false;
 					},
 					targetInRange(card){
-						if(get.suit(card)=='heart') return true;
+						if(card.name === 'sha'){
+							const suit = get.suit(card);
+							if (suit === 'heart' || suit === 'unsure') return true;
+						}
 					},
 					cardUsable(card){
-						if(card.name=='sha'&&get.suit(card)=='heart') return Infinity;
+						if(card.name === 'sha'){
+							const suit = get.suit(card);
+							if (suit === 'heart' || suit === 'unsure') return Infinity;
+						}
 					}
 				},
 				audio:2,
@@ -6820,17 +6835,18 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				prompt:'将♦牌当做杀，♥牌当做桃，♣牌当做闪，♠牌当做无懈可击使用或打出',
 				//动态的viewAs
 				viewAs(cards,player){
-					var name=false;
-					var nature=null;
-					//根据选择的卡牌的花色 判断要转化出的卡牌是闪还是火杀还是无懈还是桃
-					switch(get.suit(cards[0],player)){
-						case 'club':name='shan';break;
-						case 'diamond':name='sha';nature='fire';break;
-						case 'spade':name='wuxie';break;
-						case 'heart':name='tao';break;
+					if(cards.length){
+						var name=false,nature=null;
+						//根据选择的卡牌的花色 判断要转化出的卡牌是闪还是火杀还是无懈还是桃
+						switch(get.suit(cards[0],player)){
+							case 'club':name='shan';break;
+							case 'diamond':name='sha';nature='fire';break;
+							case 'spade':name='wuxie';break;
+							case 'heart':name='tao';break;
+						}
+						//返回判断结果
+						if(name) return {name:name,nature:nature};
 					}
-					//返回判断结果
-					if(name) return {name:name,nature:nature};
 					return null;
 				},
 				//AI选牌思路
@@ -6875,13 +6891,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					//获取卡牌花色
 					var name=get.suit(card,player);
 					//如果这张牌是梅花并且当前时机能够使用/打出闪 那么这张牌可以选择
-					if(name=='club'&&filter({name:'shan',cards:[card]},player,event)) return true;
+					if(name=='club'&&filter(get.autoViewAs({name:'shan'},'unsure'),player,event)) return true;
 					//如果这张牌是方片并且当前时机能够使用/打出火杀 那么这张牌可以选择
-					if(name=='diamond'&&filter({name:'sha',cards:[card],nature:'fire'},player,event)) return true;
+					if(name=='diamond'&&filter(get.autoViewAs({name:'sha',nature:'fire'},'unsure'),player,event)) return true;
 					//如果这张牌是黑桃并且当前时机能够使用/打出无懈 那么这张牌可以选择
-					if(name=='spade'&&filter({name:'wuxie',cards:[card]},player,event)) return true;
+					if(name=='spade'&&filter(get.autoViewAs({name:'wuxie'},'unsure'),player,event)) return true;
 					//如果这张牌是红桃并且当前时机能够使用/打出桃 那么这张牌可以选择
-					if(name=='heart'&&filter({name:'tao',cards:[card]},player,event)) return true;
+					if(name=='heart'&&filter(get.autoViewAs({name:'tao'},'unsure'),player,event)) return true;
 					//上述条件都不满足 那么就不能选择这张牌
 					return false;
 				},
@@ -6890,13 +6906,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					//获取当前时机的卡牌选择限制
 					var filter=event.filterCard;
 					//如果当前时机能够使用/打出火杀并且角色有方片 那么可以发动技能
-					if(filter({name:'sha',nature:'fire'},player,event)&&player.countCards('hes',{suit:'diamond'})) return true;
+					if(filter(get.autoViewAs({name:'sha',nature:'fire'},'unsure'),player,event)&&player.countCards('hes',{suit:'diamond'})) return true;
 					//如果当前时机能够使用/打出闪并且角色有梅花 那么可以发动技能
-					if(filter({name:'shan'},player,event)&&player.countCards('hes',{suit:'club'})) return true;
+					if(filter(get.autoViewAs({name:'shan'},'unsure'),player,event)&&player.countCards('hes',{suit:'club'})) return true;
 					//如果当前时机能够使用/打出桃并且角色有红桃 那么可以发动技能
-					if(filter({name:'tao'},player,event)&&player.countCards('hes',{suit:'heart'})) return true;
+					if(filter(get.autoViewAs({name:'tao'},'unsure'),player,event)&&player.countCards('hes',{suit:'heart'})) return true;
 					//如果当前时机能够使用/打出无懈可击并且角色有黑桃 那么可以发动技能
-					if(filter({name:'wuxie'},player,event)&&player.countCards('hes',{suit:'spade'})) return true;
+					if(filter(get.autoViewAs({name:'wuxie'},'unsure'),player,event)&&player.countCards('hes',{suit:'spade'})) return true;
 					return false;
 				},
 				ai:{
@@ -6981,15 +6997,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				enable:['chooseToUse','chooseToRespond'],
 				prompt:'将♦手牌当做火【杀】，♥手牌当做【桃】，♣手牌当做【闪】，♠手牌当做【无懈可击】使用或打出',
 				viewAs(cards,player){
-					var name=false;
-					var nature=null;
-					switch(get.suit(cards[0],player)){
-						case 'club':name='shan';break;
-						case 'diamond':name='sha';nature='fire';break;
-						case 'spade':name='wuxie';break;
-						case 'heart':name='tao';break;
+					if(cards.length){
+						var name=false,nature=null;
+						switch(get.suit(cards[0],player)){
+							case 'club':name='shan';break;
+							case 'diamond':name='sha';nature='fire';break;
+							case 'spade':name='wuxie';break;
+							case 'heart':name='tao';break;
+						}
+						if(name) return {name:name,nature:nature};
 					}
-					if(name) return {name:name,nature:nature};
 					return null;
 				},
 				check(card){
@@ -7029,10 +7046,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				filter(event,player){
 					var filter=event.filterCard;
-					if(filter({name:'sha',nature:'fire'},player,event)&&player.countCards('hs',{suit:'diamond'})) return true;
-					if(filter({name:'shan'},player,event)&&player.countCards('hs',{suit:'club'})) return true;
-					if(filter({name:'tao'},player,event)&&player.countCards('hs',{suit:'heart'})) return true;
-					if(filter({name:'wuxie'},player,event)&&player.countCards('hs',{suit:'spade'})) return true;
+					if(filter(get.autoViewAs({name:'sha',nature:'fire'},'unsure'),player,event)&&player.countCards('hs',{suit:'diamond'})) return true;
+					if(filter(get.autoViewAs({name:'shan'},'unsure'),player,event)&&player.countCards('hs',{suit:'club'})) return true;
+					if(filter(get.autoViewAs({name:'tao'},'unsure'),player,event)&&player.countCards('hs',{suit:'heart'})) return true;
+					if(filter(get.autoViewAs({name:'wuxie'},'unsure'),player,event)&&player.countCards('hs',{suit:'spade'})) return true;
 					return false;
 				},
 				precontent(){
@@ -7516,13 +7533,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					else event.finish();
 					'step 2'
-					player.addTempSkill(result.control,{player:'dieAfter'});
-					player.popup(result.control,'thunder');
+					player.addTempSkills(result.control,{player:'dieAfter'});
+					// player.popup(result.control,'thunder');
 					player.storage.drlt_duorui=[result.control];
 					player.storage.drlt_duorui_player=trigger.player;
 					trigger.player.storage.drlt_duorui=[result.control];
 					trigger.player.addTempSkill('drlt_duorui1',{player:'phaseAfter'});
-					game.log(player,'获得了技能','#g【'+get.translation(result.control)+'】')
+					// game.log(player,'获得了技能','#g【'+get.translation(result.control)+'】')
 				},
 				group:['duorui_clear'],
 			},

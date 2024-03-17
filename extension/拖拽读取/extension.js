@@ -57,7 +57,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 	 * @param {(i: number | 'finish' | ErrorEvent, max?: number) => void} callback
 	 */
 	function extractAll(zipFilePath, extractToPath, password, callback) {
-		var myWorker = new Worker(__dirname + '/extension/拖拽读取/worker.js');
+		var myWorker = new Worker('./extension/拖拽读取/worker.js');
 		myWorker.postMessage([zipFilePath instanceof ArrayBuffer ? zipFilePath : fs.readFileSync(zipFilePath), password]);
 		myWorker.onmessage = function (e) {
 			if (e.data == 'finish') {

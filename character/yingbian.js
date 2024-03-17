@@ -1673,9 +1673,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					else event.finish();
 					'step 1'
-					player.addTempSkill(result.control,'phaseUseEnd');
+					player.addTempSkills(result.control,'phaseUseEnd');
 					player.popup(result.control);
-					game.log(player,'获得了','#g【'+get.translation(result.control)+'】');
+					// game.log(player,'获得了','#g【'+get.translation(result.control)+'】');
 				},
 				ai:{threaten:0.9},
 				subSkill:{
@@ -3407,13 +3407,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						if(list.length==result.cards.length){
 							target.draw();
 							player.getStat('skill').sanchen--;
-							if(get.mode()=='guozhan') player.addTempSkill('pozhu');
+							if(get.mode()=='guozhan') player.addTempSkills('pozhu');
 						}
 					}
 					else{
 						target.draw();
 						player.getStat('skill').sanchen--;
-						if(get.mode()=='guozhan') player.addTempSkill('pozhu');
+						if(get.mode()=='guozhan') player.addTempSkills('pozhu');
 					}
 				},
 				ai:{
@@ -3554,7 +3554,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger:{global:'phaseJieshuBegin'},
 				filter:function(event,player){
 					return player.hasMark('xijue')&&event.player.isAlive()&&event.player!=player&&player.countCards('h',function(card){
-						if(_status.connectMode) return true;
+						if(_status.connectMode||get.mode()!='guozhan') return true;
 						return get.type(card)=='basic';
 					});
 				},
@@ -3567,7 +3567,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(get.damageEffect(trigger.player,player,player)<=0){
 						nono=true;
 					}
-					var next=player.chooseToDiscard('是否弃置一枚“爵”和一张基本牌，对'+get.translation(trigger.player)+'发动【骁果】？',{type:'basic'});
+					var next=player.chooseToDiscard(`是否弃置一枚“爵”和一张${get.mode()=='guozhan'?'基本':'手'}牌，对${get.translation(trigger.player)}发动【骁果】？`,'h',function(card,player){
+						if(get.mode()!='guozhan') return true;
+						return get.type(card,player)=='basic';
+					});
 					next.set('ai',function(card){
 						if(_status.event.nono) return 0;
 						return 8-get.useful(card);
@@ -3776,6 +3779,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			jiachong:['dc_jiachong','jin_jiachong','jiachong'],
 			yangyan:['yangyan','old_yangyan'],
 			yangzhi:['yangzhi','old_yangzhi'],
+			zhongyan:['zhongyan','clan_zhongyan'],
 		},
 		translate:{
 			jin_zhangchunhua:'晋张春华',
@@ -3798,7 +3802,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			xijue_tuxi_info:'摸牌阶段摸牌时，你可以少摸任意张牌，然后获得等量的角色的各一张手牌。',
 			xijue_tuxi_info_guozhan:'摸牌阶段摸牌时，你可以少摸至多两张牌，然后获得等量的角色的各一张手牌。',
 			xijue_xiaoguo:'骁果',
-			xijue_xiaoguo_info:'其他角色的结束阶段开始时，你可以弃置一张基本牌，令该角色选择一项：1.弃置一张装备牌，然后你摸一张牌；2.受到你对其造成的1点伤害。',
+			xijue_xiaoguo_info:'其他角色的结束阶段开始时，你可以弃置一张手牌，令该角色选择一项：1.弃置一张装备牌，然后你摸一张牌；2.受到你对其造成的1点伤害。',
 			xijue_xiaoguo_info_guozhan:'其他角色的结束阶段开始时，你可以弃置一张基本牌，令该角色选择一项：1.弃置一张装备牌；2.受到你对其造成的1点伤害。',
 			gz_duyu:'杜预',
 			duyu:'晋杜预',
@@ -3954,7 +3958,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			dezhang_info:'觉醒技。准备阶段，若你没有“绥”，则你减1点体力上限并获得〖卫戍〗。',
 			weishu:'卫戍',
 			weishu_info:'锁定技。①当你于摸牌阶段外不因〖卫戍①〗而摸牌后，你令一名角色摸一张牌。②当你于弃牌阶段外不因〖卫戍②〗而弃置牌后，你弃置一名其他角色的一张牌。',
-			jin_jiachong:'贾充',
+			jin_jiachong:'晋贾充',
+			jin_jiachong_prefix:'晋',
 			xiongshu:'凶竖',
 			xiongshu_info:'其他角色的出牌阶段开始时，你可弃置X张牌（X为你本轮内此前已发动过此技能的次数，为0则不弃）并展示其一张手牌，然后你预测“其本阶段内是否会使用与展示牌牌名相同的牌”。此阶段结束时，若你的预测正确，则你对其造成1点伤害；否则你获得展示牌。',
 			jianhui:'奸回',

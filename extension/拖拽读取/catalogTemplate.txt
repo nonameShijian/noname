@@ -4,6 +4,6 @@ extension["拖拽读取"]={
 	nedisk:"",
 	forum:"",
 	size:"#SIZE",
-	version:"3.0",
+	version:"3.1",
 	files:[#FILES],
 };
