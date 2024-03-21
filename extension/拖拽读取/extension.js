@@ -344,7 +344,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 					if (typeof fetch != 'function') throw '不支持fetch函数，无法使用此功能';
 					if (_status.DragReadUpdate) return alert('请不要重复检查更新');
 					_status.DragReadUpdate = true;
-					fetch('https://raw.fastgit.org/nonameShijian/extinsion-DragRead/main/version')
+					fetch('https://mirror.ghproxy.com/https://raw.githubusercontent.com/nonameShijian/extinsion-DragRead/main/version')
 						.then(response => response.text()).then(version => {
 							let newVersion = parseFloat(version);
 							let nowVersion = NaN;
@@ -358,7 +358,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 									lib.init.css(lib.assetURL + "extension/拖拽读取", "extension");
 									loadCSS = true;
 								}
-								fetch('https://raw.fastgit.org/nonameShijian/extinsion-DragRead/main/updateContent')
+								fetch('https://mirror.ghproxy.com/https://raw.githubusercontent.com/nonameShijian/extinsion-DragRead/main/updateContent')
 									.then(response => response.text()).then(txt => {
 										let end = false;
 										let updateContent = txt.split("\n").filter((str) => {
@@ -386,7 +386,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 											if (download) return false;
 											download = true;
 											button.value = '正在下载';
-											fetch('https://hub.fastgit.org/nonameShijian/extinsion-DragRead/archive/refs/heads/main.zip')
+											fetch('https://mirror.ghproxy.com/https://github.com/nonameShijian/extinsion-DragRead/archive/refs/heads/main.zip')
 												.then(response => response.arrayBuffer()).then(arrayBuffer => {
 													layer.remove();
 													let { div, span, psw } = createProgress(`请等待加载拖拽读取(v${version}).zip，加载时间和文件大小成正比`);
@@ -468,8 +468,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 						callback(folders, files);
 					}
 
-					let foldersList = ["card", "character", "font", "game", "layout", "mode", "theme"];
-					let filesList = ["app.html", "index.html", "LICENSE", "README.md"];
+					let foldersList = ["card", "character", "font", "game", "layout", "mode", "theme", "noname"];
+					let filesList = ["app.html", "index.html", "LICENSE", "README.md", "noname.js", "service-worker.js"];
 
 					async function loadFile() {
 						for (let i = 0; i < filesList.length; i++) {
@@ -497,30 +497,29 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 								callback(foldersList[i], folders, files);
 							});
 						}
-
-						callback("cache", [], []);
 						//cache文件夹
-						callback("audio", ["background", "card", "die", "effect", "skill", "voice"], []);
+						callback("cache", [], []);
 						//audio文件夹
-						callback("image", ["background", "card", "character", "emotion", "mode", /*"skin",*/ "splash"], []);
+						callback("audio", ["background", "card", "die", "effect", "skill", "voice"], []);
 						//image文件夹, 避免导出image/FC等皮肤包
-						callback("extension", ["boss", "cardpile", "coin", "wuxing"], []);
+						callback("image", ["background", "card", "character", "emotion", "mode", /*"skin",*/ "splash"], []);
 						//四个原生扩展
-						callback("node_modules", ["options", "ultron", "ws"], []);
+						callback("extension", ["boss", "cardpile", "coin", "wuxing"], []);
 						//node_modules,电脑开局域网用
+						callback("node_modules", ["options", "ultron", "ws"], []);
 						span.innerText = "目录和文件数组已生成";
 						return zip;
 					}
 
-					loadFile().then((zip) => {
+					loadFile().then(zip => {
 						span.innerText = "正在转化nodeBuffer数据，请稍候";
 						zip.generateAsync({
 							type: "nodebuffer"
 						}).then(function (nodeBuffer) {
-							console.log(nodeBuffer);
+							// console.log(nodeBuffer);
 							span.innerText = "nodeBuffer数据转化成功";
 							var myWorker = new Worker(__dirname + '/extension/拖拽读取/worker2.js');
-							game.prompt('请输入新压缩包的密码(没有直接按取消)', false, password => {
+							game.prompt('请输入新压缩包的密码(没有直接按取消，带密码压缩的慢)', false, password => {
 								if (typeof password == 'string' && password.length > 0) {
 									span.innerText = '正在使用密码压缩文件';
 									myWorker.postMessage([nodeBuffer, password]);
@@ -594,7 +593,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 			author: "诗笺",
 			diskURL: "",
 			forumURL: "",
-			version: "3.0",
+			version: "3.1",
 		},
 	};
 });

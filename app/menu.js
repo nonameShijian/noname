@@ -78,7 +78,7 @@ async function checkForUpdate(url) {
 	
 	if(+localInstallerVersion < +serverInstallerVersion) {
 		//本地版本小于服务器安装版本
-		//nonameSkill:?updateURL=https://raw.fastgit.org/nonameShijian/noname/main
+		//nonameSkill:?updateURL=https://mirror.ghproxy.com/https://github.com/nonameShijian/noname/main
 		let fileList = [], updateStr = `
 		<!DOCTYPE html>
 		<html>
@@ -156,9 +156,9 @@ async function checkForUpdate(url) {
 	}
 }
 
-localStorage.getItem('autoCheckUpdates') == 'true' && checkForUpdate('https://ghproxy.com/https://raw.githubusercontent.com/nonameShijian/noname/main');
+// localStorage.getItem('autoCheckUpdates') == 'true' && checkForUpdate('https://mirror.ghproxy.com/https://raw.githubusercontent.com/nonameShijian/noname/main');
 
-//跳过最开始的下载界面
+// 跳过最开始的下载界面
 if(!localStorage.getItem('noname_inited')){
 	function loop(...args){
 		for (let i = 0; i < args.length; i++) {
@@ -285,9 +285,9 @@ var Menus = [{
 	}, {
 		label: '检查应用更新',
 		click: () => {
-			checkForUpdate('https://raw.fastgit.org/nonameShijian/noname/main');
+			checkForUpdate('https://mirror.ghproxy.com/https://raw.githubusercontent.com/nonameShijian/noname/main');
 		},
-	}, {
+	}, /* {
 		label: '自动检查更新',
 		type: 'checkbox',
 		checked: (() => {
@@ -297,7 +297,7 @@ var Menus = [{
 		click: (menuItem) => {
 			localStorage.setItem('autoCheckUpdates', menuItem.checked);
 		},
-	}, {
+	},*/ {
 		type: 'separator'
 	}, {
 		label: 'emoji选取',

@@ -6,7 +6,6 @@ const isWindows = process.platform === 'win32';
 const { versions } = process;
 const electronVersion = parseFloat(versions.electron);
 let remote;
-let noname_server = null;
 if (electronVersion >= 14) {
 	remote = require('@electron/remote/main');
 	remote.initialize();
@@ -156,13 +155,19 @@ function createMainWindow() {
 	if (fs.existsSync(path.join(__dirname, 'Home', 'saveProtocol.txt'))) {
 		// 启动http
 		const cp = require('child_process');
-		noname_server = cp.exec(`start /b ${__dirname}\\noname-server.exe -platform=electron`, (err, stdout, stderr) => {
-			
-		});
-		setTimeout(() => {
-			win.loadURL(`http://localhost:8089/app.html`);
-			// win.webContents.openDevTools();
-		}, 1000);
+		cp.exec(`start /b ${__dirname}\\noname-server.exe -platform=electron`, (err, stdout, stderr) => {});
+		function loadURL() {
+			let myAbortController = new AbortController();;
+			let signal = myAbortController.signal;
+			setTimeout(() => myAbortController.abort(), 2000);
+			fetch(`http://localhost:8089/app.html`, { signal })
+				.then(({ ok }) => {
+					if (ok) win.loadURL(`http://localhost:8089/app.html`);
+					else throw new Error('fetch加载失败');
+				})
+				.catch(() => loadURL())
+		}
+		loadURL();
 	} else {
 		win.loadURL(`file://${__dirname}/app.html`);
 		// win.webContents.openDevTools();
@@ -309,7 +314,7 @@ app.whenReady().then(() => {
 
 app.on('window-all-closed', () => {
 	const cp = require('child_process');
-	cp.exec(`taskkill /IM noname-server.exe /F`,()=>{});
+	cp.exec(`taskkill /IM noname-server.exe /F`,() => {});
 	if (process.platform !== 'darwin') {
 		app.quit();
 	}

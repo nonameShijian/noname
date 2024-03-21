@@ -29,8 +29,18 @@
     "ultron": "1.0.2",
     "ws": "1.0.1"
   },
-  "installerVersion": "1.71",
+  "installerVersion": "1.72",
   "installerUpdateContent": [
+    {
+      "version": "1.72",
+      "updateContent": [
+        "更换了可用的客户端更新源并且删除了自动检查更新功能",
+        "本版本开始，支持以http协议启动游戏，且隐藏v1.7添加的黑色窗口进程",
+        "注:要把【拖拽读取】扩展放置到其他的电脑版无名杀使用，请在应用根目录的main.js中",
+        "的BrowserWindow构造函数中的webPreferences属性添加: nodeIntegrationInWorker: true",
+        "本版本使用chromium 120版本，将不兼容windows7，8， 8.1操作系统"
+      ]
+    },
     {
       "version": "1.71",
       "updateContent": [
