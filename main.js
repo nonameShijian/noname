@@ -6,6 +6,7 @@ const isWindows = process.platform === 'win32';
 const { versions } = process;
 const electronVersion = parseFloat(versions.electron);
 let remote;
+let noname_server = null;
 if (electronVersion >= 14) {
 	remote = require('@electron/remote/main');
 	remote.initialize();
@@ -155,7 +156,9 @@ function createMainWindow() {
 	if (fs.existsSync(path.join(__dirname, 'Home', 'saveProtocol.txt'))) {
 		// 启动http
 		const cp = require('child_process');
-		cp.exec(`start /min ${__dirname}\\noname-server.exe -platform=electron`, (err, stdout, stderr) => { });
+		noname_server = cp.exec(`start /b ${__dirname}\\noname-server.exe -platform=electron`, (err, stdout, stderr) => {
+			
+		});
 		setTimeout(() => {
 			win.loadURL(`http://localhost:8089/app.html`);
 			// win.webContents.openDevTools();
@@ -305,6 +308,8 @@ app.whenReady().then(() => {
 });
 
 app.on('window-all-closed', () => {
+	const cp = require('child_process');
+	cp.exec(`taskkill /IM noname-server.exe /F`,()=>{});
 	if (process.platform !== 'darwin') {
 		app.quit();
 	}
