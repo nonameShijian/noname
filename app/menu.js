@@ -257,7 +257,7 @@ if (window.indexedDB) {
 			const extensions = /*e.target.result;*/ this.result;
             const config = db.transaction(['config'], 'readwrite').objectStore('config');
             if (!Array.isArray(extensions) || extensions.length == 0) {
-                config.put(['应用配置', '拖拽读取', '在线更新'], 'extensions');
+				config.put(['应用配置', '拖拽读取'/*, '在线更新'*/], 'extensions');
             }
 		};
 	};

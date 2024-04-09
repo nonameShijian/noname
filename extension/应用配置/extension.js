@@ -1,4 +1,3 @@
-/// <reference path="../../typings/index.d.ts" />
 "use strict";
 game.import("extension", function(lib, game, ui, get, ai, _status) {
 	const { versions } = process;
@@ -25,7 +24,7 @@ game.import("extension", function(lib, game, ui, get, ai, _status) {
 	const thisWindow = remote.getCurrentWindow();
 	
 	//保存扩展
-    for (let extensionName of ['应用配置', '拖拽读取', '在线更新']) {
+	for (let extensionName of ['应用配置', '拖拽读取'/*, '在线更新'*/]) {
         if (lib.node.fs.existsSync(path.join(__dirname, 'extension', extensionName))) {
             if (!lib.config.extensions.includes(extensionName)) {
                 console.log(`【应用配置】加载并保存了【${extensionName}】内置扩展`);
