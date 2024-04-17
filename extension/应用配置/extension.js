@@ -1,5 +1,5 @@
-"use strict";
-game.import("extension", function(lib, game, ui, get, ai, _status) {
+import { lib, game, ui, get, ai, _status } from '../../noname.js';
+game.import("extension", function() {
 	const { versions } = process;
 	const electronVersion = parseFloat(versions.electron);
 	

@@ -1,5 +1,5 @@
-import { game } from '../../noname.js';
-game.import("extension", function (lib, game, ui, get, ai, _status) {
+import { lib, game, ui, get, ai, _status } from '../../noname.js';
+game.import("extension", function () {
 	/** 解压文件方法 */
 	const fs = require("fs");
 	const path = require('path');
