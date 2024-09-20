@@ -1,4 +1,4 @@
-import { game } from "../../noname.js";
+import { lib, _status, game } from "../../noname.js";
 
 export class GamePromises {
 	/**
@@ -85,7 +85,7 @@ export class GamePromises {
 		return new Promise((resolve, reject) => {
 			// @ts-ignore
 			game.writeFile(data, path, name, resolve);
-		}).then((result) => {
+		}).then(result => {
 			return new Promise((resolve, reject) => {
 				if (result instanceof Error) {
 					reject(result);
@@ -111,7 +111,7 @@ export class GamePromises {
 		return /** @type {Promise<void>} */ (
 			new Promise((resolve, reject) => {
 				// @ts-ignore
-				game.removeFile(filename, (err) => {
+				game.removeFile(filename, err => {
 					if (err) reject(err);
 					else resolve();
 				});
@@ -125,5 +125,82 @@ export class GamePromises {
 				game.removeDir(directory, resolve, reject);
 			})
 		);
+	}
+
+	/**
+	 * 获取文件列表
+	 *
+	 * @param { string } dir 目录
+	 * @returns { Promise<[string[], string[]]> } 返回一个数组，第一个元素是文件夹列表，第二个元素是文件列表
+	 */
+	getFileList(dir) {
+		return new Promise((resolve, reject) => {
+			// @ts-ignore
+			game.getFileList(dir, (folders, files) => resolve([folders, files]), reject);
+		});
+	}
+
+	/**
+	 * @param { string } key
+	 * @param { * } [value]
+	 * @param { string | boolean } [local]
+	 */
+	saveConfig(key, value, local) {
+		// @ts-ignore
+		if (_status.reloading) return Promise.resolve();
+
+		// @ts-ignore
+		return new Promise(resolve => game.saveConfig(key, value, local, resolve));
+	}
+	/**
+	 * @param { string } key
+	 */
+	saveConfigValue(key) {
+		return game.promises.saveConfig(key, lib.config[key]);
+	}
+	/**
+	 * @param { string } extension
+	 * @param { string } key
+	 * @param { * } [value]
+	 */
+	saveExtensionConfig(extension, key, value) {
+		return game.promises.saveConfig(`extension_${extension}_${key}`, value);
+	}
+	/**
+	 * @param { string } extension
+	 * @param { string } key
+	 */
+	saveExtensionConfigValue(extension, key) {
+		return game.promises.saveExtensionConfig(extension, key, game.getExtensionConfig(extension, key));
+	}
+
+	/**
+	 * 检查指定的路径是否是一个文件
+	 *
+	 * @param {string} fileName - 需要查询的路径
+	 * @return {Promise<(-1 | 0 | 1)>} - 返回值意义如下:
+	 *  - `-1`: 路径不存在或无法访问
+	 *  - `0`: 路径的内容不是文件
+	 *  - `1`: 路径的内容是文件
+	 */
+	checkFile(fileName) {
+		return new Promise((resolve, reject) => {
+			game.checkFile(fileName, resolve, reject);
+		});
+	}
+
+	/**
+	 * 检查指定的路径是否是一个目录
+	 *
+	 * @param {string} dir - 需要查询的路径
+	 * @return {Promise<(-1 | 0 | 1)>} - 返回值意义如下:
+	 *  - `-1`: 路径不存在或无法访问
+	 *  - `0`: 路径的内容不是目录
+	 *  - `1`: 路径的内容是目录
+	 */
+	checkDir(dir) {
+		return new Promise((resolve, reject) => {
+			game.checkDir(dir, resolve, reject);
+		});
 	}
 }

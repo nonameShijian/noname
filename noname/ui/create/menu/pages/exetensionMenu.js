@@ -18,6 +18,7 @@ import {
 } from "../index.js";
 import { ui, game, get, ai, lib, _status } from "../../../../../noname.js";
 import { nonameInitialized } from "../../../../util/index.js";
+import security from "../../../../util/security.js";
 
 export const extensionMenu = function (connectMenu) {
 	if (connectMenu) return;
@@ -332,20 +333,17 @@ export const extensionMenu = function (connectMenu) {
 				inputExtName.disabled = true;
 				setTimeout(function () {
 					var ext = {};
-					var config = null,
-						help = null;
 					for (var i in dash4.content) {
 						try {
 							if (i == "content" || i == "precontent") {
-								eval("ext[i]=" + dash4.content[i]);
+								ext[i] = security.exec2(`return (${dash4.content[i]});`).return;
 								if (typeof ext[i] != "function") {
 									throw "err";
 								} else {
 									ext[i] = ext[i].toString();
 								}
 							} else {
-								eval(dash4.content[i]);
-								eval("ext[i]=" + i);
+								ext[i] = security.exec2(dash4.content[i])[i];
 								if (ext[i] == null || typeof ext[i] != "object") {
 									throw "err";
 								} else {
@@ -370,6 +368,7 @@ export const extensionMenu = function (connectMenu) {
 						",package:" +
 						get.stringify({
 							//替换die audio，加上扩展名
+							//TODO: 创建扩展这部分更是重量级
 							character: ((pack) => {
 								var character = pack.character;
 								for (var key in character) {
@@ -381,16 +380,16 @@ export const extensionMenu = function (connectMenu) {
 											if (typeof game.readFile == "function") {
 												info[4].push(
 													"die:ext:" +
-														page.currentExtension +
-														"/audio/die/" +
-														tag.slice(tag.lastIndexOf("/") + 1)
+													page.currentExtension +
+													"/audio/die/" +
+													tag.slice(tag.lastIndexOf("/") + 1)
 												);
 											} else {
 												info[4].push(
 													"die:db:extension-" +
-														page.currentExtension +
-														":audio/die/" +
-														tag.slice(tag.lastIndexOf("/") + 1)
+													page.currentExtension +
+													":audio/die/" +
+													tag.slice(tag.lastIndexOf("/") + 1)
 												);
 											}
 										}
@@ -833,7 +832,7 @@ export const extensionMenu = function (connectMenu) {
 								};
 								img.src = data;
 							};
-							if (game.download) {
+							if (game.readFile) {
 								var url = lib.assetURL + "extension/" + name + "/" + file;
 								createButton(i, url);
 								if (lib.device == "ios" || lib.device == "android") {
@@ -1046,16 +1045,21 @@ export const extensionMenu = function (connectMenu) {
 						list.push([i, lib.translate[i]]);
 					}
 				}
+				if(!list.length){
+					if(!lib.character["noname_sunce"]) lib.character["noname_sunce"]=["male","wu",4,["jiang"],[]];
+					if(!lib.translate["noname_sunce"]) lib.translate["noname_sunce"]="孙策";
+					list.push(["noname_sunce",lib.translate["noname_sunce"]]);
+				}
 				list.sort(function (a, b) {
 					a = a[0];
 					b = b[0];
 					var aa = a,
 						bb = b;
 					if (aa.includes("_")) {
-						aa = aa.slice(aa.indexOf("_") + 1);
+						aa = aa.slice(aa.lastIndexOf("_") + 1);
 					}
 					if (bb.includes("_")) {
-						bb = bb.slice(bb.indexOf("_") + 1);
+						bb = bb.slice(bb.lastIndexOf("_") + 1);
 					}
 					if (aa != bb) {
 						return aa > bb ? 1 : -1;
@@ -1419,7 +1423,7 @@ export const extensionMenu = function (connectMenu) {
 								};
 								img.src = data;
 							};
-							if (game.download) {
+							if (game.readFile) {
 								var url = lib.assetURL + "extension/" + name + "/" + file;
 								createButton(i, url, fullskin);
 								if (lib.device == "ios" || lib.device == "android") {
@@ -1593,10 +1597,10 @@ export const extensionMenu = function (connectMenu) {
 					var aa = a,
 						bb = b;
 					if (aa.includes("_")) {
-						aa = aa.slice(aa.indexOf("_") + 1);
+						aa = aa.slice(aa.lastIndexOf("_") + 1);
 					}
 					if (bb.includes("_")) {
-						bb = bb.slice(bb.indexOf("_") + 1);
+						bb = bb.slice(bb.lastIndexOf("_") + 1);
 					}
 					if (aa != bb) {
 						return aa > bb ? 1 : -1;
@@ -1680,8 +1684,7 @@ export const extensionMenu = function (connectMenu) {
 						code = container.textarea.value;
 					}
 					try {
-						var card = null;
-						eval(code);
+						var { card } = security.exec2(code);
 						if (card == null || typeof card != "object") {
 							throw "err";
 						}
@@ -1770,8 +1773,7 @@ export const extensionMenu = function (connectMenu) {
 						page.content.pack.translate[name] = translate;
 						page.content.pack.translate[name + "_info"] = info;
 						try {
-							var card = null;
-							eval(container.code);
+							var { card } = security.exec2(container.code);
 							if (card == null || typeof card != "object") {
 								throw "err";
 							}
@@ -2139,8 +2141,7 @@ export const extensionMenu = function (connectMenu) {
 						code = container.textarea.value;
 					}
 					try {
-						var skill = null;
-						eval(code);
+						var { skill } = security.exec2(code);
 						if (skill == null || typeof skill != "object") {
 							throw "err";
 						}
@@ -2188,16 +2189,21 @@ export const extensionMenu = function (connectMenu) {
 						list.push([i, lib.translate[i]]);
 					}
 				}
+				if(!list.length){
+					if(!lib.character["noname_sunce"]) lib.character["noname_sunce"]=["male","wu",4,["jiang"],[]];
+					if(!lib.translate["noname_sunce"]) lib.translate["noname_sunce"]="孙策";
+					list.push(["noname_sunce",lib.translate["noname_sunce"]]);
+				}
 				list.sort(function (a, b) {
 					a = a[0];
 					b = b[0];
 					var aa = a,
 						bb = b;
 					if (aa.includes("_")) {
-						aa = aa.slice(aa.indexOf("_") + 1);
+						aa = aa.slice(aa.lastIndexOf("_") + 1);
 					}
 					if (bb.includes("_")) {
-						bb = bb.slice(bb.indexOf("_") + 1);
+						bb = bb.slice(bb.lastIndexOf("_") + 1);
 					}
 					if (aa != bb) {
 						return aa > bb ? 1 : -1;
@@ -2322,8 +2328,7 @@ export const extensionMenu = function (connectMenu) {
 						page.content.pack.translate[name] = translate;
 						page.content.pack.translate[name + "_info"] = info;
 						try {
-							var skill = null;
-							eval(container.code);
+							var { skill } = security.exec2(container.code);
 							if (skill == null || typeof skill != "object") {
 								throw "err";
 							}
@@ -2453,20 +2458,17 @@ export const extensionMenu = function (connectMenu) {
 						}
 						try {
 							if (link == "content" || link == "precontent") {
-								var func = null;
-								eval("func=" + code);
+								var { func } = security.exec2(`func = ${code}`);
 								if (typeof func != "function") {
 									throw "err";
 								}
 							} else if (link == "config") {
-								var config = null;
-								eval(code);
+								var { config } = security.exec2(code);
 								if (config == null || typeof config != "object") {
 									throw "err";
 								}
 							} else if (link == "help") {
-								var help = null;
-								eval(code);
+								var { help } = security.exec2(code);
 								if (help == null || typeof help != "object") {
 									throw "err";
 								}
@@ -2912,7 +2914,7 @@ export const extensionMenu = function (connectMenu) {
 					referrerPolicy: "no-referrer",
 				})
 					.then((response) => response.text())
-					.then(eval)
+					.then(security.eval) // 返回的是HTML?
 					.then(loaded)
 					.catch((reason) => {
 						console.log(reason);

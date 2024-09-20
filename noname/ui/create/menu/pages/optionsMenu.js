@@ -224,17 +224,17 @@ export const optionsMenu = function (connectMenu) {
 					for (var i in lib.character) {
 						if (lib.character[i][3].length) list.push([i, lib.translate[i]]);
 					}
-
+					if (!list.length) return;
 					list.sort(function (a, b) {
 						a = a[0];
 						b = b[0];
 						var aa = a,
 							bb = b;
 						if (aa.includes("_")) {
-							aa = aa.slice(aa.indexOf("_") + 1);
+							aa = aa.slice(aa.lastIndexOf("_") + 1);
 						}
 						if (bb.includes("_")) {
-							bb = bb.slice(bb.indexOf("_") + 1);
+							bb = bb.slice(bb.lastIndexOf("_") + 1);
 						}
 						if (aa != bb) {
 							return aa > bb ? 1 : -1;

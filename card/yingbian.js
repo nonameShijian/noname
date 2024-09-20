@@ -61,7 +61,7 @@ game.import("card", function () {
 						var base = 0;
 						if (get.cardtag(card, "yingbian_all")) {
 							if (
-								targets.filter(function (current) {
+								targets.some(function (current) {
 									var att = get.attitude(player, current);
 									if (att <= 0)
 										return (
@@ -74,7 +74,7 @@ game.import("card", function () {
 											return get.position(card) == "j" || get.value(card, current) <= 0;
 										}) > 1
 									);
-								}).length
+								})
 							)
 								base += 6;
 						}
@@ -138,13 +138,11 @@ game.import("card", function () {
 									? -1.5
 									: 1.5;
 							var js = target.getCards("j");
-							if (js.length) {
-								var jj = js[0].viewAs ? { name: js[0].viewAs } : js[0];
-								if (js.length == 1 && get.effect(target, jj, target, player) >= 0) {
-									return -1.5;
-								}
-								return 3;
-							}
+							if (js.length && js.some(i => {
+								let cardj = i.viewAs ? { name: i.viewAs } : i;
+								if (cardj.name == "xumou_jsrg") return false;
+								return get.effect(target, cardj, target, player) < 0;
+							})) return 3;
 							return -1.5;
 						},
 						player: function (player, target) {
@@ -159,13 +157,11 @@ game.import("card", function () {
 							}
 							if (get.attitude(player, target) > 1) {
 								var js = target.getCards("j");
-								if (js.length) {
-									var jj = js[0].viewAs ? { name: js[0].viewAs } : js[0];
-									if (js.length == 1 && get.effect(target, jj, target, player) >= 0) {
-										return 0;
-									}
-									return 1;
-								}
+								if (js.length && js.some(i => {
+									let cardj = i.viewAs ? { name: i.viewAs } : i;
+									if (cardj.name == "xumou_jsrg") return false;
+									return get.effect(target, cardj, target, player) < 0;
+								})) return 1;
 								return 0;
 							}
 							return 1;
@@ -188,9 +184,10 @@ game.import("card", function () {
 					return target == player;
 				},
 				modTarget: true,
-				content: function () {
-					target.chooseToGuanxing(2);
-					target.draw(2);
+				async content(event, trigger, player) {
+					const target = event.target;
+					await target.chooseToGuanxing(2);
+					await target.draw(2);
 				},
 				ai: {
 					basic: {
@@ -281,6 +278,7 @@ game.import("card", function () {
 				fullskin: true,
 				type: "equip",
 				subtype: "equip1",
+				cardcolor: "diamond",
 				distance: { attackFrom: -3 },
 				ai: {
 					basic: {
@@ -307,6 +305,7 @@ game.import("card", function () {
 				fullskin: true,
 				type: "equip",
 				subtype: "equip2",
+				cardcolor: "club",
 				ai: {
 					basic: {
 						equipValue: 2,
@@ -331,6 +330,7 @@ game.import("card", function () {
 				fullskin: true,
 				type: "equip",
 				subtype: "equip5",
+				cardcolor: "club",
 				skills: ["tianjitu_skill"],
 				onLose: function () {
 					player.addTempSkill("tianjitu_skill_lose");
@@ -355,6 +355,7 @@ game.import("card", function () {
 				fullskin: true,
 				type: "equip",
 				subtype: "equip5",
+				cardcolor: "spade",
 				ai: {
 					basic: {
 						equipValue: 3,
@@ -485,10 +486,16 @@ game.import("card", function () {
 				trigger: { player: "equipAfter" },
 				forced: true,
 				equipSkill: true,
-				filter: (event, player) =>
-					event.card.name == "tianjitu" && player.hasCard((card) => card != event.card, "he"),
+				getIndex(event, player){
+					return event.vcards.filter(card => card.name === "tianjitu").length;
+				},
+				filter: (event, player) => {
+					return player.hasCard(card => {
+						return !event.cards.includes(card) && lib.filter.cardDiscardable(card, player, "tianjitu_skill");
+					}, "he")
+				},
 				content: () => {
-					player.chooseToDiscard(true, (card) => card != _status.event.getTrigger().card, "he");
+					player.chooseToDiscard(true, (card) => !get.event().getTrigger().cards?.includes(card), "he");
 				},
 				subSkill: {
 					lose: {
@@ -507,9 +514,16 @@ game.import("card", function () {
 							],
 						},
 						filter: (event, player) => {
-							if (player.countCards("h") >= 5) return false;
-							var evt = event.getl(player);
-							return evt && evt.es.some((card) => card.name == "tianjitu");
+							return (player.countCards("h") < 5);
+						},
+						getIndex(event, player){
+							const evt = event.getl(player);
+							const lostCards = [];
+							evt.es.forEach((card) => {
+								const VEquip = evt.vcard_map.get(card);
+								if(VEquip.name === "tianjitu") lostCards.add(VEquip);
+							});
+							return lostCards.length;
 						},
 						content: function () {
 							player.drawTo(5);
@@ -750,7 +764,7 @@ game.import("card", function () {
 			heiguangkai_ai: {
 				ai: {
 					effect: {
-						player: function (card, player, target) {
+						player(card, player, target) {
 							if (
 								typeof card !== "object" ||
 								!target ||

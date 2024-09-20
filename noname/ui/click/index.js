@@ -347,7 +347,7 @@ export class Click {
 			uiintro.listen(function () {
 				_status.clicked = true;
 			});
-			uiintro.style.zIndex = 21;
+			uiintro.style.zIndex = "21";
 			uiintro.classList.add("popped");
 			uiintro.classList.add("static");
 			uiintro.classList.add("onlineclient");
@@ -2692,7 +2692,8 @@ export class Click {
 		}
 		// ui.click.skin(this,player.name);
 		game.pause2();
-		ui.click.charactercard(player.name1 || player.name, null, null, true, this);
+		var audioName=player.skin.name || player.name1 || player.name;
+		ui.click.charactercard(player.name1 || player.name, null, null, true, this, audioName);
 	}
 	avatar2() {
 		if (!lib.config.doubleclick_intro) return;
@@ -2711,7 +2712,7 @@ export class Click {
 		}
 		// ui.click.skin(this,player.name2);
 		game.pause2();
-		ui.click.charactercard(player.name2, null, null, true, this);
+		ui.click.charactercard(player.name2, null, null, true, this, player.skin.name2 || player.name2);
 	}
 	connectroom(e) {
 		if (_status.dragged) return;
@@ -2843,10 +2844,20 @@ export class Click {
 				}
 				if (targetprompt) {
 					if (Array.isArray(targetprompt)) {
-						targetprompt =
-							targetprompt[
-								Math.min(targetprompt.length - 1, ui.selected.targets.indexOf(this))
-							];
+						const targets = ui.selected.targets.slice();
+						let index = ui.selected.targets.indexOf(this);
+						for (let i = 0; i < targetprompt.length; i++) {
+							const target = targets.find(
+								(cur) => cur.node.prompt && cur.node.prompt.innerHTML === targetprompt[i]
+							);
+							if (target) {
+								targets.remove(target);
+							} else {
+								index = i;
+								break;
+							}
+						}
+						targetprompt = targetprompt[Math.min(targetprompt.length - 1, index)];
 					} else if (typeof targetprompt == "function") {
 						targetprompt = targetprompt(this);
 					}
@@ -3107,7 +3118,8 @@ export class Click {
 			delete this.logvtimeout;
 		}
 	}
-	charactercard(name, sourcenode, noedit, resume, avatar) {
+	charactercard(name, sourcenode, noedit, resume, avatar, audioName) {
+		if(!audioName) audioName = name;
 		if (_status.dragged) return;
 		if (lib.config.theme != "simple") {
 			ui.window.classList.add("shortcutpaused");
@@ -3145,7 +3157,7 @@ export class Click {
 					changeskinfunc();
 				}
 			})
-			.setBackground(name, "character");
+			.setBackground(audioName || name, "character");
 		var changeskinfunc = null;
 		var nameskin = name;
 		var nameskin2 = name;
@@ -3186,7 +3198,7 @@ export class Click {
 								delete lib.config.skin[nameskin];
 								if (
 									gzbool &&
-									lib.character[nameskin2][4].includes("gzskin") &&
+									lib.character[nameskin2].hasSkinInGuozhan &&
 									lib.config.mode_config.guozhan.guozhanSkin
 								) {
 									bg.setBackground(nameskin2, "character");
@@ -3206,7 +3218,7 @@ export class Click {
 						} else {
 							if (
 								gzbool &&
-								lib.character[nameskin2][4].includes("gzskin") &&
+								lib.character[nameskin2].hasSkinInGuozhan &&
 								lib.config.mode_config.guozhan.guozhanSkin
 							)
 								button.setBackground(nameskin2, "character", "noskin");
@@ -3348,6 +3360,93 @@ export class Click {
 					"<br>" +
 					characterintroinfo;
 			}
+			
+			// 添加台词部分
+			let dieAudios = game.parseDieTextMap(audioName).map(i => i.text).filter(Boolean);
+			if(!dieAudios.length) dieAudios = game.parseDieTextMap(name).map(i => i.text).filter(Boolean);
+			const skillAudioMap = new Map();
+			nameinfo.skills.forEach(skill => {
+				let voiceMap = game.parseSkillText(skill, audioName);
+				if(!voiceMap.length) voiceMap = game.parseSkillText(skill, name);
+				if(voiceMap.length) skillAudioMap.set(skill, voiceMap);
+			});
+			const derivationSkillAudioMap = new Map();
+			nameinfo.skills.forEach(skill => {
+				var info = get.info(skill);
+				if(info.derivation) {
+					var derivation = info.derivation;
+					if(typeof derivation == 'string') {
+						derivation = [derivation];
+					}
+					for(var i=0; i<derivation.length; i++) {
+						if (derivation[i].indexOf('_faq') != -1) continue;
+						let derivationVoiceMap = game.parseSkillText(derivation[i], audioName);
+						if(!derivationVoiceMap.length) derivationVoiceMap = game.parseSkillText(derivation[i], name);
+						if(derivationVoiceMap.length) derivationSkillAudioMap.set(derivation[i], derivationVoiceMap);
+					}
+				}
+			});
+			if (dieAudios.length || skillAudioMap.size > 0) {
+				const eleHr = document.createElement("hr");
+				eleHr.style.marginTop = "11px";
+				intro.appendChild(eleHr);
+				if (skillAudioMap.size > 0) {
+					const skillNameSpan = document.createElement("span");
+					skillNameSpan.style.lineHeight = "1.7";
+					skillNameSpan.innerHTML = `• 技能台词<br>`;
+					intro.appendChild(skillNameSpan);
+					skillAudioMap.forEach((texts, skill) => {
+						const skillNameSpan1 = document.createElement("span"),
+							skillNameSpanStyle1 = skillNameSpan1.style;
+						skillNameSpanStyle1.fontWeight = "bold";
+						skillNameSpanStyle1.fontSize = "15.7px";
+						skillNameSpanStyle1.lineHeight = "1.4";
+						skillNameSpan1.innerHTML = `${get.translation(skill)}<br>`;
+						intro.appendChild(skillNameSpan1);
+						texts.forEach((text, index) => {
+							const skillTextSpan = document.createElement("span");
+							skillTextSpan.style.fontSize = "15.2px";
+							skillTextSpan.innerHTML = `${texts.length > 1 ? `${index + 1}. ` : ""}${text}<br>`;
+							intro.appendChild(skillTextSpan);
+						});
+					});
+				}
+				if (derivationSkillAudioMap.size > 0) {
+					const derivationSkillNameSpan = document.createElement("span");
+					derivationSkillNameSpan.style.lineHeight = "1.7";
+					derivationSkillNameSpan.innerHTML = `• 衍生技能台词<br>`;
+					intro.appendChild(derivationSkillNameSpan);
+					derivationSkillAudioMap.forEach((texts, skill) => {
+						const derivationSkillNameSpan1 = document.createElement("span"),
+							derivationSkillNameSpanStyle1 = derivationSkillNameSpan1.style;
+						derivationSkillNameSpanStyle1.fontWeight = "bold";
+						derivationSkillNameSpanStyle1.fontSize = "15.7px";
+						derivationSkillNameSpanStyle1.lineHeight = "1.4";
+						derivationSkillNameSpan1.innerHTML = `${get.translation(skill)}<br>`;
+						intro.appendChild(derivationSkillNameSpan1);
+						texts.forEach((text, index) => {
+							const derivationSkillTextSpan = document.createElement("span");
+							derivationSkillTextSpan.style.fontSize = "15.2px";
+							derivationSkillTextSpan.innerHTML = `${texts.length > 1 ? `${index + 1}. ` : ""}${text}<br>`;
+							intro.appendChild(derivationSkillTextSpan);
+						});
+					});
+				}
+				if (dieAudios.length > 0) {
+					const skillNameSpan2 = document.createElement("span"),
+						skillNameSpanStyle2 = skillNameSpan2.style;
+					skillNameSpanStyle2.lineHeight = "1.9";
+					skillNameSpan2.innerHTML = `• 阵亡台词`;
+					intro.appendChild(skillNameSpan2);
+					dieAudios.forEach((text, index) => {
+						const dieTextSpan = document.createElement("span");
+						dieTextSpan.style.fontSize = "15.2px";
+						dieTextSpan.innerHTML = `<br>${dieAudios.length > 1 ? `${index + 1}. ` : ""}${text}`;
+						intro.appendChild(dieTextSpan);
+					});
+				}
+			}
+			
 			var intro2 = ui.create.div(".characterintro.intro2", uiintro);
 			var list = get.character(name, 3) || [];
 			var skills = ui.create.div(".characterskill", uiintro);
@@ -3460,37 +3559,31 @@ export class Click {
 						clickSkill.call(skillnode, "init");
 					});
 				}
-				// if(e!=='init') game.trySkillAudio(this.link,playername);
-				// 有bug，先用旧版
-				if (lib.config.background_speak && e !== "init") {
-					let audio,
-						skillnode = this;
-					const playedAudios = [];
-					(function play() {
-						if (!skillnode.audioList || !skillnode.audioList.length) {
-							skillnode.audioList = game.parseSkillAudio(skillnode.link, playername);
-							if (
-								!skillnode.audioList.length ||
-								skillnode.audioList.length == playedAudios.length
-							)
-								return;
-						}
-						audio = skillnode.audioList.shift();
-						playedAudios.push(audio);
-						game.playAudio(audio, play);
-					})();
+				
+				if (lib.config.background_speak && e !== 'init') {
+					if (!this.playAudio) {
+						const audioList = get.Audio.skill({ skill: this.link, player: audioName || playername }).fileList;
+						this.playAudio = game.tryAudio({
+							audioList,
+							addVideo: false,
+							random: false,
+							autoplay: false
+						});
+					}
+					this.playAudio();
 				}
 			};
 		} else {
 			// 样式一
+			//TODO: 这里的数据也暂时没有改成新格式，需要后续的修改
+			const nameInfo = get.character(name);
 			const introduction = ui.create.div(".characterintro", uiintro),
 				showCharacterNamePinyin = lib.config.show_characternamepinyin;
 			if (showCharacterNamePinyin != "doNotShow") {
 				const characterIntroTable = ui.create.div(".character-intro-table", introduction),
 					span = document.createElement("span");
 				span.style.fontWeight = "bold";
-				const nameInfo = get.character(name),
-					exInfo = nameInfo[4],
+				const exInfo = nameInfo.trashBin,
 					characterName =
 						exInfo && exInfo.includes("ruby") ? lib.translate[name] : get.rawName2(name);
 				span.innerHTML = characterName;
@@ -3543,17 +3636,15 @@ export class Click {
 				if (characterGroups)
 					Promise.all(
 						characterGroups.map((characterGroup) =>
-							new Promise((resolve, reject) => {
+							Promise.resolve().then(async () => {
 								const imageName = `group_${characterGroup}`,
 									information = lib.card[imageName];
-								if (!information) resolve(`${lib.assetURL}image/card/${imageName}.png`);
+								if (!information) return `${lib.assetURL}image/card/${imageName}.png`;
 								const image = information.image;
-								if (!image) resolve(`${lib.assetURL}image/card/${imageName}.png`);
-								else if (image.startsWith("db:"))
-									game.getDB("image", image.slice(3)).then(resolve, reject);
-								else if (image.startsWith("ext:"))
-									resolve(`${lib.assetURL}${image.replace(/^ext:/, "extension/")}`);
-								else resolve(`${lib.assetURL}${image}`);
+								if (!image) return `${lib.assetURL}image/card/${imageName}.png`;
+								if (image.startsWith("db:")) return await game.getDB("image", image.slice(3));
+								if (image.startsWith("ext:")) return `${lib.assetURL}${image.replace(/^ext:/, "extension/")}`;
+								return `${lib.assetURL}${image}`;
 							}).then(
 								(source) =>
 									new Promise((resolve, reject) => {
@@ -3578,17 +3669,15 @@ export class Click {
 						);
 				else {
 					const characterGroup = nameInfo[1];
-					new Promise((resolve, reject) => {
+					Promise.resolve().then(async () => {
 						const imageName = `group_${characterGroup}`,
 							information = lib.card[imageName];
-						if (!information) resolve(`${lib.assetURL}image/card/${imageName}.png`);
+						if (!information) return `${lib.assetURL}image/card/${imageName}.png`;
 						const image = information.image;
-						if (!image) resolve(`${lib.assetURL}image/card/${imageName}.png`);
-						else if (image.startsWith("db:"))
-							game.getDB("image", image.slice(3)).then(resolve, reject);
-						else if (image.startsWith("ext:"))
-							resolve(`${lib.assetURL}${image.replace(/^ext:/, "extension/")}`);
-						else resolve(`${lib.assetURL}${image}`);
+						if (!image) return `${lib.assetURL}image/card/${imageName}.png`;
+						if (image.startsWith("db:")) return await game.getDB("image", image.slice(3));
+						if (image.startsWith("ext:")) return `${lib.assetURL}${image.replace(/^ext:/, "extension/")}`;
+						return `${lib.assetURL}${image}`;
 					})
 						.then(
 							(source) =>
@@ -3621,8 +3710,89 @@ export class Click {
 			const htmlParser = document.createElement("body");
 			htmlParser.innerHTML = get.characterIntro(name);
 			Array.from(htmlParser.childNodes).forEach((value) => introduction.appendChild(value));
+			
+			// 添加台词部分
+			let dieAudios = game.parseDieTextMap(audioName).map(i => i.text).filter(Boolean);
+			if(!dieAudios.length) dieAudios = game.parseDieTextMap(name).map(i => i.text).filter(Boolean);
+			const skillAudioMap = new Map();
+			nameInfo.skills.forEach(skill => {
+				let voiceMap = game.parseSkillText(skill, audioName);
+				if(!voiceMap.length) voiceMap = game.parseSkillText(skill, name);
+				if(voiceMap.length) skillAudioMap.set(skill, voiceMap);
+			});
+			const derivationSkillAudioMap = new Map();
+			nameInfo.skills.forEach(skill => {
+				var info = get.info(skill);
+				if(info.derivation) {
+					var derivation = info.derivation;
+					if(typeof derivation == 'string') {
+						derivation = [derivation];
+					}
+					for(var i=0; i<derivation.length; i++) {
+						if (derivation[i].indexOf('_faq') != -1) continue;
+						let derivationVoiceMap = game.parseSkillText(derivation[i], audioName);
+						if(!derivationVoiceMap.length) derivationVoiceMap = game.parseSkillText(derivation[i], name);
+						if(derivationVoiceMap.length) derivationSkillAudioMap.set(derivation[i], derivationVoiceMap);
+					}
+				}
+			});
+			if (dieAudios.length || skillAudioMap.size > 0) {
+				introduction.appendChild(document.createElement("hr"));
+
+				if (skillAudioMap.size > 0) {
+					const skillNameSpan = document.createElement("span");
+					skillNameSpan.innerHTML = `技能台词<br>`;
+					introduction.appendChild(skillNameSpan);
+
+					skillAudioMap.forEach((texts, skill) => {
+						const skillNameSpan = document.createElement("span"),
+							skillNameSpanStyle = skillNameSpan.style;
+						skillNameSpanStyle.fontWeight = "bold";
+						skillNameSpan.innerHTML = `<br>${get.translation(skill)}<br>`;
+						introduction.appendChild(skillNameSpan);
+						texts.forEach((text, index) => {
+							const skillTextSpan = document.createElement("span");
+							skillTextSpan.innerHTML = `${texts.length > 1 ? `${index + 1}. ` : ""}${text}<br>`;
+							introduction.appendChild(skillTextSpan);
+						});
+					});
+				}
+
+				if (derivationSkillAudioMap.size > 0) {
+					const derivationSkillNameSpan = document.createElement("span");
+					derivationSkillNameSpan.innerHTML = `<br>衍生技能台词<br>`;
+					introduction.appendChild(derivationSkillNameSpan);
+					derivationSkillAudioMap.forEach((texts, skill) => {
+						const derivationSkillNameSpan1 = document.createElement("span"),
+							derivationSkillNameSpanStyle1 = derivationSkillNameSpan1.style;
+						derivationSkillNameSpanStyle1.fontWeight = "bold";
+						derivationSkillNameSpan1.innerHTML = `<br>${get.translation(skill)}<br>`;
+						introduction.appendChild(derivationSkillNameSpan1);
+						texts.forEach((text, index) => {
+							const derivationSkillTextSpan = document.createElement("span");
+							derivationSkillTextSpan.innerHTML = `${texts.length > 1 ? `${index + 1}. ` : ""}${text}<br>`;
+							introduction.appendChild(derivationSkillTextSpan);
+						});
+					});
+				}
+
+				if (dieAudios.length > 0) {
+					const skillNameSpan = document.createElement("span"),
+						skillNameSpanStyle = skillNameSpan.style;
+					skillNameSpanStyle.fontWeight = "bold";
+					skillNameSpan.innerHTML = `<br>阵亡台词`;
+					introduction.appendChild(skillNameSpan);
+
+					dieAudios.forEach((text, index) => {
+						const dieTextSpan = document.createElement("span");
+						dieTextSpan.innerHTML = `<br>${dieAudios.length > 1 ? `${index + 1}. ` : ""}${text}`;
+						introduction.appendChild(dieTextSpan);
+					});
+				}
+			}
+			
 			const introduction2 = ui.create.div(".characterintro.intro2", uiintro);
-			var list = get.character(name, 3) || [];
+			var list = get.character(name).skills;
 			var skills = ui.create.div(".characterskill", uiintro);
 			if (lib.config.touchscreen) {
 				lib.setScroll(introduction);
@@ -3705,7 +3875,7 @@ export class Click {
 								showSkillNamePinyin == "showCodeIdentifier"
 									? derivation
 									: lib.translate[`${derivation}_rt`] ||
-									  get.pinyin(derivationName).join(" ");
+										get.pinyin(derivationName).join(" ");
 							ruby.appendChild(rt);
 							const rightParenthesisRP = document.createElement("rp");
 							rightParenthesisRP.textContent = "）";
@@ -3745,25 +3915,18 @@ export class Click {
 						clickSkill.call(skillnode, "init");
 					});
 				}
-				// if(e!=='init') game.trySkillAudio(this.link,playername);
-				// 有bug，先用旧版
-				if (lib.config.background_speak && e !== "init") {
-					let audio,
-						skillnode = this;
-					const playedAudios = [];
-					(function play() {
-						if (!skillnode.audioList || !skillnode.audioList.length) {
-							skillnode.audioList = game.parseSkillAudio(skillnode.link, playername);
-							if (
-								!skillnode.audioList.length ||
-								skillnode.audioList.length == playedAudios.length
-							)
-								return;
-						}
-						audio = skillnode.audioList.shift();
-						playedAudios.push(audio);
-						game.playAudio(audio, play);
-					})();
+				
+				if (lib.config.background_speak && e !== 'init') {
+					if (!this.playAudio) {
+						const audioList = get.Audio.skill({ skill: this.link, player: audioName || playername }).fileList;
+						this.playAudio = game.tryAudio({
+							audioList,
+							addVideo: false,
+							random: false,
+							autoplay: false
+						});
+					}
+					this.playAudio();
 				}
 			};
 		}
@@ -3978,6 +4141,7 @@ export class Click {
 		}
 	}
 	pause() {
+		if (lib.config.test_game) return;
 		if (_status.paused2 || _status.pausing || _status.nopause || !ui.pause) return;
 		if (!_status.video) {
 			if (ui.pause.classList.contains("hidden")) return;
@@ -4010,6 +4174,7 @@ export class Click {
 		if (_status.pausing) return;
 		if (_status.dragged) return;
 		if (_status.clicked) return;
+		if (lib.config.test_game) return;
 		this.delete();
 		ui.system.show();
 		ui.time.show();
@@ -4043,12 +4208,7 @@ export class Click {
 		game.swapPlayer(this);
 	}
 	mousewheel(evt) {
-		if (
-			this.firstChild &&
-			this.firstChild.classList.contains("handcards") &&
-			!this.classList.contains("scrollh")
-		)
-			return;
+		if (this.firstElementChild && this.firstElementChild.classList.contains("handcards") && !this.classList.contains("scrollh")) return;
 		var node = this;
 		var num = this._scrollnum || 6;
 		var speed = this._scrollspeed || 16;

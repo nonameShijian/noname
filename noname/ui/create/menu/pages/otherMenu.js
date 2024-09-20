@@ -20,6 +20,7 @@ import {
 	getLatestVersionFromGitHub,
 	getTreesFromGithub,
 } from "../../../../library/update.js";
+import security from "../../../../util/security.js";
 
 export const otherMenu = function (/** @type { boolean | undefined } */ connectMenu) {
 	if (connectMenu) return;
@@ -439,11 +440,11 @@ export const otherMenu = function (/** @type { boolean | undefined } */ connectM
 				 * @param { (value: T) => Promise<boolean> } predicate
 				 */
 				const asyncFilter = async (arr, predicate) => {
-					//将arr每10个分为一个数组，分别使用Promise.all
+					//将arr每20个分为一个数组，分别使用Promise.all
 					/** @type { boolean[] } */
 					const results = [];
-					for (let i = 0; i < arr.length; i += 10) {
-						const pushArr = arr.slice(i, i + 10);
+					for (let i = 0; i < arr.length; i += 20) {
+						const pushArr = arr.slice(i, i + 20);
 						results.push(
 							...await Promise.all(pushArr.map(predicate))
 						);
@@ -453,8 +454,11 @@ export const otherMenu = function (/** @type { boolean | undefined } */ connectM
 
 				const result = await asyncFilter(files.flat(), async v => {
 					return game.promises.readFile(v.path).then(data => {
+						// 有设置就不进行对比直接返回false
+						if (lib.config.asset_notReplaceExistingFiles) return false;
 						return v.size != data.byteLength;
-					}).catch(()=>true)
+						// 报错了就是没有文件
+					}).catch(() => true);
 				}).then(arr => arr.map((v) => v.path));
 
 				console.log("需要更新的文件有:", result);
@@ -463,6 +467,22 @@ export const otherMenu = function (/** @type { boolean | undefined } */ connectM
 					await lib.init.promises.js("game", "asset");
 					if (Array.isArray(window.noname_asset_list)) {
 						game.saveConfig("asset_version", window.noname_asset_list[0]);
+						try {
+							// 动态更新素材版本显示
+							if (
+								li2 instanceof HTMLLIElement &&
+								li2.childNodes[0] &&
+								// nodeType = 3为text
+								li2.childNodes[0].nodeType === 3 &&
+								li2.childNodes[0].textContent.startsWith(
+									"素材版本"
+								)
+							) {
+								li2.childNodes[0].textContent = `素材版本：${window.noname_asset_list[0]}`;
+							}
+						} catch (error) {
+							console.error("动态更新素材版本显示失败:", error);
+						}
 						delete window.noname_asset_list;
 					}
 					if (confirm("更新完成，是否重启？")) {
@@ -655,7 +675,10 @@ export const otherMenu = function (/** @type { boolean | undefined } */ connectM
 			if (!this.classList.toggle("on")) {
 				game.saveConfig("asset_toggle_off", true);
 				[
-					/* span2, span2_br, span2_check,*/
+					span114514_br,
+					span7,
+					span7_br,
+					span7_check,
 					span3,
 					span3_br,
 					span3_check,
@@ -674,7 +697,10 @@ export const otherMenu = function (/** @type { boolean | undefined } */ connectM
 			} else {
 				game.saveConfig("asset_toggle_off");
 				[
-					/* span2, span2_br, span2_check,*/
+					span114514_br,
+					span7,
+					span7_br,
+					span7_check,
 					span3,
 					span3_br,
 					span3_check,
@@ -698,6 +724,25 @@ export const otherMenu = function (/** @type { boolean | undefined } */ connectM
 		// var span6_br = ui.create.node('br');
 		// li2.lastChild.appendChild(span6_br);
 		// var span2_br = ui.create.node('br');
+		var span114514_br = ui.create.node('br');
+		li2.lastChild.appendChild(span114514_br);
+
+		var span7 = ui.create.div("", `不替换已有素材`);
+		span7.style.fontSize = "small";
+		span7.style.lineHeight = "16px";
+		li2.lastChild.appendChild(span7);
+		var span7_check = document.createElement("input");
+		span7_check.type = "checkbox";
+		span7_check.style.marginLeft = "5px";
+		if (lib.config.asset_notReplaceExistingFiles) {
+			span7_check.checked = true;
+		}
+		span7_check.onchange = function () {
+			game.saveConfig("asset_notReplaceExistingFiles", this.checked);
+		};
+		li2.lastChild.appendChild(span7_check);
+		var span7_br = ui.create.node("br");
+		li2.lastChild.appendChild(span7_br);
 
 		var span4 = ui.create.div("", `字体素材（${lib.config.asset_font_size || "23.4MB"}）`);
 		span4.style.fontSize = "small";
@@ -1168,73 +1213,92 @@ export const otherMenu = function (/** @type { boolean | undefined } */ connectM
 				ai: ai,
 				cheat: lib.cheat,
 			});
-			Object.defineProperties(proxyWindow, {
-				_status: {
-					configurable: false,
-					enumerable: true,
-					writable: false,
-				},
-				lib: {
-					configurable: false,
-					enumerable: true,
-					writable: false,
-				},
-				game: {
-					configurable: false,
-					enumerable: true,
-					writable: false,
-				},
-				ui: {
-					configurable: false,
-					enumerable: true,
-					writable: false,
-				},
-				get: {
-					configurable: false,
-					enumerable: true,
-					writable: false,
-				},
-				ai: {
-					configurable: false,
-					enumerable: true,
-					writable: false,
-				},
-				cheat: {
-					configurable: false,
-					enumerable: true,
-					writable: false,
-				},
-			});
-			proxyWindow = new Proxy(proxyWindow, {
-				set(target, prop, newValue) {
-					if (!["_status", "lib", "game", "ui", "get", "ai", "cheat"].includes(prop)) {
-						Reflect.set(window, prop, newValue);
-					}
-					return Reflect.set(target, prop, newValue);
-				},
-			});
+			if (security.isSandboxRequired()) {
+				const { Monitor, AccessAction } = security.importSandbox();
+				new Monitor()
+					.action(AccessAction.DEFINE)
+					.action(AccessAction.WRITE)
+					.action(AccessAction.DELETE)
+					.require("target", proxyWindow)
+					.require("property", "_status", "lib", "game", "ui", "get", "ai", "cheat")
+					.then((access, nameds, control) => {
+						if (access.action == AccessAction.DEFINE) {
+							control.preventDefault();
+							control.stopPropagation();
+							control.setReturnValue(false);
+							return;
+						}
+
+						// 
+						control.overrideParameter("target", window);
+					})
+					.start();
+			} else {
+				const keys = ["_status", "lib", "game", "ui", "get", "ai", "cheat"];
+
+				for (const key of keys) {
+					const descriptor = Reflect.getOwnPropertyDescriptor(proxyWindow, key);
+					if (!descriptor) continue;
+					descriptor.writable = false;
+					descriptor.enumerable = true;
+					descriptor.configurable = false;
+					Reflect.defineProperty(proxyWindow, key, descriptor);
+				}
+
+				proxyWindow = new Proxy(proxyWindow, {
+					set(target, propertyKey, value, receiver) {
+						if (typeof propertyKey == "string" && keys.includes(propertyKey)) {
+							return Reflect.set(target, propertyKey, value, receiver);
+						}
+
+						return Reflect.set(window, propertyKey, value);
+					},
+				});
+			}
 			//使用new Function隔绝作用域，避免在控制台可以直接访问到runCommand等变量
 			/**
 			 * @type { (value:string)=>any }
 			 */
-			const fun = new Function(
-				"window",
-				`
-				const _status=window._status;
-				const lib=window.lib;
-				const game=window.game;
-				const ui=window.ui;
-				const get=window.get;
-				const ai=window.ai;
-				const cheat=window.lib.cheat;
-				//使用正则匹配绝大多数的普通obj对象，避免解析成代码块。
-				const reg=${/^\{([^{}]+:\s*([^\s,]*|'[^']*'|"[^"]*"|\{[^}]*\}|\[[^\]]*\]|null|undefined|([a-zA-Z$_][a-zA-Z0-9$_]*\s*:\s*)?[a-zA-Z$_][a-zA-Z0-9$_]*\(\)))(?:,\s*([^{}]+:\s*(?:[^\s,]*|'[^']*'|"[^"]*"|\{[^}]*\}|\[[^\]]*\]|null|undefined|([a-zA-Z$_][a-zA-Z0-9$_]*\s*:\s*)?[a-zA-Z$_][a-zA-Z0-9$_]*\(\))))*\}$/};
-				return function(value){ 
-					"use strict";
-					return eval(reg.test(value)?('('+value+')'):value);
-				}
-			`
-			)(proxyWindow);
+			let fun
+			if (security.isSandboxRequired()) {
+				const reg = /^\{([^{}]+:\s*([^\s,]*|'[^']*'|"[^"]*"|\{[^}]*\}|\[[^\]]*\]|null|undefined|([a-zA-Z$_][a-zA-Z0-9$_]*\s*:\s*)?[a-zA-Z$_][a-zA-Z0-9$_]*\(\)))(?:,\s*([^{}]+:\s*(?:[^\s,]*|'[^']*'|"[^"]*"|\{[^}]*\}|\[[^\]]*\]|null|undefined|([a-zA-Z$_][a-zA-Z0-9$_]*\s*:\s*)?[a-zA-Z$_][a-zA-Z0-9$_]*\(\))))*\}$/;
+				fun = function (value) {
+					const exp = reg.test(value) ? `(${value})` : value;
+					const expName = "_" + Math.random().toString().slice(2);
+					return security.exec(`return eval(${expName})`, { window: proxyWindow, [expName]: exp });
+				};
+				// security.exec(`
+				// 	const _status=window._status;
+				// 	const lib=window.lib;
+				// 	const game=window.game;
+				// 	const ui=window.ui;
+				// 	const get=window.get;
+				// 	const ai=window.nonameAI;
+				// 	// const cheat=window.lib.cheat; // 不再允许使用 cheat，因为它是不允许访问的变量
+				// 	//使用正则匹配绝大多数的普通obj对象，避免解析成代码块。
+				// 	const reg=${/^\{([^{}]+:\s*([^\s,]*|'[^']*'|"[^"]*"|\{[^}]*\}|\[[^\]]*\]|null|undefined|([a-zA-Z$_][a-zA-Z0-9$_]*\s*:\s*)?[a-zA-Z$_][a-zA-Z0-9$_]*\(\)))(?:,\s*([^{}]+:\s*(?:[^\s,]*|'[^']*'|"[^"]*"|\{[^}]*\}|\[[^\]]*\]|null|undefined|([a-zA-Z$_][a-zA-Z0-9$_]*\s*:\s*)?[a-zA-Z$_][a-zA-Z0-9$_]*\(\))))*\}$/};
+				// 	return function(value){
+				// 		"use strict";
+				// 		return eval(reg.test(value)?('('+value+')'):value);
+				// 	};
+				// `, { window: proxyWindow });
+			} else {
+				fun = (new Function('window', `
+					const _status=window._status;
+					const lib=window.lib;
+					const game=window.game;
+					const ui=window.ui;
+					const get=window.get;
+					const ai=window.nonameAI;
+					const cheat=window.lib.cheat;
+					//使用正则匹配绝大多数的普通obj对象，避免解析成代码块。
+					const reg=${/^\{([^{}]+:\s*([^\s,]*|'[^']*'|"[^"]*"|\{[^}]*\}|\[[^\]]*\]|null|undefined|([a-zA-Z$_][a-zA-Z0-9$_]*\s*:\s*)?[a-zA-Z$_][a-zA-Z0-9$_]*\(\)))(?:,\s*([^{}]+:\s*(?:[^\s,]*|'[^']*'|"[^"]*"|\{[^}]*\}|\[[^\]]*\]|null|undefined|([a-zA-Z$_][a-zA-Z0-9$_]*\s*:\s*)?[a-zA-Z$_][a-zA-Z0-9$_]*\(\))))*\}$/};
+					return function(value){ 
+						"use strict";
+						return eval(reg.test(value)?('('+value+')'):value);
+					}
+				`))(proxyWindow);
+			}
 			const runCommand = () => {
 				if (text2.value && !["up", "down"].includes(text2.value)) {
 					logindex = -1;
@@ -1420,6 +1484,7 @@ export const otherMenu = function (/** @type { boolean | undefined } */ connectM
 		lib.videos = [];
 		ui.create.videoNode = (video, before) => {
 			lib.videos.remove(video);
+			if (_status.over) return;
 			lib.videos[before === true ? "unshift" : "push"](video);
 		};
 		node._initLink = function () {
