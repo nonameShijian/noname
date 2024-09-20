@@ -6,9 +6,9 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "packageWin64": "electron-packager . 无名杀 --platform=win32 --arch=x64 --out=./ --app-version=1.9.0 --icon=noname.ico --overwrite --ignore=./node_modules --ignore=.git --electron-version 28.2.2",
-    "packageWin32": "electron-packager . 无名杀 --platform=win32 --arch=ia32 --out=./ --app-version=1.9.0 --icon=noname.ico --overwrite --ignore=./node_modules --ignore=.git --electron-version 28.2.2",
-    "packageLinux": "electron-packager . 无名杀 --platform=linux --arch=x64 --out=./ --app-version=1.9.0 --icon=noname.ico --overwrite --ignore=./node_modules --ignore=.git --electron-version 28.2.2"
+    "packageWin64": "electron-packager . 无名杀 --platform=win32 --arch=x64 --out=./ --app-version=1.9.0 --icon=noname.ico --overwrite --ignore=./node_modules --ignore=.git --electron-version 32.1.2",
+    "packageWin32": "electron-packager . 无名杀 --platform=win32 --arch=ia32 --out=./ --app-version=1.9.0 --icon=noname.ico --overwrite --ignore=./node_modules --ignore=.git --electron-version 32.1.2",
+    "packageLinux": "electron-packager . 无名杀 --platform=linux --arch=x64 --out=./ --app-version=1.9.0 --icon=noname.ico --overwrite --ignore=./node_modules --ignore=.git --electron-version 32.1.2"
   },
   "repository": {
     "type": "git",
@@ -17,14 +17,13 @@
   "author": "诗笺",
   "license": "ISC",
   "devDependencies": {
-    "electron": "^28.2.2",
+    "electron": "^32.1.2",
     "electron-packager": "^17.1.2"
   },
   "dependencies": {
-    "@electron/get": "^3.0.0",
+    "@electron/get": "^3.1.0",
     "@electron/remote": "^2.1.2",
-    "@types/node": "^18.13.0",
-    "noname-typings": "^2024.2.6",
+    "@types/node": "^22.5.5",
     "options": "0.0.6",
     "ultron": "1.0.2",
     "ws": "1.0.1"
