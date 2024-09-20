@@ -2,6 +2,8 @@
 
 ※如非法倒卖用于牟利将承担法律责任 开发团队将追究到底
 
+※打包失败的请在.npmrc文件设置ELECTRON_MIRROR=https://cdn.npmmirror.com/binaries/electron/
+
 ※主目录的unins000.exe是卸载程序
 
 ※内置【拖拽读取】扩展，可以把没有设置密码的zip或单个extension.js文件导入到无名杀中，只需要把文件拖拽到游戏窗口内即可导入
