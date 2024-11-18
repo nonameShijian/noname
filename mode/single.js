@@ -1,5 +1,5 @@
-import { lib, game, ui, get, ai, _status } from '../noname.js';
-export const type = 'mode';
+import { lib, game, ui, get, ai, _status } from "../noname.js";
+export const type = "mode";
 /**
  * @type { () => importModeConfig }
  */
@@ -176,7 +176,7 @@ export default () => {
 			["heart", 12, "guohe"],
 			["heart", 12, "shandian"],
 			["heart", 13, "shan"],
-	
+
 			["diamond", 1, "juedou"],
 			["diamond", 1, "zhuge"],
 			["diamond", 1, "zhuque"],
@@ -197,7 +197,7 @@ export default () => {
 			["diamond", 12, "tao"],
 			["diamond", 12, "wuxie"],
 			["diamond", 12, "huogong"],
-	
+
 			["club", 1, "juedou"],
 			["club", 1, "baiyin"],
 			["club", 2, "sha"],
@@ -218,7 +218,7 @@ export default () => {
 			["club", 9, "jiu"],
 			["club", 12, "wuxie"],
 			["club", 13, "wuxie"],
-	
+
 			["spade", 1, "juedou"],
 			["spade", 1, "guding"],
 			["spade", 2, "cixiong"],
@@ -281,7 +281,7 @@ export default () => {
 				//huatuo:['male','qun',3,['qingnang','jijiu']],
 				lvbu: ["male", "qun", 4, ["wushuang"]],
 				diaochan: ["female", "qun", 3, ["pianyi", "biyue"]],
-	
+
 				xiahouyuan: ["male", "wei", 4, ["shensu", "suzi"]],
 				old_caoren: ["male", "wei", 4, ["jushou"]],
 				huangzhong: ["male", "shu", 4, ["sgliegong"]],
@@ -289,22 +289,22 @@ export default () => {
 				xiaoqiao: ["female", "wu", 3, ["tianxiang", "hongyan"]],
 				old_zhoutai: ["male", "wu", 4, ["gzbuqu"]],
 				zhangjiao: ["male", "qun", 3, ["leiji", "guidao"], ["zhu"]],
-	
+
 				dianwei: ["male", "wei", 4, ["qiangxi"]],
 				yanwen: ["male", "qun", 4, ["shuangxiong"]],
 				pangde: ["male", "qun", 4, ["xiaoxi", "mengjin"]],
-	
+
 				menghuo: ["male", "shu", 4, ["manyi", "zaiqi"]],
 				zhurong: ["female", "shu", 4, ["manyi", "lieren"]],
 				xuhuang: ["male", "wei", 4, ["sgduanliang"]],
 				sunjian: ["male", "wu", 4, ["gzyinghun"]],
-	
+
 				jiangwei: ["male", "shu", 4, ["tiaoxin"]],
-	
+
 				hejin: ["male", "qun", 4, ["mouzhu", "yanhuo"]],
 				hansui: ["male", "qun", 4, ["xiaoxi", "niluan"]],
 				niujin: ["male", "wei", 4, ["cuorui", "liewei"]],
-	
+
 				jin_zhangchunhua: ["female", "jin", 3, ["huishi", "qingleng"]],
 				jin_simayi: ["male", "jin", 3, ["smyyingshi", "xiongzhi", "quanbian"]],
 				jin_wangyuanji: ["female", "jin", 3, ["yanxi"]],
@@ -422,10 +422,10 @@ export default () => {
 			if (ui.coin) {
 				_status.coinCoeff = get.coinCoeff([game.me.name]);
 			}
-	
+
 			game.syncState();
 			event.trigger("gameStart");
-	
+
 			var players = get.players(lib.sort.position);
 			var info = [];
 			for (var i = 0; i < players.length; i++) {
@@ -438,7 +438,7 @@ export default () => {
 			}
 			_status.videoInited = true;
 			game.addVideo("init", null, info);
-	
+
 			game.gameDraw(game.zhu, function (player) {
 				if (_status.mode == "dianjiang") return 4;
 				if (_status.mode == "wuxianhuoli") return 4;
@@ -553,7 +553,7 @@ export default () => {
 					};
 					var dialog = ui.create.characterDialog("heightset", filter).open();
 					dialog.videoId = event.videoId;
-	
+
 					game.me
 						.chooseButton(true)
 						.set("ai", function (button) {
@@ -1445,7 +1445,7 @@ export default () => {
 						var source = player;
 						var name = result.links[0];
 						var color = source.node.identity.dataset.color;
-	
+
 						game.broadcastAll(
 							function (source, name, color) {
 								source.revive(null, false);
@@ -1458,7 +1458,7 @@ export default () => {
 							color
 						);
 						game.log(source, "出场");
-	
+
 						var num = _status.mode == "normal" ? 4 : source.maxHp;
 						if (player.hasSkill("cuorui")) {
 							player.logSkill("cuorui");
@@ -1764,7 +1764,7 @@ export default () => {
 					},
 				},
 			},
-	
+
 			_changeHandcard: {
 				trigger: { global: "gameDrawAfter" },
 				silent: true,
@@ -2136,7 +2136,7 @@ export default () => {
 			changban2: "血战长坂坡",
 			dianjiang2: "点将单挑",
 			wuxianhuoli2: "无限火力",
-	
+
 			wuxianhuoli_weisuoyuwei: "为所欲为",
 			wuxianhuoli_weisuoyuwei_info: "①准备阶段，你摸一张牌。②你使用【杀】的次数上限+1。",
 			wuxianhuoli_duoduoyishan: "多多益善",
@@ -2147,7 +2147,7 @@ export default () => {
 			wuxianhuoli_liuanhuaming_info: "每回合限两次。当你于回合外失去牌后，你摸一张牌。",
 			wuxianhuoli_mianmianjudao: "面面俱到",
 			wuxianhuoli_mianmianjudao_info: "准备阶段，你从牌堆或弃牌堆中获得基本牌和锦囊牌各一张。",
-	
+
 			wanrong: "婉容",
 			wanrong_info: "当你成为【杀】的目标后，你可以摸一张牌。",
 			sgzhiheng: "制衡",
@@ -2180,5 +2180,5 @@ export default () => {
 			血战长坂: '<div style="margin:10px">游戏规则</div><ul style="margin-top:0"><li>选将阶段<br>双方在游戏开始时由系统随机分配身份。分配到先手身份的玩家优先出牌，分配到后手身份的玩家优先选将。<br>双方各自随机获得3名暗置武将，同时从将池中随机选出6名明置武将，由后手玩家开始，按照一次1张-2张-2张-1张的顺序，轮流选择获得明置武将。之后双方各从自己的6名武将中选择2名分别作为主将和副将进行游戏。<li>胜利条件<br>对方死亡。' + "<li>双将规则<br>双将主将决定角色的性别和势力，体力上限为主副将体力上限的平均值，向下取整。体力上限为3的角色可在游戏开始后更换一次起始手牌。<li>牌堆<br>牌堆中移除【木牛流马】【闪电】，♣花色的【藤甲】和【无懈可击 ♦️Q】️</ul>",
 			无限火力: '<div style="margin:10px">1ｖ1火力全开模式</div><ul style="margin-top:0">（来自三国杀国际服）<li>所有角色的初始体力值和体力上限均为10，护甲均为0<li>每局游戏会有一个固定的Buff和一个随机的Buff，对所有角色生效' + "<li>游戏全程会有两个任务，分别为“所有角色造成3点伤害”和“所有角色造成5点伤害”，在任务一完成后才会解锁任务二。<br>每当任务完成时，系统会发放奖励：所有角色观看三个随机的技能并获得其中一个（每名角色每局有一次刷新的机会），然后摸两张牌。",
 		},
-	}
-}
+	};
+};

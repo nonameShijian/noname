@@ -463,11 +463,7 @@ game.import("card", function () {
 				},
 				content: function () {
 					"step 0";
-					target.chooseToDiscard(
-						"he",
-						[1, target.countCards("he")],
-						"弃置任意张牌并摸等量的牌"
-					).ai = function (card) {
+					target.chooseToDiscard("he", [1, target.countCards("he")], "弃置任意张牌并摸等量的牌").ai = function (card) {
 						return 6 - get.value(card);
 					};
 					"step 1";
@@ -585,11 +581,7 @@ game.import("card", function () {
 					if (cards && cards.length) {
 						card = cards[0];
 					}
-					if (
-						target == targets[0] &&
-						card.clone &&
-						(card.clone.parentNode == player.parentNode || card.clone.parentNode == ui.arena)
-					) {
+					if (target == targets[0] && card.clone && (card.clone.parentNode == player.parentNode || card.clone.parentNode == ui.arena)) {
 						card.clone.moveDelete(target);
 						game.addVideo("gain2", target, get.cardsInfo([card]));
 					}
@@ -637,12 +629,7 @@ game.import("card", function () {
 							if (value >= 8) return -100;
 							return num - value;
 						})
-						.set("rand", Math.random() < 0.5).prompt2 =
-						"若与" +
-						get.translation(target) +
-						"展示的牌相同，你弃置展示的牌，" +
-						get.translation(target) +
-						"失去1点体力";
+						.set("rand", Math.random() < 0.5).prompt2 = "若与" + get.translation(target) + "展示的牌相同，你弃置展示的牌，" + get.translation(target) + "失去1点体力";
 					"step 1";
 					event.card1 = result.cards[0];
 					target
@@ -659,12 +646,7 @@ game.import("card", function () {
 							if (value >= 8) return -100;
 							return num - value;
 						})
-						.set("rand", Math.random() < 0.5).prompt2 =
-						"若与" +
-						get.translation(player) +
-						"展示的牌相同，" +
-						get.translation(player) +
-						"弃置展示的牌，你失去1点体力";
+						.set("rand", Math.random() < 0.5).prompt2 = "若与" + get.translation(player) + "展示的牌相同，" + get.translation(player) + "弃置展示的牌，你失去1点体力";
 					"step 2";
 					event.card2 = result.cards[0];
 					ui.arena.classList.add("thrownhighlight");
@@ -703,14 +685,8 @@ game.import("card", function () {
 					},
 					result: {
 						player: function (player, target) {
-							if (
-								player.countCards("h") <= Math.min(5, Math.max(2, player.hp)) &&
-								_status.event.name == "chooseToUse"
-							) {
-								if (
-									typeof _status.event.filterCard == "function" &&
-									_status.event.filterCard(new lib.element.VCard({ name: "bingpotong" }))
-								) {
+							if (player.countCards("h") <= Math.min(5, Math.max(2, player.hp)) && _status.event.name == "chooseToUse") {
+								if (typeof _status.event.filterCard == "function" && _status.event.filterCard(new lib.element.VCard({ name: "bingpotong" }))) {
 									return -10;
 								}
 								if (_status.event.skill) {
@@ -746,10 +722,9 @@ game.import("card", function () {
 						target.loseHp();
 						event.finish();
 					} else {
-						target.chooseToDiscard({ color: "black" }, "弃置一张黑色手牌或受失去1点体力").ai =
-							function (card) {
-								return 8 - get.value(card);
-							};
+						target.chooseToDiscard({ color: "black" }, "弃置一张黑色手牌或受失去1点体力").ai = function (card) {
+							return 8 - get.value(card);
+						};
 					}
 					"step 1";
 					if (!result.bool) {
@@ -884,6 +859,7 @@ game.import("card", function () {
 						}
 						return 11 - get.value(card);
 					};
+					next.set("respondTo", [player, card]);
 					next.autochoose = lib.filter.autoRespondShan;
 					"step 1";
 					if (result.bool == false) {
@@ -924,21 +900,6 @@ game.import("card", function () {
 					},
 				},
 			},
-			// wenhuangsan:{
-			//     type:'jiguan',
-			// 	enable:true,
-			// 	fullskin:true,
-			// },
-			// tuhunsha:{
-			//     type:'jiguan',
-			// 	enable:true,
-			// 	fullskin:true,
-			// },
-			// shenhuofeiya:{
-			//     type:'jiguan',
-			// 	enable:true,
-			// 	fullskin:true,
-			// },
 			mianlijinzhen: {
 				type: "jiguan",
 				enable: true,
@@ -1044,6 +1005,7 @@ game.import("card", function () {
 				content: function () {
 					"step 0";
 					var next = _status.currentPhase.chooseToRespond({ name: "shan" });
+					next.set("respondTo", [player, card]);
 					next.set("prompt2", "否则本回合无法对其他角色使用卡牌");
 					"step 1";
 					if (!result.bool) {
@@ -1099,11 +1061,7 @@ game.import("card", function () {
 				},
 				intro: {
 					content: function (storage, player) {
-						return (
-							"出牌阶段限一次，你可以弃置一张基本牌并发现一张牌，持续三回合（剩余" +
-							player.storage.luyugeng_markcount +
-							"回合）"
-						);
+						return "出牌阶段限一次，你可以弃置一张基本牌并发现一张牌，持续三回合（剩余" + player.storage.luyugeng_markcount + "回合）";
 					},
 				},
 				content: function () {
@@ -1139,11 +1097,7 @@ game.import("card", function () {
 				},
 				intro: {
 					content: function (storage, player) {
-						return (
-							"你在摸牌阶段额外摸一张牌，然后弃置一张牌（剩余" +
-							player.storage.xiajiao_markcount +
-							"回合）"
-						);
+						return "你在摸牌阶段额外摸一张牌，然后弃置一张牌（剩余" + player.storage.xiajiao_markcount + "回合）";
 					},
 				},
 				content: function () {
@@ -1185,11 +1139,7 @@ game.import("card", function () {
 				nopop: true,
 				intro: {
 					content: function (storage, player) {
-						return (
-							"你可以将一张红桃牌当作桃使用（剩余" +
-							player.storage.mizhilianou_markcount +
-							"回合）"
-						);
+						return "你可以将一张红桃牌当作桃使用（剩余" + player.storage.mizhilianou_markcount + "回合）";
 					},
 				},
 				content: function () {
@@ -1261,11 +1211,7 @@ game.import("card", function () {
 				nopop: true,
 				intro: {
 					content: function (storage, player) {
-						return (
-							"当你下一次受到杀造成的伤害时，令伤害-1（剩余" +
-							player.storage.gudonggeng_markcount +
-							"回合）"
-						);
+						return "当你下一次受到杀造成的伤害时，令伤害-1（剩余" + player.storage.gudonggeng_markcount + "回合）";
 					},
 				},
 				content: function () {
@@ -1310,11 +1256,7 @@ game.import("card", function () {
 				nopop: true,
 				intro: {
 					content: function (storage, player) {
-						return (
-							"你在回合内使用首张杀时摸一张牌（剩余" +
-							player.storage.qingtuan_markcount +
-							"回合）"
-						);
+						return "你在回合内使用首张杀时摸一张牌（剩余" + player.storage.qingtuan_markcount + "回合）";
 					},
 				},
 				content: function () {
@@ -1350,11 +1292,7 @@ game.import("card", function () {
 				nopop: true,
 				intro: {
 					content: function (storage, player) {
-						return (
-							"结束阶段，若你的体力值为全场最少或之一，你获得1点护甲（剩余" +
-							player.storage.liyutang_markcount +
-							"回合）"
-						);
+						return "结束阶段，若你的体力值为全场最少或之一，你获得1点护甲（剩余" + player.storage.liyutang_markcount + "回合）";
 					},
 				},
 				content: function () {
@@ -1380,11 +1318,7 @@ game.import("card", function () {
 				nopop: true,
 				intro: {
 					content: function (storage, player) {
-						return (
-							"准备阶段，若你的体力值为全场最少或之一，你回复1点体力（剩余" +
-							player.storage.yougeng_markcount +
-							"回合）"
-						);
+						return "准备阶段，若你的体力值为全场最少或之一，你回复1点体力（剩余" + player.storage.yougeng_markcount + "回合）";
 					},
 				},
 				content: function () {
@@ -1410,11 +1344,7 @@ game.import("card", function () {
 				nopop: true,
 				intro: {
 					content: function (storage, player) {
-						return (
-							"你不能成为其他角色的黑色牌的目标（剩余" +
-							player.storage.molicha_markcount +
-							"回合）"
-						);
+						return "你不能成为其他角色的黑色牌的目标（剩余" + player.storage.molicha_markcount + "回合）";
 					},
 				},
 				mod: {
@@ -1444,11 +1374,7 @@ game.import("card", function () {
 				nopop: true,
 				intro: {
 					content: function (storage, player) {
-						return (
-							"你在出牌阶段可以额外使用一张杀（剩余" +
-							player.storage.yuanbaorou_markcount +
-							"回合）"
-						);
+						return "你在出牌阶段可以额外使用一张杀（剩余" + player.storage.yuanbaorou_markcount + "回合）";
 					},
 				},
 				mod: {
@@ -1475,11 +1401,7 @@ game.import("card", function () {
 				nopop: true,
 				intro: {
 					content: function (storage, player) {
-						return (
-							"出牌阶段结束时，你摸一张牌（剩余" +
-							player.storage.tanhuadong_markcount +
-							"回合）"
-						);
+						return "出牌阶段结束时，你摸一张牌（剩余" + player.storage.tanhuadong_markcount + "回合）";
 					},
 				},
 				content: function () {
@@ -1512,11 +1434,7 @@ game.import("card", function () {
 				forceLoad: true,
 				intro: {
 					content: function (storage, player) {
-						return (
-							"结束阶段，你随机弃置一名随机敌人的一张随机牌（剩余" +
-							player.storage.mapodoufu_markcount +
-							"回合）"
-						);
+						return "结束阶段，你随机弃置一名随机敌人的一张随机牌（剩余" + player.storage.mapodoufu_markcount + "回合）";
 					},
 				},
 				content: function () {
@@ -1807,61 +1725,45 @@ game.import("card", function () {
 			jinlianzhu: "金莲珠",
 			jinlianzhu_info: "对一名即将受到伤害的角色使用，防止此伤害，并令伤害来源摸一张牌。",
 			shihuifen: "石灰粉",
-			shihuifen_info:
-				"在一名其他角色的出牌阶段开始时对其使用，目标需打出一张闪，否则此阶段使用卡牌无法指定其他角色为目标。",
+			shihuifen_info: "在一名其他角色的出牌阶段开始时对其使用，目标需打出一张【闪】，否则此阶段使用卡牌无法指定其他角色为目标。",
 			liufengsan: "流风散",
 			liufengsan_info: "出牌阶段对一名角色使用，目标获得两张闪。",
 			liutouge: "六骰格",
-			liutouge_info:
-				"出牌阶段对一名角色使用，若目标是敌人，对目标施加一个随机的负面效果；否则对目标施加一个随机的正面效果。",
+			liutouge_info: "出牌阶段对一名角色使用，若目标是敌人，对目标施加一个随机的负面效果；否则对目标施加一个随机的正面效果。",
 			longxugou: "龙须钩",
 			longxugou_info: "出牌阶段对一名装备区内有牌的其他角色使用，获得其装备区内的一张牌并装备之。",
 			mianlijinzhen: "棉里针",
 			mianlijinzhen_info: "出牌阶段对一名体力值不小于你的角色使用，目标摸一张牌然后失去1点体力。",
 			shenhuofeiya: "神火飞鸦",
-			shenhuofeiya_info:
-				"出牌阶段对一名其他角色和其相邻角色使用，目标需打出一张闪，否则受到1点火属性伤害。",
-			// tuhunsha:'土魂砂',
-			// tuhunsha_info:'土魂砂',
-			// wenhuangsan:'瘟癀伞',
-			// wenhuangsan_info:'瘟癀伞',
+			shenhuofeiya_info: "出牌阶段对一名其他角色和其相邻角色使用，目标需打出一张【闪】，否则受到1点火属性伤害。",
 			qiankunbiao: "乾坤镖",
 			qiankunbiao_info: "随机弃置一名其他角色和其相邻角色的一张牌。",
 
 			bingpotong: "天女散花",
 			bingpotong_ab: "散花",
-			bingpotong_info:
-				"出牌阶段对至多3名角色使用，你与每个目标依次同时展示一张手牌，若颜色相同，你弃置展示的手牌，目标失去1点体力并终止结算。",
+			bingpotong_info: "出牌阶段对至多3名角色使用，你与每个目标依次同时展示一张手牌，若颜色相同，你弃置展示的手牌，目标失去1点体力并终止结算。",
 			feibiao: "飞镖",
 			feibiao_info: "出牌阶段，对一名距离1以外的角色使用，令其弃置一张黑色手牌或失去1点体力。",
 
 			dinvxuanshuang: "帝女玄霜",
-			dinvxuanshuang_info:
-				"对一名濒死状态的角色使用，目标回复1点体力，然后可以弃置任意张牌并摸等量的牌。",
+			dinvxuanshuang_info: "对一名濒死状态的角色使用，目标回复1点体力，然后可以弃置任意张牌并摸等量的牌。",
 			yunvyuanshen: "玉女元参",
 			yunvyuanshen_skill: "玉女元参",
 			yunvyuanshen_info: "出牌阶段对一名角色使用，目标在下一次进入濒死状态时回复1点体力。",
 			ziyangdan: "紫阳丹",
-			ziyangdan_info:
-				"出牌阶段对一名角色使用，目标获得3点护甲，此后每个准备阶段失去1点护甲，直到首次失去所有护甲或累计以此法失去3点护甲。",
+			ziyangdan_info: "出牌阶段对一名角色使用，目标获得3点护甲，此后每个准备阶段失去1点护甲，直到首次失去所有护甲或累计以此法失去3点护甲。",
 			gjyuheng: "玉衡",
 			gjyuheng_plus: "玉衡",
 			gjyuheng_pro: "玉衡",
 			gjyuheng_skill: "玉衡",
 			gjyuheng_plus_skill: "玉衡",
 			gjyuheng_pro_skill: "玉衡",
-			gjyuheng_info:
-				"出牌阶段限一次，若敌方角色有黑桃手牌，你可以弃置一张黑桃手牌，然后获得一名随机敌方角色的一张随机黑桃手牌（此牌在本局游戏中第三次和第七次发动效果后，分别自动获得一次强化）。",
-			gjyuheng_plus_info:
-				"由普通玉衡强化得到，将玉衡技能描述中的“弃置一张黑桃手牌”改为“弃置一张黑色手牌”。",
-			gjyuheng_pro_info:
-				"由普通玉衡二次强化得到，将玉横技能描述中的“弃置一张黑桃手牌”改为“弃置一张黑色手牌”，并去掉使用次数限制。",
-			gjyuheng_skill_info:
-				"出牌阶段限一次，若敌方角色有黑桃手牌，你可以弃置一张黑桃手牌，然后获得一名随机敌方角色的一张随机黑桃手牌。",
-			gjyuheng_plus_skill_info:
-				"出牌阶段限一次，若敌方角色有黑桃手牌，你可以弃置一张黑色手牌，然后获得一名随机敌方角色的一张随机黑桃手牌。",
-			gjyuheng_pro_skill_info:
-				"出牌阶段限，若敌方角色有黑桃手牌，你可以弃置一张黑色手牌，然后获得一名随机敌方角色的一张随机黑桃手牌。",
+			gjyuheng_info: "出牌阶段限一次，若敌方角色有黑桃手牌，你可以弃置一张黑桃手牌，然后获得一名随机敌方角色的一张随机黑桃手牌（此牌在本局游戏中第三次和第七次发动效果后，分别自动获得一次强化）。",
+			gjyuheng_plus_info: "由普通玉衡强化得到，将玉衡技能描述中的“弃置一张黑桃手牌”改为“弃置一张黑色手牌”。",
+			gjyuheng_pro_info: "由普通玉衡二次强化得到，将玉横技能描述中的“弃置一张黑桃手牌”改为“弃置一张黑色手牌”，并去掉使用次数限制。",
+			gjyuheng_skill_info: "出牌阶段限一次，若敌方角色有黑桃手牌，你可以弃置一张黑桃手牌，然后获得一名随机敌方角色的一张随机黑桃手牌。",
+			gjyuheng_plus_skill_info: "出牌阶段限一次，若敌方角色有黑桃手牌，你可以弃置一张黑色手牌，然后获得一名随机敌方角色的一张随机黑桃手牌。",
+			gjyuheng_pro_skill_info: "出牌阶段限，若敌方角色有黑桃手牌，你可以弃置一张黑色手牌，然后获得一名随机敌方角色的一张随机黑桃手牌。",
 			shujinsan: "舒筋散",
 			shujinsan_info: "出牌阶段对任意角色使用，目标可弃置任意张牌，并摸等量的牌。",
 			mutoumianju: "木头面具",

@@ -34,6 +34,23 @@ const characters = {
 	std_wanglang: ["male", "wei", 3, ["stdgushe", "stdjici"]],
 	std_zhonghui: ["male", "wei", 4, ["stdxingfa"], ["clan:颍川钟氏"]],
 	std_huaxin: ["male", "wei", 3, ["stdyuanqing", "stdshuchen"]],
+
+	std_zhangbao: ["male", "shu", 4, ["stdjuezhu", "stdchengji"]],
+	std_liuchen: ["male", "shu", 4, ["stdzhanjue", "stdqinwang"], ["zhu"]],
+	std_guansuo: ["male", "shu", 4, ["stdzhengnan"]],
+	std_xiahouba: ["male", "shu", 4, ["stdbaobian"], ["name:夏侯|霸"]],
+	std_caorui: ["male", "wei", 3, ["stdhuituo", "stdmingjian", "xingshuai"], ["zhu"]],
+	std_liuye: ["male", "wei", 3, ["stdpolu", "stdchoulve"]],
+	std_guohuanghou: ["female", "wei", 3, ["stdjiaozhao", "stddanxin"], ["name:郭|null"]],
+	std_lvfan: ["male", "wu", 3, ["mbdiaodu", "stddianfeng"]],
+	std_dingfeng: ["male", "wu", 4, ["stdduanbing", "stdfenxun"]],
+	std_sunluban: ["female", "wu", 3, ["stdzenhui", "stdchuyi"]],
+	std_liuzan: ["male", "wu", 4, ["stdfenyin"]],
+	std_sunyi: ["male", "wu", 4, ["stdzaoli"]],
+	std_taoqian: ["male", "qun", 4, ["stdyirang"]],
+	std_jiling: ["male", "qun", 4, ["stdshuangdao"]],
+	std_liru: ["male", "qun", 3, ["stdmieji", "stdjuece"]],
+	std_wangyun: ["male", "qun", 3, ["stdyunji", "stdzongji"]],
 };
 
 export default characters;

@@ -2,6 +2,54 @@ import { lib, game, ui, get, ai, _status } from "../../noname.js";
 
 /** @type { importCharacterConfig['skill'] } */
 const skills = {
+	//标准版乐进
+	stdxiaoguo: {
+		audio: "xiaoguo",
+		trigger: { global: "phaseJieshuBegin" },
+		filter(event, player) {
+			return (
+				event.player.isIn() &&
+				event.player != player &&
+				player.countCards("h", card => {
+					if (_status.connectMode) return true;
+					return get.type(card) == "basic" && lib.filter.cardDiscardable(card, player);
+				})
+			);
+		},
+		async cost(event, trigger, player) {
+			const target = trigger.player;
+			const next = player.chooseToDiscard(get.prompt(event.name.slice(0, -5)), (card, player) => {
+				return get.type(card) == "basic";
+			});
+			next.set("ai", card => {
+				return get.event("eff") - get.useful(card);
+			});
+			next.set(
+				"eff",
+				(function () {
+					if (target.hasSkillTag("noe")) return get.attitude(_status.event.player, target);
+					return get.damageEffect(target, player, _status.event.player);
+				})()
+			);
+			next.set("logSkill", [event.name.slice(0, -5), target]);
+			event.result = await next.forResult();
+		},
+		popup: false,
+		async content(event, trigger, player) {
+			const target = trigger.player;
+			const bool = await target
+				.chooseToDiscard("he", "弃置一张装备牌，或受到1点伤害", { type: "equip" })
+				.set("ai", card => {
+					if (get.event("damage") > 0) return 0;
+					if (get.event("noe")) return 12 - get.value(card);
+					return -get.event("damage") - get.value(card);
+				})
+				.set("damage", get.damageEffect(target, player, target))
+				.set("noe", target.hasSkillTag("noe"))
+				.forResultBool();
+			if (!bool) await target.damage();
+		},
+	},
 	//标准版甘夫人
 	stdshushen: {
 		audio: "shushen",
@@ -455,6 +503,7 @@ const skills = {
 		filter(event) {
 			return event.card && (event.card.name == "sha" || event.card.name == "juedou") && event.notLink();
 		},
+		charlotte: true,
 		forced: true,
 		async content(event, trigger, player) {
 			trigger.num++;
@@ -612,13 +661,15 @@ const skills = {
 						}
 					}
 					if (event.cards.length) {
+						// 异步函数最后一个Promise事件可以省略await
 						player.gain(event.cards, "gain2");
 					}
 					return;
 				}
 				if (!bool) {
 					if (event.cards.length) {
-						player.gain(event.cards, "gain2");
+						// 但还是建议加上
+						await player.gain(event.cards, "gain2");
 					}
 					return;
 				}
@@ -856,7 +907,7 @@ const skills = {
 	wusheng: {
 		audio: 2,
 		audioname2: {
-			old_guanzhang: "old_fuhun",
+			old_guanzhang: "wusheng_old_guanzhang",
 			old_guanyu: "wusheng_re_guanyu",
 			guanzhang: "wusheng_guanzhang",
 			guansuo: "wusheng_guansuo",
@@ -936,8 +987,7 @@ const skills = {
 		firstDo: true,
 		audioname: ["re_zhangfei", "xiahouba"],
 		audioname2: {
-			old_guanzhang: "old_fuhun",
-			dc_xiahouba: "paoxiao_xiahouba",
+			old_guanzhang: "paoxiao_old_guanzhang",
 			guanzhang: "paoxiao_guanzhang",
 		},
 		trigger: { player: "useCard1" },
@@ -1705,6 +1755,7 @@ const skills = {
 		derivation: ["mashu", "shenji"],
 	},
 	shenji: {
+		audio: 2,
 		mod: {
 			selectTarget(card, player, range) {
 				if (range[1] == -1) return;

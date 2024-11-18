@@ -296,6 +296,7 @@ const cards = {
 						if (get.name(card) == _status.event.choice) return get.order(card);
 						return 0;
 					})
+					.set("respondTo", [player, card])
 					.set(
 						"choice",
 						(function () {

@@ -132,7 +132,7 @@ window.config = {
 	characters: ["standard", "shenhua", "sp", "sp2", "yijiang", "newjiang", "sixiang", "refresh", "mobile", "extra", "yingbian", "sb", "tw", "offline", "clan", "collab", "xianding", "huicui", "shiji", "jsrg", "onlyOL"],
 	moderned_chracters: ["standard", "shenhua", "sp", "sp2", "yijiang", "newjiang", "sixiang", "refresh", "mobile", "extra", "yingbian", "sb", "tw", "offline", "clan", "collab", "xianding", "huicui", "shiji", "onlyOL", "jsrg", "old", "diy", "ddd", "key"],
 	connect_characters: ["diy"],
-	connect_cards: ["huanlekapai", "guozhan", "sp", "zhulu", "yingbian", "yongjian"],
+	connect_cards: ["huanlekapai", "guozhan", "sp", "zhulu", "yingbian", "yongjian", "xianxia"],
 	plays: [],
 	extensions: [],
 	banned: [],

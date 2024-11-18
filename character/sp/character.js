@@ -1,4 +1,8 @@
 const characters = {
+	ol_dongxie: ["female", "qun", "3/5", ["oljiaowei", "olbianyu", "olfengyao"]],
+	ol_hanfu: ["male", "qun", 4, ["olshuzi", "olkuangshou"]],
+	ol_niufu: ["male", "qun", 4, ["olfansuan", "olzonglve"]],
+	chenggongying: ["male", "qun", 4, ["olkuangxiang"]],
 	wangkuang: ["male", "qun", 4, ["olrenxia"]],
 	kongshu: ["female", "qun", 3, ["olleiluan", "olfuchao"]],
 	ol_kebineng: ["male", "qun", 4, ["olpingduan"], ["name:科比|罐头"]],
@@ -38,7 +42,7 @@ const characters = {
 	ol_wenqin: ["male", "wei", 4, ["olguangao", "olhuiqi"]],
 	haopu: ["male", "shu", 4, ["olzhenying"]],
 	ol_mengda: ["male", "shu", 4, ["olgoude"]],
-	ol_wanglang: ["male", "wei", 3, ["gushe", "oljici"]],
+	ol_wanglang: ["male", "wei", 3, ["gushe", "oljici"], ["die:wanglang"]],
 	lushi: ["female", "qun", 3, ["olzhuyan", "releijie"], ["name:卢|null"]],
 	zhangshiping: ["male", "shu", 3, ["olhongji", "olxinggu"]],
 	sunhong: ["male", "wu", 3, ["olxianbi", "olzenrun"]],
@@ -92,10 +96,13 @@ const characters = {
 	wolongfengchu: ["male", "shu", 4, ["youlong", "luanfeng"], ["name:诸葛|亮-庞|统"]],
 	sp_zhangliao: ["male", "qun", 4, ["mubing", "ziqu", "diaoling"]],
 	caoshuang: ["male", "wei", 4, ["retuogu", "shanzhuan"]],
-	ol_zhangchangpu: ["female", "wei", 3, ["yanjiao", "olxingshen"]],
+	ol_zhangchangpu: ["female", "wei", 3, ["yanjiao", "olxingshen"], ["die:zhangchangpu"]],
 	zhangling: ["male", "qun", 3, ["zlhuji", "zlshoufu"]],
 	caiyang: ["male", "qun", 1, ["yinka", "zhuixi"], ["forbidai", "unseen"]],
 	sunshao: ["male", "wu", 3, ["bizheng", "yidian"]],
+	mifuren: ["female", "shu", 3, ["guixiu", "cunsi"], ["name:糜|null", "unseen"]],
+	zoushi: ["female", "qun", 3, [], ["name:邹|null", "unseen"]],
+	zhangren: ["male", "qun", 4, ["chuanxin", "zfengshi"], ["unseen"]],
 
 	huangfusong: ["male", "qun", 4, ["fenyue"], ["name:皇甫|嵩"]],
 	yuantanyuanshang: ["male", "qun", 4, ["neifa"], ["name:袁|谭-袁|尚"]],
@@ -176,15 +183,13 @@ const characters = {
 	dingfeng: ["male", "wu", 4, ["reduanbing", "refenxun"]],
 	shamoke: ["male", "shu", 4, ["gzjili"]],
 
-	//zhangren: ["male", "qun", 4, ["chuanxin", "zfengshi"]],
-
 	wangyun: ["male", "qun", 4, ["xinlianji", "xinmoucheng"], ["clan:太原王氏"]],
 	sunqian: ["male", "shu", 3, ["qianya", "shuimeng"]],
 	xizhicai: ["male", "wei", 3, ["tiandu", "xianfu", "chouce"]],
 	quyi: ["male", "qun", 4, ["fuqi", "jiaozi"]],
 
 	luzhi: ["male", "wei", 3, ["qingzhong", "weijing"]],
-	
+
 	wangcan: ["male", "qun", 3, ["xinfu_sanwen", "xinfu_qiai", "xinfu_denglou"]],
 	re_jsp_pangtong: ["male", "wu", 3, ["xinfu_guolun", "xinfu_songsang"]],
 	lvqian: ["male", "wei", 4, ["xinfu_weilu", "xinfu_zengdao"]],

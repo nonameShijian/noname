@@ -1,5 +1,5 @@
-import { lib, game, ui, get, ai, _status } from '../noname.js';
-export const type = 'mode';
+import { lib, game, ui, get, ai, _status } from "../noname.js";
+export const type = "mode";
 /**
  * @type { () => importModeConfig }
  */
@@ -35,7 +35,7 @@ export default () => {
 						true
 					);
 				}
-	
+
 				event.created = true;
 				var node = ui.create.div(".shadowed");
 				node.style.width = "400px";
@@ -52,7 +52,7 @@ export default () => {
 				node.style.webkitUserSelect = "text";
 				node.style.textAlign = "center";
 				node.style.overflow = "hidden";
-	
+
 				var connect = function (e) {
 					event.textnode.textContent = "正在连接...";
 					clearTimeout(event.timeout);
@@ -82,7 +82,7 @@ export default () => {
 				});
 				ui.window.appendChild(node);
 				ui.ipnode = node;
-	
+
 				var text = event.textnode;
 				text.style.width = "400px";
 				text.style.height = "30px";
@@ -95,14 +95,14 @@ export default () => {
 				text.style.textAlign = "center";
 				ui.window.appendChild(text);
 				ui.iptext = text;
-	
+
 				var button = ui.create.div(".menubutton.highlight.large.pointerdiv", "连接", connect);
 				button.style.width = "70px";
 				button.style.left = "calc(50% - 35px)";
 				button.style.top = "calc(50% + 60px)";
 				ui.window.appendChild(button);
 				ui.ipbutton = button;
-	
+
 				ui.hall_button = ui.create.system(
 					"联机大厅",
 					function () {
@@ -129,9 +129,7 @@ export default () => {
 						});
 						var list = ui.create.div(".caption");
 						for (var i = 0; i < lib.config.recentIP.length; i++) {
-							ui.create.div(".text.textlink", list, clickLink).textContent = get.trimip(
-								lib.config.recentIP[i]
-							);
+							ui.create.div(".text.textlink", list, clickLink).textContent = get.trimip(lib.config.recentIP[i]);
 						}
 						uiintro.add(list);
 						var clear = uiintro.add('<div class="text center">清除</div>');
@@ -148,15 +146,11 @@ export default () => {
 				);
 				if (get.config("read_clipboard", "connect")) {
 					var ced = false;
-					var read = (text) => {
+					var read = text => {
 						try {
 							var text2 = text.split("\n")[2];
 							var ip = text2.slice(5);
-							if (
-								ip.length > 0 &&
-								text2.startsWith("联机地址:") &&
-								(ced || confirm("是否根据剪贴板的邀请链接以进入联机地址和房间？"))
-							) {
+							if (ip.length > 0 && text2.startsWith("联机地址:") && (ced || confirm("是否根据剪贴板的邀请链接以进入联机地址和房间？"))) {
 								node.innerHTML = ip;
 								event.textnode.innerHTML = "正在连接...";
 								clearTimeout(event.timeout);
@@ -178,7 +172,7 @@ export default () => {
 						navigator.clipboard
 							.readText()
 							.then(read)
-							.catch((_) => {});
+							.catch(_ => {});
 					} else {
 						var input = ui.create.node("textarea", ui.window, { opacity: "0" });
 						input.select();
@@ -210,5 +204,5 @@ export default () => {
 			_status.connectDenied = createNode;
 			setTimeout(lib.init.onfree, 1000);
 		},
-	}
-}
+	};
+};

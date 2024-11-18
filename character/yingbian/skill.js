@@ -3629,18 +3629,20 @@ const skills = {
 	sanchen: {
 		audio: 2,
 		enable: "phaseUse",
-		usable: 1,
-		filter: function (event, player) {
+		usable(skill, player) {
+			return 1 + player.countMark("sanchen_add");
+		},
+		filter(event, player) {
 			var stat = player.getStat("sanchen");
 			return game.hasPlayer(function (current) {
 				return !stat || !stat.includes(current);
 			});
 		},
-		filterTarget: function (card, player, target) {
+		filterTarget(card, player, target) {
 			var stat = player.getStat("sanchen");
 			return !stat || !stat.includes(target);
 		},
-		content: function () {
+		content() {
 			"step 0";
 			var stat = player.getStat();
 			if (!stat.sanchen) stat.sanchen = [];
@@ -3663,12 +3665,14 @@ const skills = {
 				for (var i of result.cards) list.add(get.type2(i));
 				if (list.length == result.cards.length) {
 					target.draw();
-					player.getStat("skill").sanchen--;
+					player.addTempSkill(event.name + "_add", "phaseUseAfter");
+					player.addMark(event.name + "_add", 1, false);
 					if (get.mode() == "guozhan") player.addTempSkills("pozhu");
 				}
 			} else {
 				target.draw();
-				player.getStat("skill").sanchen--;
+				player.addTempSkill(event.name + "_add", "phaseUseAfter");
+				player.addMark(event.name + "_add", 1, false);
 				if (get.mode() == "guozhan") player.addTempSkills("pozhu");
 			}
 		},
@@ -3676,7 +3680,7 @@ const skills = {
 			order: 9,
 			threaten: 1.7,
 			result: {
-				target: function (player, target) {
+				target(player, target) {
 					if (target.hasSkillTag("nogain")) return 0.1;
 					return Math.sqrt(target.countCards("he"));
 				},
@@ -3686,6 +3690,12 @@ const skills = {
 			content: "已发动过#次技能",
 		},
 		marktext: "陈",
+		subSkill: {
+			add: {
+				charlotte: true,
+				onremove: true,
+			},
+		},
 	},
 	zhaotao: {
 		forbid: ["guozhan"],

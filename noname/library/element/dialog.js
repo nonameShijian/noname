@@ -22,7 +22,21 @@ export class Dialog extends HTMLDivElement {
 	noforcebutton;
 	/** @type { boolean } */
 	noopen;
-
+	/** 
+	 * dialog添加数据是否支持分页
+	 * @type { boolean }
+	 **/
+	supportsPagination;
+	/**
+	 * dialog中储存的分页元素(用来兼容一个dialog中多个分页的情况)
+	 * @type { Map<HTMLElement, InstanceType<typeof import("../../util/pagination.js").Pagination>> }
+	 */
+	paginationMap;
+	/** 
+	 * 根据数据类型，为每一个类型分配一页的最大数据量
+	 * @type { Map<keyof UI['create']['buttonPresets'], number> }
+	 */
+	paginationMaxCount;
 	// @ts-ignore
 	constructor(...args) {
 		if (args[0] instanceof Dialog) {
@@ -39,6 +53,9 @@ export class Dialog extends HTMLDivElement {
 		// @ts-ignore
 		const dialog = ui.create.div(".dialog");
 		Object.setPrototypeOf(dialog, (lib.element.Dialog || Dialog).prototype);
+		dialog.supportsPagination = false;
+		dialog.paginationMap = new Map();
+		dialog.paginationMaxCount = new Map();
 		dialog.contentContainer = ui.create.div(".content-container", dialog);
 		dialog.content = ui.create.div(".content", dialog.contentContainer);
 		dialog.bar1 = ui.create.div(".bar.top", dialog);
@@ -76,6 +93,7 @@ export class Dialog extends HTMLDivElement {
 	 */
 	addNewRow(...args) {
 		this.classList.add("addNewRow");
+		this.classList.remove('nobutton');
 		//参数归一化
 		let itemOptions = parameterNormolize();
 		//设置比例字符串
@@ -198,7 +216,7 @@ export class Dialog extends HTMLDivElement {
 				itemContainer.classList.add("popup");
 				let button = ui.create.button(item, get.itemtype(item), itemContainer, itemOption.ItemNoclick);
 				button.css(itemOption.itemCss ?? {});
-				if(item._custom) item._custom(button);
+				if (item._custom) item._custom(button);
 				items.push(button);
 			} else {
 				for (let i of item) {

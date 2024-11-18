@@ -1,5 +1,5 @@
 import { lib, game, ui, get, ai, _status } from "../noname.js";
-export const type = 'mode';
+export const type = "mode";
 /**
  * @type { () => importModeConfig }
  */
@@ -630,7 +630,7 @@ export default () => {
 										content: function () {
 											"step 0";
 											player.changeLingli(-2);
-											("step 1");
+											"step 1";
 											event.skills = lib.huanhuazhizhan.skills;
 											var skills = event.skills;
 											skills.randomSort();
@@ -649,7 +649,7 @@ export default () => {
 											player.chooseControl(event.list).set("ai", function () {
 												return 0;
 											}).dialog = dialog;
-											("step 2");
+											"step 2";
 											if (result.control == "刷新") {
 												player.changeLingli(-1);
 												event.goto(1);
@@ -660,7 +660,7 @@ export default () => {
 												event.lose = true;
 												player.chooseControl(player.skillH).prompt = "选择失去1个已有技能";
 											}
-											("step 3");
+											"step 3";
 											if (event.lose) player.removeSkillH(result.control);
 											player.addSkillH(event.skill);
 										},
@@ -723,13 +723,13 @@ export default () => {
 												game.log(player, "本回合内未造成伤害，触发死战模式惩罚");
 											}
 											if (trigger._lastDead == undefined) event.goto(2);
-											("step 1");
+											"step 1";
 											var type = get.rand(1, 8);
 											event.type = type;
 											trigger._lastDead.playerfocus(1200);
 											player.$fullscreenpop("乾坤八卦·" + ["离", "坎", "乾", "震", "兑", "艮", "巽", "坤"][type - 1], get.groupnature(trigger._lastDead.group, "raw"));
 											game.delay(1.5);
-											("step 2");
+											"step 2";
 											var type = event.type;
 											switch (type) {
 												case 1: {
@@ -800,7 +800,7 @@ export default () => {
 													break;
 												}
 											}
-											("step 3");
+											"step 3";
 											if (game.playerx().length <= 4 && !_status._aozhan) {
 												game.countPlayer2(function (current) {
 													delete current._toKill;
@@ -1104,11 +1104,11 @@ export default () => {
 										}
 										ui.arena.classList.add("choose-character");
 										game.me.chooseButton(["请选择角色形象", [_status.characterlist.randomRemove(5), "character"]], true).onfree = true;
-										("step 1");
+										"step 1";
 										game.me.init(result.links[0]);
 										var list = ["xiandeng", "shulv", "xisheng"];
 										game.me.chooseControl(list).dialog = game.getSkillDialog(list, "选择要获得的初始技能");
-										("step 2");
+										"step 2";
 										var list = ["_lingli", "_lingli_round", "_lingli_draw", "_lingli_save", "_hhzz_qiankunbagua", "_lingli_damage"];
 										for (var i = 0; i < list.length; i++) {
 											game.addGlobalSkill(list[i]);
@@ -1123,14 +1123,14 @@ export default () => {
 											current.markSkill("_lingli");
 										});
 										game.showIdentity(true);
-										("step 3");
+										"step 3";
 										game.randomMission();
 										var list = [game.createCard("hhzz_fudichouxin"), game.createCard("hhzz_toulianghuanzhu"), game.createCard("hhzz_toulianghuanzhu"), game.createCard("hhzz_toulianghuanzhu")];
 										for (var i = 0; i < list.length; i++) {
 											ui.cardPile.insertBefore(list[i], ui.cardPile.childNodes[get.rand(ui.cardPile.childElementCount)]);
 										}
 										game.updateRoundNumber();
-										("step 4");
+										"step 4";
 										setTimeout(function () {
 											ui.arena.classList.remove("choose-character");
 										}, 500);
@@ -1305,7 +1305,7 @@ export default () => {
 						player1 = this.player1;
 						player2 = this.player2;
 					}
-	
+
 					var createCard = function (wuxie) {
 						var card;
 						if (wuxie) {
@@ -1320,7 +1320,7 @@ export default () => {
 						card.style.margin = 0;
 						return card;
 					};
-	
+
 					var func = function () {
 						game.linexy([player1.getLeft() + player1.offsetWidth / 2, player1.getTop() + player1.offsetHeight / 2, player2.getLeft() + player2.offsetWidth / 2, player2.getTop() + player2.offsetHeight / 2], node);
 						var card = createCard(true);
@@ -1334,7 +1334,7 @@ export default () => {
 							card.delete();
 						}, 1000);
 						player1.node.count.innerHTML = "1";
-	
+
 						setTimeout(function () {
 							if (!node.showcaseinterval) return;
 							player1.node.count.innerHTML = "2";
@@ -1350,7 +1350,7 @@ export default () => {
 								card.delete();
 							}, 1000);
 						}, 300);
-	
+
 						setTimeout(function () {
 							if (!node.showcaseinterval) return;
 							player2.node.count.innerHTML = "1";
@@ -1366,7 +1366,7 @@ export default () => {
 							setTimeout(function () {
 								card.delete();
 							}, 700);
-	
+
 							setTimeout(function () {
 								if (!node.showcaseinterval) return;
 								player2.node.count.innerHTML = "2";
@@ -1723,7 +1723,7 @@ export default () => {
 						node.appendChild(card);
 						ui.refresh(card);
 					};
-	
+
 					var list2 = ["qilin", "dawan", "zhuahuang"];
 					var func2 = function () {
 						var card = game.createCard(list2.shift(), "noclick");
@@ -1740,7 +1740,7 @@ export default () => {
 						node.appendChild(card);
 						ui.refresh(card);
 					};
-	
+
 					if (init) {
 						node.nodes = [];
 					} else {
@@ -2047,13 +2047,13 @@ export default () => {
 											return 1 / (1 + target.countCards("he"));
 										},
 									});
-									("step 1");
+									"step 1";
 									if (result.bool) {
 										player.logSkill(event.name, result.targets);
 										player.discard(result.cards);
 										result.targets[0].chooseToDiscard("弃置一张牌，或令" + get.translation(player) + "摸一张牌", "he").ai = lib.skill.zhiheng.check;
 									} else event.finish();
-									("step 2");
+									"step 2";
 									if (!result.bool) player.draw();
 								},
 							},
@@ -2168,9 +2168,9 @@ export default () => {
 								content: function () {
 									"step 0";
 									player.draw();
-									("step 1");
+									"step 1";
 									player.changeHujia(1);
-									("step 2");
+									"step 2";
 									var evt = event.getParent("phase");
 									if (evt && evt.after) {
 										var next = player.loseHp();
@@ -2493,7 +2493,7 @@ export default () => {
 									.set("ai", function () {
 										return Math.random() < 0.15 ? "确定" : "取消";
 									});
-								("step 1");
+								"step 1";
 								if (result.control == "确定") {
 									game.log(player, "将", player.name, "替换为了", player._backupCharacter);
 									player.reinit(player.name, player._backupCharacter);
@@ -2511,12 +2511,12 @@ export default () => {
 								var bool = Math.random() < 0.5;
 								var bool2 = Math.random() < 0.5;
 								var ref = game.players[0];
-	
+
 								ref.side = bool;
 								ref.next.side = bool2;
 								ref.next.next.side = !bool;
 								ref.previous.side = !bool2;
-	
+
 								var firstChoose = game.players.randomGet();
 								if (firstChoose.next.side == firstChoose.side) {
 									firstChoose = firstChoose.next;
@@ -2526,7 +2526,7 @@ export default () => {
 									firstChoose.node.name.innerHTML = get.verticalStr(get.cnNumber(i + 1, true) + "号位");
 									firstChoose = firstChoose.next;
 								}
-	
+
 								for (var i = 0; i < game.players.length; i++) {
 									if (game.players[i].side == game.me.side) {
 										game.players[i].node.identity.firstChild.innerHTML = "友";
@@ -2565,7 +2565,7 @@ export default () => {
 									}
 									return event.filterChoice(button.link, ui.selected.buttons[0].link);
 								});
-								("step 1");
+								"step 1";
 								game.me.init(result.links[0]);
 								game.me._backupCharacter = result.links[1];
 								_status.characterlist.removeArray(result.links);
@@ -2937,7 +2937,7 @@ export default () => {
 										ui.discardPile.appendChild(cards.shift());
 									}
 								}
-								("step 1");
+								"step 1";
 								if (game.fellow) {
 									game.dead.remove(game.fellow);
 									game.fellow.remove();
@@ -2967,7 +2967,7 @@ export default () => {
 										.set("choiceList", list)
 										.set("prompt", "请选择一项奖励（当前已通过" + _status.qianlidanji.completeNumber + "关）");
 								}
-								("step 2");
+								"step 2";
 								if (_status.qianlidanji.completeNumber != 5) {
 									if (result.index == 3) {
 										game.over(true);
@@ -2978,7 +2978,7 @@ export default () => {
 								_status.characterlist.removeArray(_status.qianlidanji.used);
 								if (_status.qianlidanji.completeNumber == 5) event._result = { links: ["caiyang"] };
 								else game.zhu.chooseButton(["选择下一关出战的对手", [_status.characterlist.randomGets(3), "character"]], true);
-								("step 3");
+								"step 3";
 								_status.event.getParent("phaseLoop").player = game.zhu;
 								var source = game.fan;
 								var name = result.links[0];
@@ -3016,7 +3016,7 @@ export default () => {
 								source.gain(get.cards(gain))._triggered = null;
 								game.triggerEnter(source);
 								if (event.reward) event.reward();
-								("step 4");
+								"step 4";
 								var cards = Array.from(ui.ordering.childNodes);
 								while (cards.length) {
 									cards.shift().discard();
@@ -3024,8 +3024,8 @@ export default () => {
 								var evt = _status.event.getParent("phase");
 								if (evt) {
 									game.resetSkills();
-									let evtx=_status.event;
-									while(evtx!=evt){
+									let evtx = _status.event;
+									while (evtx != evt) {
 										evtx.finish();
 										evtx.untrigger(true);
 										evtx = evtx.getParent();
@@ -3059,7 +3059,7 @@ export default () => {
 								game.fan.setIdentity();
 								game.fan.identityShown = true;
 								game.fan.node.identity.classList.remove("guessing");
-	
+
 								event.list = [];
 								for (var i in lib.character) {
 									if (lib.filter.characterDisabled(i)) continue;
@@ -3080,7 +3080,7 @@ export default () => {
 								}
 								dialog.setCaption("选择角色");
 								game.me.chooseButton(dialog, true).set("onfree", true);
-	
+
 								ui.create.cheat = function () {
 									_status.createControl = ui.cheat2;
 									ui.cheat = ui.create.control("更换", function () {
@@ -3090,10 +3090,10 @@ export default () => {
 										if (game.changeCoin) {
 											game.changeCoin(-3);
 										}
-	
+
 										event.list.randomSort();
 										list = event.list.slice(0, 5);
-	
+
 										var buttons = ui.create.div(".buttons");
 										var node = _status.event.dialog.buttons[0].parentNode;
 										_status.event.dialog.buttons = ui.create.buttons(list, "character", buttons);
@@ -3116,7 +3116,7 @@ export default () => {
 								} else {
 									event.dialogxx = ui.create.characterDialog("heightset");
 								}
-	
+
 								ui.create.cheat2 = function () {
 									ui.cheat2 = ui.create.control("自由选将", function () {
 										if (this.dialog == _status.event.dialog) {
@@ -3157,7 +3157,7 @@ export default () => {
 									if (!ui.cheat && get.config("change_choice")) ui.create.cheat();
 									if (!ui.cheat2 && get.config("free_choose")) ui.create.cheat2();
 								}
-								("step 1");
+								"step 1";
 								if (ui.cheat) {
 									ui.cheat.close();
 									delete ui.cheat;
@@ -3171,7 +3171,7 @@ export default () => {
 								_status.characterlist.remove(result.buttons[0].link);
 								_status.qianlidanji.used.add(result.buttons[0].link);
 								game.zhu.chooseControl("地狱", "困难", "普通", "简单", "无双").set("prompt", "请选择游戏难度");
-								("step 2");
+								"step 2";
 								var hp = Math.floor(result.index / 2);
 								event.draw = Math.floor((result.index + 1) / 2);
 								if (hp) {
@@ -3180,7 +3180,7 @@ export default () => {
 									game.zhu.update();
 								}
 								game.zhu.chooseButton(["请选择对手的登场武将", [_status.characterlist.randomGets(3), "character"]], true);
-								("step 3");
+								"step 3";
 								game.fan.init(result.links[0]);
 								_status.characterlist.remove(result.links[0]);
 								_status.qianlidanji.used.add(result.links[0]);
@@ -3190,7 +3190,7 @@ export default () => {
 								setTimeout(function () {
 									ui.arena.classList.remove("choose-character");
 								}, 500);
-	
+
 								var pack = {
 									character: {
 										pujing: ["male", "qun", 1, [], []],
@@ -3338,8 +3338,8 @@ export default () => {
 								character: ["re_sp_zhugeliang", "yujin_yujin", "re_zhangliao", "re_lusu"],
 								lib: {
 									character: {
-										re_sp_zhugeliang: ["male", "shu", 3, ["tiaoxin", "bazhen", "feiying"], []],
-										yujin_yujin: ["male", "wei", 4, ["jiangchi", "danshou"], []],
+										re_sp_zhugeliang: ["male", "shu", 3, ["tiaoxin", "bazhen", "feiying"], ["name:诸葛|亮"]],
+										yujin_yujin: ["male", "wei", 4, ["jiangchi", "danshou"], ["die:xin_yujin.mp3"]],
 										re_zhangliao: ["male", "wei", 4, ["benxi", "tuifeng", "qingxi"], []],
 										re_lusu: ["male", "wu", 3, ["kaikang", "shenxian"], []],
 									},
@@ -3358,7 +3358,7 @@ export default () => {
 								lib: {
 									character: {
 										re_huangzhong: ["male", "shu", 4, ["yingjian", "weikui", "gzyinghun"], []],
-										re_xiahouyuan: ["male", "wei", 4, ["benxi", "yaowu", "dujin", "juesi"], []],
+										re_xiahouyuan: ["male", "wei", 4, ["benxi", "yaowu", "dujin", "juesi"], ["name:夏侯|渊"]],
 										zhanghe: ["male", "wei", 4, ["kaikang", "xingshang", "zhiheng"], []],
 										xin_fazheng: ["male", "shu", 4, ["xinfu_zhanji", "nzry_chenglve", "yiji"], []],
 									},
@@ -3378,7 +3378,7 @@ export default () => {
 									character: {
 										re_caocao: ["male", "wei", 4, ["fankui", "zhuiji", "duanbing"], []],
 										xin_yuanshao: ["male", "qun", "3/6", ["reluanji", "kuanggu", "benghuai", "weizhong"], []],
-										guotufengji: ["male", "qun", 2, ["sijian", "jigong", "shifei", "jianying"], []],
+										guotufengji: ["male", "qun", 2, ["sijian", "jigong", "shifei", "jianying"], ["name:null|null"]],
 										re_guojia: ["male", "wei", 3, ["yiji", "sanyao", "gongxin"], []],
 									},
 									translate: {
@@ -3395,7 +3395,7 @@ export default () => {
 								character: ["chunyuqiong", "sp_xuyou", "re_xuhuang", "gaolan"],
 								lib: {
 									character: {
-										chunyuqiong: ["male", "qun", 8, ["ranshang", "duliang", "jiuchi"], []],
+										chunyuqiong: ["male", "qun", 8, ["ranshang", "duliang", "jiuchi"], ["name:淳于|琼"]],
 										sp_xuyou: ["male", "qun", 3, ["qice", "lianying", "nzry_jianxiang"], []],
 										re_xuhuang: ["male", "wei", 4, ["shenduan", "xiaoguo", "nzry_juzhan"], []],
 										gaolan: ["male", "qun", 4, ["yuanhu", "shensu", "benyu", "suishi"], []],
@@ -3415,7 +3415,7 @@ export default () => {
 								lib: {
 									character: {
 										re_sp_zhugeliang: ["male", "shu", 3, ["tianbian", "jyzongshi", "xinfu_guolun"], []],
-										re_zhangzhang: ["male", "wu", 3, ["zhuandui", "tiaoxin", "guzheng"], []],
+										re_zhangzhang: ["male", "wu", 3, ["zhuandui", "tiaoxin", "guzheng"], ["name:张|昭-张|纮"]],
 										guyong: ["male", "wu", 3, ["qiaoshui", "qicai", "bingyi"], []],
 										re_lusu: ["male", "wu", 3, ["qingzhongx", "shuimeng"], []],
 									},
@@ -3436,7 +3436,7 @@ export default () => {
 										yj_jushou: ["male", "qun", 3, ["mingce", "jianyan", "shibei"], []],
 										re_caocao: ["male", "wei", 4, ["miji", "beige", "feiying"], []],
 										jsp_guanyu: ["male", "wei", 4, ["nuzhan", "jianchu", "new_rewusheng"], []],
-										re_yanwen: ["male", "qun", 4, ["shuangxiong", "zhanyi", "zhichi"], []],
+										re_yanwen: ["male", "qun", 4, ["shuangxiong", "zhanyi", "zhichi"], ["name:颜|良-文|丑"]],
 									},
 									translate: {
 										yj_jushou: "白马沮授",
@@ -3453,7 +3453,7 @@ export default () => {
 								lib: {
 									character: {
 										re_lingtong: ["male", "wu", 4, ["xuanfeng", "zishou", "tiaoxin"], []],
-										re_lidian: ["male", "wei", 3, ["weijing", "wangxi", "zhuandui"], []],
+										re_lidian: ["male", "wei", 3, ["weijing", "wangxi", "zhuandui"], ["die:lidian"]],
 										re_zhangliao: ["male", "wei", 3, ["retuxi", "mashu", "reyingzi", "xinpojun"], []],
 										re_ganning: ["male", "wu", 5, ["lizhan", "jiang", "zhenwei"], []],
 									},
@@ -3567,7 +3567,7 @@ export default () => {
 									"textbutton",
 								]);
 								game.me.chooseButton(true).set("dialog", id).set("onfree", true);
-								("step 1");
+								"step 1";
 								var pack = game.liangjunduilei[result.links[0]];
 								game.versusVideoName = pack.name;
 								if (get.is.phoneLayout()) {
@@ -3588,7 +3588,7 @@ export default () => {
 									player.side = pack.place[i];
 									player = player.next;
 								}
-	
+
 								for (var i = 0; i < game.players.length; i++) {
 									if (game.players[i].side == game.me.side) {
 										game.players[i].node.identity.firstChild.innerHTML = "友";
@@ -3785,7 +3785,7 @@ export default () => {
 								}
 								maxpos = Math.max(maxpos, scene.players[i].position);
 							}
-	
+
 							if (maxpos < scene.players.length) {
 								maxpos = scene.players.length;
 							}
@@ -3938,7 +3938,7 @@ export default () => {
 						lib.translate.zhong = lib.translate.zhong || "忠";
 						lib.translate.nei = lib.translate.nei || "内";
 						lib.translate.fan = lib.translate.fan || "反";
-	
+
 						this.style.transition = "all 0s";
 						this.style.height = this.offsetHeight - 10 + "px";
 						this.style.overflow = "scroll";
@@ -3954,14 +3954,14 @@ export default () => {
 							width: "100%",
 						};
 						var style3 = { marginLeft: "4px", marginRight: "4px", position: "relative" };
-	
+
 						var scenename = ui.create.node("input", ui.create.div(style2, "", "场景名称：", this), { width: "120px" });
 						scenename.type = "text";
 						scenename.style.marginTop = "20px";
 						var sceneintro = ui.create.node("input", ui.create.div(style2, "", "场景描述：", this), { width: "120px" });
 						sceneintro.type = "text";
 						sceneintro.style.marginBottom = "10px";
-	
+
 						var line1 = ui.create.div(style2, this);
 						var addCharacter = ui.create.node(
 							"button",
@@ -4008,7 +4008,7 @@ export default () => {
 								line11.style.display = "block";
 								capt9.style.display = "block";
 								line3.style.display = "block";
-	
+
 								line6_t.style.display = "block";
 								line6_b.style.display = "block";
 								line6_d.style.display = "block";
@@ -4080,7 +4080,7 @@ export default () => {
 							},
 							style
 						);
-	
+
 						var capt1 = ui.create.div(style2, "", "角色信息", this);
 						var line2 = ui.create.div(style2, this);
 						line2.style.display = "none";
@@ -4132,12 +4132,12 @@ export default () => {
 						ui.create.node("span", "玩家 ", line2_t, { marginLeft: "10px" });
 						var playercontrol = ui.create.node("input", line2_t);
 						playercontrol.type = "checkbox";
-	
+
 						var list = [];
 						for (var i in lib.character) {
 							list.push([i, lib.translate[i]]);
 						}
-	
+
 						list.sort(function (a, b) {
 							a = a[0];
 							b = b[0];
@@ -4165,16 +4165,16 @@ export default () => {
 						name2.style.marginLeft = "3px";
 						name2.style.marginRight = "3px";
 						name2.style.maxWidth = "80px";
-	
+
 						var capt9 = ui.create.div(style2, "", "编辑牌堆", this);
 						capt9.style.display = "none";
-	
+
 						var capt2 = ui.create.div(style2, "", "添加卡牌", this);
 						var line3 = ui.create.div(style2, this);
 						line3.style.display = "none";
 						capt1.style.display = "none";
 						capt2.style.display = "none";
-	
+
 						var line5 = ui.create.div(style2, this);
 						line5.style.display = "none";
 						var pileaddlist = [];
@@ -4222,7 +4222,7 @@ export default () => {
 						cardpileaddnumber.style.marginLeft = "3px";
 						cardpileaddnumber.style.marginRight = "3px";
 						cardpileaddnumber.style.width = "85px";
-	
+
 						var fakecard = function (info, position, capt) {
 							var name = info[0],
 								suit = info[1],
@@ -4289,7 +4289,7 @@ export default () => {
 						cc_j.style.marginLeft = "3px";
 						cc_j.style.marginRight = "3px";
 						cc_j.style.width = "85px";
-	
+
 						var capt_h = ui.create.div(style2, "", "手牌区", this);
 						var line6_h = ui.create.div(style2, this);
 						var capt_e = ui.create.div(style2, "", "装备区", this);
@@ -4300,7 +4300,7 @@ export default () => {
 						capt_h.style.display = "none";
 						capt_e.style.display = "none";
 						capt_j.style.display = "none";
-	
+
 						var line10 = ui.create.div(style2, this);
 						line10.style.display = "none";
 						var ac_h = ui.create.node("button", "加入牌堆顶", line10, function () {
@@ -4324,17 +4324,17 @@ export default () => {
 						ac_j.style.marginLeft = "3px";
 						ac_j.style.marginRight = "3px";
 						ac_j.style.width = "85px";
-	
+
 						var line11 = ui.create.div(style2, this, "", "<span>替换牌堆</span>");
 						line11.style.display = "none";
 						var replacepile = ui.create.node("input", line11);
 						replacepile.type = "checkbox";
-	
+
 						ui.create.node("span", line11, "开局摸牌", { marginLeft: "10px" });
 						var gameDraw = ui.create.node("input", line11);
 						gameDraw.type = "checkbox";
 						gameDraw.checked = true;
-	
+
 						var capt_t = ui.create.div(style2, "", "牌堆顶", this);
 						var line6_t = ui.create.div(style2, this);
 						var capt_b = ui.create.div(style2, "", "牌堆底", this);
@@ -4345,7 +4345,7 @@ export default () => {
 						capt_t.style.display = "none";
 						capt_b.style.display = "none";
 						capt_d.style.display = "none";
-	
+
 						var line4 = ui.create.div(style2, this);
 						line4.style.display = "none";
 						line4.style.marginTop = "20px";
@@ -4369,7 +4369,7 @@ export default () => {
 							capt_h.style.display = "none";
 							capt_e.style.display = "none";
 							capt_j.style.display = "none";
-	
+
 							name1.value = "random";
 							name2.value = "none";
 							identity.value = "fan";
@@ -4456,14 +4456,14 @@ export default () => {
 							player.style.top = 0;
 							player.style.margin = "-18px";
 							player.node.marks.remove();
-	
+
 							line7.appendChild(player);
 							player.listen(function () {
 								if (confirm("是否删除此角色？")) {
 									this.remove();
 								}
 							});
-	
+
 							return player;
 						};
 						ui.create.div(".menubutton.large", "确定", line4, style3, function () {
@@ -4506,7 +4506,7 @@ export default () => {
 						ui.create.div(".menubutton.large", "取消", line4, style3, resetCharacter);
 						var line7 = ui.create.div(style2, this);
 						line7.style.marginTop = "12px";
-	
+
 						var capt8 = ui.create.div(style2, "", "胜负条件", this);
 						capt8.style.display = "none";
 						var line8 = ui.create.div(style2, this);
@@ -4534,12 +4534,12 @@ export default () => {
 						var turns = ui.create.selectlist(turnslist, "1", line8);
 						ui.create.node("span", "个回合后", line8, style);
 						var turnsresult = ui.create.selectlist(results, "none", line8);
-	
+
 						var washes = ui.create.selectlist(turnslist, "1", line8);
 						washes.style.marginLeft = "20px";
 						ui.create.node("span", "次洗牌后", line8, style);
 						var washesresult = ui.create.selectlist(results, "none", line8);
-	
+
 						var line9 = ui.create.div(style2, this);
 						line9.style.display = "none";
 						line9.style.marginTop = "20px";
@@ -4550,7 +4550,7 @@ export default () => {
 							cardpileaddname.value = "random";
 							cardpileaddsuit.value = "random";
 							cardpileaddnumber.value = "random";
-	
+
 							line8.style.display = "none";
 							capt8.style.display = "none";
 							capt9.style.display = "none";
@@ -4559,14 +4559,14 @@ export default () => {
 							line11.style.display = "none";
 							line3.style.display = "none";
 							line7.style.display = "block";
-	
+
 							line6_t.style.display = "none";
 							line6_b.style.display = "none";
 							line6_d.style.display = "none";
 							capt_t.style.display = "none";
 							capt_b.style.display = "none";
 							capt_d.style.display = "none";
-	
+
 							if (all === true) {
 								replacepile.checked = false;
 								gameDraw.checked = true;
@@ -4579,9 +4579,9 @@ export default () => {
 								line6_d.innerHTML = "";
 							}
 						};
-	
+
 						ui.create.div(".menubutton.large", "确定", line9, style3, resetStatus);
-	
+
 						game.addSceneClear = function () {
 							resetCharacter();
 							resetStatus(true);
@@ -4617,7 +4617,7 @@ export default () => {
 							for (var i = 0; i < scene.discardPile.length; i++) {
 								fakecard(scene.discardPile[i], line6_d, capt_d);
 							}
-	
+
 							for (var i = 0; i < scene.players.length; i++) {
 								createCharacter(scene.players[i]);
 							}
@@ -4761,14 +4761,14 @@ export default () => {
 							width: "100%",
 						};
 						var style3 = { marginLeft: "4px", marginRight: "4px", position: "relative" };
-	
+
 						var scenename = ui.create.node("input", ui.create.div(style2, "", "关卡名称：", this), { width: "120px" });
 						scenename.type = "text";
 						scenename.style.marginTop = "20px";
 						var sceneintro = ui.create.node("input", ui.create.div(style2, "", "关卡描述：", this), { width: "120px" });
 						sceneintro.type = "text";
 						sceneintro.style.marginBottom = "10px";
-	
+
 						var line1 = ui.create.div(style2, this);
 						var line2 = ui.create.div(style2, this);
 						line1.style.marginBottom = "10px";
@@ -4886,5 +4886,5 @@ export default () => {
 				},
 			},
 		},
-	}
-}
+	};
+};

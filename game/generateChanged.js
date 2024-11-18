@@ -1,6 +1,6 @@
 // 通过比对git信息来获取改动的文件列表
 // 然后生成zip文件
-// 使用 node game/listChangedFiles.js commitHash
+// 使用 node game/generateChanged.js commitHash
 // 命令参数是对应commit的SHA
 // 生成的压缩包在game目录下
 const { exec } = require("child_process");

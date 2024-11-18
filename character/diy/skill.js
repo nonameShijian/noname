@@ -2024,14 +2024,10 @@ const skills = {
 	//手杀削弱版许攸
 	junkshicai: {
 		audio: "nzry_shicai_2",
-		trigger: { player: ["useCardAfter", "useCard1"] },
-		filter(event, player, name) {
-			if (player.getHistory("useCard", evt => get.type2(evt.card) == get.type2(event.card)).indexOf(event) !== 0) return false;
-			if (name === "useCard1") {
-				lib.skill.nzry_shicai.init(player);
-				return false;
-			}
-			return event.cards.someInD("oe");
+		trigger: { player: "useCardAfter" },
+		filter(event, player) {
+			if (!event.cards.filterInD("oe").length) return false;
+			return player.getHistory("useCard", evt => get.type2(evt.card) == get.type2(event.card)).indexOf(event) == 0;
 		},
 		prompt2(event, player) {
 			const cards = event.cards.filterInD("oe");
@@ -2073,12 +2069,6 @@ const skills = {
 			game.cardsGotoPile(cards, "insert");
 			game.log(player, "将", cards, "置于了牌堆顶");
 			player.draw();
-		},
-		init(player) {
-			lib.skill.nzry_shicai.init(player);
-		},
-		onremove(player) {
-			player.removeSkill("nzry_shicai_2");
 		},
 		ai: {
 			reverseOrder: true,
@@ -7466,8 +7456,9 @@ const skills = {
 		},
 		content() {
 			"step 0";
+			const num = player.getCards("he").reduce((arr, card) => arr.add(get.suit(card, player)), []).length;
 			player
-				.chooseToDiscard("he", true, [1, 4], function (card, player) {
+				.chooseToDiscard("he", true, [1, num], function (card, player) {
 					if (!ui.selected.cards.length) return true;
 					var suit = get.suit(card, player);
 					for (var i of ui.selected.cards) {
@@ -7483,7 +7474,7 @@ const skills = {
 			"step 1";
 			if (result.bool) {
 				var skills = lib.skill.junkyuheng.derivation.randomGets(result.cards.length);
-				player.addAdditionalSkills("junkyuheng", skills);
+				player.addAdditionalSkills("junkyuheng", skills, true);
 			}
 		},
 		group: "junkyuheng_remove",
@@ -7636,17 +7627,19 @@ const skills = {
 	},
 	junkchigang: {
 		audio: "dili_chigang",
-		trigger: { player: "phaseJudgeBefore" },
+		trigger: { player: "phaseChange" },
 		forced: true,
 		zhuanhuanji: true,
 		mark: true,
 		marktext: "☯",
+		filter(event, player) {
+			return event.phaseList[event.num].indexOf("phaseJudge") != -1;
+		},
 		content() {
 			player.changeZhuanhuanji("junkchigang");
-			trigger.cancel();
-			var next = player[player.storage.junkchigang ? "phaseDraw" : "phaseUse"]();
-			event.next.remove(next);
-			trigger.getParent().next.push(next);
+			let phase = player.storage.junkchigang ? "phaseDraw" : "phaseUse";
+			trigger.phaseList[trigger.num] = `${phase}|clanguixiang`;
+			game.delayx();
 		},
 		ai: {
 			effect: {

@@ -10,6 +10,7 @@ import { extensionMenu } from "./menu/pages/exetensionMenu.js";
 import { optionsMenu } from "./menu/pages/optionsMenu.js";
 import { otherMenu } from "./menu/pages/otherMenu.js";
 import { startMenu } from "./menu/pages/startMenu.js";
+import { Pagination } from "../../util/pagination.js";
 
 export class Create {
 	/**
@@ -1024,7 +1025,9 @@ export class Create {
 		}
 		var list = [];
 		const groups = [];
+		/** @type { Dialog } */
 		var dialog;
+		/** 筛选武将的信息 */
 		var node = ui.create.div(".caption.pointerspan");
 		if (get.is.phoneLayout()) {
 			node.style.fontSize = "30px";
@@ -1090,6 +1093,7 @@ export class Create {
 		var newlined = false;
 		var newlined2;
 		var packsource;
+		/** 点击筛选中的按钮 */
 		var clickCapt = function (e) {
 			if (_status.dragged) return;
 			if (dialog.currentcapt2 == "最近" && dialog.currentcaptnode2 != this && !dialog.currentcaptnode2.inited) {
@@ -1107,6 +1111,7 @@ export class Create {
 						this.touchlink.classList.remove("active");
 					}
 					for (var i = 0; i < dialog.buttons.length; i++) {
+						restoreState(dialog.buttons[i]);
 						if (dialog.currentgroup && dialog.buttons[i].group != dialog.currentgroup) {
 							dialog.buttons[i].classList.add("nodisplay");
 						} else if (dialog.currentcapt2 && dialog.buttons[i].capt != dialog.getCurrentCapt(dialog.buttons[i].link, dialog.buttons[i].capt, true)) {
@@ -1129,6 +1134,7 @@ export class Create {
 						this.touchlink.classList.add("active");
 					}
 					for (var i = 0; i < dialog.buttons.length; i++) {
+						restoreState(dialog.buttons[i]);
 						if (dialog.buttons[i].capt != dialog.getCurrentCapt(dialog.buttons[i].link, dialog.buttons[i].capt)) {
 							dialog.buttons[i].classList.add("nodisplay");
 						} else if (dialog.currentcapt2 && dialog.buttons[i].capt != dialog.getCurrentCapt(dialog.buttons[i].link, dialog.buttons[i].capt, true)) {
@@ -1158,6 +1164,7 @@ export class Create {
 						this.touchlink.classList.remove("active");
 					}
 					for (var i = 0; i < dialog.buttons.length; i++) {
+						restoreState(dialog.buttons[i]);
 						if (dialog.currentgroup && dialog.buttons[i].group != dialog.currentgroup) {
 							dialog.buttons[i].classList.add("nodisplay");
 						} else if (dialog.currentcapt && dialog.buttons[i].capt != dialog.getCurrentCapt(dialog.buttons[i].link, dialog.buttons[i].capt)) {
@@ -1183,6 +1190,7 @@ export class Create {
 						packsource.classList.add("thundertext");
 					}
 					for (var i = 0; i < dialog.buttons.length; i++) {
+						restoreState(dialog.buttons[i]);
 						if (dialog.currentcapt && dialog.buttons[i].capt != dialog.getCurrentCapt(dialog.buttons[i].link, dialog.buttons[i].capt)) {
 							dialog.buttons[i].classList.add("nodisplay");
 						} else if (dialog.buttons[i].capt != dialog.getCurrentCapt(dialog.buttons[i].link, dialog.buttons[i].capt, true)) {
@@ -1216,6 +1224,7 @@ export class Create {
 					packsource.classList.remove("thundertext");
 				}
 			}
+			updatePagination();
 			if (e) e.stopPropagation();
 		};
 		for (i = 0; i < namecapt.length; i++) {
@@ -1259,6 +1268,7 @@ export class Create {
 			var span = document.createElement("span");
 			newlined.appendChild(span);
 			span.style.margin = "8px";
+			/** 点击筛选某势力的武将 */
 			var clickGroup = function () {
 				if (_status.dragged) return;
 				if (dialog.currentcapt2 == "最近" && dialog.currentcaptnode2 != this && !dialog.currentcaptnode2.inited) {
@@ -1274,6 +1284,7 @@ export class Create {
 					dialog.currentgroupnode = null;
 					node.classList.remove("thundertext");
 					for (var i = 0; i < dialog.buttons.length; i++) {
+						restoreState(dialog.buttons[i]);
 						if (dialog.currentcapt && dialog.buttons[i].capt != dialog.getCurrentCapt(dialog.buttons[i].link, dialog.buttons[i].capt)) {
 							dialog.buttons[i].classList.add("nodisplay");
 						} else if (dialog.currentcapt2 && dialog.buttons[i].capt != dialog.getCurrentCapt(dialog.buttons[i].link, dialog.buttons[i].capt, true)) {
@@ -1290,6 +1301,7 @@ export class Create {
 					dialog.currentgroupnode = node;
 					node.classList.add("thundertext");
 					for (var i = 0; i < dialog.buttons.length; i++) {
+						restoreState(dialog.buttons[i]);
 						if (dialog.currentcapt && dialog.buttons[i].capt != dialog.getCurrentCapt(dialog.buttons[i].link, dialog.buttons[i].capt)) {
 							dialog.buttons[i].classList.add("nodisplay");
 						} else if (dialog.currentcapt2 && dialog.buttons[i].capt != dialog.getCurrentCapt(dialog.buttons[i].link, dialog.buttons[i].capt, true)) {
@@ -1309,6 +1321,7 @@ export class Create {
 						}
 					}
 				}
+				updatePagination();
 			};
 			for (var i = 0; i < groups.length; i++) {
 				var span = ui.create.div(".tdnode.pointerdiv.shadowed.reduce_radius.reduce_margin");
@@ -1486,16 +1499,20 @@ export class Create {
 		} else {
 			list.sort(lib.sort.character);
 		}
+		// 自由选将
 		dialog = ui.create.dialog("hidden");
 		dialog.classList.add("noupdate");
 		dialog.classList.add("scroll1");
 		dialog.classList.add("scroll2");
 		dialog.classList.add("scroll3");
+		dialog.supportsPagination = Boolean(parseInt(lib.config.showMax_character_number));
+		dialog.paginationMaxCount.set("character", parseInt(lib.config.showMax_character_number));
 		dialog.addEventListener(lib.config.touchscreen ? "touchend" : "mouseup", function () {
 			_status.clicked2 = true;
 		});
 		if (heightset) {
-			dialog.style.height = (game.layout == "long2" || game.layout == "nova" ? 380 : 350) + "px";
+			//这里如果dialog的高度较低的话，会显示不全下面的分页按钮，所以我增加了50px，后面遇到高度问题，可以研究更完美的方案，在这里更改。
+			dialog.style.height = (game.layout == "long2" || game.layout == "nova" ? 380 : 350) + 50 + "px";
 			dialog._scrollset = true;
 		}
 		dialog.getCurrentCapt = function (link, capt, noalph) {
@@ -1515,6 +1532,68 @@ export class Create {
 			}
 			return this.currentcapt;
 		};
+		// 搜索框，by Curpond
+		/** @type { Element } */
+		// @ts-ignore
+		const container = dialog.querySelector(".content-container>.content");
+		const Searcher = ui.create.div(".searcher.caption");
+		const input = document.createElement("input").css({
+			textAlign: "center",
+			border: "solid 2px #294510",
+			borderRadius: "6px",
+			fontWeight: "bold",
+			fontSize: "21px"
+		});
+		const div = ui.create.div(".searcher.find");
+		input.placeholder = "支持正则搜索";
+		//使用click事件搜索，因为用input事件，难以解决按下a键会触发自动托管的bug
+		let find = ui.create.button(["find", "搜索"], "tdnodes");
+		find.style.display = "inline";
+		const updatePagination = () => {
+			if (dialog.paginationMaxCount.get("character")) {
+				const buttons = dialog.content.querySelector(".buttons");
+				const array = dialog.buttons.filter(item => !item.classList.contains("nodisplay") && item.style.display !== 'none');
+				/** @type { Pagination } */
+				// @ts-ignore
+				const p = dialog.paginationMap.get(buttons);
+				if (p) {
+					p.state.data = array;
+					// @ts-ignore
+					p.setTotalPageCount(Math.ceil(array.length / dialog.paginationMaxCount.get("character")));
+				}
+			}
+		};
+		const restoreState = btn => {
+			if (btn.style.display == 'none') {
+				btn.style.display = '';
+			}
+		};
+		const updateFind = () => {
+			const { value } = input;
+			const reg = new RegExp(value);
+			for (let btn of dialog.buttons) {
+				if (reg.test(get.translation(btn.link)) || reg.test(get.translation(btn.link + '_ab'))) {
+					btn.classList.remove("nodisplay");
+				} else {
+					btn.classList.add("nodisplay");
+				}
+			}
+			updatePagination();
+		};
+		find.addEventListener('click', updateFind);
+		input.onkeydown = function (e) {
+			e.stopPropagation();
+			if (e.code == "Enter") {
+				updateFind();
+			}
+		};
+		//阻止冒泡以防止触发窗口被拖动而无法选中文字
+		input.onmousedown = function (e) {
+			e.stopPropagation();
+		};
+		Searcher.append(input, find);
+		container.prepend(Searcher);
+
 		if (str) {
 			dialog.add(str);
 		}
@@ -1583,46 +1662,41 @@ export class Create {
 				clickCapt.call(node[lib.config.character_dialog_tool]);
 			}
 		}
-
-		//仅仅下面是新加的，by Curpond
-
-		let container = dialog.querySelector(".content-container>.content");
-		let Searcher = ui.create.div(".searcher.caption");
-		let input = document.createElement("input");
-		input.style.textAlign = "center";
-		input.style.border = "solid 2px #294510";
-		input.style.borderRadius = "6px";
-		input.style.fontWeight = "bold";
-		input.style.fontSize = "21px";
-		input.placeholder = "支持正则搜索";
-		let find = ui.create.button(["find", "搜索"], "tdnodes");
-		find.style.display = "inline";
-		let clickfind = function (e) {
-			e.stopPropagation();
-			let value = input.value;
-			if (value == "") {
-				game.alert("搜索不能为空");
-				input.focus();
-				return;
-			}
-			let list = [];
-			for (let btn of dialog.buttons) {
-				let reg = new RegExp(value, "g");
-				if (reg.test(get.translation(btn.link)) || reg.test(lib.translate[`${btn.link}_ab`])) {
-					btn.classList.remove("nodisplay");
-				} else {
-					btn.classList.add("nodisplay");
-				}
-			}
-		};
-		input.addEventListener("keydown", e => {
-			if (e.key == "Enter") clickfind(e);
-			e.stopPropagation();
-		});
-		find.listen(clickfind);
-		Searcher.appendChild(input);
-		Searcher.appendChild(find);
-		container.prepend(Searcher);
+		if (dialog.paginationMaxCount.get("character")) {
+			/** @type { HTMLDivElement } */
+			// @ts-ignore
+			const buttons = dialog.content.querySelector(".buttons");
+			const array = dialog.buttons.filter(item => !item.classList.contains("nodisplay") && item.style.display !== 'none');
+			// 传入初始配置
+			const p = new Pagination({
+				// 数据
+				data: array,
+				// 总页数(向上取整)
+				totalPageCount: Math.ceil(array.length / dialog.paginationMaxCount.get("character")),
+				// 父元素
+				container: dialog.content,
+				// 添加到容器的哪个子元素后面
+				insertAfter: buttons,
+				// 回调修改数据
+				onPageChange: state => {
+					const { pageNumber, data } = state;
+					// 设一个dialog一页显示10张武将牌
+					data.forEach((item, index) => {
+						const maxCount = dialog.paginationMaxCount.get("character");
+						if (index >= (pageNumber - 1) * maxCount && index < pageNumber * maxCount) {
+							item.classList.remove("nodisplay");
+						} else {
+							item.classList.add("nodisplay");
+						}
+					});
+				},
+				// 触发什么事件来更改当前页数，默认为click
+				changePageEvent: "click",
+			});
+			dialog.paginationMap.set(buttons, p);
+			// 渲染元素
+			p.renderPageDOM();
+		}
 
 		return dialog;
 	}
@@ -2282,11 +2356,41 @@ export class Create {
 		//------添加记牌器 by Curpond-------
 		ui.deckMonitor = ui.create.system(
 			"记牌器",
-			function () {
+			async function () {
+				function getResult() {
+					return new Promise((resolve, reject) => {
+						if (game.online) {
+							try {
+								game.ws.send(JSON.stringify(['cardPile']));
+								game.ws.addEventListener('message', function (e) {
+									let data = JSON.parse(JSON.parse(e.data)[0]);
+									if (data.type == 'cardPile') {
+										resolve(data.data);
+									}
+								}, { once: true });
+
+							} catch (error) {
+								resolve(false);
+							}
+
+
+						} else {
+							resolve({
+								drawPile: ui.cardPile.children,
+								discardPile: ui.discardPile.children
+							});
+						}
+					});
+
+				}
 				if (!_status.gameStarted) return;
 				game.pause2();
-				let drawPile = ui.cardPile.children;
-				let discardPile = ui.discardPile.children;
+
+				let result = await getResult();
+				if (!result) return;
+				let drawPile = result.drawPile;
+				let discardPile = result.discardPile;
+
 				let popupContainer = ui.create.div(".popupContainer.deckMonitor", ui.window, function () {
 					this.delete(400);
 					game.resume2();
@@ -2342,7 +2446,7 @@ export class Create {
 						typeResult.equip ??= [];
 						typeResult.delay ??= [];
 						for (let key of Object.keys(typeResult).sort((a, b) => {
-							let arr = ['basic', 'trick', 'equip', 'delay', 'jiqi', 'spell', 'zhenfa', 'food', 'jiguan', 'land'];
+							let arr = ["basic", "trick", "equip", "delay", "jiqi", "spell", "zhenfa", "food", "jiguan", "land"];
 							return arr.indexOf(a) - arr.indexOf(b);
 						})) {
 							let result = Object.groupBy(typeResult[key], card => get.name(card));
@@ -2413,6 +2517,22 @@ export class Create {
 			true,
 			true
 		);
+
+
+
+		lib.arenaReady?.push(function () {
+			if (lib.config.show_deckMonitor) {
+				ui.deckMonitor.style.display = "";
+				if (_status.connectMode && !lib.config.show_deckMonitor_online) {
+					ui.deckMonitor.style.display = "none";
+				}
+			} else {
+				ui.deckMonitor.style.display = "none";
+			}
+			document.documentElement.style.setProperty("--tip-display", lib.config.show_tip ? "flex" : "none");
+		});
+
+
 		//---------------------------------
 		ui.playerids = ui.create.system(
 			"显示身份",
@@ -3072,26 +3192,44 @@ export class Create {
 		var shareButton = ui.create.div(".menubutton.large.highlight.connectbutton.connectbutton2.pointerdiv", "分享房间", ui.window, function () {
 			var text = `无名杀-联机-${lib.translate[get.mode()]}-${game.connectPlayers.filter(p => p.avatar).length}/${game.connectPlayers.filter(p => !p.classList.contains("unselectable2")).length}\n${get.connectNickname()}邀请你加入${game.roomId}房间\n联机地址:${game.ip}\n请先通过游戏内菜单-开始-联机中启用“读取邀请链接”选项`;
 			window.focus();
-			if (navigator.clipboard && lib.node) {
-				navigator.clipboard
-					.writeText(text)
-					.then(() => {
-						game.alert(`分享内容复制成功`);
-					})
-					.catch(e => {
-						game.alert(`分享内容复制失败${e || ""}`);
-					});
-			} else {
-				var input = ui.create.node("textarea", ui.window, {
-					opacity: "0",
+			const fallbackCopyTextToClipboard = function (text) {
+				const textArea = document.createElement("textarea");
+				textArea.value = text;
+				textArea.style.position = "fixed";
+				textArea.style.top = "0";
+				textArea.style.left = "0";
+				textArea.style.width = "1px";
+				textArea.style.height = "1px";
+				textArea.style.padding = "0";
+				textArea.style.border = "none";
+				textArea.style.outline = "none";
+				textArea.style.boxShadow = "none";
+				textArea.style.background = "transparent";
+				document.body.appendChild(textArea);
+				textArea.focus();
+				textArea.select();
+				try {
+					const successful = document.execCommand("copy");
+					if (!successful) {
+						console.error("Unable to copy using execCommand");
+						game.promises.prompt(`###分享内容复制失败，请自行复制以下内容###${text}`, true);
+					}
+					else {
+						game.alert("分享内容复制成功");
+					}
+				} catch (err) {
+					console.error("Unable to copy using execCommand:", err);
+				}
+				document.body.removeChild(textArea);
+			};
+			if ("clipboard" in navigator) {
+				navigator.clipboard.writeText(text).then(() => {
+					game.alert("分享内容复制成功");
+				}).catch(() => {
+					fallbackCopyTextToClipboard(text);
 				});
-				input.value = text;
-				input.focus();
-				input.select();
-				var result = document.execCommand("copy");
-				input.blur();
-				ui.window.removeChild(input);
-				game.alert(`分享内容复制${result ? "成功" : "失败"}`);
+			} else {
+				fallbackCopyTextToClipboard(text);
 			}
 		});
 
@@ -3230,5 +3368,12 @@ export class Create {
 			_status.cardtag,
 			lib.inpile_nature
 		);
+	}
+	/**
+	 * 创建分页类
+	 * @param {Partial<PaginationState>} options 
+	 */
+	pagination(options) {
+		return new Pagination(options);
 	}
 }

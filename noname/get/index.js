@@ -369,10 +369,10 @@ export class Get extends GetCompatible {
 	}
 	/**
 	 * 用于获取武将的姓氏和名字
-	 * @param { string } str
-	 * @param { string|undefined } defaultSurname
-	 * @param { string|undefined } defaultName
-	 * @returns { Array }
+	 * @param { string } str 武将ID
+	 * @param { string | undefined } defaultSurname 默认姓氏
+	 * @param { string | undefined } defaultName 默认名字，为空则设“某”
+	 * @returns { Array } 返回由[姓氏, 名字]组成的数组
 	 */
 	characterSurname(str, defaultSurname, defaultName) {
 		const info = get.character(str).names;
@@ -467,9 +467,9 @@ export class Get extends GetCompatible {
 	}
 	/**
 	 * 获取牌堆底的牌
-	 * @param { number } [num = 1]
-	 * @param { boolean } [putBack]
-	 * @returns { Card[] }
+	 * @param { number } [num = 1] 默认为1
+	 * @param { boolean } [putBack] 是否放回牌堆底
+	 * @returns { Card[] | Card } num为0返回Card，否则返回Cards
 	 */
 	bottomCards(num, putBack) {
 		if (_status.waitingForCards) {
@@ -1121,6 +1121,7 @@ export class Get extends GetCompatible {
 		if (!require) return "";
 		var interfaces = require("os").networkInterfaces();
 		for (var devName in interfaces) {
+			if (devName.includes("VMware")) continue;
 			var iface = interfaces[devName];
 			for (var i = 0; i < iface.length; i++) {
 				var alias = iface[i];
@@ -2426,9 +2427,9 @@ export class Get extends GetCompatible {
 	}
 	/**
 	 * 返回牌堆顶的牌
-	 * @param { number } [num = 1]
-	 * @param { boolean } [putBack]
-	 * @returns
+	 * @param { number } [num = 1] 默认为1
+	 * @param { boolean } [putBack] 是否放回牌堆顶
+	 * @returns { Card[] | Card } num为0返回Card，否则返回Cards
 	 */
 	cards(num, putBack) {
 		if (_status.waitingForCards) {
@@ -2666,6 +2667,10 @@ export class Get extends GetCompatible {
 		//哪个大聪明在返回牌位置的函数写返回玩家位置的功能
 		if (get.itemtype(card) == "player") return parseInt(card.dataset.position);
 		if (!card) return null;
+		if (get.itemtype(card) == "vcard") {
+			if (card.cards) return get.position(card.cards[0], ordering);
+			return null;
+		}
 		if (card.timeout && card.destiny && card.destiny.classList) {
 			if (card.destiny.classList.contains("equips")) return "e";
 			if (card.destiny.classList.contains("judges")) return "j";
@@ -2696,11 +2701,14 @@ export class Get extends GetCompatible {
 	 */
 	skillTranslation(str, player) {
 		var str2;
+		if (get.itemtype(player) !== "player") {
+			player = undefined;
+		}
 		if (str.startsWith("re")) {
 			str2 = str.slice(2);
 			if (str2) {
 				if (lib.translate[str] == lib.translate[str2]) {
-					if (player.hasSkill(str2)) {
+					if (player?.hasSkill(str2)) {
 						return "界" + lib.translate[str];
 					}
 				}
@@ -2709,7 +2717,7 @@ export class Get extends GetCompatible {
 			str2 = str.slice(3);
 			if (str2) {
 				if (lib.translate[str] == lib.translate[str2]) {
-					if (player.hasSkill(str2)) {
+					if (player?.hasSkill(str2)) {
 						return "新" + lib.translate[str];
 					}
 				}
@@ -2765,10 +2773,7 @@ export class Get extends GetCompatible {
 					}
 				}
 				if ((str.suit && str.number) || str.isCard) {
-					var cardnum = get.number(str, false) || "";
-					if ([1, 11, 12, 13].includes(cardnum)) {
-						cardnum = { 1: "A", 11: "J", 12: "Q", 13: "K" }[cardnum];
-					}
+					var cardnum = get.strNumber(get.number(str, false), true) || "";
 					if (arg == "viewAs" && str.viewAs != str.name && str.viewAs) {
 						str2 += "（" + get.translation(str) + "）";
 					} else {
@@ -2835,40 +2840,29 @@ export class Get extends GetCompatible {
 	/**
 	 * 返回数字在扑克牌中的表示形式
 	 * @param { number } num
+	 * @param { boolean } [forced] 未获取点数字母对应元素时，若此参数不为false，则返回字符串格式
 	 * @returns { string }
 	 */
-	strNumber(num) {
-		switch (num) {
-			case 1:
-				return "A";
-			case 11:
-				return "J";
-			case 12:
-				return "Q";
-			case 13:
-				return "K";
-			default:
-				return num.toString();
-		}
+	strNumber(num, forced) {
+		if (typeof num !== "number") return;
+		let result = lib.numstrList.get(num);
+		if (result === undefined && forced !== false) result = num.toString();
+		return result;
 	}
 	/**
 	 * 返回扑克牌中的表示形式对应的数字
 	 * @param { string } str
+	 * @param { boolean } [forced] 未获取字母点数对应元素时，若此参数不为false，则返回数字格式
 	 * @returns { number }
 	 */
-	numString(str) {
-		switch (str) {
-			case "A":
-				return 1;
-			case "J":
-				return 11;
-			case "Q":
-				return 12;
-			case "K":
-				return 13;
-			default:
-				return parseInt(str);
-		}
+	numString(str, forced) {
+		if (typeof str !== "string") return;
+		let result = lib.numstrList.entries().reduce((map, list) => {
+			map[list[1]] = list[0];
+			return map;
+		}, {})[str];
+		if (result === undefined && forced !== false) result = parseInt(str);
+		return result;
 	}
 	/**
 	 * 将阿拉伯数字转换为中文的表达形式
@@ -3064,7 +3058,7 @@ export class Get extends GetCompatible {
 	selectableTargets(sort) {
 		var selectable = [];
 		var players = game.players.slice(0);
-		if (_status.event.deadTarget) players.addArray(game.dead);
+		if (_status.event.deadTarget || (_status.event.skill && get.info(_status.event.skill)?.deadTarget)) players.addArray(game.dead);
 		for (var i = 0; i < players.length; i++) {
 			if (players[i].classList.contains("selectable") && players[i].classList.contains("selected") == false) {
 				selectable.push(players[i]);
@@ -3171,7 +3165,7 @@ export class Get extends GetCompatible {
 		return num;
 	}
 	/**
-	 * 返回玩家本回合技能的使用次数
+	 * 返回玩家本回合某个主动技的使用次数
 	 * @param { string } skill 技能ID
 	 * @param { Player } [player = _status.event.player]
 	 * @returns { number }
@@ -4560,6 +4554,9 @@ export class Get extends GetCompatible {
 			if (uiintro.content.firstChild) {
 				uiintro.content.firstChild.style.paddingTop = "3px";
 			}
+		} else if (node.classList.contains("nodeintro")) {
+			if (node.nodeTitle) uiintro.add(node.nodeTitle);
+			uiintro._place_text = uiintro.add('<div class="text">' + node.nodeContent + "</div>");
 		}
 		if (lib.config.touchscreen) {
 			lib.setScroll(uiintro.contentContainer);

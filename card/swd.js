@@ -54,10 +54,7 @@ game.import("card", function () {
 					result: {
 						target: function (player, target) {
 							if (target.hasSkillTag("nofire")) return 0;
-							if (
-								get.damageEffect(target, player, player) < 0 &&
-								get.attitude(player, target) > 0
-							) {
+							if (get.damageEffect(target, player, player) < 0 && get.attitude(player, target) > 0) {
 								return -2;
 							}
 							var nh = target.countCards("he");
@@ -142,14 +139,8 @@ game.import("card", function () {
 					},
 					result: {
 						player: function (player, target) {
-							if (
-								player.countCards("h") <= Math.min(5, Math.max(2, player.hp)) &&
-								_status.event.name == "chooseToUse"
-							) {
-								if (
-									typeof _status.event.filterCard == "function" &&
-									_status.event.filterCard({ name: "dujian" })
-								) {
+							if (player.countCards("h") <= Math.min(5, Math.max(2, player.hp)) && _status.event.name == "chooseToUse") {
+								if (typeof _status.event.filterCard == "function" && _status.event.filterCard({ name: "dujian" })) {
 									return -10;
 								}
 								if (_status.event.skill) {
@@ -183,20 +174,12 @@ game.import("card", function () {
 				content: function () {
 					"step 0";
 					var choice;
-					if (
-						target.countCards("h", "shan") == 0 ||
-						target.countCards("h", "sha") == 0 ||
-						target.hp <= 1
-					) {
+					if (target.countCards("h", "shan") == 0 || target.countCards("h", "sha") == 0 || target.hp <= 1) {
 						choice = "basic";
 					} else {
 						var e2 = target.getEquip(2);
 						var e3 = target.getEquip(3);
-						if (
-							(e2 && e3) ||
-							((e2 || e3) && target.needsToDiscard() <= 1) ||
-							Math.random() < 0.5
-						) {
+						if ((e2 && e3) || ((e2 || e3) && target.needsToDiscard() <= 1) || Math.random() < 0.5) {
 							choice = "trick";
 						} else {
 							choice = "equip";
@@ -297,10 +280,7 @@ game.import("card", function () {
 							var info = lib.card[lib.inpile[i]];
 							if (info.type == "trick" && !info.multitarget && !info.notarget) {
 								if (Array.isArray(info.selectTarget)) {
-									if (
-										info.selectTarget[0] > 0 &&
-										info.selectTarget[1] >= info.selectTarget[0]
-									) {
+									if (info.selectTarget[0] > 0 && info.selectTarget[1] >= info.selectTarget[0]) {
 										list.push(lib.inpile[i]);
 									}
 								} else if (typeof info.selectTarget == "number") {
@@ -637,6 +617,7 @@ game.import("card", function () {
 			jiguantong: {
 				fullskin: true,
 				type: "jiguan",
+				cardnature: "fire",
 				enable: true,
 				wuxieable: true,
 				selectTarget: -1,
@@ -880,6 +861,7 @@ game.import("card", function () {
 				content: function () {
 					"step 0";
 					var next = target.chooseToRespond({ name: "shan" });
+					next.set("respondTo", [player, card]);
 					next.autochoose = lib.filter.autoRespondShan;
 					"step 1";
 					if (result.bool == false) {
@@ -921,18 +903,7 @@ game.import("card", function () {
 				content: function () {
 					"step 0";
 					if (player.countCards("he")) {
-						player
-							.chooseCard(true, "he")
-							.set(
-								"prompt2",
-								"你将" +
-									get.translation(cards) +
-									"和选择牌置于" +
-									get.translation(target) +
-									"的武将牌上，然后摸一张牌；" +
-									get.translation(target) +
-									"于下一结束阶段获得武将牌上的牌"
-							);
+						player.chooseCard(true, "he").set("prompt2", "你将" + get.translation(cards) + "和选择牌置于" + get.translation(target) + "的武将牌上，然后摸一张牌；" + get.translation(target) + "于下一结束阶段获得武将牌上的牌");
 					} else {
 						event.finish();
 					}
@@ -959,12 +930,7 @@ game.import("card", function () {
 					result: {
 						target: function (player, target) {
 							var players = game.filterPlayer(function (current) {
-								return (
-									current != player &&
-									!current.isTurnedOver() &&
-									get.attitude(player, current) >= 3 &&
-									get.attitude(current, player) >= 3
-								);
+								return current != player && !current.isTurnedOver() && get.attitude(player, current) >= 3 && get.attitude(current, player) >= 3;
 							});
 							players.sort(lib.sort.seat);
 							if (target == players[0]) return 2;
@@ -1049,12 +1015,7 @@ game.import("card", function () {
 				enable: function (card, player) {
 					var es = player.getCards("e");
 					for (var i = 0; i < es.length; i++) {
-						if (
-							lib.inpile.includes(es[i].name) &&
-							!lib.card[es[i].name].nopower &&
-							!lib.card[es[i].name].unique &&
-							!es[i].nopower
-						) {
+						if (lib.inpile.includes(es[i].name) && !lib.card[es[i].name].nopower && !lib.card[es[i].name].unique && !es[i].nopower) {
 							return true;
 						}
 					}
@@ -1091,12 +1052,7 @@ game.import("card", function () {
 					var cards = [];
 					var time = 0;
 					for (var i = 0; i < es.length; i++) {
-						if (
-							!lib.inpile.includes(es[i].name) ||
-							lib.card[es[i].name].nopower ||
-							lib.card[es[i].name].unique ||
-							es[i].nopower
-						) {
+						if (!lib.inpile.includes(es[i].name) || lib.card[es[i].name].nopower || lib.card[es[i].name].unique || es[i].nopower) {
 							es.splice(i--, 1);
 						}
 					}
@@ -1347,8 +1303,7 @@ game.import("card", function () {
 					order: 5,
 					result: {
 						target: function (player, target) {
-							if (target.hasSkillTag("noe") || target.hasSkillTag("reverseEquip"))
-								return target.countCards("e") * 2;
+							if (target.hasSkillTag("noe") || target.hasSkillTag("reverseEquip")) return target.countCards("e") * 2;
 							if (target.getEquip("baiyin") && target.isDamaged()) return 2;
 							if (target.getEquip("xuanyuanjian") || target.getEquip("qiankundai")) return 1;
 							if (target.hasSkill("jiguanyaoshu_skill")) return 0.5;
@@ -1389,8 +1344,7 @@ game.import("card", function () {
 					target.changeHujia(2);
 					target.turnOver();
 					"step 1";
-					if (target.isTurnedOver())
-						target.addTempSkill("hslingjian_jinjilengdong", { player: "turnOverAfter" });
+					if (target.isTurnedOver()) target.addTempSkill("hslingjian_jinjilengdong", { player: "turnOverAfter" });
 				},
 				ai: {
 					order: 2,
@@ -1601,10 +1555,9 @@ game.import("card", function () {
 						target.loseHp();
 						event.finish();
 					} else {
-						target.chooseToDiscard({ color: "black" }, "弃置一张黑色手牌或受失去1点体力").ai =
-							function (card) {
-								return 8 - get.value(card);
-							};
+						target.chooseToDiscard({ color: "black" }, "弃置一张黑色手牌或受失去1点体力").ai = function (card) {
+							return 8 - get.value(card);
+						};
 					}
 					"step 1";
 					if (!result.bool) {
@@ -1676,11 +1629,7 @@ game.import("card", function () {
 						if (cards && cards.length) {
 							card = cards[0];
 						}
-						if (
-							target == targets[0] &&
-							card.clone &&
-							(card.clone.parentNode == player.parentNode || card.clone.parentNode == ui.arena)
-						) {
+						if (target == targets[0] && card.clone && (card.clone.parentNode == player.parentNode || card.clone.parentNode == ui.arena)) {
 							card.clone.moveDelete(target);
 							game.addVideo("gain2", target, get.cardsInfo([card]));
 						}
@@ -1736,12 +1685,7 @@ game.import("card", function () {
 							if (card) {
 								if (
 									game.hasPlayer(function (current) {
-										return (
-											!current.hujia &&
-											get.attitude(target, current) < 0 &&
-											target.canUse(card, current, true, true) &&
-											get.effect(current, card, target) > 0
-										);
+										return !current.hujia && get.attitude(target, current) < 0 && target.canUse(card, current, true, true) && get.effect(current, card, target) > 0;
 									})
 								) {
 									return 1;
@@ -1765,11 +1709,7 @@ game.import("card", function () {
 					if (cards && cards.length) {
 						card = cards[0];
 					}
-					if (
-						target == targets[0] &&
-						card.clone &&
-						(card.clone.parentNode == player.parentNode || card.clone.parentNode == ui.arena)
-					) {
+					if (target == targets[0] && card.clone && (card.clone.parentNode == player.parentNode || card.clone.parentNode == ui.arena)) {
 						card.clone.moveDelete(target);
 						game.addVideo("gain2", target, get.cardsInfo([card]));
 					}
@@ -1905,6 +1845,7 @@ game.import("card", function () {
 						if (target.hasSkillTag("notrick")) return 0;
 						return 11 - get.value(card);
 					};
+					next.set("respondTo", [player, card]);
 					next.autochoose = lib.filter.autoRespondSha;
 					"step 1";
 					if (result.bool == false) {
@@ -1969,6 +1910,7 @@ game.import("card", function () {
 						}
 						return 11 - get.value(card);
 					};
+					next.set("respondTo", [player, card]);
 					next.autochoose = lib.filter.autoRespondShan;
 					"step 1";
 					if (result.bool == false) {
@@ -2250,16 +2192,7 @@ game.import("card", function () {
 				priority: -1,
 				content: function () {
 					var hs = player.getCards("h");
-					var list = [
-						"yuchanqian",
-						"yuchankun",
-						"yuchanzhen",
-						"yuchanxun",
-						"yuchangen",
-						"yuchanli",
-						"yuchankan",
-						"yuchandui",
-					];
+					var list = ["yuchanqian", "yuchankun", "yuchanzhen", "yuchanxun", "yuchangen", "yuchanli", "yuchankan", "yuchandui"];
 					for (var i = 0; i < hs.length; i++) {
 						if (hs[i].name.indexOf("yuchan") == 0) {
 							hs[i].init([hs[i].suit, hs[i].number, list.randomGet(hs[i].name)]);
@@ -2396,12 +2329,7 @@ game.import("card", function () {
 					if (!lib.filter.cardEnabled(event.card, player, event.parent)) return false;
 					var type = get.type(event.card);
 					if (type != "basic" && type != "trick") return false;
-					var card = game.createCard(
-						event.card.name,
-						event.card.suit,
-						event.card.number,
-						event.card.nature
-					);
+					var card = game.createCard(event.card.name, event.card.suit, event.card.number, event.card.nature);
 					var targets = event._targets || event.targets;
 					for (var i = 0; i < targets.length; i++) {
 						if (!targets[i].isIn()) return false;
@@ -2415,12 +2343,7 @@ game.import("card", function () {
 				},
 				content: function () {
 					"step 0";
-					var card = game.createCard(
-						trigger.card.name,
-						trigger.card.suit,
-						trigger.card.number,
-						trigger.card.nature
-					);
+					var card = game.createCard(trigger.card.name, trigger.card.suit, trigger.card.number, trigger.card.nature);
 					player.storage.shenmiguo = [card, (trigger._targets || trigger.targets).slice(0)];
 					player
 						.chooseToUse(
@@ -2487,9 +2410,7 @@ game.import("card", function () {
 					return player.canUse("sha", target);
 				},
 				filter: function (event, player) {
-					return (
-						player.countCards("h", "sha") > 0 && lib.filter.cardUsable({ name: "sha" }, player)
-					);
+					return player.countCards("h", "sha") > 0 && lib.filter.cardUsable({ name: "sha" }, player);
 				},
 				content: function () {
 					"step 0";
@@ -2566,17 +2487,9 @@ game.import("card", function () {
 				intro: {
 					content: function (storage, player) {
 						if (storage == 1) {
-							"在" +
-								get.translation(player.storage.gouhunluo2) +
-								"的下个准备阶段失去1点体力并弃置所有手牌";
+							"在" + get.translation(player.storage.gouhunluo2) + "的下个准备阶段失去1点体力并弃置所有手牌";
 						}
-						return (
-							"在" +
-							storage +
-							"轮后" +
-							get.translation(player.storage.gouhunluo2) +
-							"的准备阶段失去1点体力并弃置所有手牌"
-						);
+						return "在" + storage + "轮后" + get.translation(player.storage.gouhunluo2) + "的准备阶段失去1点体力并弃置所有手牌";
 					},
 				},
 				nopop: true,
@@ -2644,10 +2557,7 @@ game.import("card", function () {
 				},
 				content: function () {
 					"step 0";
-					player.showCards(
-						get.translation(player) + "发动了【青龙之圭】",
-						player.getCards("h", "qinglongzhigui")
-					);
+					player.showCards(get.translation(player) + "发动了【青龙之圭】", player.getCards("h", "qinglongzhigui"));
 					player.draw(2);
 					"step 1";
 					player.chooseToDiscard("he", true);
@@ -2669,10 +2579,7 @@ game.import("card", function () {
 					};
 					"step 1";
 					if (result.bool) {
-						player.showCards(
-							get.translation(player) + "发动了【白兽之琥】",
-							player.getCards("h", "baishouzhihu")
-						);
+						player.showCards(get.translation(player) + "发动了【白兽之琥】", player.getCards("h", "baishouzhihu"));
 						player.logSkill("_baishouzhihu", result.targets);
 						result.targets[0].randomDiscard();
 						// player.discardPlayerCard(result.targets[0],'he',true);
@@ -2685,12 +2592,7 @@ game.import("card", function () {
 				trigger: { player: "damageEnd" },
 				forced: true,
 				filter: function (event, player) {
-					return (
-						event.source &&
-						event.source != player &&
-						event.source.isAlive() &&
-						player.countCards("h", "zhuquezhizhang") > 0
-					);
+					return event.source && event.source != player && event.source.isAlive() && player.countCards("h", "zhuquezhizhang") > 0;
 				},
 				logTarget: "source",
 				check: function (event, player) {
@@ -2698,10 +2600,7 @@ game.import("card", function () {
 				},
 				content: function () {
 					"step 0";
-					player.showCards(
-						get.translation(player) + "发动了【朱雀之璋】",
-						player.getCards("h", "zhuquezhizhang")
-					);
+					player.showCards(get.translation(player) + "发动了【朱雀之璋】", player.getCards("h", "zhuquezhizhang"));
 					trigger.source.damage("fire");
 					"step 1";
 					game.delay();
@@ -2711,17 +2610,10 @@ game.import("card", function () {
 				trigger: { source: "damageEnd" },
 				forced: true,
 				filter: function (event, player) {
-					return (
-						player.countCards("h", "xuanwuzhihuang") > 0 &&
-						event.num > 0 &&
-						player.hp < player.maxHp
-					);
+					return player.countCards("h", "xuanwuzhihuang") > 0 && event.num > 0 && player.hp < player.maxHp;
 				},
 				content: function () {
-					player.showCards(
-						get.translation(player) + "发动了【玄武之璜】",
-						player.getCards("h", "xuanwuzhihuang")
-					);
+					player.showCards(get.translation(player) + "发动了【玄武之璜】", player.getCards("h", "xuanwuzhihuang"));
 					player.recover(trigger.num);
 				},
 			},
@@ -2732,10 +2624,7 @@ game.import("card", function () {
 					return !player.hujia && player.countCards("h", "huanglinzhicong") > 0;
 				},
 				content: function () {
-					player.showCards(
-						get.translation(player) + "发动了【黄麟之琮】",
-						player.getCards("h", "huanglinzhicong")
-					);
+					player.showCards(get.translation(player) + "发动了【黄麟之琮】", player.getCards("h", "huanglinzhicong"));
 					player.changeHujia();
 					player.update();
 				},
@@ -2757,10 +2646,7 @@ game.import("card", function () {
 					};
 					"step 1";
 					if (result.bool) {
-						player.showCards(
-							get.translation(player) + "发动了【苍螭之璧】",
-							player.getCards("h", "cangchizhibi")
-						);
+						player.showCards(get.translation(player) + "发动了【苍螭之璧】", player.getCards("h", "cangchizhibi"));
 						player.logSkill("_cangchizhibi", result.targets);
 						for (var i = 0; i < result.targets.length; i++) {
 							result.targets[i].link();
@@ -2807,11 +2693,7 @@ game.import("card", function () {
 				},
 				content: function () {
 					"step 0";
-					var next = player.chooseToDiscard(
-						"he",
-						{ color: "black" },
-						get.prompt("huanglinzhicong_duanzao")
-					);
+					var next = player.chooseToDiscard("he", { color: "black" }, get.prompt("huanglinzhicong_duanzao"));
 					next.ai = function (card) {
 						return 8 - get.value(card);
 					};
@@ -2842,11 +2724,7 @@ game.import("card", function () {
 				},
 				content: function () {
 					"step 0";
-					var next = player.chooseToDiscard(
-						"he",
-						{ color: "red" },
-						get.prompt("xuanwuzhihuang_duanzao")
-					);
+					var next = player.chooseToDiscard("he", { color: "red" }, get.prompt("xuanwuzhihuang_duanzao"));
 					next.ai = function (card) {
 						if (get.recoverEffect(player, player, player) <= 0) return 0;
 						return 8 - get.value(card);
@@ -2925,14 +2803,10 @@ game.import("card", function () {
 				direct: true,
 				content: function () {
 					"step 0";
-					player.chooseTarget(
-						[1, 1],
-						get.prompt("baishouzhihu_duanzao"),
-						function (card, player, target) {
-							if (player == target) return false;
-							return target.countCards("he") > 0;
-						}
-					).ai = function (target) {
+					player.chooseTarget([1, 1], get.prompt("baishouzhihu_duanzao"), function (card, player, target) {
+						if (player == target) return false;
+						return target.countCards("he") > 0;
+					}).ai = function (target) {
 						return -get.attitude(player, target);
 					};
 					"step 1";
@@ -3034,11 +2908,7 @@ game.import("card", function () {
 				content: function () {
 					"step 0";
 					event.hu = player.getEquip("lianyaohu");
-					player.chooseCardButton(
-						"弃置两张壶中的牌，然后从牌堆中获得一张类别不同的牌",
-						2,
-						event.hu.storage.shouna
-					).ai = function () {
+					player.chooseCardButton("弃置两张壶中的牌，然后从牌堆中获得一张类别不同的牌", 2, event.hu.storage.shouna).ai = function () {
 						return 1;
 					};
 					"step 1";
@@ -3221,15 +3091,7 @@ game.import("card", function () {
 				content: function () {
 					"step 0";
 					event.cards = get.cards(2);
-					player.chooseCardButton(
-						true,
-						event.cards,
-						"昊天塔：选择一张牌作为" +
-							get.translation(trigger.player) +
-							"的" +
-							trigger.judgestr +
-							"判定结果"
-					).ai = function (button) {
+					player.chooseCardButton(true, event.cards, "昊天塔：选择一张牌作为" + get.translation(trigger.player) + "的" + trigger.judgestr + "判定结果").ai = function (button) {
 						if (get.attitude(player, trigger.player) > 0) {
 							return 1 + trigger.judge(button.link);
 						}
@@ -3387,12 +3249,9 @@ game.import("card", function () {
 					"step 1";
 					if (result.bool) {
 						event.bool = true;
-						player.chooseTarget(
-							"选择一个目标视为" + get.translation(target) + "对其使用一张杀",
-							function (card, player, target2) {
-								return player != target2 && target.canUse("sha", target2);
-							}
-						).ai = function (target2) {
+						player.chooseTarget("选择一个目标视为" + get.translation(target) + "对其使用一张杀", function (card, player, target2) {
+							return player != target2 && target.canUse("sha", target2);
+						}).ai = function (target2) {
 							return get.effect(target2, { name: "sha" }, target, player);
 						};
 					} else {
@@ -3411,11 +3270,7 @@ game.import("card", function () {
 							if (get.attitude(player, target) >= 0) return 0;
 							if (
 								game.hasPlayer(function (current) {
-									return (
-										player != current &&
-										target.canUse("sha", current) &&
-										get.effect(current, { name: "sha" }, target, player) > 0
-									);
+									return player != current && target.canUse("sha", current) && get.effect(current, { name: "sha" }, target, player) > 0;
 								})
 							) {
 								return -1;
@@ -3535,12 +3390,7 @@ game.import("card", function () {
 				trigger: { player: "damageEnd" },
 				forced: true,
 				filter: function (event) {
-					return (
-						event.card &&
-						event.card.name == "sha" &&
-						event.source &&
-						event.source.countCards("he")
-					);
+					return event.card && event.card.name == "sha" && event.source && event.source.countCards("he");
 				},
 				content: function () {
 					trigger.source.discard(trigger.source.getCards("he").randomGet());
@@ -3550,10 +3400,7 @@ game.import("card", function () {
 				trigger: { player: "loseAfter" },
 				forced: true,
 				filter: function (event, player) {
-					return (
-						_status.currentPhase != player &&
-						!player.hasSkill("hslingjian_xuanfengzhiren_equip3_dist")
-					);
+					return _status.currentPhase != player && !player.hasSkill("hslingjian_xuanfengzhiren_equip3_dist");
 				},
 				content: function () {
 					player.addTempSkill("hslingjian_xuanfengzhiren_equip3_dist");
@@ -3570,10 +3417,7 @@ game.import("card", function () {
 				trigger: { player: "loseAfter" },
 				forced: true,
 				filter: function (event, player) {
-					return (
-						_status.currentPhase == player &&
-						!player.hasSkill("hslingjian_xuanfengzhiren_equip4_dist")
-					);
+					return _status.currentPhase == player && !player.hasSkill("hslingjian_xuanfengzhiren_equip4_dist");
 				},
 				content: function () {
 					player.addTempSkill("hslingjian_xuanfengzhiren_equip4_dist");
@@ -3747,12 +3591,9 @@ game.import("card", function () {
 				},
 				content: function () {
 					"step 0";
-					player.chooseTarget(
-						get.prompt("hslingjian_jinjilengdong_duanzao"),
-						function (card, player, target) {
-							return player != target && !target.isTurnedOver();
-						}
-					).ai = function (target) {
+					player.chooseTarget(get.prompt("hslingjian_jinjilengdong_duanzao"), function (card, player, target) {
+						return player != target && !target.isTurnedOver();
+					}).ai = function (target) {
 						if (target.hasSkillTag("noturn")) return 0;
 						return Math.max(0, -get.attitude(player, target) - 2);
 					};
@@ -3773,12 +3614,9 @@ game.import("card", function () {
 				},
 				content: function () {
 					"step 0";
-					player.chooseTarget(
-						get.prompt("hslingjian_yinmilichang_duanzao"),
-						function (card, player, target) {
-							return target != player && !target.hasSkill("qianxing");
-						}
-					).ai = function (target) {
+					player.chooseTarget(get.prompt("hslingjian_yinmilichang_duanzao"), function (card, player, target) {
+						return target != player && !target.hasSkill("qianxing");
+					}).ai = function (target) {
 						var att = get.attitude(player, target);
 						if (get.distance(player, target, "absolute") <= 1) return 0;
 						if (target.hp == 1) return 2 * att;
@@ -4076,23 +3914,11 @@ game.import("card", function () {
 						lib.card[name].ai.equipValue = function () {
 							return getValue(lib.card[equipname].ai.equipValue.apply(this, arguments), dvalue);
 						};
-					} else if (
-						lib.card[name].ai.basic &&
-						typeof lib.card[name].ai.basic.equipValue == "number"
-					) {
-						lib.card[name].ai.basic.equipValue = getValue(
-							lib.card[name].ai.basic.equipValue,
-							dvalue
-						);
-					} else if (
-						lib.card[name].ai.basic &&
-						typeof lib.card[name].ai.basic.equipValue == "function"
-					) {
+					} else if (lib.card[name].ai.basic && typeof lib.card[name].ai.basic.equipValue == "number") {
+						lib.card[name].ai.basic.equipValue = getValue(lib.card[name].ai.basic.equipValue, dvalue);
+					} else if (lib.card[name].ai.basic && typeof lib.card[name].ai.basic.equipValue == "function") {
 						lib.card[name].ai.basic.equipValue = function () {
-							return getValue(
-								lib.card[equipname].ai.basic.equipValue.apply(this, arguments),
-								dvalue
-							);
+							return getValue(lib.card[equipname].ai.basic.equipValue.apply(this, arguments), dvalue);
 						};
 					} else {
 						if (dvalue == 3) {
@@ -4120,8 +3946,7 @@ game.import("card", function () {
 					}
 					for (var i = 0; i < cards.length; i++) {
 						for (var j = 1; j <= 5; j++) {
-							lib.translate[cards[i].name + "_equip" + j] =
-								lib.translate[cards[i].name + "_duanzao"];
+							lib.translate[cards[i].name + "_equip" + j] = lib.translate[cards[i].name + "_duanzao"];
 						}
 						var name2 = cards[i].name + "_" + get.subtype(equip);
 						lib.card[name].skills.add(name2);
@@ -4175,20 +4000,10 @@ game.import("card", function () {
 						} else {
 							color = "rgba(117,186,255,0.2);";
 						}
-						str +=
-							'<div style="text-align:left;line-height:18px;border-radius:4px;margin-top:7px;margin-bottom:10px;position:relative;width:100%">';
-						str +=
-							'<div class="shadowed" style="position:absolute;left0;top:0;padding:5px;border-radius:4px;background:' +
-							color +
-							'">' +
-							lib.translate[lingjians[i]] +
-							"</div>";
+						str += '<div style="text-align:left;line-height:18px;border-radius:4px;margin-top:7px;margin-bottom:10px;position:relative;width:100%">';
+						str += '<div class="shadowed" style="position:absolute;left0;top:0;padding:5px;border-radius:4px;background:' + color + '">' + lib.translate[lingjians[i]] + "</div>";
 						for (var j = 0; j < types.length; j++) {
-							str +=
-								'<div class="shadowed" style="position:relative;left:85px;width:calc(100% - 95px);height:100%;padding:5px;border-radius: 4px;margin-bottom:10px">' +
-								(type != "jiqi" ? lib.translate[types[j]] + "：" : "") +
-								lib.translate[lingjians[i] + "_" + types[j] + "_info"] +
-								"</div>";
+							str += '<div class="shadowed" style="position:relative;left:85px;width:calc(100% - 95px);height:100%;padding:5px;border-radius: 4px;margin-bottom:10px">' + (type != "jiqi" ? lib.translate[types[j]] + "：" : "") + lib.translate[lingjians[i] + "_" + types[j] + "_info"] + "</div>";
 							if (type == "jiqi") break;
 						}
 						str += "</div>";
@@ -4233,12 +4048,7 @@ game.import("card", function () {
 					if (!player.countCards("h", { type: ["hslingjian", "jiqi"] })) return false;
 					var es = player.getCards("he", { type: "equip" });
 					for (var i = 0; i < es.length; i++) {
-						if (
-							lib.inpile.includes(es[i].name) &&
-							!lib.card[es[i].name].nopower &&
-							!lib.card[es[i].name].unique &&
-							!es[i].nopower
-						) {
+						if (lib.inpile.includes(es[i].name) && !lib.card[es[i].name].nopower && !lib.card[es[i].name].unique && !es[i].nopower) {
 							return true;
 						}
 					}
@@ -4298,10 +4108,7 @@ game.import("card", function () {
 									if (target.hasSkill("hslingjian_chaofeng")) return;
 									if (
 										game.hasPlayer(function (current) {
-											return (
-												current.hasSkill("hslingjian_chaofeng") &&
-												get.distance(player, current, "pure") <= 1
-											);
+											return current.hasSkill("hslingjian_chaofeng") && get.distance(player, current, "pure") <= 1;
 										})
 									) {
 										return false;
@@ -4535,12 +4342,8 @@ game.import("card", function () {
 						}, 200);
 						event.count = function (num) {
 							event.longfan.childNodes[num].num = (event.longfan.childNodes[num].num + 1) % 10;
-							if (event.longfan.childNodes[num].num == 2)
-								event.longfan.childNodes[num].innerHTML = "二";
-							else
-								event.longfan.childNodes[num].innerHTML = get.cnNumber(
-									event.longfan.childNodes[num].num
-								);
+							if (event.longfan.childNodes[num].num == 2) event.longfan.childNodes[num].innerHTML = "二";
+							else event.longfan.childNodes[num].innerHTML = get.cnNumber(event.longfan.childNodes[num].num);
 						};
 						game.pause();
 					} else {
@@ -4748,7 +4551,7 @@ game.import("card", function () {
 					effect: {
 						target(card, player, target) {
 							if (get.tag(card, "damage") && !target.hujia) return [1, 0.5];
-						}
+						},
 					},
 				},
 				intro: {
@@ -4769,10 +4572,7 @@ game.import("card", function () {
 					if (event.player.storage.nigong % 2 != 0) {
 						str += "摸一张牌，";
 					}
-					str +=
-						"并对一名其他角色造成" +
-						get.cnNumber(Math.floor(event.player.storage.nigong / 2)) +
-						"点伤害";
+					str += "并对一名其他角色造成" + get.cnNumber(Math.floor(event.player.storage.nigong / 2)) + "点伤害";
 					return str;
 				},
 				content: function () {
@@ -4827,10 +4627,7 @@ game.import("card", function () {
 					});
 					"step 1";
 					if (result.bool) {
-						trigger.target.chooseToRespond(
-							{ name: "shan" },
-							"萨登荆环：请额外打出一张闪响应杀"
-						).autochoose = lib.filter.autoRespondShan;
+						trigger.target.chooseToRespond({ name: "shan" }, "萨登荆环：请额外打出一张闪响应杀").autochoose = lib.filter.autoRespondShan;
 					} else {
 						event.finish();
 					}
@@ -4857,7 +4654,7 @@ game.import("card", function () {
 						target(card) {
 							if (get.tag(card, "thunderDamage")) return [0, 2];
 						},
-					}
+					},
 				},
 			},
 			guiyanfadao: {
@@ -4918,11 +4715,7 @@ game.import("card", function () {
 			jiguan: 0.45,
 		},
 		help: {
-			轩辕剑:
-				"<ul><li>零件、祭器牌可用于煅造装备，煅造得到强化装备，并装备给距离1以内的角色<li>" +
-				"煅造装备时失去牌以及装备牌的过程不触发任何技能（如枭姬、祈禳） <li>" +
-				"进行洗牌时强化装备将从弃牌堆中消失，不进入牌堆<li>" +
-				"专属、特殊装备无法被强化",
+			轩辕剑: "<ul><li>零件、祭器牌可用于煅造装备，煅造得到强化装备，并装备给距离1以内的角色<li>" + "煅造装备时失去牌以及装备牌的过程不触发任何技能（如枭姬、祈禳） <li>" + "进行洗牌时强化装备将从弃牌堆中消失，不进入牌堆<li>" + "专属、特殊装备无法被强化",
 		},
 		translate: {
 			qiankundai: "乾坤袋",
@@ -4987,42 +4780,32 @@ game.import("card", function () {
 			yuchanqian: "乾玉蝉",
 			yuchanqian_info: "在你行动时可当作杀使用；可用于煅造装备；在你使用一张牌后，此牌会随机切换形态。",
 			yuchankun: "坤玉蝉",
-			yuchankun_info:
-				"在你行动时可当作草药使用；可用于煅造装备；在你使用一张牌后，此牌会随机切换形态。",
+			yuchankun_info: "在你行动时可当作草药使用；可用于煅造装备；在你使用一张牌后，此牌会随机切换形态。",
 			yuchanzhen: "震玉蝉",
 			yuchanzhen_info: "在你行动时可当作酒使用；可用于煅造装备；在你使用一张牌后，此牌会随机切换形态。",
 			yuchanxun: "巽玉蝉",
 			yuchanxun_info: "在你行动时可当作桃使用；可用于煅造装备；在你使用一张牌后，此牌会随机切换形态。",
 			yuchankan: "坎玉蝉",
-			yuchankan_info:
-				"在你行动时可当作神秘果使用；可用于煅造装备；在你使用一张牌后，此牌会随机切换形态。",
+			yuchankan_info: "在你行动时可当作神秘果使用；可用于煅造装备；在你使用一张牌后，此牌会随机切换形态。",
 			yuchanli: "离玉蝉",
-			yuchanli_info:
-				"在你行动时可当作天仙酒使用；可用于煅造装备；在你使用一张牌后，此牌会随机切换形态。",
+			yuchanli_info: "在你行动时可当作天仙酒使用；可用于煅造装备；在你使用一张牌后，此牌会随机切换形态。",
 			yuchangen: "艮玉蝉",
-			yuchangen_info:
-				"在你行动时可当作封印之蛋使用；可用于煅造装备；在你使用一张牌后，此牌会随机切换形态。",
+			yuchangen_info: "在你行动时可当作封印之蛋使用；可用于煅造装备；在你使用一张牌后，此牌会随机切换形态。",
 			yuchandui: "兑玉蝉",
-			yuchandui_info:
-				"在你行动时可当作雪肌冰鲍使用；可用于煅造装备；在你使用一张牌后，此牌会随机切换形态。",
+			yuchandui_info: "在你行动时可当作雪肌冰鲍使用；可用于煅造装备；在你使用一张牌后，此牌会随机切换形态。",
 			yangpijuan: "羊皮卷",
 			yangpijuan_info: "出牌阶段对自己使用，选择一种卡牌类别，发现一张该类别的卡牌。",
-			// pantao:'蟠桃',
-			// pantao_info:'出牌阶段对自己使用，或对濒死角色使用，目标回复2点体力并获得1点护甲。',
 			shencaojie: "神草结",
-			shencaojie_info:
-				"你的锦囊牌即将造成伤害时对目标使用，令此伤害+1；你即将受到锦囊牌伤害时对自己使用，令此伤害-1。",
+			shencaojie_info: "你的锦囊牌即将造成伤害时对目标使用，令此伤害+1；你即将受到锦囊牌伤害时对自己使用，令此伤害-1。",
 			yuruyi: "玉如意",
 			yuruyi_ab: "如意",
 			yuruyi_info: "你有更高的机率摸到好牌。",
 			fengyinzhidan: "封印之蛋",
 			fengyinzhidan_info: "随机使用两张普通锦囊牌（随机指定目标）。",
 			shuchui: "鼠槌",
-			shuchui_info:
-				"出牌阶段限一次，你可以指定一名攻击范围内的角色，依次将手牌中的至多3张杀对该角色使用，若杀造成了伤害，你摸一张牌。",
+			shuchui_info: "出牌阶段限一次，你可以指定一名攻击范围内的角色，依次将手牌中的至多3张杀对该角色使用，若杀造成了伤害，你摸一张牌。",
 			zhiluxiaohu: "指路小狐",
-			zhiluxiaohu_info:
-				"出牌阶段对自己使用，视为对一名随机敌方角色使用一张杀，若此杀造成伤害，你摸一张牌。",
+			zhiluxiaohu_info: "出牌阶段对自己使用，视为对一名随机敌方角色使用一张杀，若此杀造成伤害，你摸一张牌。",
 			xuejibingbao: "雪肌冰鲍",
 			xuejibingbao_info: "出牌阶段对一名角色使用，该角色摸牌阶段摸牌数+1，持续2个回合。",
 			gouhunluo: "勾魂锣",
@@ -5040,8 +4823,7 @@ game.import("card", function () {
 			qinglongzhigui_equip5_info: "结束阶段，你摸一张牌。",
 			baishouzhihu: "白兽之琥",
 			g_baishouzhihu: "白兽之琥",
-			baishouzhihu_info:
-				"可用于煅造装备；此牌在你手牌中时，每当你弃置卡牌，你可以弃置一名其他角色的一张随机牌。",
+			baishouzhihu_info: "可用于煅造装备；此牌在你手牌中时，每当你弃置卡牌，你可以弃置一名其他角色的一张随机牌。",
 			baishouzhihu_duanzao: "风牙",
 			baishouzhihu_equip1_info: "结束阶段，你可以弃置一名其他角色的一张随机牌。",
 			baishouzhihu_equip2_info: "结束阶段，你可以弃置一名其他角色的一张随机牌。",
@@ -5050,19 +4832,13 @@ game.import("card", function () {
 			baishouzhihu_equip5_info: "结束阶段，你可以弃置一名其他角色的一张随机牌。",
 			zhuquezhizhang: "朱雀之璋",
 			g_zhuquezhizhang: "朱雀之璋",
-			zhuquezhizhang_info:
-				"可用于煅造装备；此牌在你手牌中时，每当你受到其他角色造成的伤害，你对伤害来源造成1点火属性伤害。",
+			zhuquezhizhang_info: "可用于煅造装备；此牌在你手牌中时，每当你受到其他角色造成的伤害，你对伤害来源造成1点火属性伤害。",
 			zhuquezhizhang_duanzao: "炽翎",
-			zhuquezhizhang_equip1_info:
-				"结束阶段，你可以弃置一张红色牌并对一名体力值不小于你的角色造成1点火属性伤害。",
-			zhuquezhizhang_equip2_info:
-				"结束阶段，你可以弃置一张红色牌并对一名体力值不小于你的角色造成1点火属性伤害。",
-			zhuquezhizhang_equip3_info:
-				"结束阶段，你可以弃置一张红色牌并对一名体力值不小于你的角色造成1点火属性伤害。",
-			zhuquezhizhang_equip4_info:
-				"结束阶段，你可以弃置一张红色牌并对一名体力值不小于你的角色造成1点火属性伤害。",
-			zhuquezhizhang_equip5_info:
-				"结束阶段，你可以弃置一张红色牌并对一名体力值不小于你的角色造成1点火属性伤害。",
+			zhuquezhizhang_equip1_info: "结束阶段，你可以弃置一张红色牌并对一名体力值不小于你的角色造成1点火属性伤害。",
+			zhuquezhizhang_equip2_info: "结束阶段，你可以弃置一张红色牌并对一名体力值不小于你的角色造成1点火属性伤害。",
+			zhuquezhizhang_equip3_info: "结束阶段，你可以弃置一张红色牌并对一名体力值不小于你的角色造成1点火属性伤害。",
+			zhuquezhizhang_equip4_info: "结束阶段，你可以弃置一张红色牌并对一名体力值不小于你的角色造成1点火属性伤害。",
+			zhuquezhizhang_equip5_info: "结束阶段，你可以弃置一张红色牌并对一名体力值不小于你的角色造成1点火属性伤害。",
 			xuanwuzhihuang: "玄武之璜",
 			g_xuanwuzhihuang: "玄武之璜",
 			xuanwuzhihuang_duanzao: "寒晶",
@@ -5084,8 +4860,7 @@ game.import("card", function () {
 			cangchizhibi: "苍螭之璧",
 			g_cangchizhibi: "苍螭之璧",
 			cangchizhibi_duanzao: "灵枢",
-			cangchizhibi_info:
-				"可用于煅造装备；此牌在你手牌中时，准备阶段，你可以选择至多3名角色横置或重置之。",
+			cangchizhibi_info: "可用于煅造装备；此牌在你手牌中时，准备阶段，你可以选择至多3名角色横置或重置之。",
 			cangchizhibi_equip1_info: "结束阶段，你可以横置或重置一名角色。",
 			cangchizhibi_equip2_info: "结束阶段，你可以横置或重置一名角色。",
 			cangchizhibi_equip3_info: "结束阶段，你可以横置或重置一名角色。",
@@ -5095,21 +4870,16 @@ game.import("card", function () {
 			guisheqi: "龟蛇旗",
 			guisheqi_info: "出牌阶段对一名角色使用，目标获得1点护甲。",
 			jiguanfeng: "机关蜂",
-			jiguanfeng_info:
-				"出牌阶段对一名其他角色使用，目标需打出一张闪，否则非锁定技失效直到下一回合开始，并受到1点伤害。",
+			jiguanfeng_info: "出牌阶段对一名其他角色使用，目标需打出一张【闪】，否则非锁定技失效直到下一回合开始，并受到1点伤害。",
 			jiguanyuan: "机关鸢",
-			jiguanyuan_info:
-				"出牌阶段对一名其他角色使用，你将此牌和一张其它牌置于一名其他角色的武将牌上，然后摸一张牌；该角色于下一结束阶段获得武将牌上的牌。",
+			jiguanyuan_info: "出牌阶段对一名其他角色使用，你将此牌和一张其它牌置于一名其他角色的武将牌上，然后摸一张牌；该角色于下一结束阶段获得武将牌上的牌。",
 			jiguantong: "机关火筒",
 			jiguantong_ab: "火筒",
-			jiguantong_info:
-				"出牌阶段对所有其他角色使用，目标弃置一张手牌，或受到1点火焰伤害；若没有人选择受到伤害，使用者摸一张牌。",
+			jiguantong_info: "出牌阶段对所有其他角色使用，目标弃置一张手牌，或受到1点火焰伤害；若没有人选择受到伤害，使用者摸一张牌。",
 			jiutiansuanchi: "九天算尺",
-			jiutiansuanchi_info:
-				"每当你使用杀造成伤害，你可以弃置一张牌并展示受伤害角色的一张手牌，若此牌与你弃置的牌花色或点数相同，此杀的伤害+2。",
+			jiutiansuanchi_info: "每当你使用杀造成伤害，你可以弃置一张牌并展示受伤害角色的一张手牌，若此牌与你弃置的牌花色或点数相同，此杀的伤害+2。",
 			shenmiguo: "神秘果",
-			shenmiguo_info:
-				"出牌阶段内，当你使用一张基本牌或普通锦囊牌后使用，令此牌再结算一次。每阶段限用一次。",
+			shenmiguo_info: "出牌阶段内，当你使用一张基本牌或普通锦囊牌后使用，令此牌再结算一次。每阶段限用一次。",
 			qinglianxindeng: "青莲心灯",
 			qinglianxindeng_info: "你防止锦囊牌造成的伤害。",
 			hslingjian_xuanfengzhiren_duanzao: "风刃",
@@ -5118,28 +4888,24 @@ game.import("card", function () {
 			hslingjian_xuanfengzhiren_equip2_info: "每当你受到杀造成的伤害，伤害来源随机弃置一张牌。",
 			hslingjian_xuanfengzhiren_equip3_info: "当你于回合外失去牌后，你本回合的防御距离+1。",
 			hslingjian_xuanfengzhiren_equip4_info: "当你于回合内失去牌后，你本回合的进攻距离+1。",
-			hslingjian_xuanfengzhiren_equip5_info:
-				"出牌阶段限一次，你可以弃置一张牌，然后随机弃置一名其他角色的一张牌。",
+			hslingjian_xuanfengzhiren_equip5_info: "出牌阶段限一次，你可以弃置一张牌，然后随机弃置一名其他角色的一张牌。",
 			hslingjian_zhongxinghujia_duanzao: "重甲",
 			hslingjian_zhongxinghujia_duanzao2: "护",
 			hslingjian_zhongxinghujia_equip1_info: "每当你用杀造成一次伤害，你可以随机装备一件防具牌。",
 			hslingjian_zhongxinghujia_equip2_info: "每当你受到杀造成的伤害，你可以弃置伤害来源的防具牌。",
 			hslingjian_zhongxinghujia_equip3_info: "当你的装备区内有防具牌时，你的防御距离+1。",
 			hslingjian_zhongxinghujia_equip4_info: "当你的装备区内有防具牌时，你的进攻距离+1。",
-			hslingjian_zhongxinghujia_equip5_info:
-				"出牌阶段限一次，你可以弃置两张牌，然后令一名角色随机装备一件防具。",
+			hslingjian_zhongxinghujia_equip5_info: "出牌阶段限一次，你可以弃置两张牌，然后令一名角色随机装备一件防具。",
 			hslingjian_jinjilengdong_duanzao: "冰冻",
 			hslingjian_jinjilengdong_duanzao2: "冰",
 			hslingjian_jinjilengdong_equip1_info: "每当你用杀造成一次伤害，你可以令目标摸两张牌并翻面。",
 			hslingjian_jinjilengdong_equip2_info: "每当你受到杀造成的伤害，你可以令伤害来源摸两张牌并翻面。",
 			hslingjian_jinjilengdong_equip3_info: "你的武将牌背面朝上时防御距离+2。",
 			hslingjian_jinjilengdong_equip4_info: "你的武将牌背面朝上时进攻距离+2。",
-			hslingjian_jinjilengdong_equip5_info:
-				"回合结束后，若你的武将牌正面朝上，你可以与一名武将牌正面朝上的其他角色同时翻面，然后各摸两张牌。",
+			hslingjian_jinjilengdong_equip5_info: "回合结束后，若你的武将牌正面朝上，你可以与一名武将牌正面朝上的其他角色同时翻面，然后各摸两张牌。",
 			hslingjian_yinmilichang_duanzao: "隐力",
 			hslingjian_yinmilichang_duanzao2: "隐",
-			hslingjian_yinmilichang_equip1_info:
-				"每当你用杀造成一次伤害，你可以令一名其他角色获得潜行直到其下一回合开始。",
+			hslingjian_yinmilichang_equip1_info: "每当你用杀造成一次伤害，你可以令一名其他角色获得潜行直到其下一回合开始。",
 			hslingjian_yinmilichang_equip2_info: "每当你受到一次伤害，你本回合内获得潜行。",
 			hslingjian_yinmilichang_equip3_info: "当你的体力值为1时，你的防御距离+1。",
 			hslingjian_yinmilichang_equip4_info: "当你的体力值为1时，你的进攻距离+1。",
@@ -5157,22 +4923,18 @@ game.import("card", function () {
 			hslingjian_shengxiuhaojiao_equip2_info: "有嘲讽的角色不能对你使用杀。",
 			hslingjian_shengxiuhaojiao_equip3_info: "若你的手牌数大于你的体力值，你的防御距离+1。",
 			hslingjian_shengxiuhaojiao_equip4_info: "若你的手牌数大于你的体力值，你的进攻距离+1。",
-			hslingjian_shengxiuhaojiao_equip5_info:
-				"出牌阶段限一次，你可以弃置两张牌，然后令一名角色获得或解除嘲讽。",
+			hslingjian_shengxiuhaojiao_equip5_info: "出牌阶段限一次，你可以弃置两张牌，然后令一名角色获得或解除嘲讽。",
 			hslingjian_shijianhuisu_duanzao: "回溯",
 			hslingjian_shijianhuisu_duanzao2: "溯",
 			hslingjian_shijianhuisu_equip1_info: "当你装备一张防具牌时，你摸一张牌。",
 			hslingjian_shijianhuisu_equip2_info: "当你装备一张武器牌时，你摸一张牌。",
 			hslingjian_shijianhuisu_equip3_info: "当你的装备区内没有其他牌时，你的防御距离+1。",
 			hslingjian_shijianhuisu_equip4_info: "当你的装备区内没有其他牌时，你的进攻距离+1。",
-			hslingjian_shijianhuisu_equip5_info:
-				"出牌阶段限一次，你可以弃置一张牌，然后令一名其他角色将其装备区内的牌收回手牌。",
+			hslingjian_shijianhuisu_equip5_info: "出牌阶段限一次，你可以弃置一张牌，然后令一名其他角色将其装备区内的牌收回手牌。",
 			_lingjianduanzao: "煅造",
-			_lingjianduanzao_info:
-				"出牌阶段，你可以将一张装备牌和一张可煅造的牌合成为一件强化装备，并装备给距离1以内的一名角色。",
+			_lingjianduanzao_info: "出牌阶段，你可以将一张装备牌和一张可煅造的牌合成为一件强化装备，并装备给距离1以内的一名角色。",
 			jiguanshu: "机关鼠",
-			jiguanshu_info:
-				"出牌阶段对自己使用，用随机祭器强化装备区内的一张随机装备，然后用随机零件强化其余的装备。",
+			jiguanshu_info: "出牌阶段对自己使用，用随机祭器强化装备区内的一张随机装备，然后用随机零件强化其余的装备。",
 			lingjiandai: "零件袋",
 			lingjiandai_info: "出牌阶段对自己使用，获得3张随机零件。",
 			mujiaren: "木甲人",
@@ -5180,18 +4942,15 @@ game.import("card", function () {
 			jiguanyaoshu: "机关要术",
 			jiguanyaoshu_skill: "巧匠",
 			jiguanyaoshu_skill_info: "每当你于回合外失去装备区内的牌，你获得一个随机零件。",
-			jiguanyaoshu_info:
-				"出牌阶段对距离1以内的一名角色使用，目标随机装备一件装备牌并获得技能巧匠（每当你于回合外失去装备区内的牌，你获得一个随机零件）。",
+			jiguanyaoshu_info: "出牌阶段对距离1以内的一名角色使用，目标随机装备一件装备牌并获得技能巧匠（每当你于回合外失去装备区内的牌，你获得一个随机零件）。",
 			hslingjian: "零件",
 			hslingjian_xuanfengzhiren: "旋风之刃",
 			hslingjian_xuanfengzhiren_info: "可用于煅造装备；随机弃置一名角色的一张牌。",
 			hslingjian_zhongxinghujia: "重型护甲",
-			hslingjian_zhongxinghujia_info:
-				"可用于煅造装备；令一名角色装备一件随机防具，然后随机弃置其一张手牌。",
+			hslingjian_zhongxinghujia_info: "可用于煅造装备；令一名角色装备一件随机防具，然后随机弃置其一张手牌。",
 			hslingjian_jinjilengdong: "紧急冷冻",
 			hslingjian_jinjilengdong_bg: "冻",
-			hslingjian_jinjilengdong_info:
-				"可用于煅造装备；令一名武将牌正面朝上的其他角色获得2点护甲并翻面，该角色不能使用卡牌，也不能成为卡牌的目标直到武将牌翻回正面。",
+			hslingjian_jinjilengdong_info: "可用于煅造装备；令一名武将牌正面朝上的其他角色获得2点护甲并翻面，该角色不能使用卡牌，也不能成为卡牌的目标直到武将牌翻回正面。",
 			hslingjian_yinmilichang: "隐秘力场",
 			hslingjian_yinmilichang_info: "可用于煅造装备；令一名其他角色获得技能潜行，直到其下一回合开始。",
 			hslingjian_xingtigaizao: "型体改造",
@@ -5212,8 +4971,7 @@ game.import("card", function () {
 			guiyanfadao_info: "每当你使用杀命中目标，你可以防止伤害，改为令目标失去1点体力。",
 			tianxianjiu: "天仙酒",
 			tianxianjiu_bg: "仙",
-			tianxianjiu_info:
-				"出牌阶段对自己使用，你使用的下一张杀造成伤害后可以摸两张牌；濒死阶段，对自己使用，回复1点体力。",
+			tianxianjiu_info: "出牌阶段对自己使用，你使用的下一张杀造成伤害后可以摸两张牌；濒死阶段，对自己使用，回复1点体力。",
 			// xiangyuye:'翔羽叶',
 			// xiangyuye_info:'出牌阶段，对一名攻击范围外的角色使用，令其弃置一张黑色手牌或失去1点体力。',
 			// huanpodan:'还魄丹',
@@ -5227,30 +4985,26 @@ game.import("card", function () {
 			// ximohu_info:'锁定技，你将即将受到的雷属性伤害转化为你的体力值。',
 			sadengjinhuan: "萨登荆环",
 			sadengjinhuan_ab: "荆环",
-			sadengjinhuan_info: "当你的杀被闪避后，可以进行一次判定，若结果为红色目标需再打出一张闪。",
+			sadengjinhuan_info: "当你的【杀】被【闪】避后，可以进行一次判定，若结果为红色目标需再打出一张【闪】。",
 			sadengjinhuan_bg: "荆",
 			qipoguyu: "奇魄古玉",
 			xujin: "蓄劲",
 			xujin2: "蓄劲",
 			// qipoguyu_info:'装备后获得蓄劲技能。',
-			xujin_info:
-				"回合开始前，若你的蓄劲标记数小于当前的体力值，你可以跳过此回合，并获得一枚蓄劲标记。锁定技，每当你即将造成伤害，你令此伤害+X，然后弃置一枚蓄劲标记，X为你拥有的蓄劲标记数。",
+			xujin_info: "回合开始前，若你的蓄劲标记数小于当前的体力值，你可以跳过此回合，并获得一枚蓄劲标记。锁定技，每当你即将造成伤害，你令此伤害+X，然后弃置一枚蓄劲标记，X为你拥有的蓄劲标记数。",
 			guilingzhitao: "归灵指套",
 			nigong: "逆攻",
 			nigong2: "逆攻",
 			nigong3: "逆攻",
 			nigong4: "逆攻",
-			guilingzhitao_info:
-				"每当你受到1点伤害，你获得一个逆攻标记，标记数不能超过4。出牌阶段，你可以弃置所有逆攻标记并令对一名其他角色造成标记数一半的伤害（若非整数则向下取整并摸一张牌）。",
-			nigong_info:
-				"每当你受到1点伤害，你获得一个逆攻标记，标记数不能超过4。出牌阶段，你可以弃置所有逆攻标记并令对一名其他角色造成标记数一半的伤害（若非整数则向下取整并摸一张牌）。",
+			guilingzhitao_info: "每当你受到1点伤害，你获得一个逆攻标记，标记数不能超过4。出牌阶段，你可以弃置所有逆攻标记并令对一名其他角色造成标记数一半的伤害（若非整数则向下取整并摸一张牌）。",
+			nigong_info: "每当你受到1点伤害，你获得一个逆攻标记，标记数不能超过4。出牌阶段，你可以弃置所有逆攻标记并令对一名其他角色造成标记数一半的伤害（若非整数则向下取整并摸一张牌）。",
 			baihupifeng: "白狐披风",
 			baihupifeng_bg: "狐",
 			baihupifeng_info: "结束阶段，若你的体力值是全场最小的之一，你可以回复1点体力。",
 			fengxueren: "封雪刃",
 			fengxueren_bg: "雪",
-			fengxueren_info:
-				"你使用杀击中目标后，若目标武将牌正面朝上，你可以防止伤害，然后令目标摸一张牌并翻面。",
+			fengxueren_info: "你使用杀击中目标后，若目标武将牌正面朝上，你可以防止伤害，然后令目标摸一张牌并翻面。",
 			chilongya: "赤龙牙",
 			chilongya_info: "锁定技，你的火属性伤害+1。",
 			daihuofenglun: "带火风轮",
@@ -5263,8 +5017,7 @@ game.import("card", function () {
 			xiayuncailing_info: "你的进攻距离-1，你的防御距离+2。",
 			shentoumianju: "神偷面具",
 			shentoumianju_bg: "偷",
-			shentoumianju_info:
-				"出牌阶段，你可以指定一名手牌比你多的角色，弃置一张手牌并进行一次判定，若结果不为梅花，你获得其一张手牌。",
+			shentoumianju_info: "出牌阶段，你可以指定一名手牌比你多的角色，弃置一张手牌并进行一次判定，若结果不为梅花，你获得其一张手牌。",
 			shentou: "神偷",
 			shentou_info: "出牌阶段，你可以进行一次判定，若结果不为梅花，你获得任意一名角色的一张手牌。",
 			xianluhui: "仙炉灰",
@@ -5273,11 +5026,9 @@ game.import("card", function () {
 			caoyao_info: "出牌阶段，对距离为1以内的角色使用，回复1点体力。",
 			langeguaiyi: "蓝格怪衣",
 			langeguaiyi_bg: "格",
-			langeguaiyi_info:
-				"出牌阶段限一次，你可以进行一次判定，然后按花色执行以下效果。红桃：你回复1点体力；方片：你摸一张牌；梅花：你令一名随机敌方角色随机弃置一张牌；黑桃：无事发生。",
+			langeguaiyi_info: "出牌阶段限一次，你可以进行一次判定，然后按花色执行以下效果。红桃：你回复1点体力；方片：你摸一张牌；梅花：你令一名随机敌方角色随机弃置一张牌；黑桃：无事发生。",
 			longfan: "龙帆",
-			longfan_info:
-				"出牌阶段限一次，你可以进行一次判定，然后按花色执行以下效果。红桃：你回复1点体力；方片：你摸一张牌；梅花：你令一名随机敌方角色随机弃置一张牌；黑桃：无事发生。",
+			longfan_info: "出牌阶段限一次，你可以进行一次判定，然后按花色执行以下效果。红桃：你回复1点体力；方片：你摸一张牌；梅花：你令一名随机敌方角色随机弃置一张牌；黑桃：无事发生。",
 			// longfan_info:'0000：翻面；1111：弃手牌；2222：弃装备牌；3333：受伤害；4444：失去体力；5555：连环；6666：摸牌；7777：回复体力；8888：弃置判定牌；9999：置衡。',
 			guiyoujie: "鬼幽结",
 			guiyoujie_bg: "结",
@@ -5292,22 +5043,18 @@ game.import("card", function () {
 			xixue: "吸血",
 			xixue_info: "锁定技，每当你使用杀造成1点伤害，你回复1点体力。",
 			zhufangshenshi: "祠符",
-			zhufangshenshi_info:
-				"出牌阶段，对一名其他角色使用，本回合内对其使用卡牌无视距离，结算后摸一张牌。",
+			zhufangshenshi_info: "出牌阶段，对一名其他角色使用，本回合内对其使用卡牌无视距离，结算后摸一张牌。",
 			jingleishan: "惊雷闪",
-			jingleishan_info:
-				"出牌阶段，对所有其他角色使用。每名目标角色需打出一张【杀】，否则受到1点雷电伤害。",
+			jingleishan_info: "出牌阶段，对所有其他角色使用。每名目标角色需打出一张【杀】，否则受到1点雷电伤害。",
 			chiyuxi: "炽羽袭",
 			chiyuxi_info: "出牌阶段，对所有其他角色使用。每名目标角色需打出一张【闪】，否则受到1点火焰伤害。",
 			guangshatianyi: "光纱天衣",
 			guangshatianyi_bg: "纱",
 			guangshatianyi_info: "锁定技，每当你即将受到伤害，有三分之一的概率令伤害减一。",
 			sifeizhenmian: "四非真面",
-			sifeizhenmian_info:
-				"出牌阶段限一次，你可以令一名有手牌的其他角色进行一次判定，若结果为不为红桃且目标有可用的手牌，目标随机使用一张手牌（随机指定目标）。",
+			sifeizhenmian_info: "出牌阶段限一次，你可以令一名有手牌的其他角色进行一次判定，若结果为不为红桃且目标有可用的手牌，目标随机使用一张手牌（随机指定目标）。",
 			yiluan: "意乱",
-			yiluan_info:
-				"出牌阶段限一次，你可以令一名有手牌的其他角色进行一次判定，若结果为不为红桃且目标有可用的手牌，目标随机使用一张手牌（随机指定目标）。",
+			yiluan_info: "出牌阶段限一次，你可以令一名有手牌的其他角色进行一次判定，若结果为不为红桃且目标有可用的手牌，目标随机使用一张手牌（随机指定目标）。",
 			donghuangzhong: "东皇钟",
 			xuanyuanjian: "轩辕剑",
 			xuanyuanjian2: "轩辕剑",
@@ -5333,27 +5080,20 @@ game.import("card", function () {
 			lianhua: "炼化",
 			// dujian:'毒箭',
 			// dujian_info:'出牌阶段，对一名有手牌或装备牌的角色使用，令其展示一张手牌，若与你选择的手牌颜色相同，其失去1点体力。',
-			lianhua_info:
-				"出牌阶段限一次，你可以弃置两张炼妖壶中的牌，从牌堆中获得一张与弃置的牌类别均不相同的牌。",
+			lianhua_info: "出牌阶段限一次，你可以弃置两张炼妖壶中的牌，从牌堆中获得一张与弃置的牌类别均不相同的牌。",
 			shouna: "收纳",
 			shouna_info: "出牌阶段限一次，你可以弃置一张手牌，并将一名其他角色的一张手牌置入炼妖壶。",
-			donghuangzhong_info:
-				"结束阶段，你可以弃置一张红色手牌，并选择一名角色将一张随机单体延时锦囊置入其判定区。",
-			xuanyuanjian_info:
-				"装备时获得1点护甲；每当你即将造成一次伤害，你令此伤害加一并变为雷属性，并在伤害结算后失去1点体力。任何时候，若你体力值不超过2，则立即失去轩辕剑。",
+			donghuangzhong_info: "结束阶段，你可以弃置一张红色手牌，并选择一名角色将一张随机单体延时锦囊置入其判定区。",
+			xuanyuanjian_info: "装备时获得1点护甲；每当你即将造成一次伤害，你令此伤害加一并变为雷属性，并在伤害结算后失去1点体力。任何时候，若你体力值不超过2，则立即失去轩辕剑。",
 			pangufu_info: "锁定技，每当你造成一次伤害，受伤角色须弃置一张牌。",
-			haotianta_info:
-				"锁定技，任意一名角色进行判定前，你观看牌堆顶的2张牌，并选择一张作为判定结果，此结果不可被更改，也不能触发技能。",
+			haotianta_info: "锁定技，任意一名角色进行判定前，你观看牌堆顶的2张牌，并选择一张作为判定结果，此结果不可被更改，也不能触发技能。",
 			shennongding_info: "出牌阶段，你可以弃置两张手牌，然后回复1点体力。每阶段限一次。",
 			kongdongyin_info: "令你抵挡一次死亡，将体力回复至1，并摸一张牌，发动后进入弃牌堆。",
 			kunlunjingc_info: "出牌阶段限一次，你可以观看牌堆顶的三张牌，然后用一张手牌替换其中的一张。",
 			nvwashi_info: "当一名角色濒死时，若你的体力值大于1，你可以失去1点体力并令其回复1点体力。",
-			kongxin_info:
-				"出牌阶段限一次，你可以与一名其他角色进行拼点，若你赢，你可以指定另一名角色视为对方对该角色使用一张杀，否则对方可弃置你一张牌。",
-			fuxiqin_info:
-				"出牌阶段限一次，你可以与一名其他角色进行拼点，若你赢，你可以指定另一名角色视为对方对该角色使用一张杀，否则对方可弃置你一张牌。",
-			lianyaohu_info:
-				"出牌阶段各限一次，你可以选择一项：1.弃置一张手牌，并将一名其他角色的一张手牌置入炼妖壶；2.弃置两张炼妖壶中的牌，从牌堆中获得一张与弃置的牌类别均不相同的牌。",
+			kongxin_info: "出牌阶段限一次，你可以与一名其他角色进行拼点，若你赢，你可以指定另一名角色视为对方对该角色使用一张杀，否则对方可弃置你一张牌。",
+			fuxiqin_info: "出牌阶段限一次，你可以与一名其他角色进行拼点，若你赢，你可以指定另一名角色视为对方对该角色使用一张杀，否则对方可弃置你一张牌。",
+			lianyaohu_info: "出牌阶段各限一次，你可以选择一项：1.弃置一张手牌，并将一名其他角色的一张手牌置入炼妖壶；2.弃置两张炼妖壶中的牌，从牌堆中获得一张与弃置的牌类别均不相同的牌。",
 		},
 		list: [
 			["heart", 1, "hufu"],
@@ -5370,7 +5110,6 @@ game.import("card", function () {
 			["heart", 1, "daihuofenglun", "fire"],
 
 			["diamond", 2, "xiayuncailing"],
-			// ['heart',2,'pantao'],
 			// ['heart',2,'huanpodan'],
 
 			["club", 3, "caoyao"],

@@ -35,6 +35,7 @@ game.import("card", function () {
 				audio: true,
 				fullskin: true,
 				type: "trick",
+				cardnature: "fire",
 				derivation: "ty_luxun",
 				cardimage: "huoshaolianying",
 				enable: true,
@@ -85,7 +86,8 @@ game.import("card", function () {
 						.forResult();
 					await game.delay();
 					if (result2.bool) {
-						await target.discard(result.cards);
+						let discards = result.cards.slice(0).filter(card => lib.filter.canBeDiscarded(card, player, target, event));
+						if (discards.length) await target.discard(discards);
 						await target.damage("fire");
 						if (target.isLinked() && event.cards?.someInD()) await player.gain(event.cards.filterInD(), "gain2");
 					}
@@ -267,6 +269,7 @@ game.import("card", function () {
 			},
 			ty_feilongduofeng: {
 				fullskin: true,
+				cardimage: "feilongduofeng",
 				type: "equip",
 				subtype: "equip1",
 				distance: { attackFrom: -1 },

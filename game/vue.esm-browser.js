@@ -11201,7 +11201,7 @@ const hydrate = (...args) => {
   ensureHydrationRenderer().hydrate(...args);
 };
 /**
- * @type {import("@vue/runtime-dom").CreateAppFunction<Element>}
+ * @type {import("@vue/runtime-dom").CreateAppFunction<HTMLElement>}
  */
 const createApp = (...args) => {
   const app = ensureRenderer().createApp(...args);

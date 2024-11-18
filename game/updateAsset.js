@@ -1,3 +1,5 @@
+// node game/updateAsset.js nextVersion commitHash
+
 // import { exec } from "node:child_process";
 const { exec } = require("node:child_process");
 // import { copyFile, writeFile } from "node:fs/promises";

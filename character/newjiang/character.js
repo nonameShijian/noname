@@ -27,7 +27,10 @@ const characters = {
 	mp_wangrong: ["male", "wei", 3, ["mpjianlin", "mpsixiao"]],
 	mp_liuling: ["male", "jin", 3, ["mpjiusong", "mpmaotao", "mpbishi"], ["doublegroup:wei:qun:jin"]],
 	mp_xiangxiu: ["male", "jin", 3, ["mpmiaoxi", "mpsijiu"], ["doublegroup:wei:jin"]],
-	yj_majun: ["male", "wei", 3, ["yjgongqiao", "yjjingyi"]],
+	yj_majun: ["male", "wei", 3, ["gongqiao", "jingyi"]],
+	cx_majun: ["male", "wei", 3, ["chuanxie", "yjqiaosi"], [...["character", "die"].map(i => i + ":yj_majun")]],
+	qq_majun: ["male", "wei", 3, ["yuliao", "qiqiao", "yanxie"], [...["character", "die"].map(i => i + ":yj_majun")]],
+	new_yj_dongzhuo: ["male", "qun", "4/5", ["xiongjin", "xiawei", "baoxi"]],
 };
 
 export default characters;

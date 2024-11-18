@@ -232,7 +232,7 @@ const translates = {
 	dbchongjian_backup: "冲坚",
 	dbchongjian_info: "吴势力技。你可以将一张装备牌当做一种【杀】（无距离限制且无视防具）或【酒】使用。当你以此法使用【杀】造成伤害后，你获得目标角色装备区内的X张牌（X为伤害值）。",
 	dbchoujue: "仇决",
-	dbchoujue_info: "锁定技。当你杀死其他角色后，你加1点体力上限并摸两张牌，然后本回合发动【却敌】的次数上限+1。",
+	dbchoujue_info: "锁定技。当你杀死其他角色后，你加1点体力上限并摸两张牌，然后你本回合发动〖却敌〗的次数上限+1。",
 	sp_chendong: "手杀陈武董袭",
 	sp_chendong_prefix: "手杀",
 	spyilie: "毅烈",

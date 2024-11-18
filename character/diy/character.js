@@ -34,7 +34,6 @@ const characters = {
 	// diy_weiyan:['male','shu',4,['diykuanggu']],
 	diy_zhenji: ["female", "wei", 3, ["diy_jiaoxia", "yiesheng"]],
 	// diy_menghuo:['male','shu',4,['huoshou','zaiqix']],
-	//re_huangyueying:['female','shu',3,['rejizhi','qicai']],
 
 	diy_liufu: ["male", "wei", 3, ["zhucheng", "duoqi"]],
 	diy_xizhenxihong: ["male", "shu", 4, ["fuchou", "jinyan"], ["name:习|珍-习|宏"]],

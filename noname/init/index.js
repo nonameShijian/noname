@@ -264,7 +264,7 @@ export async function boot() {
 	config.get("all").plays = [];
 	config.get("all").mode = [];
 
-	if (!config.get("errstop") || config.get("compatiblemode")) _status.withError = true;
+	if (config.get("compatiblemode")) _status.withError = true;
 	if (config.get("debug")) {
 		await lib.init.promises.js(`${lib.assetURL}game`, "asset");
 		if (window.noname_skin_list) {
@@ -551,7 +551,8 @@ export async function boot() {
 	} else {
 		Reflect.get(ui, "css").phone = lib.init.css();
 	}
-	ui.css.others = lib.init.css(lib.assetURL + "layout/" + "others", "dialog")
+	ui.css._others = lib.init.css(lib.assetURL + "layout/" + "others", "dialog");
+	ui.css._skill = lib.init.css(lib.assetURL + "layout/" + "others", "skill");
 	initSheet(Reflect.get(lib, "config"));
 
 	config.set("duration", 500);
@@ -846,6 +847,7 @@ async function loadConfig() {
 async function loadCss() {
 	Reflect.set(ui, "css", {
 		menu: await lib.init.promises.css(lib.assetURL + "layout/default", "menu"),
+		newmenu: await lib.init.promises.css(lib.assetURL + "layout/default", "newmenu"),
 		default: await lib.init.promises.css(lib.assetURL + "layout/default", "layout"),
 	});
 }

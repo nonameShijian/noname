@@ -294,7 +294,7 @@ game.import("card", function () {
 					"step 1";
 					player.give(result.cards, event.target1);
 					"step 2";
-					if (!event.target1.countCards("h")) {
+					if (!event.target1.countCards("h") || !event.target2 || !event.target2.isIn()) {
 						event.finish();
 					} else {
 						var he = event.target1.getCards("he");
@@ -524,6 +524,7 @@ game.import("card", function () {
 				},
 			},
 			qibaodao: {
+				audio: "qibaodao2",
 				equipSkill: true,
 				trigger: { source: "damageBegin1" },
 				forced: true,

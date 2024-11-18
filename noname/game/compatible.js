@@ -151,12 +151,12 @@ export class GameCompatible {
 					function callback(module) {
 						// 此时已经加载了update.js，可以尝试更新
 						if (confirm(tips)) {
-							let url = "https://ghproxy.cc/https://github.com/libccy/noname/releases/download/chromium85-client/Noname-yuri-v1.9.2.apk";
+							let url = "https://ghproxy.cc/https://github.com/libccy/noname/releases/download/chromium85-client/Noname-yuri-v1.9.3.apk";
 
 							if (coreVersion == 77) {
 								let compatibleTips = ["检测到你现在的版本号为上版本兼容版的版本号，由于当前版本无法确认是否为兼容版，特此在此再次询问", "请问你是否需要下载最新的兼容版？", "（目前由理版可直接使用已安装的Chrome内核，但如果无法安装最新的Chrome，依然需要兼容版）"].join("\n");
 								if (confirm(compatibleTips)) {
-									url = "https://ghproxy.cc/https://github.com/libccy/noname/releases/download/chromium85-client/Noname-yuri-compatible-v1.8.3.apk";
+									url = "https://ghproxy.cc/https://github.com/libccy/noname/releases/download/chromium85-client/Noname-yuri-compatible-v1.8.4.apk";
 								}
 							}
 
