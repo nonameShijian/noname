@@ -6,9 +6,9 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "packageWin64": "electron-packager . 无名杀 --platform=win32 --arch=x64 --out=./ --app-version=1.9.0 --icon=noname.ico --overwrite --ignore=./node_modules --ignore=.git --electron-version 32.1.2",
-    "packageWin32": "electron-packager . 无名杀 --platform=win32 --arch=ia32 --out=./ --app-version=1.9.0 --icon=noname.ico --overwrite --ignore=./node_modules --ignore=.git --electron-version 32.1.2",
-    "packageLinux": "electron-packager . 无名杀 --platform=linux --arch=x64 --out=./ --app-version=1.9.0 --icon=noname.ico --overwrite --ignore=./node_modules --ignore=.git --electron-version 32.1.2"
+    "packageWin64": "electron-packager . 无名杀 --platform=win32 --arch=x64 --out=./ --app-version=1.9.0 --icon=noname.ico --overwrite --ignore=./node_modules --ignore=.git --electron-version 33.2.0",
+    "packageWin32": "electron-packager . 无名杀 --platform=win32 --arch=ia32 --out=./ --app-version=1.9.0 --icon=noname.ico --overwrite --ignore=./node_modules --ignore=.git --electron-version 33.2.0",
+    "packageLinux": "electron-packager . 无名杀 --platform=linux --arch=x64 --out=./ --app-version=1.9.0 --icon=noname.ico --overwrite --ignore=./node_modules --ignore=.git --electron-version 33.2.0"
   },
   "repository": {
     "type": "git",
@@ -17,19 +17,26 @@
   "author": "诗笺",
   "license": "ISC",
   "devDependencies": {
-    "electron": "^32.1.2",
+    "electron": "^33.2.0",
     "electron-packager": "^17.1.2"
   },
   "dependencies": {
     "@electron/get": "^3.1.0",
     "@electron/remote": "^2.1.2",
-    "@types/node": "^22.5.5",
+    "@types/node": "^22.9.0",
     "options": "0.0.6",
     "ultron": "1.0.2",
     "ws": "1.0.1"
   },
-  "installerVersion": "1.73",
+  "installerVersion": "1.74",
   "installerUpdateContent": [
+    {
+      "version": "1.74",
+      "updateContent": [
+        "本版本开始将强制使用http协议进行游戏",
+        "本版本使用chromium 130版本，将不兼容windows7，8， 8.1，macOS 10.15操作系统"
+      ]
+    },
     {
       "version": "1.73",
       "updateContent": [

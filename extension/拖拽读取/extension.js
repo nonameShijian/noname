@@ -15,6 +15,7 @@ game.import("extension", function () {
 		remote = require('electron').remote;
 	}
 	const { dialog } = remote;
+	const { webUtils } = require('electron');
 	// const body = document.body;
 	let loadCSS = false;
 
@@ -260,7 +261,7 @@ game.import("extension", function () {
 
 				if (files[0].type.indexOf("zip") == -1) {
 					// 支持只导入extension.js
-					if (name == "extension.js" && confirm(`检测到extension.js(${files[0].path})，是否导入？`)) {
+					if (name == "extension.js" && confirm(`检测到extension.js(${webUtils.getPathForFile(files[0])})，是否导入？`)) {
 
 					} else {
 						return false;
@@ -270,7 +271,7 @@ game.import("extension", function () {
 				let showMessageBox = dialog.showMessageBox(remote.getCurrentWindow(), {
 					type: 'info',
 					title: '拖拽导入',
-					message: `获取到${name}(${files[0].path})，是否选择文件类型并导入？`,
+					message: `获取到${name}(${webUtils.getPathForFile(files[0])})，是否选择文件类型并导入？`,
 					buttons: ['取消', '扩展包', '离线包或完整包', '素材包'],
 					// 默认为取消
 					defaultId: 0,
@@ -300,11 +301,11 @@ game.import("extension", function () {
 						switch (index) {
 							//扩展
 							case 1:
-								getExtNameAndExtract(files[0].path, psw.value, span, div);
+								getExtNameAndExtract(webUtils.getPathForFile(files[0]), psw.value, span, div);
 								break;
 							// 离线包或完整包
 							case 2:
-								extract(files[0].path, __dirname, psw.value, span, div);
+								extract(webUtils.getPathForFile(files[0]), __dirname, psw.value, span, div);
 								break;
 							// 素材包
 							case 3:
@@ -314,7 +315,7 @@ game.import("extension", function () {
 									let filePath;
 									if (Array.isArray(result)) filePath = result[0];
 									else filePath = result.filePaths[0];
-									extract(files[0].path, filePath, psw.value, span, div);
+									extract(webUtils.getPathForFile(files[0]), filePath, psw.value, span, div);
 								}
 								let openDialog = dialog.showOpenDialog(remote.getCurrentWindow(), {
 									title: '选择文件夹，以解压到选择的文件夹下',

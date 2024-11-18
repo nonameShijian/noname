@@ -152,7 +152,7 @@ function createMainWindow() {
 			experimentalFeatures: true, //启用Chromium的实验功能
 		}
 	});
-	if (fs.existsSync(path.join(__dirname, 'Home', 'saveProtocol.txt'))) {
+	if (/*fs.existsSync(path.join(__dirname, 'Home', 'saveProtocol.txt'))*/true) {
 		// 启动http
 		const cp = require('child_process');
 		cp.exec(`start /b ${__dirname}\\noname-server.exe -platform=electron`, (err, stdout, stderr) => {});
@@ -177,29 +177,6 @@ function createMainWindow() {
 	}
 	return win;
 }
-
-/* function createExtensionWindow() {
-	let win = new BrowserWindow({
-		width: 800,
-		height: 600,
-		title: '无名杀-下载扩展',
-		icon: path.join(__dirname, 'noname.ico'),
-		autoHideMenuBar: true,
-		webPreferences: {
-			nodeIntegration: true, //主页面用node
-			contextIsolation: false, //必须为false
-			enableRemoteModule: true, //可以调用Remote
-		}
-	});
-	win.loadURL(`file://${__dirname}/downloadExtension.html`);
-	//win.webContents.openDevTools();
-	win.webContents.executeJavaScript(`window.extensionName = '${extensionName}'`);
-	if (electronVersion >= 14) {
-		remote.enable(win.webContents);
-	}
-	return win;
-}
-*/
 
 function createUpdateWindow() {
 	let win = new BrowserWindow({
@@ -227,7 +204,6 @@ function createUpdateWindow() {
 app.whenReady().then(() => {
 	
 	let downloadPath, downloadExtName, extensionWinId, updatePath, updateUrl, updateWinId;
-	// const downloadUrl = 'https://kuangthree.coding.net/p/noname-extensionxwjh/d/noname-extensionxwjh/git/raw/master/';
 	
 	ipcMain.on('download-path', function(event, arg) {
 		[downloadPath, downloadExtName, extensionWinId] = arg;
@@ -238,40 +214,6 @@ app.whenReady().then(() => {
 		[updatePath, updateUrl, updateWinId] = arg;
 		event.returnValue = updatePath;
 	});
-	
-	// 注释掉下载扩展的功能
-	/*session.defaultSession.on('will-download', (event, item) => {
-		if(!downloadPath || !downloadExtName || !extensionWinId) return;
-		const fileUrl = decodeURI(item.getURL()).replace(downloadUrl + downloadExtName + '/', '');
-		const savePath = path.join(downloadPath, fileUrl);
-		item.setSavePath(savePath);
-		const winId = BrowserWindow.fromId(extensionWinId);
-		
-		item.on('updated', (event, state) => {
-			if(winId.isDestroyed()) {
-				//窗口被关闭
-				downloadPath = downloadExtName = extensionWinId = null;
-				item.cancel();
-				return;
-			}
-			if (state === 'interrupted') {
-				winId.webContents.send('download-clog', '下载被中断，但可以继续');
-			} else if (state === 'progressing') {
-				if (item.isPaused()) {
-					winId.webContents.send('download-clog', '下载暂停');
-				} else {
-					const progress = item.getReceivedBytes() / item.getTotalBytes();
-					winId.webContents.send('download-progress', progress);
-				}
-			}
-		});
-		
-		item.once('done', (event, state) => {
-			if(winId.isDestroyed()) return;
-			winId.webContents.send('download-done', state);
-		});
-	});
-	*/
 	
 	session.defaultSession.on('will-download', (event, item) => {
 		if(!updatePath || !updateUrl || !updateWinId) return;
