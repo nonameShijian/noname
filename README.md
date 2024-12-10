@@ -18,6 +18,18 @@
 
 ※若不看上面的提示，询问的内容将不予解答
 
+# v1.74更新提示：
+1.本版本开始将强制使用http协议进行游戏
+
+2.启动http端口不再依靠exe
+
+3.优化拖拽读取扩展的依赖项
+
+4.本版本使用chromium 130版本，将不兼容windows7，8， 8.1，macOS 10.15操作系统
+
+注:要把【拖拽读取】扩展放置到其他的电脑版无名杀使用，请在应用根目录的main.js中的BrowserWindow构造函数中的webPreferences属性添加: nodeIntegrationInWorker: true
+并且使用npm下载iconv-lite依赖
+
 # v1.73更新提示：
 1.支持import fs from 'fs'的写法
 
