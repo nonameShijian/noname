@@ -17,7 +17,7 @@ if (globalThis.__dirname.includes('electron.asar')) {
     });
 }
 
-const iconv = require(__dirname + '/node_modules/iconv-lite');
+const iconv = require('iconv-lite');
 
 onmessage = function (e) {
     const [buffer, password, getExtName] = e.data;
