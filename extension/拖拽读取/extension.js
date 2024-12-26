@@ -124,7 +124,7 @@ game.import("extension", function () {
 	 * @param { HTMLDivElement } div 
 	 */
 	function getExtNameAndExtract(zipFilePath, password, span, div) {
-		var myWorker = new Worker(__dirname + '/extension/拖拽读取/worker.js');
+		var myWorker = new Worker('./extension/拖拽读取/worker.js');
 		myWorker.postMessage([zipFilePath instanceof ArrayBuffer ? zipFilePath : fs.readFileSync(zipFilePath), password, 'getExtName']);
 		myWorker.onmessage = async function (e) {
 			// console.log(e.data);
