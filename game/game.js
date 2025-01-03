@@ -101,7 +101,7 @@
 	// 处理Node环境下的http情况
 	if (typeof window.require == "function" && typeof window.process == "object" && typeof window.__dirname == "string") {
 		// 在http环境下修改__dirname和require的逻辑
-		if (window.__dirname.endsWith("electron.asar\\renderer")) {
+		if (window.__dirname.endsWith("electron.asar\\renderer") || window.__dirname.endsWith("electron.asar/renderer")) {
 			const path = require("path");
 			window.__dirname = path.join(path.resolve(), "resources/app");
 			const oldData = Object.entries(window.require);
