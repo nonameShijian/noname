@@ -8,7 +8,9 @@
     "start": "electron .",
     "packageWin64": "electron-packager . 无名杀 --platform=win32 --arch=x64 --out=./ --app-version=1.9.0 --icon=noname.ico --overwrite --ignore=./node_modules --ignore=.git --electron-version 33.2.0",
     "packageWin32": "electron-packager . 无名杀 --platform=win32 --arch=ia32 --out=./ --app-version=1.9.0 --icon=noname.ico --overwrite --ignore=./node_modules --ignore=.git --electron-version 33.2.0",
-    "packageLinux": "electron-packager . 无名杀 --platform=linux --arch=x64 --out=./ --app-version=1.9.0 --icon=noname.ico --overwrite --ignore=./node_modules --ignore=.git --electron-version 33.2.0"
+    "packageLinux": "electron-packager . 无名杀 --platform=linux --arch=x64 --out=./ --app-version=1.9.0 --icon=noname.ico --overwrite --ignore=./node_modules --ignore=.git --electron-version 33.2.0",
+    "packageDarwin": "electron-packager . 无名杀 --platform=darwin --arch=arm64 --out=./ --app-version=1.9.0 --icon=noname.icns --overwrite --ignore=./node_modules --ignore=.git --electron-version 33.2.0",
+    "packageDarwinIntel": "electron-packager . 无名杀 --platform=darwin --arch=x64 --out=./ --app-version=1.9.0 --icon=noname.icns --overwrite --ignore=./node_modules --ignore=.git --electron-version 33.2.0"
   },
   "repository": {
     "type": "git",
