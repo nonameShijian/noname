@@ -2,7 +2,17 @@ importScripts('./minizip-asm.min.js');
 
 if (globalThis.__dirname.includes('electron.asar')) {
     const path = require('path');
-    globalThis.__dirname = path.join(path.resolve(), 'resources/app/extension/拖拽读取');
+	if (globalThis.process.platform === "darwin") {
+		globalThis.__dirname = path.join(
+			globalThis.process.resourcesPath,
+			'app/extension/拖拽读取'
+		);
+	} else {
+		globalThis.__dirname = path.join(
+			path.resolve(),
+			'resources/app/extension/拖拽读取'
+		);
+	}
     const oldData = Object.entries(globalThis.require);
     // @ts-ignore
     globalThis.require = function (moduleId) {
