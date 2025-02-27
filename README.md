@@ -18,6 +18,34 @@
 
 ※若不看上面的提示，询问的内容将不予解答
 
+---
+
+# Mac版注意事项
+
+## 通用注意事项
+
+1.如果无法使用游戏内方法安装完整包，可将完整包压缩包移动到“应用程序/无名杀.app/Contents/Resources/app”目录。不要覆盖`node_modules`文件夹；
+
+2.Mac客户端支持的最低游戏版本为v1.10.18。如果这个版本还没有发布，请在安装完整包后，下载[这个文件](https://raw.githubusercontent.com/libnoname/noname/refs/heads/PR-Branch/game/game.js)移动到“应用程序/无名杀.app/Contents/Resources/app/game”中替换同名文件。
+
+3.Mac客户端目前缺乏充分测试，许多扩展在开发时未考虑系统兼容问题，如果在游戏运行中遇到问题，请先禁用所有扩展（除了客户端自带的扩展），如果问题仍然存在，再到无名杀相关仓库提交issue或在社区求助。扩展兼容问题请联系扩展作者。
+
+## 如果直接使用打包后的应用包
+
+1.“无名杀.app”应用包直接移动到“应用程序”，即可完成安装；
+
+2.如果提示“已损坏”，不要移动到废纸篓，这是因为macOS安装机制不允许运行来自网络的未签名应用。在终端中运行`sudo xattr -r -d com.apple.quarantine /Applications/无名杀.app`，即可绕过此限制（需要输入电脑密码）。
+
+## 如果希望自行打包
+
+1.确保安装了Node.js和npm；
+
+2.下载或克隆仓库，在文件夹中运行`npm install`安装依赖；
+
+3.在文件夹中运行`npm run packageDarwin`（Intel芯片使用`npm run packageDarwinIntel`）打包应用；
+
+4.打包完成后，在新出现的文件夹中找到“无名杀.app”，移动到“应用程序”即可。
+
 # v1.74更新提示：
 1.本版本开始将强制使用http协议进行游戏
 
