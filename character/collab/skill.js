@@ -3216,6 +3216,243 @@ const skills = {
 			player.awakenSkill("fenxin_old");
 		},
 	},
+	//ol限时地主肌肉曹冲
+	ol_dizhu_caochpng_duanti: {
+		//啊好麻烦啊就这样吧
+			audio: 2,
+			forced: true,
+			trigger: {
+					player: ["gainAfter"],
+			},
+				filter: function (event, player) {
+					var target = event.player;
+					return event.getg(target).length && event.getParent(1).name == "draw";
+				},
+				content: function () {
+					player.damage("nosource");
+				},
+			},
+			ol_dizhu_caochpng_xishu: {
+				audio: 2,
+				trigger: {
+					player: "useCardToPlayered",
+					target: "useCardToTargeted",
+				},
+				filter: function (event, player, target) {
+					var evt = event.getParent();
+					if (event.player.getEquips(1).length <= 0 && !evt.jiu) return false;
+					return (event.targets.length == 1 || player == event.target) && event.card.name == "sha";
+				},
+				direct: true,
+				content: function () {
+					"step 0";
+					var num = 0;
+					if (trigger.player.getEquips(1).length > 0) num++;
+					if (trigger.getParent().jiu) num++;
+					if (num > 0) {
+						var next = trigger.player.choosePlayerCard(trigger.target, 'he', [1, num], get.prompt('ol_dizhu_caochpng_xishu', trigger.target) + "弃置其至多" + num + "张牌");
+						next.set('ai', function (button) {
+							if (!_status.event.goon) return 0;
+							var val = get.value(button.link);
+							if (button.link == _status.event.target.getEquip(2)) return 2 * (val + 3);
+							return val;
+						});
+						next.set('goon', get.attitude(trigger.player, trigger.target) <= 0);
+						next.set('forceAuto', true);
+					} else {
+						event.finish();
+					}
+					"step 1";
+					if (result.bool) {
+						var target = trigger.target;
+						trigger.player.logSkill("ol_dizhu_caochpng_xishu", target);
+						target.discard(result.cards);
+					}
+				},
+			},
+			ol_dizhu_caochpng_chengxiang: {
+				getIndex: function (event, player) {
+					return event.num;
+				},
+				intro: {
+					content: "下次发动【称象】多亮出$张牌",
+				},
+				audio: 2,
+				frequent: true,
+				trigger: {
+					player: "damageEnd",
+				},
+				content: function () {
+					"step 0";
+					var chengxiangNum = 13;
+					var mark = 0;
+					if (player.countMark("ol_dizhu_caochpng_chengxiang") > 0) {
+						mark += player.countMark("ol_dizhu_caochpng_chengxiang");
+						player.removeMark("ol_dizhu_caochpng_chengxiang", Infinity, false);
+					}
+					var cardNum = 4 + mark;
+					var list = [];
+					if (player.hasSkill("ol_dizhu_caochpng_duanti")) {
+						if (player.isMinHp(false)) {
+							var card = get.cardPile2(function (card) {
+								return ["tao", "jiu", "zong", "xionghuangjiu"].includes(card.name);
+							});
+							if (card) list.push(card);
+						}
+						if (player.isMaxHp(false)) {
+							var card2 = get.cardPile2(function (card) {
+								return get.subtype(card) == "equip1" || get.tag(card, "damage");
+							});
+							if (card2) list.push(card2);
+						}
+						if (list.length > 0) {
+							cardNum -= list.length;
+						}
+					}
+					for (var i = 0; i < ui.cardPile.childElementCount; i++) {
+						if (!list.contains(ui.cardPile.childNodes[i])) {
+							list.push(ui.cardPile.childNodes[i]);
+							cardNum--;
+						}
+						if (cardNum <= 0) break;
+					}
+					var cards = list;
+					game.log(cards);
+					var guanXing = decadeUI.content.chooseGuanXing(player, cards, cards.length, null, 4, false);
+					guanXing.doubleSwitch = true;
+					guanXing.caption = "【称象】";
+					guanXing.header2 = "获得的牌";
+					guanXing.callback = function () {
+						var num = 0;
+						for (var i = 0; i < this.cards[1].length; i++) {
+							num += get.number(this.cards[1][i]);
+						}
+
+						return num > 0 && num <= chengxiangNum;
+					};
+
+					game.broadcast(
+						function (player, cards, callback) {
+							if (!window.decadeUI) return;
+							var guanXing = decadeUI.content.chooseGuanXing(player, cards, cards.length, null, 4, false);
+							guanXing.caption = "【称象】";
+							guanXing.header2 = "获得的牌";
+							guanXing.callback = callback;
+						},
+						player,
+						cards,
+						guanXing.callback
+					);
+
+					var player = event.player;
+					event.switchToAuto = function () {
+						var cards = guanXing.cards[0];
+						var num, sum, next;
+						var index = 0;
+						var results = [];
+
+						for (var i = 0; i < cards.length; i++) {
+							num = 0;
+							sum = 0;
+							next = i + 1;
+							for (var j = i; j < cards.length; j++) {
+								if (j != i && j < next) continue;
+
+								num = sum + get.number(cards[j]);
+								if (num <= chengxiangNum) {
+									sum = num;
+									if (!results[index]) results[index] = [];
+									results[index].push(cards[j]);
+								}
+
+								if (j >= cards.length - 1) index++;
+							}
+
+							if (results[index] && results[index].length == cards.length) break;
+						}
+
+						var costs = [];
+						for (var i = 0; i < results.length; i++) {
+							costs[i] = {
+								value: 0,
+								index: i,
+							};
+							for (var j = 0; j < results[i].length; j++) {
+								costs[i].value += get.value(results[i][j], player);
+								//优先选择桃子或者酒
+								if (results[i][j].name == "tao" || results[i][j].name == "jiu") {
+									costs[i].value += 5;
+								}
+								// 如果有队友且有【仁心】且血量不低，优先选择装备牌
+								if (player.hasFriend() && player.hasSkill("renxin") && get.type(results[i][j]) == "equip" && player.hp > 1) {
+									costs[i].value += 3;
+								}
+
+								// 如果自己有延时牌且没有无懈可击，优先选择无懈可击
+								if (player.node.judges.childNodes.length > 0 && !player.hasWuxie() && results[i][j] == "wuxie") {
+									costs[i].value += 5;
+								}
+							}
+						}
+
+						costs.sort(function (a, b) {
+							return b.value - a.value;
+						});
+
+						var time = 500;
+						var result = results[costs[0].index];
+
+						for (var i = 0; i < result.length; i++) {
+							setTimeout(
+								function (move, finished) {
+									guanXing.move(move, guanXing.cards[1].length, 1);
+									if (finished) guanXing.finishTime(1000);
+								},
+								time,
+								result[i],
+								i >= result.length - 1
+							);
+							time += 500;
+						}
+					};
+
+					if (event.isOnline()) {
+						event.player.send(function () {
+							if (!window.decadeUI && decadeUI.eventDialog) _status.event.finish();
+						}, event.player);
+
+						event.player.wait();
+						decadeUI.game.wait();
+					} else if (!event.isMine()) {
+						event.switchToAuto();
+					}
+					"step 1";
+					if (event.result && event.result.bool) {
+						game.cardsDiscard(event.cards1);
+						var cards2 = event.cards2;
+						player.gain(cards2, "gain2");
+						let num = cards2.reduce((num, i) => {
+							return num + get.number(i, player);
+						}, 0);
+						if (num == 13) player.addMark("ol_dizhu_caochpng_chengxiang", 1, false);
+					}
+				},
+				ai: {
+					maixie: true,
+					"maixie_hp": true,
+					effect: {
+						target: function (card, player, target) {
+							if (get.tag(card, "damage")) {
+								if (player.hasSkillTag("jueqing", false, target)) return [1, -2];
+								if (!target.hasFriend()) return;
+								if (target.hp >= 4) return [1, 2];
+								if (target.hp == 3) return [1, 1.5];
+								if (target.hp == 2) return [1, 0.5];
+							}
+						},
+					},
+				},
+			},
 };
 
 export default skills;

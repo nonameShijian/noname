@@ -14184,6 +14184,14 @@ export class Library {
 				nature: "red",
 			},
 		],
+		[
+			"限时地主肌肉曹冲",
+			{
+				showName: "冲儿",
+				color: "#FFD700",
+				nature: "thunder",
+			},
+		],
 	]);
 	groupnature = {
 		shen: "shen",
