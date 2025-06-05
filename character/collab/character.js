@@ -28,6 +28,7 @@ const characters = {
 	jiangziya: ["male", "qun", 3, ["xingzhou", "lieshen"], ["name:姜|尚"]],
 	shengongbao: ["male", "qun", 3, ["zhuzhou", "yaoxian"]],
 	nanjixianweng: ["male", "qun", 3, ["xwshoufa", "fuzhao"], ["name:null|null"]],
+	ol_dizhu_caochpng: ["male", "wei", 3, ["ol_dizhu_caochpng_duanti", "ol_dizhu_caochpng_xishu", "ol_dizhu_caochpng_chengxiang"], , ["die:true", "die:3", "name:null|null"]],
 };
 
 export default characters;
