@@ -148,6 +148,14 @@ const translates = {
 	xwshoufa_info: "出牌阶段，你可以展示并将所有♠/♥/♣/♦花色的手牌交给一名其他角色，令其获得〖天妒〗/〖天香〗/〖倾国〗/〖武圣〗直到你的下个回合开始。",
 	fuzhao: "福照",
 	fuzhao_info: "一名角色进入濒死状态时，你可以令其进行一次判定，若结果为♥，其回复1点体力。",
+	//ol地主肌肉曹冲
+	ol_dizhu_caochpng_duanti: "锻体",
+	ol_dizhu_caochpng_duanti_info: "锁定技，当你从牌堆摸牌后，你受到一点无来源伤害。当你发动称象时，若你的体力值为全场最低，则必定亮出一张桃或酒；若你的体力值为全场最高，则必定亮出一张武器牌或伤害牌。",
+	ol_dizhu_caochpng_xishu: "习术",
+	ol_dizhu_caochpng_xishu_info: "当你使用杀指定唯一目标后或成为杀的唯一目标后，使用者每满足一项便可以弃置目标角色的一张牌：1.装备了武器牌；2.此杀受酒的效果影响。",
+	ol_dizhu_caochpng_chengxiang: "称象",
+	ol_dizhu_caochpng_chengxiang_info: "当你受到1点伤害后，你可以亮出牌堆顶的四张牌，然后获得其中的任意张点数之和小于等于13的牌；若获得的牌点数恰好为13，你下次发动称象多亮出一张牌。",
+	
 };
 
 export default translates;
