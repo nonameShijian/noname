@@ -149,6 +149,8 @@ const translates = {
 	fuzhao: "福照",
 	fuzhao_info: "一名角色进入濒死状态时，你可以令其进行一次判定，若结果为♥，其回复1点体力。",
 	//ol地主肌肉曹冲
+	ol_dizhu_caochpng: "限时地主肌肉曹冲",
+	ol_dizhu_caochpng_prefix: "限时地主肌肉曹冲",
 	ol_dizhu_caochpng_duanti: "锻体",
 	ol_dizhu_caochpng_duanti_info: "锁定技，当你从牌堆摸牌后，你受到一点无来源伤害。当你发动称象时，若你的体力值为全场最低，则必定亮出一张桃或酒；若你的体力值为全场最高，则必定亮出一张武器牌或伤害牌。",
 	ol_dizhu_caochpng_xishu: "习术",
