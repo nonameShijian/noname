@@ -46,6 +46,15 @@
 
 4.打包完成后，在新出现的文件夹中找到“无名杀.app”，移动到“应用程序”即可。
 
+# v1.75更新提示：
+
+1.app/redirect.js中新增了加载game/importmap.js，旧版本需要使用新客户端的请在对应位置创建同名空文件
+
+2.本版本使用chromium 130版本，将不兼容windows7，8， 8.1，macOS 10.15操作系统
+
+注:要把【拖拽读取】扩展放置到其他的电脑版无名杀使用，请在应用根目录的main.js中的BrowserWindow构造函数中的webPreferences属性添加: nodeIntegrationInWorker: true
+并且使用npm下载iconv-lite依赖
+
 # v1.74更新提示：
 1.本版本开始将强制使用http协议进行游戏
 
