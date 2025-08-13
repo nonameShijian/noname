@@ -2,7 +2,7 @@
   "name": "noname",
   "version": "1.9.0",
   "productName": "无名杀",
-  "description": "游戏内容来源于项目无名杀（https://github.com/libccy/noname），本Electron应用及功能由我制作",
+  "description": "游戏内容来源于项目无名杀（https://github.com/libnoname/noname），本Electron应用及功能由我制作",
   "main": "main.js",
   "scripts": {
     "start": "electron .",

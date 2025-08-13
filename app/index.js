@@ -17,9 +17,9 @@
 		},
 		onDeviceReady: function() {
 			//github镜像网址
-			var site_g = 'https://raw.fastgit.org/libccy/noname/master/';
+			var site_g = 'https://raw.fastgit.org/libnoname/noname/master/';
 			//苏婆config镜像网址
-			var site_c = 'https://ghproxy.com/https://raw.githubusercontent.com/libccy/noname/master/';
+			var site_c = 'https://ghproxy.com/https://raw.githubusercontent.com/libnoname/noname/master/';
 			//Show-K URC网址
 			var site_urc = 'https://unitedrhythmized.club/libccy/noname/master/';
 			var site = site_g;
