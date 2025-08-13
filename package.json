@@ -32,8 +32,18 @@
     "ultron": "1.0.2",
     "ws": "1.0.1"
   },
-  "installerVersion": "1.74",
+  "installerVersion": "1.75",
   "installerUpdateContent": [
+    {
+      "version": "1.75",
+      "updateContent": [
+        "app/redirect.js中新增了加载game/importmap.js，旧版本需要使用新客户端的请在对应位置创建同名空文件",
+        "注:要把【拖拽读取】扩展放置到其他的电脑版无名杀使用，请在应用根目录的main.js中",
+        "的BrowserWindow构造函数中的webPreferences属性添加: nodeIntegrationInWorker: true",
+        "并且使用npm下载iconv-lite依赖",
+        "本版本使用chromium 130版本，将不兼容windows7，8， 8.1，macOS 10.15操作系统"
+      ]
+    },
     {
       "version": "1.74",
       "updateContent": [

@@ -3,6 +3,7 @@ import { lib } from "../../library/index.js";
 import { game } from "../../game/index.js";
 import { get } from "../../get/index.js";
 import { _status } from "../../status/index.js";
+import { ai } from "../../ai/index.js";
 import { menu } from "./menu/index.js";
 import { cardPackMenu } from "./menu/pages/cardPackMenu.js";
 import { characterPackMenu } from "./menu/pages/characterPackMenu.js";
@@ -87,7 +88,7 @@ export class Create {
 		}, 50);
 	}
 	/**
-	 * 创建codemirror编辑器
+	 * 创建codemirror5编辑器
 	 * @param {HTMLDivElement} container
 	 * @param {Function} saveInput
 	 */
@@ -107,12 +108,16 @@ export class Create {
 		};
 		//创建ul列表
 		const createMenu = function (pos, self, List, click) {
-			if (!self || self == window) return;
+			if (!self || self == window) {
+				return;
+			}
 			const parent = self.parentNode;
 			if (parent) {
 				for (let i = 0; i < parent.childElementCount; i++) {
 					const node = parent.childNodes[i];
-					if (node != self && node.ul) closeMenu.call(node);
+					if (node != self && node.ul) {
+						closeMenu.call(node);
+					}
 				}
 			}
 			if (self.ul) {
@@ -122,7 +127,9 @@ export class Create {
 				return self.ul;
 			}
 			const editor = container.editor;
-			if (!editor) return false;
+			if (!editor) {
+				return false;
+			}
 			self.style.background = "#08f";
 			const ul = document.createElement("ul");
 			container.css.call(ul, {
@@ -141,8 +148,11 @@ export class Create {
 			const getActive = () => {
 				let i = 0;
 				while (i < ul.childElementCount) {
-					if (ul.childNodes[i].classList.contains("CodeMirror-hint-active")) break;
-					else i++;
+					if (ul.childNodes[i].classList.contains("CodeMirror-hint-active")) {
+						break;
+					} else {
+						i++;
+					}
 				}
 				return i;
 			};
@@ -163,7 +173,9 @@ export class Create {
 						elt.innerHTML = cur;
 					}
 					let className = "CodeMirror-hint" + (i != 0 ? "" : " " + "CodeMirror-hint-active");
-					if (cur.className != null) className = cur.className + " " + className;
+					if (cur.className != null) {
+						className = cur.className + " " + className;
+					}
 					elt.className = className;
 					elt.hintId = i;
 					ui.window.listen.call(elt, function () {
@@ -183,8 +195,12 @@ export class Create {
 		//关闭ul列表
 		const closeMenu = function () {
 			const ul = this.ul;
-			if (!ul) return false;
-			if (ul.parentNode) ul.parentNode.removeChild(ul);
+			if (!ul) {
+				return false;
+			}
+			if (ul.parentNode) {
+				ul.parentNode.removeChild(ul);
+			}
 			this.style.background = "";
 			//创建后不用删除了，除非以后要动态加载。
 			//delete this.ul;
@@ -199,7 +215,9 @@ export class Create {
 		});
 		const saveConfig = ui.create.div(".editbutton", "保存", editorpage, saveInput);
 		const theme = ui.create.div(".editbutton", "主题", editorpage, function () {
-			if (!this || this == window) return;
+			if (!this || this == window) {
+				return;
+			}
 			if (this.ul && this.ul.parentNode) {
 				return closeMenu.call(this);
 			}
@@ -229,7 +247,9 @@ export class Create {
 			}
 		});
 		const edit = ui.create.div(".editbutton", "编辑", editorpage, function () {
-			if (!this || this == window) return;
+			if (!this || this == window) {
+				return;
+			}
 			if (this.ul && this.ul.parentNode) {
 				return closeMenu.call(this);
 			}
@@ -251,7 +271,9 @@ export class Create {
 			}
 		});
 		const fontSize = ui.create.div(".editbutton", "字号", editorpage, function () {
-			if (!this || this == window) return;
+			if (!this || this == window) {
+				return;
+			}
 			if (this.ul && this.ul.parentNode) {
 				return closeMenu.call(this);
 			}
@@ -280,6 +302,217 @@ export class Create {
 		});
 		const editor = ui.create.div(editorpage);
 		return editor;
+	}
+	/**
+	 * 创建codemirror6编辑器
+	 * @param {HTMLDivElement} container
+	 * @param {{ value?: string, language?: string, saveInput?:(view: import("@codemirror/view").EditorView) => any }} config
+	 */
+	async editor2(container, config = {}) {
+		const {
+			value = "",
+			language = "javascript",
+			saveInput = view => {
+				ui.window.classList.remove("shortcutpaused");
+				ui.window.classList.remove("systempaused");
+				view.dom.parentElement?.parentElement?.parentElement?.remove();
+			},
+		} = config;
+
+		const { basicSetup } = await import("codemirror");
+		const { EditorView } = await import("@codemirror/view");
+		const { linter, lintGutter } = await import("@codemirror/lint");
+		const { search, highlightSelectionMatches, openSearchPanel } = await import("@codemirror/search");
+
+		// 在editorpage中添加功能按钮等
+		const editorpage = ui.create.div(container);
+		editorpage.addEventListener("keydown", function (e) {
+			e.stopPropagation();
+		});
+		editorpage.addEventListener("keyup", function (e) {
+			e.stopPropagation();
+		});
+
+		const discardConfig = ui.create.div(".editbutton", "取消", editorpage, () => {
+			ui.window.classList.remove("shortcutpaused");
+			ui.window.classList.remove("systempaused");
+			container.delete();
+		});
+
+		const saveConfig = ui.create.div(".editbutton", "保存", editorpage, () => {
+			saveInput(view);
+		});
+
+		const fontSize = ui.create.div(".editbutton", "字号", editorpage, () => {
+			game.promises.prompt(`###请输入字号###${lib.config.codeMirror_fontSize || "16px"}`).then(size => {
+				if (size === false) {
+					return;
+				}
+				container.style.fontSize = Number(size.slice(0, -2)) / game.documentZoom + "px";
+				game.saveConfig("codeMirror_fontSize", size);
+			});
+		});
+
+		container.style.fontSize = Number((lib.config.codeMirror_fontSize || "16px").slice(0, -2)) / game.documentZoom + "px";
+
+		const searchPanel = ui.create.div(".editbutton", "搜索", editorpage, () => {
+			openSearchPanel(view);
+		});
+
+		const editor = ui.create.div(editorpage);
+
+		const extensions = [
+			basicSetup,
+			lintGutter(), // 显示lint信息的gutter
+			search({ top: true }), // 启用搜索面板
+			highlightSelectionMatches(), // 高亮匹配的选择项
+		];
+
+		if (language === "javascript" || language === "typescript") {
+			const { javascript, scopeCompletionSource, javascriptLanguage, esLint } = await import("@codemirror/lang-javascript");
+			const { default: security } = await import("@/noname/util/security.js");
+			let proxyWindow = Object.assign({}, window, {
+				_status: _status,
+				lib: lib,
+				game: game,
+				ui: ui,
+				get: get,
+				ai: ai,
+				player: lib.element.player,
+				card: lib.element.card,
+				event: lib.element.event,
+				dialog: lib.element.dialog,
+			});
+			if (security.isSandboxRequired()) {
+				const { Monitor, AccessAction } = security.importSandbox();
+				new Monitor()
+					.action(AccessAction.DEFINE)
+					.action(AccessAction.WRITE)
+					.action(AccessAction.DELETE)
+					.require("target", proxyWindow)
+					.require("property", "_status", "lib", "game", "ui", "get", "ai", "player", "card", "event", "dialog")
+					.then((access, nameds, control) => {
+						if (access.action == AccessAction.DEFINE) {
+							control.preventDefault();
+							control.stopPropagation();
+							control.setReturnValue(false);
+							return;
+						}
+
+						//
+						control.overrideParameter("target", window);
+					})
+					.start();
+			} else {
+				const keys = ["_status", "lib", "game", "ui", "get", "ai", "player", "card", "event", "dialog"];
+
+				for (const key of keys) {
+					const descriptor = Reflect.getOwnPropertyDescriptor(proxyWindow, key);
+					if (!descriptor) {
+						continue;
+					}
+					descriptor.writable = false;
+					descriptor.enumerable = true;
+					descriptor.configurable = false;
+					Reflect.defineProperty(proxyWindow, key, descriptor);
+				}
+
+				proxyWindow = new Proxy(proxyWindow, {
+					set(target, propertyKey, value, receiver) {
+						if (typeof propertyKey == "string" && keys.includes(propertyKey)) {
+							return Reflect.set(target, propertyKey, value, receiver);
+						}
+
+						return Reflect.set(window, propertyKey, value);
+					},
+				});
+			}
+
+			extensions.push(
+				javascript({ typescript: true }),
+				javascriptLanguage.data.of({
+					autocomplete: scopeCompletionSource(proxyWindow),
+				})
+			);
+			if (language === "javascript") {
+				const { Linter } = await import("@/game/eslint-linter-browserify.js");
+				extensions.push(
+					linter(
+						esLint(new Linter(), {
+							rules: {
+								"no-class-assign": 0,
+								"no-console": 0,
+								"no-constant-condition": [
+									"error",
+									{
+										checkLoops: false,
+									},
+								],
+								"no-irregular-whitespace": [
+									"error",
+									{
+										skipStrings: true,
+										skipTemplates: true,
+									},
+								],
+								"prefer-const": 0,
+								"no-redeclare": 0,
+								"no-undef": 0,
+								"no-empty": [
+									"error",
+									{
+										allowEmptyCatch: true,
+									},
+								],
+								"no-unused-vars": 1,
+								"require-yield": 0,
+								"no-fallthrough": ["error", { commentPattern: "\\[falls[\\s\\w]*through\\]" }],
+								curly: "error",
+							},
+							languageOptions: {
+								ecmaVersion: 13,
+								sourceType: "module",
+							},
+						})
+					)
+				);
+			}
+		} else if (language === "css") {
+			const { css } = await import("@codemirror/lang-css");
+			extensions.push(css());
+		} else if (language === "json") {
+			const { json, jsonParseLinter } = await import("@codemirror/lang-json");
+			extensions.push(json(), linter(jsonParseLinter()));
+		} else if (language === "html") {
+			const { html } = await import("@codemirror/lang-html");
+			const { parser: htmlParser } = await import("@lezer/html");
+			const { parser: jsParser } = await import("@lezer/javascript");
+			const { parseMixed } = await import("@lezer/common");
+			const { LRLanguage } = await import("@codemirror/language");
+
+			const mixedHTMLParser = htmlParser.configure({
+				wrap: parseMixed(node => {
+					return node.name == "ScriptText" ? { parser: jsParser } : null;
+				}),
+			});
+
+			const mixedHTML = LRLanguage.define({ parser: mixedHTMLParser });
+			extensions.push(html());
+		} else if (language === "markdown") {
+			const { markdown } = await import("@codemirror/lang-markdown");
+			extensions.push(markdown());
+		} else if (language === "vue") {
+			const { vue } = await import("@codemirror/lang-vue");
+			extensions.push(vue());
+		}
+
+		const view = new EditorView({
+			doc: value,
+			parent: editor,
+			extensions,
+		});
+		lib.setScroll(view.scrollDOM);
+		return view;
 	}
 	/**
 	 * 弹出提示。
@@ -311,7 +544,9 @@ export class Create {
 	}
 	showNextToast() {
 		const toast = ui.toastQueue.shift();
-		if (!toast) return;
+		if (!toast) {
+			return;
+		}
 		toast.style.display = "block";
 		toast.addEventListener("animationend", () => {
 			toast.remove();
@@ -338,13 +573,23 @@ export class Create {
 				tempname = get.translation(card.viewAs);
 			} else {
 				if (cardName == "sha") {
-					if (cardNature) tempname = get.translation(cardNature) + tempname;
-					if (cardNature == "thunder") datasetNature = "thunder";
-					if (cardNature == "kami") datasetNature = "kami";
-					if (cardNature == "ice") datasetNature = "ice";
+					if (cardNature) {
+						tempname = get.translation(cardNature) + tempname;
+					}
+					if (cardNature == "thunder") {
+						datasetNature = "thunder";
+					}
+					if (cardNature == "kami") {
+						datasetNature = "kami";
+					}
+					if (cardNature == "ice") {
+						datasetNature = "ice";
+					}
 				}
 			}
-			if (cardTempNameConfig == "default") getApplyNode._tempName.classList.add("vertical");
+			if (cardTempNameConfig == "default") {
+				getApplyNode._tempName.classList.add("vertical");
+			}
 			if (datasetNature.length > 0) {
 				node.dataset.nature = datasetNature;
 			} else {
@@ -357,18 +602,30 @@ export class Create {
 				tempname = get.translation(card.viewAs);
 			}
 			if (cardName == "sha") {
-				if (cardNature) tempname = get.translation(cardNature) + tempname;
-				if (cardNature == "fire") datasetNature = "fire";
-				if (cardNature == "thunder") datasetNature = "thunder";
-				if (cardNature == "kami") datasetNature = "kami";
-				if (cardNature == "ice") datasetNature = "ice";
+				if (cardNature) {
+					tempname = get.translation(cardNature) + tempname;
+				}
+				if (cardNature == "fire") {
+					datasetNature = "fire";
+				}
+				if (cardNature == "thunder") {
+					datasetNature = "thunder";
+				}
+				if (cardNature == "kami") {
+					datasetNature = "kami";
+				}
+				if (cardNature == "ice") {
+					datasetNature = "ice";
+				}
 			}
 			let bg = node.querySelector("div");
 			if (bg) {
 				Array.from(node.childNodes)
 					.filter(v => v != bg)
 					.forEach(v => node.removeChild(v));
-			} else bg = ui.create.div(node);
+			} else {
+				bg = ui.create.div(node);
+			}
 			node.classList.add("tempimage");
 			let img = get.dynamicVariable(lib.card[cardName].image, card);
 			if (img) {
@@ -389,13 +646,19 @@ export class Create {
 					if (lib.card[cardName].modeimage) {
 						bg.setBackgroundImage("image/mode/" + lib.card[cardName].modeimage + "/card/" + cardName + ".png");
 					} else {
-						if (cardName == "sha" && cardNature == "stab") bg.setBackgroundImage("image/card/cisha.png");
-						else bg.setBackgroundImage("image/card/" + cardName + ".png");
+						if (cardName == "sha" && lib.natureBg.has(cardNature)) {
+							bg.setBackgroundImage(lib.natureBg.get(cardNature));
+						} else {
+							bg.setBackgroundImage("image/card/" + cardName + ".png");
+						}
 					}
 				}
 			} else if (get.dynamicVariable(lib.card[cardName].image, card) == "background") {
-				if (cardNature) bg.setBackground(cardName + "_" + cardNature, "card");
-				else bg.setBackground(cardName, "card");
+				if (cardNature) {
+					bg.setBackground(cardName + "_" + cardNature, "card");
+				} else {
+					bg.setBackground(cardName, "card");
+				}
 			} else if (lib.card[cardName].fullimage) {
 				if (img) {
 					if (img.startsWith("ext:")) {
@@ -419,8 +682,11 @@ export class Create {
 					}
 				}
 			} else if (get.dynamicVariable(lib.card[cardName].image, card) == "card") {
-				if (cardNature) bg.setBackground(cardName + "_" + cardNature, "card");
-				else bg.setBackground(cardName, "card");
+				if (cardNature) {
+					bg.setBackground(cardName + "_" + cardNature, "card");
+				} else {
+					bg.setBackground(cardName, "card");
+				}
 			} else if (typeof get.dynamicVariable(lib.card[cardName].image, card) == "string" && !lib.card[cardName].fullskin) {
 				if (img) {
 					if (img.startsWith("ext:")) {
@@ -504,13 +770,21 @@ export class Create {
 				} else {
 					str = arguments[i];
 				}
-			} else if (["div", "table", "tr", "td", "body", "fragment"].includes(get.objtype(arguments[i]))) position = arguments[i];
-			else if (typeof arguments[i] == "number") position2 = arguments[i];
-			else if (get.itemtype(arguments[i]) == "divposition") divposition = arguments[i];
-			else if (typeof arguments[i] == "object") style = arguments[i];
-			else if (typeof arguments[i] == "function") listen = arguments[i];
+			} else if (["div", "table", "tr", "td", "body", "fragment"].includes(get.objtype(arguments[i]))) {
+				position = arguments[i];
+			} else if (typeof arguments[i] == "number") {
+				position2 = arguments[i];
+			} else if (get.itemtype(arguments[i]) == "divposition") {
+				divposition = arguments[i];
+			} else if (typeof arguments[i] == "object") {
+				style = arguments[i];
+			} else if (typeof arguments[i] == "function") {
+				listen = arguments[i];
+			}
 		}
-		if (str == undefined) str = "";
+		if (str == undefined) {
+			str = "";
+		}
 		var node = document.createElement("div");
 		for (var i = 0; i < str.length; i++) {
 			if (str[i] == ".") {
@@ -535,10 +809,18 @@ export class Create {
 				position.appendChild(node);
 			}
 		}
-		if (style) node.css(style);
-		if (divposition) node.setPosition(divposition);
-		if (innerHTML) node.innerHTML = innerHTML;
-		if (listen) node.listen(listen);
+		if (style) {
+			node.css(style);
+		}
+		if (divposition) {
+			node.setPosition(divposition);
+		}
+		if (innerHTML) {
+			node.innerHTML = innerHTML;
+		}
+		if (listen) {
+			node.listen(listen);
+		}
 		return node;
 	}
 	filediv() {
@@ -570,11 +852,17 @@ export class Create {
 				} else {
 					tagName = arguments[i];
 				}
-			} else if (["div", "table", "tr", "td", "body", "fragment"].includes(get.objtype(arguments[i]))) position = arguments[i];
-			else if (typeof arguments[i] == "number") position2 = arguments[i];
-			else if (get.itemtype(arguments[i]) == "divposition") divposition = arguments[i];
-			else if (typeof arguments[i] == "object") style = arguments[i];
-			else if (typeof arguments[i] == "function") listen = arguments[i];
+			} else if (["div", "table", "tr", "td", "body", "fragment"].includes(get.objtype(arguments[i]))) {
+				position = arguments[i];
+			} else if (typeof arguments[i] == "number") {
+				position2 = arguments[i];
+			} else if (get.itemtype(arguments[i]) == "divposition") {
+				divposition = arguments[i];
+			} else if (typeof arguments[i] == "object") {
+				style = arguments[i];
+			} else if (typeof arguments[i] == "function") {
+				listen = arguments[i];
+			}
 		}
 		if (tagName == undefined) {
 			tagName = "div";
@@ -615,10 +903,18 @@ export class Create {
 				position.appendChild(node);
 			}
 		}
-		if (style) HTMLDivElement.prototype.css.call(node, style);
-		if (divposition) HTMLDivElement.prototype.setPosition.call(node, divposition);
-		if (innerHTML) node.innerHTML = innerHTML;
-		if (listen) node.onclick = listen;
+		if (style) {
+			HTMLDivElement.prototype.css.call(node, style);
+		}
+		if (divposition) {
+			HTMLDivElement.prototype.setPosition.call(node, divposition);
+		}
+		if (innerHTML) {
+			node.innerHTML = innerHTML;
+		}
+		if (listen) {
+			node.onclick = listen;
+		}
 		return node;
 	}
 	iframe(src) {
@@ -780,18 +1076,31 @@ export class Create {
 	statictable() {
 		var str, row, col, position, position2, fixed, style, divposition;
 		for (var i = 0; i < arguments.length; i++) {
-			if (typeof arguments[i] == "string") str = arguments[i];
-			else if (typeof arguments[i] == "number") {
+			if (typeof arguments[i] == "string") {
+				str = arguments[i];
+			} else if (typeof arguments[i] == "number") {
 				if (typeof row == "number") {
-					if (typeof col == "number") position2 = arguments[i];
-					else col = arguments[i];
-				} else row = arguments[i];
-			} else if (["div", "table", "tr", "td", "body", "fragment"].includes(get.objtype(arguments[i]))) position = arguments[i];
-			else if (typeof arguments[i] == "boolean") fixed = arguments[i];
-			else if (get.itemtype(arguments[i]) == "divposition") divposition = arguments[i];
-			else if (typeof arguments[i] == "object") style = arguments[i];
+					if (typeof col == "number") {
+						position2 = arguments[i];
+					} else {
+						col = arguments[i];
+					}
+				} else {
+					row = arguments[i];
+				}
+			} else if (["div", "table", "tr", "td", "body", "fragment"].includes(get.objtype(arguments[i]))) {
+				position = arguments[i];
+			} else if (typeof arguments[i] == "boolean") {
+				fixed = arguments[i];
+			} else if (get.itemtype(arguments[i]) == "divposition") {
+				divposition = arguments[i];
+			} else if (typeof arguments[i] == "object") {
+				style = arguments[i];
+			}
 		}
-		if (str == undefined) str = "";
+		if (str == undefined) {
+			str = "";
+		}
 		var node = document.createElement("table");
 		for (var i = 0; i < str.length; i++) {
 			if (str[i] == ".") {
@@ -812,7 +1121,9 @@ export class Create {
 		var tr, td;
 		for (var i = 0; i < row; i++) {
 			tr = document.createElement("tr");
-			if (fixed) tr.style.height = 100 / row + "%";
+			if (fixed) {
+				tr.style.height = 100 / row + "%";
+			}
 			node.appendChild(tr);
 			for (var j = 0; j < col; j++) {
 				td = document.createElement("td");
@@ -829,8 +1140,12 @@ export class Create {
 		return node;
 	}
 	giveup() {
-		if (ui.giveup) return;
-		if (!lib.config.show_giveup) return;
+		if (ui.giveup) {
+			return;
+		}
+		if (!lib.config.show_giveup) {
+			return;
+		}
 		ui.giveup = ui.create.system(
 			"投降",
 			function () {
@@ -906,15 +1221,27 @@ export class Create {
 	characterDialog2(filter) {
 		var list = [];
 		for (var i in lib.character) {
-			if (lib.character[i].isMinskin) continue;
+			if (lib.character[i].isMinskin) {
+				continue;
+			}
 			if (lib.character[i].isBoss || lib.character[i].isHiddenBoss) {
-				if (lib.config.mode == "boss") continue;
-				if (!lib.character[i].isBossAllowed) continue;
+				if (lib.config.mode == "boss") {
+					continue;
+				}
+				if (!lib.character[i].isBossAllowed) {
+					continue;
+				}
 			}
 
-			if (lib.character[i].isHiddenInStoneMode) continue;
-			if (lib.config.banned.includes(i)) continue;
-			if (filter && filter(i)) continue;
+			if (lib.character[i].isHiddenInStoneMode) {
+				continue;
+			}
+			if (lib.config.banned.includes(i)) {
+				continue;
+			}
+			if (filter && filter(i)) {
+				continue;
+			}
 			list.push(i);
 		}
 		var dialog = ui.create.dialog("hidden");
@@ -927,7 +1254,9 @@ export class Create {
 		dialog.classList.add("choose-character");
 		var getPack = function (name) {
 			for (var i in lib.characterPack) {
-				if (lib.characterPack[i][name]) return i;
+				if (lib.characterPack[i][name]) {
+					return i;
+				}
 			}
 			return null;
 		};
@@ -1048,8 +1377,12 @@ export class Create {
 		};
 		if (thisiscard) {
 			for (var i in lib.card) {
-				if (!lib.translate[i + "_info"]) continue;
-				if (filter && filter(i)) continue;
+				if (!lib.translate[i + "_info"]) {
+					continue;
+				}
+				if (filter && filter(i)) {
+					continue;
+				}
 				list.push(["", get.translation(lib.card[i].type), i]);
 				if (namecapt.indexOf(getCapt(i)) == -1) {
 					namecapt.push(getCapt(i));
@@ -1058,22 +1391,40 @@ export class Create {
 		} else {
 			for (var i in lib.character) {
 				if (lib.character[i][4]) {
-					if (lib.character[i].isMinskin) continue;
+					if (lib.character[i].isMinskin) {
+						continue;
+					}
 					if (lib.character[i].isBoss || lib.character[i].isHiddenBoss) {
-						if (lib.config.mode == "boss") continue;
-						if (!lib.character[i].isBossAllowed) continue;
+						if (lib.config.mode == "boss") {
+							continue;
+						}
+						if (!lib.character[i].isBossAllowed) {
+							continue;
+						}
 					}
 
-					if (lib.character[i].isHiddenInStoneMode) continue;
-					if (lib.character[i].isUnseen) continue;
+					if (lib.character[i].isHiddenInStoneMode) {
+						continue;
+					}
+					if (lib.character[i].isUnseen) {
+						continue;
+					}
 				}
-				if (lib.config.banned.includes(i)) continue;
-				if (lib.characterFilter[i] && !lib.characterFilter[i](get.mode())) continue;
-				if (filter && filter(i)) continue;
+				if (lib.config.banned.includes(i)) {
+					continue;
+				}
+				if (lib.characterFilter[i] && !lib.characterFilter[i](get.mode())) {
+					continue;
+				}
+				if (filter && filter(i)) {
+					continue;
+				}
 				list.push(i);
 				if (get.is.double(i)) {
 					groups.add("double");
-				} else groups.add(lib.character[i][1]);
+				} else {
+					groups.add(lib.character[i][1]);
+				}
 				if (namecapt.indexOf(getCapt(i)) == -1) {
 					namecapt.push(getCapt(i));
 				}
@@ -1095,7 +1446,9 @@ export class Create {
 		var packsource;
 		/** 点击筛选中的按钮 */
 		var clickCapt = function (e) {
-			if (_status.dragged) return;
+			if (_status.dragged) {
+				return;
+			}
 			if (dialog.currentcapt2 == "最近" && dialog.currentcaptnode2 != this && !dialog.currentcaptnode2.inited) {
 				dialog.currentcapt2 = null;
 				dialog.currentcaptnode2.classList.remove("thundertext");
@@ -1225,7 +1578,9 @@ export class Create {
 				}
 			}
 			updatePagination();
-			if (e) e.stopPropagation();
+			if (e) {
+				e.stopPropagation();
+			}
 		};
 		for (i = 0; i < namecapt.length; i++) {
 			if (namecapt[i] == "newline") {
@@ -1270,7 +1625,9 @@ export class Create {
 			span.style.margin = "8px";
 			/** 点击筛选某势力的武将 */
 			var clickGroup = function () {
-				if (_status.dragged) return;
+				if (_status.dragged) {
+					return;
+				}
 				if (dialog.currentcapt2 == "最近" && dialog.currentcaptnode2 != this && !dialog.currentcaptnode2.inited) {
 					dialog.currentcapt2 = null;
 					dialog.currentcaptnode2.classList.remove("thundertext");
@@ -1307,11 +1664,17 @@ export class Create {
 						} else if (dialog.currentcapt2 && dialog.buttons[i].capt != dialog.getCurrentCapt(dialog.buttons[i].link, dialog.buttons[i].capt, true)) {
 							dialog.buttons[i].classList.add("nodisplay");
 						} else if (dialog.currentgroup == "double") {
-							if (dialog.buttons[i]._changeGroup) dialog.buttons[i].classList.remove("nodisplay");
-							else dialog.buttons[i].classList.add("nodisplay");
+							if (dialog.buttons[i]._changeGroup) {
+								dialog.buttons[i].classList.remove("nodisplay");
+							} else {
+								dialog.buttons[i].classList.add("nodisplay");
+							}
 						} else if (dialog.currentgroup == "ye") {
-							if (dialog.buttons[i].group == "ye") dialog.buttons[i].classList.remove("nodisplay");
-							else dialog.buttons[i].classList.add("nodisplay");
+							if (dialog.buttons[i].group == "ye") {
+								dialog.buttons[i].classList.remove("nodisplay");
+							} else {
+								dialog.buttons[i].classList.add("nodisplay");
+							}
 						} else {
 							if (dialog.buttons[i]._changeGroup || dialog.buttons[i].group != dialog.currentgroup) {
 								dialog.buttons[i].classList.add("nodisplay");
@@ -1354,7 +1717,9 @@ export class Create {
 				filternode = ui.create.div(".popup-container.filter-character.modenopause");
 				ui.create.div(filternode);
 				filternode.listen(function (e) {
-					if (this.classList.contains("removing")) return;
+					if (this.classList.contains("removing")) {
+						return;
+					}
 					delete _status.filterCharacter;
 					ui.window.classList.remove("shortcutpaused");
 					this.delete();
@@ -1394,8 +1759,12 @@ export class Create {
 			node.appendChild(newlined2);
 
 			packsource.addEventListener(lib.config.touchscreen ? "touchend" : "click", function () {
-				if (packsource.onlypack) return;
-				if (_status.dragged) return;
+				if (packsource.onlypack) {
+					return;
+				}
+				if (_status.dragged) {
+					return;
+				}
 				if (get.is.phoneLayout() && lib.config.filternode_button && filternode) {
 					_status.filterCharacter = true;
 					ui.window.classList.add("shortcutpaused");
@@ -1418,18 +1787,28 @@ export class Create {
 			});
 			var packlist = [];
 			for (var i = 0; i < lib.config.all.characters.length; i++) {
-				if (!lib.config.characters.includes(lib.config.all.characters[i])) continue;
+				if (!lib.config.characters.includes(lib.config.all.characters[i])) {
+					continue;
+				}
 				packlist.add(lib.config.all.characters[i]);
 			}
 			for (var i = 0; i < lib.config.characters.length; i++) {
-				if (lib.config.all.characters.includes(lib.config.characters[i])) continue;
-				if (!lib.characterPack[lib.config.characters[i]]) continue;
-				if (!lib.translate[lib.config.characters[i] + "_character_config"]) continue;
+				if (lib.config.all.characters.includes(lib.config.characters[i])) {
+					continue;
+				}
+				if (!lib.characterPack[lib.config.characters[i]]) {
+					continue;
+				}
+				if (!lib.translate[lib.config.characters[i] + "_character_config"]) {
+					continue;
+				}
 				packlist.add(lib.config.characters[i]);
 			}
 			Object.keys(lib.characterPack)
 				.filter(key => {
-					if (key.indexOf("mode_extension") != 0) return false;
+					if (key.indexOf("mode_extension") != 0) {
+						return false;
+					}
 					const extName = key.slice(15);
 					//if (!game.hasExtension(extName) || !game.hasExtensionLoaded(extName)) return false;
 					return lib.config[`extension_${extName}_characters_enable`] === true;
@@ -1482,7 +1861,9 @@ export class Create {
 			};
 			list.sort(function (a, b) {
 				var del = groupSort(a) - groupSort(b);
-				if (del != 0) return del;
+				if (del != 0) {
+					return del;
+				}
 				var aa = a,
 					bb = b;
 				if (a.includes("_")) {
@@ -1518,7 +1899,9 @@ export class Create {
 		dialog.getCurrentCapt = function (link, capt, noalph) {
 			var currentcapt = noalph ? this.currentcapt2 : this.currentcapt;
 			if (this.seperatelist && noalph) {
-				if (this.seperatelist[currentcapt].includes(link)) return capt;
+				if (this.seperatelist[currentcapt].includes(link)) {
+					return capt;
+				}
 				return null;
 			}
 			if (lib.characterDialogGroup[currentcapt]) {
@@ -1534,7 +1917,7 @@ export class Create {
 		};
 		// 搜索框，by Curpond
 		/** @type { Element } */
-		// @ts-ignore
+		// @ts-expect-error ignore
 		const container = dialog.querySelector(".content-container>.content");
 		const Searcher = ui.create.div(".searcher.caption");
 		const input = document.createElement("input").css({
@@ -1542,7 +1925,7 @@ export class Create {
 			border: "solid 2px #294510",
 			borderRadius: "6px",
 			fontWeight: "bold",
-			fontSize: "21px"
+			fontSize: "21px",
 		});
 		const div = ui.create.div(".searcher.find");
 		input.placeholder = "支持正则搜索";
@@ -1552,27 +1935,27 @@ export class Create {
 		const updatePagination = () => {
 			if (dialog.paginationMaxCount.get("character")) {
 				const buttons = dialog.content.querySelector(".buttons");
-				const array = dialog.buttons.filter(item => !item.classList.contains("nodisplay") && item.style.display !== 'none');
+				const array = dialog.buttons.filter(item => !item.classList.contains("nodisplay") && item.style.display !== "none");
 				/** @type { Pagination } */
-				// @ts-ignore
+				// @ts-expect-error ignore
 				const p = dialog.paginationMap.get(buttons);
 				if (p) {
 					p.state.data = array;
-					// @ts-ignore
+					// @ts-expect-error ignore
 					p.setTotalPageCount(Math.ceil(array.length / dialog.paginationMaxCount.get("character")));
 				}
 			}
 		};
 		const restoreState = btn => {
-			if (btn.style.display == 'none') {
-				btn.style.display = '';
+			if (btn.style.display == "none") {
+				btn.style.display = "";
 			}
 		};
 		const updateFind = () => {
 			const { value } = input;
 			const reg = new RegExp(value);
 			for (let btn of dialog.buttons) {
-				if (reg.test(get.translation(btn.link)) || reg.test(get.translation(btn.link + '_ab'))) {
+				if (reg.test(get.translation(btn.link)) || reg.test(get.translation(btn.link + "_ab"))) {
 					btn.classList.remove("nodisplay");
 				} else {
 					btn.classList.add("nodisplay");
@@ -1580,7 +1963,7 @@ export class Create {
 			}
 			updatePagination();
 		};
-		find.addEventListener('click', updateFind);
+		find.addEventListener("click", updateFind);
 		input.onkeydown = function (e) {
 			e.stopPropagation();
 			if (e.code == "Enter") {
@@ -1626,7 +2009,9 @@ export class Create {
 					}
 				}
 				for (var i in seperate) {
-					if (i == "list") continue;
+					if (i == "list") {
+						continue;
+					}
 					var link = "";
 					var linkcontent = seperate[i];
 					if (i.includes("_link:")) {
@@ -1664,11 +2049,11 @@ export class Create {
 		}
 		if (dialog.paginationMaxCount.get("character")) {
 			/** @type { HTMLDivElement } */
-			// @ts-ignore
+			// @ts-expect-error ignore
 			const buttons = dialog.content.querySelector(".buttons");
-			const array = dialog.buttons.filter(item => !item.classList.contains("nodisplay") && item.style.display !== 'none');
-			// 传入初始配置
-			const p = new Pagination({
+			const array = dialog.buttons.filter(item => !item.classList.contains("nodisplay") && item.style.display !== "none");
+			// 传入初始配置 + 渲染元素
+			dialog.addPagination({
 				// 数据
 				data: array,
 				// 总页数(向上取整)
@@ -1693,9 +2078,6 @@ export class Create {
 				// 触发什么事件来更改当前页数，默认为click
 				changePageEvent: "click",
 			});
-			dialog.paginationMap.set(buttons, p);
-			// 渲染元素
-			p.renderPageDOM();
 		}
 
 		return dialog;
@@ -1718,15 +2100,20 @@ export class Create {
 		var node = ui.create.div(".config");
 		for (var i = 0; i < arguments.length; i++) {
 			if (typeof arguments[i] == "string" || typeof arguments[i] == "number") {
-				if (two) ui.create.div(".toggle", node).innerHTML = arguments[i];
-				else {
+				if (two) {
+					ui.create.div(".toggle", node).innerHTML = arguments[i];
+				} else {
 					ui.create.div(node).innerHTML = arguments[i];
 					two = true;
 				}
-			} else if (typeof arguments[i] == "function") func = arguments[i];
+			} else if (typeof arguments[i] == "function") {
+				func = arguments[i];
+			}
 		}
 		if (func) {
-			for (var i = 0; i < node.childNodes.length; i++) node.childNodes[i].listen(func);
+			for (var i = 0; i < node.childNodes.length; i++) {
+				node.childNodes[i].listen(func);
+			}
 		}
 		return node;
 	}
@@ -1762,7 +2149,9 @@ export class Create {
 			switcher.link = current ? true : false;
 			switcher.addEventListener(lib.config.touchscreen ? "touchend" : "click", ui.click.toggle);
 		}
-		if (func) switcher.additionalCommand = func;
+		if (func) {
+			switcher.additionalCommand = func;
+		}
 		return node;
 	}
 	caption(str, position) {
@@ -1801,8 +2190,11 @@ export class Create {
 		}
 		if (ui.confirm) {
 			ui.confirm.str = str;
-			if (func) ui.confirm.custom = func;
-			else delete ui.confirm.custom;
+			if (func) {
+				ui.confirm.custom = func;
+			} else {
+				delete ui.confirm.custom;
+			}
 		}
 	}
 	skills(skills) {
@@ -1817,11 +2209,15 @@ export class Create {
 					}
 				}
 			}
-			if (same) return;
+			if (same) {
+				return;
+			}
 			ui.skills.close();
 			delete ui.skills;
 		}
-		if (skills == undefined || skills.length == 0) return;
+		if (skills == undefined || skills.length == 0) {
+			return;
+		}
 		if (!_status.event.isMine()) {
 			_status.noupdatec = true;
 		}
@@ -1850,11 +2246,15 @@ export class Create {
 					}
 				}
 			}
-			if (same) return;
+			if (same) {
+				return;
+			}
 			ui.skills2.close();
 			delete ui.skills2;
 		}
-		if (skills == undefined || skills.length == 0) return;
+		if (skills == undefined || skills.length == 0) {
+			return;
+		}
 		if (!_status.event.isMine()) {
 			_status.noupdatec = true;
 		}
@@ -1883,11 +2283,15 @@ export class Create {
 					}
 				}
 			}
-			if (same) return;
+			if (same) {
+				return;
+			}
 			ui.skills3.close();
 			delete ui.skills3;
 		}
-		if (skills == undefined || skills.length == 0) return;
+		if (skills == undefined || skills.length == 0) {
+			return;
+		}
 		if (!_status.event.isMine()) {
 			_status.noupdatec = true;
 		}
@@ -1903,6 +2307,126 @@ export class Create {
 		_status.noupdatec = false;
 		ui.skills3.skills = skills;
 		return ui.skills3;
+	}
+	/**
+	 * 向当前事件注入牌的全选/反选按钮喵
+	 * 这个函数一般在“AI代选”的位置前面调用喵
+	 */
+	cardChooseAll() {
+		const event = get.event();
+		// 如果不是当前玩家、当前配置或者事件不允许全选或者使用complexCard与complexSelect，则取消注入喵
+		if (!event.isMine() || event.noChooseAll || event.complexCard || event.complexSelect || !lib.config.choose_all_button) {
+			return null;
+		}
+		// 这里的条件用的是“AI代选”按钮的条件喵
+		const selectCard = event.selectCard;
+		if (typeof selectCard == "function") {
+			return null;
+		}
+		const range = get.select(selectCard);
+		if (range[1] <= 1) {
+			return null; // 只选一张牌就不使用全选哦喵
+		}
+		return event.cardChooseAll = ui.create.control("全选", function () {
+			// 这个反选要封装喵？
+			// 好像就只有这里用哦
+			const event = get.event();
+			const selecteds = [...ui.selected.cards];
+
+			// 清空选择的牌喵
+			ui.selected.cards.length = 0;
+			game.check();
+
+			const selectables = get.selectableCards();
+			// @ts-expect-error 啊至少垫片函数是接受数组的喵
+			const cards = selecteds.length ? [...new Set(selectables).difference(selecteds)] : selectables;
+			
+			if (cards.length <= range[1]) {
+				// 如果可以就全选喵
+				ui.selected.cards.push(...cards);
+			} else {
+				// 否则随机选择几张喵
+				ui.selected.cards.push(...cards.randomGets(range[1]));
+			}
+
+			// 更新UI喵
+			for (const card of ui.selected.cards) {
+				card.classList.add("selected");
+				card.updateTransform(true, 0);
+			}
+			for (const card of selecteds) {
+				card.classList.remove("selected");
+				card.updateTransform(false, 0);
+			}
+			game.check();
+			if (typeof event.custom?.add?.card == "function") {
+				_status.event.custom.add.card();
+			}
+		});
+	}
+	/**
+	 * 向当前事件注入按钮的全选/反选按钮喵
+	 */
+	buttonChooseAll() {
+		const event = get.event();
+		// 如果不是当前玩家、当前配置或者事件不允许全选或者使用complexSelect，则取消注入喵
+		if (!event.isMine() || !(event.dialog instanceof lib.element.Dialog) || event.noChooseAll || event.complexSelect || !lib.config.choose_all_button) {
+			return null;
+		}
+		// 这里的条件用的是“AI代选”按钮的条件喵
+		const selectButton = event.selectButton;
+		if (typeof selectButton == "function") {
+			return null;
+		}
+		const range = get.select(selectButton);
+		if (range[1] <= 1) {
+			return null; // 只选一个按钮就不使用全选哦喵
+		}
+		// 获取标题来作为按钮的定位喵
+		const caption = event.dialog.content.querySelector(".caption");
+		if (!event.dialog.content.contains(caption)) {
+			return null; // 没有标题那么全选按钮就没有位置添加哦喵
+		}
+		// 创建全选按钮喵
+		const buttonChooseAll = ui.create.div(".select-all.popup.pointerdiv");
+		event.buttonChooseAll = buttonChooseAll;
+		buttonChooseAll.listen(function (e) {
+			const event = get.event();
+			const selecteds = [...ui.selected.buttons];
+
+			// 清空选择的按钮喵
+			ui.selected.buttons.length = 0;
+			game.check();
+			
+			const selectables = get.selectableButtons();
+			// @ts-expect-error 啊至少垫片函数是接受数组的喵
+			const buttons = selecteds.length ? [...new Set(selectables).difference(selecteds)] : selectables;
+			
+			if (buttons.length <= range[1]) {
+				// 如果可以就全选喵
+				ui.selected.buttons.push(...buttons);
+			} else {
+				// 否则随机选择几个喵
+				ui.selected.buttons.push(...buttons.randomGets(range[1]));
+			}
+
+			// 更新UI喵
+			for (const button of ui.selected.buttons) {
+				button.classList.add("selected");
+			}
+			for (const button of selecteds) {
+				button.classList.remove("selected");
+			}
+			game.check();
+			if (typeof event.custom?.add?.button == "function") {
+				_status.event.custom.add.button();
+			}
+
+			// 取消冒泡防止被uncheck喵
+			e.stopPropagation();
+		});
+		event.dialog.content.insertBefore(buttonChooseAll, caption);
+		return buttonChooseAll;
 	}
 	arena() {
 		var i, j;
@@ -2019,8 +2543,9 @@ export class Create {
 			document.body.classList.add("statusbar");
 		}
 		if (lib.config.keep_awake) {
-			if (window.plugins && window.plugins.insomnia) window.plugins.insomnia.keepAwake();
-			else {
+			if (window.plugins && window.plugins.insomnia) {
+				window.plugins.insomnia.keepAwake();
+			} else {
 				lib.init.js(lib.assetURL + "game", "NoSleep", function () {
 					var noSleep = new NoSleep();
 					document.addEventListener(
@@ -2035,7 +2560,7 @@ export class Create {
 				});
 			}
 		}
-		lib.init.js(lib.assetURL + "game", "keyWords", function () { });
+		lib.init.js(lib.assetURL + "game", "keyWords", function () {});
 
 		lib.updateURL = lib.updateURLS[lib.config.update_link] || lib.updateURLS.coding;
 
@@ -2054,7 +2579,9 @@ export class Create {
 		ui.window.addEventListener(
 			lib.config.touchscreen ? "touchend" : "click",
 			() => {
-				if (!ui.backgroundMusic.played.length && lib.config.background_music != "music_off" && !isNaN(ui.backgroundMusic.duration)) ui.backgroundMusic.play();
+				if (!ui.backgroundMusic.played.length && lib.config.background_music != "music_off" && !isNaN(ui.backgroundMusic.duration)) {
+					ui.backgroundMusic.play();
+				}
 			},
 			{ once: true }
 		);
@@ -2172,7 +2699,9 @@ export class Create {
 				ui.roundmenu.style.transition = "";
 			}, 500);
 			game.saveConfig("roundmenu_transform", [0, 0]);
-			if (e) e.stopPropagation();
+			if (e) {
+				e.stopPropagation();
+			}
 			return false;
 		};
 		ui.click.resetround = resetround;
@@ -2220,41 +2749,27 @@ export class Create {
 		ui.sidebar.ontouchmove = ui.click.touchScroll;
 		ui.sidebar.style.webkitOverflowScrolling = "touch";
 
-		var zoom;
-		switch (lib.config.ui_zoom) {
-			case "esmall":
-				zoom = 0.8;
-				break;
-			case "vsmall":
-				zoom = 0.9;
-				break;
-			case "small":
-				zoom = 0.93;
-				break;
-			case "big":
-				zoom = 1.05;
-				break;
-			case "vbig":
-				zoom = 1.1;
-				break;
-			case "ebig":
-				zoom = 1.2;
-				break;
-			case "eebig":
-				zoom = 1.5;
-				break;
-			case "eeebig":
-				zoom = 1.8;
-				break;
-			case "eeeebig":
-				zoom = 2;
-				break;
-			default:
-				zoom = 1;
+		let zoom = Number.parseInt(lib.config.ui_zoom);
+		if (isNaN(zoom) || zoom < 50 || zoom > 300) {
+			zoom = 100;
+			game.saveConfig("ui_zoom", `${zoom}%`);
 		}
-		game.documentZoom = game.deviceZoom * zoom;
-		if (zoom != 1) {
-			ui.updatez();
+
+		game.documentZoom = (game.deviceZoom * zoom) / 100;
+		zoom !== 100 && ui.updatez();
+
+		if (get.mode() === "doudizhu") {
+			if (typeof get.config("choice_zhu", "doudizhu") !== "number") {
+				game.saveConfig("choice_zhu", 5, "doudizhu");
+			}
+			if (typeof get.config("choice_fan", "doudizhu") !== "number") {
+				game.saveConfig("choice_fan", 3, "doudizhu");
+			}
+		}
+		
+		// 根据157的要求移除掉本体的五行扩展哦喵
+		if (game.hasExtension("wuxing")) {
+			game.removeExtension("wuxing");
 		}
 
 		ui.system1 = ui.create.div("#system1", ui.system);
@@ -2305,11 +2820,21 @@ export class Create {
 		}
 
 		if (lib.forcehide) {
-			if (lib.forcehide.includes("replay")) ui.replay.classList.add("forcehide");
-			if (lib.forcehide.includes("auto")) ui.auto.classList.add("forcehide");
-			if (lib.forcehide.includes("pause")) ui.pause.classList.add("forcehide");
-			if (lib.forcehide.includes("wuxie")) ui.wuxie.classList.add("forcehide");
-			if (lib.forcehide.includes("cardPileButton")) ui.cardPileButton.classList.add("forcehide");
+			if (lib.forcehide.includes("replay")) {
+				ui.replay.classList.add("forcehide");
+			}
+			if (lib.forcehide.includes("auto")) {
+				ui.auto.classList.add("forcehide");
+			}
+			if (lib.forcehide.includes("pause")) {
+				ui.pause.classList.add("forcehide");
+			}
+			if (lib.forcehide.includes("wuxie")) {
+				ui.wuxie.classList.add("forcehide");
+			}
+			if (lib.forcehide.includes("cardPileButton")) {
+				ui.cardPileButton.classList.add("forcehide");
+			}
 		}
 		ui.volumn = ui.create.system("♫");
 		lib.setPopped(ui.volumn, ui.click.volumn, 200);
@@ -2328,9 +2853,13 @@ export class Create {
 		// }
 
 		ui.sortCard = ui.create.system("整理手牌", function () {
-			if (!game.me || game.me.hasSkillTag("noSortCard")) return;
+			if (!game.me || game.me.hasSkillTag("noSortCard")) {
+				return;
+			}
 			var hs = game.me.getCards("h");
-			if (!hs.length) return;
+			if (!hs.length) {
+				return;
+			}
 			game.addVideo("lose", game.me, [get.cardsInfo(hs), [], [], []]);
 			for (var i = 0; i < hs.length; i++) {
 				hs[i].goto(ui.special);
@@ -2338,16 +2867,23 @@ export class Create {
 			if (game.me.hasSkillTag("sortCardByNum")) {
 				var getn = function (card) {
 					var num = get.number(card, game.me);
-					if (num < 3) return 13 + num;
+					if (num < 3) {
+						return 13 + num;
+					}
 					return num;
 				};
 				hs.sort((a, b) => getn(b) - getn(a));
-			} else
+			} else {
 				hs.sort(function (b, a) {
-					if (a.name != b.name) return lib.sort.card(a.name, b.name);
-					else if (a.suit != b.suit) return lib.suit.indexOf(a) - lib.suit.indexOf(b);
-					else return a.number - b.number;
+					if (a.name != b.name) {
+						return lib.sort.card(a.name, b.name);
+					} else if (a.suit != b.suit) {
+						return lib.suit.indexOf(a) - lib.suit.indexOf(b);
+					} else {
+						return a.number - b.number;
+					}
 				});
+			}
 			game.me.directgain(hs, false);
 		});
 		if (!lib.config.show_sortcard) {
@@ -2361,33 +2897,37 @@ export class Create {
 					return new Promise((resolve, reject) => {
 						if (game.online) {
 							try {
-								game.ws.send(JSON.stringify(['cardPile']));
-								game.ws.addEventListener('message', function (e) {
-									let data = JSON.parse(JSON.parse(e.data)[0]);
-									if (data.type == 'cardPile') {
-										resolve(data.data);
-									}
-								}, { once: true });
-
+								game.ws.send(JSON.stringify(["cardPile"]));
+								game.ws.addEventListener(
+									"message",
+									function (e) {
+										let data = JSON.parse(JSON.parse(e.data)[0]);
+										if (data.type == "cardPile") {
+											resolve(data.data);
+										}
+									},
+									{ once: true }
+								);
 							} catch (error) {
 								resolve(false);
 							}
-
-
 						} else {
 							resolve({
 								drawPile: ui.cardPile.children,
-								discardPile: ui.discardPile.children
+								discardPile: ui.discardPile.children,
 							});
 						}
 					});
-
 				}
-				if (!_status.gameStarted) return;
+				if (!_status.gameStarted) {
+					return;
+				}
 				game.pause2();
 
 				let result = await getResult();
-				if (!result) return;
+				if (!result) {
+					return;
+				}
 				let drawPile = result.drawPile;
 				let discardPile = result.discardPile;
 
@@ -2418,7 +2958,9 @@ export class Create {
 					function renderNumberColumn() {
 						let numberResult = Object.groupBy(cards, card => get.number(card));
 						for (let i = 1; i <= 13; i++) {
-							if (!numberResult[i]) numberResult[i] = [];
+							if (!numberResult[i]) {
+								numberResult[i] = [];
+							}
 						}
 						createColumnContainer(numberResult, "点数", cards.length);
 					}
@@ -2432,10 +2974,12 @@ export class Create {
 								}
 							})
 						);
-						// @ts-ignore
+						// @ts-expect-error ignore
 						delete suitResult[void 0];
 						for (let suit of lib.suit) {
-							if (!suitResult[suit]) suitResult[suit] = [];
+							if (!suitResult[suit]) {
+								suitResult[suit] = [];
+							}
 						}
 						createColumnContainer(suitResult, "花色", cards.length);
 					}
@@ -2454,20 +2998,26 @@ export class Create {
 								Object.assign(
 									result,
 									Object.groupBy(typeResult[key], card => {
-										if (get.name(card) !== "sha") return;
+										if (get.name(card) !== "sha") {
+											return;
+										}
 										return get.translation(get.color(card)) + "杀";
 									})
 								);
 								Object.assign(
 									result,
 									Object.groupBy(typeResult[key], card => {
-										if (get.name(card) !== "sha") return;
+										if (get.name(card) !== "sha") {
+											return;
+										}
 										let perfix = get.translation(get.nature(card));
-										if (perfix == "") perfix = "普通";
+										if (perfix == "") {
+											perfix = "普通";
+										}
 										return perfix + "杀";
 									})
 								);
-								// @ts-ignore
+								// @ts-expect-error ignore
 								delete result[void 0];
 								createColumnContainer(result, get.translation(key), typeResult[key].length);
 							} else {
@@ -2489,7 +3039,9 @@ export class Create {
 								}, "")
 							);
 							item.addEventListener("mouseenter", function (e) {
-								if (tip.innerHTML == "") return;
+								if (tip.innerHTML == "") {
+									return;
+								}
 								tip.style.display = "block";
 								let rect = item.getBoundingClientRect();
 								if (rect.top < window.innerHeight / 2) {
@@ -2518,8 +3070,6 @@ export class Create {
 			true
 		);
 
-
-
 		lib.arenaReady?.push(function () {
 			if (lib.config.show_deckMonitor) {
 				ui.deckMonitor.style.display = "";
@@ -2531,7 +3081,6 @@ export class Create {
 			}
 			document.documentElement.style.setProperty("--tip-display", lib.config.show_tip ? "flex" : "none");
 		});
-
 
 		//---------------------------------
 		ui.playerids = ui.create.system(
@@ -2639,18 +3188,29 @@ export class Create {
 			const favouriteMode = lib.config.favouriteMode;
 			let removed = false;
 			for (let index = 0; index < favouriteMode.length; index++) {
-				if (typeof favouriteMode[index] == "string") continue;
+				if (typeof favouriteMode[index] == "string") {
+					continue;
+				}
 				favouriteMode.splice(index--, 1);
-				if (!removed) removed = true;
+				if (!removed) {
+					removed = true;
+				}
 			}
-			if (removed) game.saveConfigValue("favouriteMode");
+			if (removed) {
+				game.saveConfigValue("favouriteMode");
+			}
 			this.innerHTML = "";
 			favouriteMode.slice(0, 6).forEach((value, index) => this.add(value, index));
 			let mode = lib.config.mode;
 			const config = get.config(`${mode}_mode`);
-			if (typeof config == "string") mode += `|${config}`;
-			if (favouriteMode.includes(mode)) ui.favmode.classList.add("glow");
-			else ui.favmode.classList.remove("glow");
+			if (typeof config == "string") {
+				mode += `|${config}`;
+			}
+			if (favouriteMode.includes(mode)) {
+				ui.favmode.classList.add("glow");
+			} else {
+				ui.favmode.classList.remove("glow");
+			}
 		};
 		ui.favmodelist.add = function (name, index) {
 			const info = name.split("|"),
@@ -2661,11 +3221,15 @@ export class Create {
 			dataset.type = Math.min(6, lib.config.favouriteMode.length) % 2 == 0 ? "even" : "odd";
 			dataset.position = index;
 			let str = lib.translate[name] || lib.translate[mode] || "";
-			if (str.length == 2) str += "模式";
+			if (str.length == 2) {
+				str += "模式";
+			}
 			node.innerHTML = str;
 			node.listen(() => {
 				game.saveConfig("mode", mode);
-				if (submode) game.saveConfig(`${mode}_mode`, submode, mode);
+				if (submode) {
+					game.saveConfig(`${mode}_mode`, submode, mode);
+				}
 				game.reload();
 			});
 		};
@@ -2709,8 +3273,9 @@ export class Create {
 		lib.status.date = new Date();
 		lib.status.dateDelayed = 0;
 
-		// @ts-ignore
-		while (lib.arenaReady.length) lib.arenaReady.shift()();
+		while (lib.arenaReady?.length) {
+			lib.arenaReady?.shift()();
+		}
 		delete lib.arenaReady;
 		if (lib.config.auto_check_update && !sessionStorage.getItem("auto_check_update")) {
 			setTimeout(() => {
@@ -2725,7 +3290,7 @@ export class Create {
 						game.saveConfig("asset_version", "无");
 					} else {
 						var func = function () {
-							if (confirm("是否下载图片和字体素材？（约386.6MB）")) {
+							if (confirm("是否下载图片和字体素材？")) {
 								if (!ui.arena.classList.contains("menupaused")) {
 									ui.click.configMenu();
 									ui.click.menuTab("其它");
@@ -2735,11 +3300,11 @@ export class Create {
 								game.saveConfig("asset_version", "无");
 							}
 						};
-						if (_status.new_tutorial) {
-							_status.new_tutorial = func;
-						} else {
-							func();
-						}
+						// if (_status.new_tutorial) {
+						// 	_status.new_tutorial = func;
+						// } else {
+						// 	func();
+						// }
 					}
 				}, 3000);
 			});
@@ -2777,7 +3342,9 @@ export class Create {
 		}
 		if (lib.config.button_press) {
 			node.addEventListener(lib.config.touchscreen ? "touchstart" : "mousedown", function (e) {
-				if (!node.classList.contains("hidden")) node.classList.add("pressdown");
+				if (!node.classList.contains("hidden")) {
+					node.classList.add("pressdown");
+				}
 			});
 			node.addEventListener(lib.config.touchscreen ? "touchend" : "mouseup", function (e) {
 				node.classList.remove("pressdown");
@@ -2789,7 +3356,9 @@ export class Create {
 		return node;
 	}
 	pause() {
-		if (_status.pausing) return;
+		if (_status.pausing) {
+			return;
+		}
 		ui.click.shortcut(false);
 		var node = ui.create.div(".pausedbg", ui.window);
 		_status.pausing = true;
@@ -2876,7 +3445,9 @@ export class Create {
 				node = item.cloneNode(true);
 			}
 			node.classList.add("button");
-			if (position) position.appendChild(node);
+			if (position) {
+				position.appendChild(node);
+			}
 			node.link = item;
 			if (item.style.backgroundImage) {
 				node.style.backgroundImage = item.style.backgroundImage;
@@ -2923,15 +3494,23 @@ export class Create {
 				node = ui.create.div(".button.character", position);
 			}
 			node._link = item;
-			if (_status.noReplaceCharacter && type == "characterx") type = "character";
+			if (_status.noReplaceCharacter && type == "characterx") {
+				type = "character";
+			}
 			if (type == "characterx") {
-				if (lib.characterReplace[item] && lib.characterReplace[item].length) item = lib.characterReplace[item].randomGet();
+				if (lib.characterReplace[item] && lib.characterReplace[item].length) {
+					item = lib.characterReplace[item].randomGet();
+				}
 			}
 			node.link = item;
 
 			var double = get.is.double(node._link, true);
-			if (double) node._changeGroup = true;
-			if (type == "characterx" && lib.characterReplace[node._link] && lib.characterReplace[node._link].length > 1) node._replaceButton = true;
+			if (double) {
+				node._changeGroup = true;
+			}
+			if (type == "characterx" && lib.characterReplace[node._link] && lib.characterReplace[node._link].length > 1) {
+				node._replaceButton = true;
+			}
 			var func = function (node, item) {
 				node.setBackground(item, "character");
 				if (node.node) {
@@ -2939,7 +3518,9 @@ export class Create {
 					node.node.hp.remove();
 					node.node.group.remove();
 					node.node.intro.remove();
-					if (node.node.replaceButton) node.node.replaceButton.remove();
+					if (node.node.replaceButton) {
+						node.node.replaceButton.remove();
+					}
 				}
 				node.node = {
 					name: ui.create.div(".name", node),
@@ -2982,13 +3563,18 @@ export class Create {
 						maxHp = infoitem.maxHp,
 						shield = infoitem.hujia;
 					if (maxHp > 14) {
-						if (hp !== maxHp || shield > 0) node.node.hp.innerHTML = infoitem[2];
-						else node.node.hp.innerHTML = get.numStr(infoitem[2]);
+						if (hp !== maxHp || shield > 0) {
+							node.node.hp.innerHTML = infoitem[2];
+						} else {
+							node.node.hp.innerHTML = get.numStr(infoitem[2]);
+						}
 						node.node.hp.classList.add("text");
 					} else {
 						for (var i = 0; i < maxHp; i++) {
 							var next = ui.create.div("", node.node.hp);
-							if (i >= hp) next.classList.add("exclude");
+							if (i >= hp) {
+								next.classList.add("exclude");
+							}
 						}
 						for (var i = 0; i < shield; i++) {
 							ui.create.div(node.node.hp, ".shield");
@@ -3012,10 +3598,16 @@ export class Create {
 				if (infoitem[1]) {
 					if (double) {
 						node.node.group.innerHTML = double.reduce((previousValue, currentValue) => `${previousValue}<div data-nature="${get.groupnature(currentValue)}">${get.translation(currentValue)}</div>`, "");
-						if (double.length > 4)
-							if (new Set([5, 6, 9]).has(double.length)) node.node.group.style.height = "48px";
-							else node.node.group.style.height = "64px";
-					} else node.node.group.innerHTML = `<div>${get.translation(infoitem[1])}</div>`;
+						if (double.length > 4) {
+							if (new Set([5, 6, 9]).has(double.length)) {
+								node.node.group.style.height = "48px";
+							} else {
+								node.node.group.style.height = "64px";
+							}
+						}
+					} else {
+						node.node.group.innerHTML = `<div>${get.translation(infoitem[1])}</div>`;
+					}
 					node.node.group.style.backgroundColor = get.translation(`${get.bordergroup(infoitem)}Color`);
 				} else {
 					node.node.group.style.display = "none";
@@ -3032,8 +3624,11 @@ export class Create {
 						var list = lib.characterReplace[node._link];
 						var link = node.link;
 						var index = list.indexOf(link);
-						if (index == list.length - 1) index = 0;
-						else index++;
+						if (index == list.length - 1) {
+							index = 0;
+						} else {
+							index++;
+						}
 						link = list[index];
 						node.link = link;
 						node.refresh(node, link);
@@ -3083,6 +3678,52 @@ export class Create {
 			}
 			return node;
 		},
+		/**
+		 * @returns { import("../../library/index.js").Button }
+		 */
+		skill: (item, type, position, noclick, node) => {
+			//搜索拥有这个技能的角色
+			let characterName;
+			if (Array.isArray(item)) {
+				characterName = item[1] || _status.skillOwner[item[0]];
+				item = item[0];
+			} else {
+				characterName = _status.skillOwner[item] || "shibing";
+			}
+			const info = get.character(characterName);
+			//创建这张vcard并重新赋值link
+			node = ui.create.buttonPresets.vcard(item, "vcard", position, noclick);
+			node.owner = characterName;
+			node.link = item;
+			//更改vcard的名字不然看不清
+			node.node.name.innerHTML = `<div class="name" data-nature=${get.groupnature(info[1], "raw")}m style="position: relative;color:#ffffff;fontweight:bold">${get.translation(item)}</div>`;
+			//更改vcard背景
+			node.node.background.innerHTML = "";
+			node.setBackground(characterName, "character");
+			//添加右键查看技能信息
+			node._customintro = function (uiintro, evt) {
+				const skill = node.link;
+				uiintro.add(get.translation(skill));
+				if (lib.translate[skill + "_info"]) {
+					uiintro.add(`<div class="text">${get.skillInfoTranslation(skill)}</div>`);
+					if (lib.translate[skill + "_append"]) {
+						uiintro._place_text = uiintro.add('<div class="text">' + lib.translate[skill + "_append"] + "</div>");
+					}
+				}
+				if (lib.skill[skill]?.derivation) {
+					let skills = lib.skill[skill].derivation;
+					if (!Array.isArray(skills)) {
+						skills = [skills];
+					}
+					skills = skills.filter(skill => lib.translate[`${skill}_info`] && lib.skill[skill]);
+					if (skills.length) {
+						uiintro.add(`—— 衍生技能 ——`);
+					}
+					uiintro.add([skills.map(i => [i, node.owner]), ui.create.buttonPresets.skill]);
+				}
+			};
+			return node;
+		},
 	};
 	button(item, type, position, noClick, button) {
 		return new lib.element.Button(item, type, position, noClick, button);
@@ -3111,7 +3752,9 @@ export class Create {
 				buttons.push(ui.create.button(list[i], type, fragment, noclick));
 			}
 		}
-		if (position) position.appendChild(fragment);
+		if (position) {
+			position.appendChild(fragment);
+		}
 		return buttons;
 	}
 	textbuttons(list, dialog, noclick) {
@@ -3124,9 +3767,13 @@ export class Create {
 				str = item;
 				link = item;
 			}
-			if (!str.startsWith("<div")) str = '<div class="popup text textbutton">' + str + "</div>";
+			if (!str.startsWith("<div")) {
+				str = '<div class="popup text textbutton">' + str + "</div>";
+			}
 			var next = dialog.add(str);
-			if (!noclick) next.firstChild.addEventListener(lib.config.touchscreen ? "touchend" : "click", ui.click.button);
+			if (!noclick) {
+				next.firstChild.addEventListener(lib.config.touchscreen ? "touchend" : "click", ui.click.button);
+			}
 			next.firstChild.link = link;
 			Object.setPrototypeOf(next, lib.element.Button.prototype);
 			dialog.buttons.add(next.firstChild);
@@ -3159,7 +3806,9 @@ export class Create {
 		ipbar.style.position = "relative";
 
 		var button = ui.create.div(".menubutton.large.highlight.connectbutton.connectbutton1.pointerdiv", game.online ? "退出联机" : "开始游戏", ui.window, function () {
-			if (button.clicked) return;
+			if (button.clicked) {
+				return;
+			}
 			if (game.online) {
 				if (game.onlinezhu) {
 					game.send("startGame");
@@ -3172,7 +3821,9 @@ export class Create {
 			} else {
 				var num = 0;
 				for (var i of game.connectPlayers) {
-					if (!i.nickname && !i.classList.contains("unselectable2")) num++;
+					if (!i.nickname && !i.classList.contains("unselectable2")) {
+						num++;
+					}
 				}
 				if (num >= lib.configOL.number - 1) {
 					alert("至少要有两名玩家才能开始游戏！");
@@ -3213,8 +3864,7 @@ export class Create {
 					if (!successful) {
 						console.error("Unable to copy using execCommand");
 						game.promises.prompt(`###分享内容复制失败，请自行复制以下内容###${text}`, true);
-					}
-					else {
+					} else {
 						game.alert("分享内容复制成功");
 					}
 				} catch (err) {
@@ -3223,11 +3873,14 @@ export class Create {
 				document.body.removeChild(textArea);
 			};
 			if ("clipboard" in navigator) {
-				navigator.clipboard.writeText(text).then(() => {
-					game.alert("分享内容复制成功");
-				}).catch(() => {
-					fallbackCopyTextToClipboard(text);
-				});
+				navigator.clipboard
+					.writeText(text)
+					.then(() => {
+						game.alert("分享内容复制成功");
+					})
+					.catch(() => {
+						fallbackCopyTextToClipboard(text);
+					});
 			} else {
 				fallbackCopyTextToClipboard(text);
 			}
@@ -3241,12 +3894,18 @@ export class Create {
 		if (numberOfPlayers === 0) {
 			return;
 		}
-		if (numberOfPlayers == undefined) numberOfPlayers = lib.configOL.number;
-		if (numberOfPlayers == undefined) numberOfPlayers = get.playerNumber();
+		if (numberOfPlayers == undefined) {
+			numberOfPlayers = lib.configOL.number;
+		}
+		if (numberOfPlayers == undefined) {
+			numberOfPlayers = get.playerNumber();
+		}
 		if (typeof numberOfPlayers == "string") {
 			numberOfPlayers = parseInt(numberOfPlayers);
 		}
-		if (!numberOfPlayers) numberOfPlayers = 5;
+		if (!numberOfPlayers) {
+			numberOfPlayers = 5;
+		}
 		for (let ordinal = 0; ordinal < numberOfPlayers; ordinal++) {
 			const player = ui.create.player().addTempClass("start");
 			game.players.push(player);
@@ -3335,14 +3994,22 @@ export class Create {
 			if (lib.card[lib.card.list[i][2]]) {
 				if (!lib.card.list[i]._replaced) {
 					if (!_status.connectMode) {
-						if (lib.config.bannedcards.includes(lib.card.list[i][2])) continue;
+						if (lib.config.bannedcards.includes(lib.card.list[i][2])) {
+							continue;
+						}
 					} else {
-						if (lib.configOL.bannedcards.includes(lib.card.list[i][2])) continue;
+						if (lib.configOL.bannedcards.includes(lib.card.list[i][2])) {
+							continue;
+						}
 					}
-					if (game.bannedcards && game.bannedcards.includes(lib.card.list[i][2])) continue;
+					if (game.bannedcards && game.bannedcards.includes(lib.card.list[i][2])) {
+						continue;
+					}
 				}
 				lib.inpile.add(lib.card.list[i][2]);
-				if (lib.card.list[i][2] == "sha" && lib.card.list[i][3]) lib.inpile_nature.add(lib.card.list[i][3]);
+				if (lib.card.list[i][2] == "sha" && lib.card.list[i][3]) {
+					lib.inpile_nature.add(lib.card.list[i][3]);
+				}
 				ui.create.card(ui.cardPile).init(lib.card.list[i]);
 			}
 		}
@@ -3352,11 +4019,15 @@ export class Create {
 			return natures.indexOf(a) - natures.indexOf(b);
 		});
 		for (var i in _status.cardtag) {
-			if (!_status.cardtag[i].length) delete _status.cardtag[i];
+			if (!_status.cardtag[i].length) {
+				delete _status.cardtag[i];
+			}
 		}
 		game.broadcastAll(
 			function (num, pile, top, cardtag, inpile2) {
-				if (ui.cardPileNumber) ui.cardPileNumber.innerHTML = "0轮 剩余牌: " + num;
+				if (ui.cardPileNumber) {
+					ui.cardPileNumber.innerHTML = "0轮 剩余牌: " + num;
+				}
 				lib.inpile = pile;
 				_status.pileTop = top;
 				_status.cardtag = cardtag;
@@ -3371,7 +4042,7 @@ export class Create {
 	}
 	/**
 	 * 创建分页类
-	 * @param {Partial<PaginationState>} options 
+	 * @param {Partial<PaginationState>} options
 	 */
 	pagination(options) {
 		return new Pagination(options);

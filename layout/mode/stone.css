@@ -227,7 +227,7 @@
 }
 
 #deck-builder > .shadowed.list > .list-container.deck > .card {
-	zoom: 0.8;
+	/* zoom: 0.8; */
 	margin-bottom: 15px;
 	margin-top: 0;
 	transition: all 0s;

@@ -7,14 +7,14 @@ let [core, version] = get.coreInfo();
  * @type {Promise<unknown>}
  */
 let waitUpdate = Promise.resolve();
-if (core === "chrome" && !isNaN(version) && version < 85) {
+if (core === "chrome" && !isNaN(version) && version < 91) {
 	/*
-	const tip = "检测到您的浏览器内核版本小于85，请及时升级浏览器或手机webview内核！";
+	const tip = "检测到您的浏览器内核版本小于91，请及时升级浏览器或手机webview内核！";
 	console.warn(tip);
 	game.print(tip);
 	const redirect_tip = `您使用的浏览器或无名杀客户端内核版本过低，将在未来的版本被废弃！\n目前使用的浏览器UA信息为：\n${userAgent}\n点击“确认”以前往GitHub下载最新版无名杀客户端（可能需要科学上网）。`;
 	if (confirm(redirect_tip)) {
-		window.open("https://github.com/libccy/noname/releases/tag/chromium77-client");
+		window.open("https://github.com/libnoname/noname/releases/tag/chromium91-client");
 	}
 	*/
 	waitUpdate = game.tryUpdateClient(/** UpdateReason.UNDERSUPPORT **/ 4);
@@ -30,7 +30,7 @@ waitUpdate
 				const url = sendUpdate();
 				if (typeof url == "string") {
 					if (typeof window.require == "function" && typeof window.process == "object") {
-						// @ts-ignore
+						// @ts-expect-error ignore
 						const remote = require("@electron/remote");
 						const thisWindow = remote.getCurrentWindow();
 						thisWindow.loadURL(url);
@@ -40,11 +40,11 @@ waitUpdate
 				}
 			};
 			/*
-			升级方法:
-				1. 游戏启动后导出数据，然后以http/s协议重启
-				2. 以http/s协议导入数据
-				3. 保存http/s协议的状态，以后不再以file协议启动
-			*/
+		升级方法:
+			1. 游戏启动后导出数据，然后以http/s协议重启
+			2. 以http/s协议导入数据
+			3. 保存http/s协议的状态，以后不再以file协议启动
+		*/
 			// 导出数据到根目录的noname.config.txt
 			if (navigator.notification) {
 				navigator.notification.activityStart("正在进行升级", "请稍候");
@@ -61,7 +61,7 @@ waitUpdate
 						console.error("升级失败:", e);
 					});
 			};
-			// @ts-ignore
+			// @ts-expect-error ignore
 			if (!lib.db) {
 				data = {};
 				for (let i in localStorage) {
@@ -91,13 +91,13 @@ waitUpdate
 						return /** @type {Promise<void>} */ (
 							// eslint-disable-next-line no-async-promise-executor
 							new Promise(async (resolve, reject) => {
-								if (!data) return reject(new Error("没有数据内容"));
+								if (!data) {return reject(new Error("没有数据内容"));}
 								try {
 									data = JSON.parse(lib.init.decode(data));
 									if (!data || typeof data != "object") {
 										throw "err";
 									}
-									// @ts-ignore
+									// @ts-expect-error ignore
 									if (lib.db && (!data.config || !data.data)) {
 										throw "err";
 									}
@@ -110,7 +110,7 @@ waitUpdate
 									}
 									return;
 								}
-								// @ts-ignore
+								// @ts-expect-error ignore
 								if (!lib.db) {
 									const noname_inited = localStorage.getItem("noname_inited");
 									const onlineKey = localStorage.getItem(lib.configprefix + "key");
@@ -147,8 +147,7 @@ waitUpdate
 						if (url.searchParams.get("sendUpdate")) {
 							url.searchParams.delete("sendUpdate");
 							location.href = url.toString();
-						}
-						else {
+						} else {
 							location.reload();
 						}
 					})
@@ -157,8 +156,7 @@ waitUpdate
 						if (window.FileError) {
 							if (!(e instanceof window.FileError)) {
 								alert(typeof e?.message == "string" ? e.message : JSON.stringify(e));
-							}
-							else {
+							} else {
 								console.error(`noname.config.txt读取失败: ${Object.keys(window.FileError).find(msg => window.FileError[msg] === e.code)}`);
 							}
 						}

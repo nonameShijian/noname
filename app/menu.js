@@ -170,7 +170,7 @@ if(!localStorage.getItem('noname_inited')){
 		}
 		return true;
 	}
-	let has = loop('game/update.js', 'game/config.js', 'game/package.js', 'game/game.js');
+	let has = loop('game/update.js', 'game/config.js', 'game/package.js', 'game/importmap.js', 'game/game.js');
 	if(has) localStorage.setItem('noname_inited', 'nodejs');
 }
 

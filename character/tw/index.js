@@ -6,14 +6,12 @@ import skills from "./skill.js";
 import translates from "./translate.js";
 import characterIntros from "./intro.js";
 import characterFilters from "./characterFilter.js";
-import characterReplaces from "./characterReplace.js";
 import dynamicTranslates from "./dynamicTranslate.js";
 import perfectPairs from "./perfectPairs.js";
 import voices from "./voices.js";
 import { characterSort, characterSortTranslate } from "./sort.js";
 
 game.import("character", function () {
-	if (lib.config.characters.includes("tw")) lib.group.add("western");
 	return {
 		name: "tw",
 		connect: true,
@@ -25,11 +23,10 @@ game.import("character", function () {
 		characterTitle: {},
 		dynamicTranslate: { ...dynamicTranslates },
 		characterIntro: { ...characterIntros },
-		characterReplace: { ...characterReplaces },
 		characterSubstitute: {
-			huan_zhugeliang: [
-				["huan_zhugeliang_shadow", []],
-			],
+			huan_zhugeliang: [["huan_zhugeliang_shadow", []]],
+			huan_caoang: [["huan_caoang_shadow", []]],
+			tw_sb_sp_zhugeliang: [["sb_zhugeliang", []]],
 		},
 		card: { ...cards },
 		skill: { ...skills },

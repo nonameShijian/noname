@@ -122,7 +122,7 @@ const characters = {
 		group: "key",
 		hp: 3,
 		skills: ["yui_jiang", "yui_lieyin", "yui_takaramono"],
-		names: "日向|由依",
+		names: "芳冈|由依",
 	},
 	key_tsumugi: {
 		sex: "female",

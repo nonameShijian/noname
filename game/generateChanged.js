@@ -29,7 +29,7 @@ function collectFilesSync(paths, filter = (_path) => true) {
 			for (const entry of entries) {
 				const fullPath = path.join(directoryPath, entry.name);
 				// 添加过滤函数
-				if (!filter(fullPath)) continue;
+				if (!filter(fullPath)) {continue;}
 
 				if (entry.isDirectory()) {
 					// 如果是目录，则递归进入
@@ -79,7 +79,7 @@ function compareFilesWithCommit(commitHash = "HEAD") {
 
 		});
 
-		const nonameExtensions = ["boss", "cardpile", "coin", "wuxing"].map(name => joinRootPath(`extension/${name}`));
+		const nonameExtensions = ["boss", "cardpile", "coin"].map(name => joinRootPath(`extension/${name}`));
 
 		filesArray.push(...collectFilesSync([joinRootPath("card"), joinRootPath("character"), joinRootPath("game"), joinRootPath("layout"), joinRootPath("mode"), joinRootPath("noname"), joinRootPath("theme"), joinRootPath("index.html"), joinRootPath("LICENSE"), joinRootPath("noname-compatible.js"), joinRootPath("noname.js"), joinRootPath("README.md"), joinRootPath("service-worker.js"), joinRootPath("tsconfig.json")]));
 
@@ -87,8 +87,8 @@ function compareFilesWithCommit(commitHash = "HEAD") {
 		filesArray.push(...collectFilesSync([joinRootPath("extension")], path => nonameExtensions.some(extPath => path.startsWith(extPath))));
 
 		filesArray = [...new Set(filesArray.map(v => v.replace(/\\/g, "/")))].sort((a, b) => {
-			if (a > b) return 1;
-			if (a < b) return -1;
+			if (a > b) {return 1;}
+			if (a < b) {return -1;}
 			return 0;
 		});
 

@@ -2,7 +2,7 @@
 /**
  * @type { ServiceWorkerGlobalScope } 提供ServiceWorker的代码提示
  */
-// @ts-ignore
+// @ts-expect-error transfer type on force.
 var self = globalThis;
 // 以副作用导入typescript，以保证require也可以同步使用
 import './game/typescript.js';
@@ -34,8 +34,10 @@ self.addEventListener("install", (event) => {
 self.addEventListener("activate", (event) => {
 	// 当一个 service worker 被初始注册时，页面在下次加载之前不会使用它。 claim() 方法会立即控制这些页面
 	// event.waitUntil(self.clients.claim());
-	console.log("service worker加载完成，执行重启操作");
-	sendReload();
+	event.waitUntil(self.clients.claim().then(() => {
+		console.log("service worker加载完成，执行重启操作");
+		sendReload();
+	}));
 });
 
 self.addEventListener('message', event => {
@@ -67,7 +69,9 @@ const searchParams = ["raw", "worker", "sharedworker", "module", "url"];
 
 self.addEventListener("fetch", event => {
 	const request = event.request;
-	if (typeof request.url != "string") return;
+	if (typeof request.url != "string") {
+		return;
+	}
 	const url = new URL(request.url);
 	// 直接返回vue编译好的结果
 	if (vueFileMap.has(request.url)) {
@@ -81,20 +85,30 @@ self.addEventListener("fetch", event => {
 		event.respondWith(rep);
 		return;
 	}
-	if (!['.ts', '.json', '.vue', 'css', '.js'].some(ext => url.pathname.endsWith(ext)) && !request.url.replace(location.origin, '').startsWith('/noname-builtinModules/')) return;
+	if (!['.ts', '.json', '.vue', '.css', '.js'].some(ext => url.pathname.endsWith(ext)) && !request.url.replace(location.origin, '').startsWith('/noname-builtinModules/')) {
+		return;
+	}
 	// 普通js请求不处理
 	if (url.pathname.endsWith('.js')) {
-		if (url.searchParams.size == 0 || !url.searchParams.keys().some(key => searchParams.includes(key))) return;
+		if (url.searchParams.size == 0 || !Array.from(url.searchParams.keys()).some(key => searchParams.includes(key))) {
+			return;
+		}
 	}
 	if (url.pathname.endsWith('.ts')) {
 		// 不处理视频文件
-		if (request.headers.get('accept')?.includes('video/mp2t')) return;
+		if (request.headers.get('accept')?.includes('video/mp2t')) {
+			return;
+		}
 		// 不处理.d.ts文件
-		if (url.pathname.endsWith('.d.ts')) return;
+		if (url.pathname.endsWith('.d.ts')) {
+			return;
+		}
 	}
 	// 只处理import关键字发起的json和css请求
 	if (url.pathname.endsWith('.json') || url.pathname.endsWith('.css')) {
-		if (!event.request.headers.get('origin')) return;
+		if (!event.request.headers.get('origin')) {
+			return;
+		}
 	}
 	/**
 	 * 将nodejs的模块编译为js module模块，是在html中使用了如下代码:
@@ -133,7 +147,7 @@ self.addEventListener("fetch", event => {
 		// 请求原文件
 		const response = fetch(request.url.replace(/\?.*/, ''), {
 			method: request.method,
-			mode: "no-cors",
+			// mode: "no-cors",
 			headers: new Headers({
 				"Content-Type": "text/plain"
 			}),
@@ -141,7 +155,9 @@ self.addEventListener("fetch", event => {
 		// 修改请求结果
 		event.respondWith(
 			response.then(res => {
-				if (!res.ok) return res;
+				if (!res.ok) {
+					return res;
+				}
 				console.log('正在编译', request.url);
 				return res.text().then(text => {
 					const requestAcceptHeader = request.headers.get('accept');
@@ -282,9 +298,6 @@ self.addEventListener("fetch", event => {
 									esModuleInterop: true,
 								}, `${url.origin}${url.pathname}?${scriptSearchParams.toString()}`) : script.content, "__sfc_main__")
 									.replace(`const __sfc_main__`, `export const __sfc_main__`)
-									// import vue重新指向
-									.replaceAll(`from "vue"`, `from "/game/vue.esm-browser.js"`)
-									.replaceAll(`from 'vue'`, `from '/game/vue.esm-browser.js'`)
 							);
 	
 							codeList.push(`import { __sfc_main__ } from '${ url.origin + url.pathname + '?' + scriptSearchParams.toString() }'`);
@@ -305,8 +318,6 @@ self.addEventListener("fetch", event => {
 								`${url.origin}${url.pathname}?${templateSearchParams.toString()}`,
 								template.code
 								// .replace(`function render(_ctx, _cache) {`, str => str + 'console.log(_ctx);')
-								.replaceAll(`from "vue"`, `from "/game/vue.esm-browser.js"`)
-								.replaceAll(`from 'vue'`, `from '/game/vue.esm-browser.js'`)
 							);
 							
 							codeList.push(`import { render } from '${ url.origin + url.pathname + '?' + templateSearchParams.toString() }'`);

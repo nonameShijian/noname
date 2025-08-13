@@ -315,8 +315,8 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 	vertical-align: top;
 	margin-bottom: -30px;
 	/* Hack to make IE7 behave */
-	*zoom: 1;
-	*display: inline;
+	/* *zoom: 1;
+	*display: inline; */
 }
 .CodeMirror .CodeMirror-gutter-wrapper {
 	position: absolute;

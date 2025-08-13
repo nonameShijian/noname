@@ -8,6 +8,7 @@ const cards = {
 		destroy: "chexuan",
 		type: "equip",
 		subtype: "equip5",
+		cardcolor: "heart",
 		skills: ["cheliji_sichengliangyu"],
 	},
 	cheliji_tiejixuanyu: {
@@ -17,6 +18,7 @@ const cards = {
 		destroy: "chexuan",
 		type: "equip",
 		subtype: "equip5",
+		cardcolor: "club",
 		skills: ["cheliji_tiejixuanyu"],
 	},
 	cheliji_feilunzhanyu: {
@@ -26,6 +28,7 @@ const cards = {
 		destroy: "chexuan",
 		type: "equip",
 		subtype: "equip5",
+		cardcolor: "spade",
 		skills: ["cheliji_feilunzhanyu"],
 	},
 };
