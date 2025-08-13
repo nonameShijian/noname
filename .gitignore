@@ -3,4 +3,6 @@ Home/
 无名杀-win32-x64/
 无名杀-win32-ia32/
 无名杀-linux-x64/
+无名杀-darwin-arm64/
+无名杀-darwin-x64/
 package-lock.json
