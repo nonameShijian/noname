@@ -28,6 +28,10 @@ export async function onload() {
 		createTouchDraggedFilter();
 	}
 
+	if (lib.config.hideMenuBar) {
+		try { window.__setHideMenuBar?.(true); } catch(e) {}
+	}
+
 	// 重构了吗？如构
 	let loadingCustomStyle = [
 		tryLoadCustomStyle("card_style", data => {

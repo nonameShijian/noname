@@ -14,6 +14,69 @@ const thisWindow = remote.getCurrentWindow();
 const contents = thisWindow.webContents;
 const fs = require('fs');
 
+// 读取/保存核心配置（与现有启动读取逻辑保持一致的key）
+const getConfigKey = () => {
+    const prefix = 'noname_0.9_';
+    const parts = __dirname.split('/').map(s => s && (/[A-Z]|[a-z]/.test(s[0]) ? s[0] : '_'));
+    return prefix + parts.join('') + '_' + 'config';
+};
+const loadCoreConfig = () => {
+    try {
+        const key = getConfigKey();
+        return JSON.parse(localStorage.getItem(key) || '{}') || {};
+    } catch (e) {
+        return {};
+    }
+};
+const saveCoreConfig = (cfg) => {
+    try {
+        const key = getConfigKey();
+        localStorage.setItem(key, JSON.stringify(cfg || {}));
+    } catch (e) {}
+};
+
+let coreConfig = loadCoreConfig();
+// 兼容两种键名：历史的 hide_menubar 与 新的 hideMenuBar
+let initialHideMenuBar = !!(coreConfig.hide_menubar ?? coreConfig.hideMenuBar);
+
+function persistHideMenuBar(hide) {
+    try {
+        coreConfig = loadCoreConfig();
+        coreConfig.hide_menubar = !!hide;
+        coreConfig.hideMenuBar = !!hide; // 同步两个键，便于不同版本读取
+        saveCoreConfig(coreConfig);
+    } catch (e) {}
+}
+
+function applyMenuBarVisibilityFromHidden(hide) {
+    try {
+        // 保持菜单已设置，这样 F12 才能切换可见性
+        // @ts-ignore
+        Menu.setApplicationMenu(Menu.buildFromTemplate(Menus));
+        if (hide) {
+            thisWindow.setAutoHideMenuBar(true);
+            thisWindow.setMenuBarVisibility(false);
+        } else {
+            thisWindow.setAutoHideMenuBar(false);
+            thisWindow.setMenuBarVisibility(true);
+        }
+    } catch(e) {
+        try {
+            // @ts-ignore
+            Menu.setApplicationMenu(Menu.buildFromTemplate(Menus));
+        } catch(_) {}
+    }
+}
+
+// 暴露全局API给渲染端其他模块调用
+// 例如：window.__setHideMenuBar(true)
+// 会同时保存配置并立即生效
+// @ts-ignore
+window.__setHideMenuBar = function(hide) {
+    persistHideMenuBar(!!hide);
+    applyMenuBarVisibilityFromHidden(!!hide);
+};
+
 const readJSON = (url) => {
 	return new Promise((resolve, reject) => {
 		fetch(url).then(response => {
@@ -361,6 +424,13 @@ var Menus = [{
 		label: '打开/关闭控制台',
 		role: 'toggleDevTools',
 	}, {
+		label: '隐藏顶部菜单栏',
+		type: 'checkbox',
+		checked: initialHideMenuBar,
+		click: (menuItem) => {
+			try { window.__setHideMenuBar?.(!!menuItem.checked); } catch (_) {}
+		},
+	}, {
 		type: 'separator' //分割线
 	}, {
 		label: '全屏模式',
@@ -425,8 +495,8 @@ var Menus = [{
     }],
 }];
 
-// @ts-ignore
-Menu.setApplicationMenu(Menu.buildFromTemplate(Menus));
+// 根据设置决定是否显示菜单栏
+applyMenuBarVisibilityFromHidden(initialHideMenuBar);
 
 let leaveFullScreen = function (e) {
 	if (e.code == "F11") {
@@ -452,6 +522,26 @@ thisWindow.on('leave-full-screen', () => {
 	} else {
 		app.exit(0);
 	}
+});
+
+// F12 切换菜单栏显示（仅当配置为隐藏时生效，以便临时调出菜单）
+window.addEventListener('keydown', (e) => {
+    try {
+        if (e.keyCode !== 123) return;
+        coreConfig = loadCoreConfig();
+        const isHidden = !!(coreConfig.hide_menubar ?? coreConfig.hideMenuBar);
+        if (!isHidden) return;
+        // 优先使用 API 判断/设置
+        if (typeof thisWindow.isMenuBarVisible === 'function') {
+            const visible = !!thisWindow.isMenuBarVisible();
+            thisWindow.setMenuBarVisibility(!visible);
+        } else {
+            // 旧版 Electron 兼容
+            // @ts-ignore
+            window.__menuTempShown = !window.__menuTempShown;
+            thisWindow.setMenuBarVisibility(!!window.__menuTempShown);
+        }
+    } catch (_) {}
 });
 
 // @ts-ignore
