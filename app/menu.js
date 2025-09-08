@@ -498,50 +498,12 @@ var Menus = [{
 // 根据设置决定是否显示菜单栏
 applyMenuBarVisibilityFromHidden(initialHideMenuBar);
 
-let leaveFullScreen = function (e) {
-	if (e.code == "F11") {
-		thisWindow.setFullScreen(false);
-	}
-};
-
-thisWindow.on('enter-full-screen', () => {
-	if (!thisWindow.isDestroyed()) {
-		Menu.setApplicationMenu(null);
-		window.addEventListener('keydown', leaveFullScreen);
-	} else {
-		app.exit(0);
-	}
-});
-
 thisWindow.on('leave-full-screen', () => {
 	if (!thisWindow.isDestroyed()) {
-		window.removeEventListener('keydown', leaveFullScreen);
-		// @ts-ignore
-		Menu.setApplicationMenu(Menu.buildFromTemplate(Menus));
 		contents.closeDevTools();
 	} else {
 		app.exit(0);
 	}
-});
-
-// F12 切换菜单栏显示（仅当配置为隐藏时生效，以便临时调出菜单）
-window.addEventListener('keydown', (e) => {
-    try {
-        if (e.keyCode !== 123) return;
-        coreConfig = loadCoreConfig();
-        const isHidden = !!(coreConfig.hide_menubar ?? coreConfig.hideMenuBar);
-        if (!isHidden) return;
-        // 优先使用 API 判断/设置
-        if (typeof thisWindow.isMenuBarVisible === 'function') {
-            const visible = !!thisWindow.isMenuBarVisible();
-            thisWindow.setMenuBarVisibility(!visible);
-        } else {
-            // 旧版 Electron 兼容
-            // @ts-ignore
-            window.__menuTempShown = !window.__menuTempShown;
-            thisWindow.setMenuBarVisibility(!!window.__menuTempShown);
-        }
-    } catch (_) {}
 });
 
 // @ts-ignore
