@@ -1214,18 +1214,6 @@ async function setOnError() {
 
 function setWindowListener() {
 	window.onkeydown = function (e) {
-		// F12 切换菜单栏显示
-		if (lib.config && lib.config.hideMenuBar && e.keyCode === 123) {
-			try { window.__setHideMenuBar && this && this.alert; /* no-op to keep scope */ } catch(e) {}
-			try {
-				const fn = window.__setHideMenuBar;
-				if (typeof fn === 'function') {
-					// 在 App 菜单里已经实现“仅隐藏状态下的临时切换”逻辑
-					// 这里直接触发由 App 菜单监听的 F12 行为即可
-					// 不再在渲染端重复实现切换
-				}
-			} catch (err) {}
-		}
 		if (typeof ui.menuContainer == "undefined" || !ui.menuContainer.classList.contains("hidden")) {
 			if (e.keyCode == 116 || ((e.ctrlKey || e.metaKey) && e.keyCode == 82)) {
 				if (e.shiftKey) {
