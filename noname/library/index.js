@@ -1705,13 +1705,6 @@ export class Library {
 					} else {
 						map.confirm_exit.hide();
 					}
-					if (map.hideMenuBar) {
-					if (lib.node || (window.require && !lib.device)) {
-						map.hideMenuBar.show();
-					} else {
-						map.hideMenuBar.hide();
-						}
-					}
 				},
 			},
 		},
