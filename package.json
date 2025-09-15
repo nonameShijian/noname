@@ -6,11 +6,11 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "packageWin64": "electron-packager . 无名杀 --platform=win32 --arch=x64 --out=./ --app-version=1.9.0 --icon=noname.ico --overwrite --ignore=./node_modules --ignore=.git --electron-version 33.2.0",
-    "packageWin32": "electron-packager . 无名杀 --platform=win32 --arch=ia32 --out=./ --app-version=1.9.0 --icon=noname.ico --overwrite --ignore=./node_modules --ignore=.git --electron-version 33.2.0",
-    "packageLinux": "electron-packager . 无名杀 --platform=linux --arch=x64 --out=./ --app-version=1.9.0 --icon=noname.ico --overwrite --ignore=./node_modules --ignore=.git --electron-version 33.2.0",
-    "packageDarwin": "electron-packager . 无名杀 --platform=darwin --arch=arm64 --out=./ --app-version=1.9.0 --icon=noname.icns --overwrite --ignore=./node_modules --ignore=.git --electron-version 33.2.0",
-    "packageDarwinIntel": "electron-packager . 无名杀 --platform=darwin --arch=x64 --out=./ --app-version=1.9.0 --icon=noname.icns --overwrite --ignore=./node_modules --ignore=.git --electron-version 33.2.0"
+    "packageWin64": "node build.js win64",
+    "packageWin32": "node build.js win32",
+    "packageLinux": "node build.js linux",
+    "packageDarwin": "node build.js darwin",
+    "packageDarwinIntel": "node build.js darwin_intel"
   },
   "repository": {
     "type": "git",
@@ -29,10 +29,7 @@
     "body-parser": "^1.20.3",
     "express": "^4.21.2",
     "iconv-lite": "^0.6.3",
-    "minimist": "^1.2.8",
-    "options": "0.0.6",
-    "ultron": "1.0.2",
-    "ws": "1.0.1"
+    "minimist": "^1.2.8"
   },
   "installerVersion": "1.75",
   "installerUpdateContent": [
