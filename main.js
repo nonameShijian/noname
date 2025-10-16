@@ -13,6 +13,7 @@ const isWindows = process.platform === "win32";
 const { versions } = process;
 const electronVersion = parseFloat(versions.electron);
 require("./noname-server.js");
+/** @type { import("@electron/remote/main") } */
 let remote;
 if (electronVersion >= 14) {
 	remote = require("@electron/remote/main");
