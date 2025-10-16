@@ -9,7 +9,7 @@ async function build(config) {
 		overwrite: true,
 		name: "无名杀",
 		appVersion: "1.9.0",
-		electronVersion: "33.2.0",
+		electronVersion: "38.3.0",
 		ignore: ["build.js", "noname"],
 		...config,
 	});
